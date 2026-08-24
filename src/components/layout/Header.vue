@@ -49,7 +49,6 @@ const NAV_LINKS = [
 
 const CATALOG_DROPDOWN = [
   { href: '/catalog/',               label: 'Все двери',      desc: 'Межкомнатные' },
-  { href: '/catalog/#series',        label: 'Серии',          desc: 'Все коллекции' },
   { href: '/catalog/skrytye-dveri/', label: 'Скрытые двери', desc: 'Скрытый монтаж' },
   { href: '/vhodnye-dveri/',         label: 'Входные двери', desc: 'С монтажом' },
   { href: '/catalog/decor/',         label: 'Декор',         desc: 'Плинтус, фрамуги, рейки' },
