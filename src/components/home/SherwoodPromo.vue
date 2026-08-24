@@ -28,16 +28,6 @@ const SHADES: Shade[] = [
   { name: 'Вишня',    description: 'благородный характер для изысканных решений',         swatch: `${CDN}cherry.webp` },
 ]
 
-/* Рендеры дверей (~510×924, обрезаны по низу полотна) — появляются поверх
-   затемнённой обложки по очереди и стоят на нижней кромке ленты.
-   Порядок совпадает с порядком оттенков в SHADES. */
-const DOORS = [
-  { name: 'Янтарь',  image: `${CDN}Frame 4.webp` },
-  { name: 'Бурбон',  image: `${CDN}Frame 6.webp` },
-  { name: 'Солярис', image: `${CDN}Frame 5.webp` },
-  { name: 'Вишня',   image: `${CDN}Frame 7.webp` },
-]
-
 const { sectionRef, visible } = useScrollReveal(0.15)
 </script>
 
@@ -61,25 +51,6 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             height="941"
             class="absolute inset-0 h-full w-full object-cover"
           />
-          <!-- Затемнение, чтобы двери читались на фоне интерьера -->
-          <div class="absolute inset-0 bg-black/45" aria-hidden="true" />
-          <!-- Двери коллекции — кластер смещён вправо, стоит на нижней
-               кромке ленты (рендеры обрезаны по низу полотна) -->
-          <div class="absolute inset-0 flex items-end justify-end gap-[3.5%] overflow-hidden pr-[7%]">
-            <img
-              v-for="(door, i) in DOORS"
-              :key="door.name"
-              :src="door.image"
-              :alt="`Дверь Урбан Древесный в оттенке ${door.name}`"
-              loading="lazy"
-              decoding="async"
-              width="508"
-              height="924"
-              class="h-[48%] w-auto drop-shadow-[0_1rem_1.5rem_rgba(0,0,0,0.45)] transition-[opacity,transform] duration-1800 ease-[cubic-bezier(0.22,1,0.36,1)] [clip-path:inset(4px_0_0_0)] motion-reduce:transition-none sm:h-[54%]"
-              :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
-              :style="{ transitionDelay: visible ? `${300 + i * 380}ms` : '0ms' }"
-            />
-          </div>
           <!-- CTA на тёмной зоне обложки — белый ghost, как в херо.
                Только sm+: на телефонах кнопке на фото не хватает места,
                там она в контенте ниже. -->
