@@ -80,12 +80,14 @@ const { sectionRef, visible } = useScrollReveal(0.15)
               :style="{ transitionDelay: visible ? `${300 + i * 380}ms` : '0ms' }"
             />
           </div>
-          <!-- CTA на тёмной зоне обложки — белый ghost, как в херо -->
+          <!-- CTA на тёмной зоне обложки — белый ghost, как в херо.
+               Только sm+: на телефонах кнопке на фото не хватает места,
+               там она в контенте ниже. -->
           <a
             href="https://vk.com/vfddoors74"
             target="_blank"
             rel="noopener"
-            class="btn btn-ghost absolute left-[4%] top-[7%] px-6! py-3! text-sm! sm:top-auto sm:bottom-[8%]"
+            class="btn btn-ghost absolute bottom-[8%] left-[4%] hidden! px-6! py-3! text-sm! lg:inline-flex!"
           >
             Узнать больше
             <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -148,6 +150,18 @@ const { sectionRef, visible } = useScrollReveal(0.15)
               Откройте для себя разницу текстур.
               Найдите свой оттенок характера.
             </p>
+            <!-- Мобильный CTA — в потоке контента, как у MirrorDoorPromo -->
+            <a
+              href="https://vk.com/vfddoors74"
+              target="_blank"
+              rel="noopener"
+              class="mt-5 flex h-13 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800 sm:max-w-xs lg:hidden"
+            >
+              Узнать больше
+              <svg class="h-4.5 w-4.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
           </div>
         </div>
       </div>
