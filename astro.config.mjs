@@ -34,6 +34,18 @@ export default defineConfig({
         if (/\/catalog\/series(\/.+)?\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }
         }
+        if (/\/catalog\/dveri-[^/]+\/?$/.test(u)) {
+          return { ...item, changefreq: 'weekly', priority: 0.8 }
+        }
+        // Цветовые SEO-лендинги — см. src/data/color-categories.ts (слаги
+        // там не начинаются с dveri-, отдельная проверка).
+        if (/\/catalog\/(belye|seryye|bezhevye|shokolad-mokko)-dveri\/?$/.test(u)) {
+          return { ...item, changefreq: 'weekly', priority: 0.8 }
+        }
+        // Стилевые SEO-лендинги — см. src/data/style-categories.ts.
+        if (/\/catalog\/(loft-dveri|minimalizm-dveri)\/?$/.test(u)) {
+          return { ...item, changefreq: 'weekly', priority: 0.8 }
+        }
         if (/\/articles\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.7 }
         }

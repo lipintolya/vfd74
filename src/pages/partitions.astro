@@ -14,6 +14,7 @@ import Downloads from '../components/partitions/Downloads.astro'
 import SectionNav from '../components/partitions/SectionNav.astro'
 import ReplayButton from '../components/partitions/ReplayButton.astro'
 import QuoteCta from '../components/ui/QuoteCta.astro'
+import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import IconArrowRight from '../components/ui/icons/IconArrowRight.astro'
 import IconTelegram from '../components/ui/icons/IconTelegram.astro'
 import IconExpand from '../components/ui/icons/IconExpand.astro'
@@ -25,13 +26,40 @@ import {
 } from '../data/partitions'
 import '../styles/partitions.css'
 
-const title       = 'Алюминиевые перегородки GRAFIA — ВФД Челябинск'
+const title       = 'Алюминиевые перегородки в Челябинске — цены, изготовление на заказ | ВФД'
 const description = 'Раздвижные и распашные алюминиевые перегородки из профилей GRAFIA. Замер бесплатно. Монтаж по Челябинску. Срок изготовления 45 рабочих дней.'
 const canonicalUrl = Astro.site ? new URL('/partitions/', Astro.site).href : undefined
 
 const breadcrumbItems = [
   { label: 'Главная', href: '/' },
   { label: 'Перегородки' },
+]
+
+const partitionsFaq = [
+  {
+    q: 'Сколько времени изготавливается перегородка?',
+    a: 'Срок изготовления — 45 рабочих дней после оформления заказа и утверждения чертежей. Расчёт стоимости по вашим размерам делаем оперативно, обычно в течение дня.',
+  },
+  {
+    q: 'Какое стекло используется в перегородках?',
+    a: 'Закалённые стёкла толщиной 4, 6 или 8 мм повышенной прочности — прозрачные, тонированные или сатин. Возможна установка зеркала.',
+  },
+  {
+    q: 'Можно ли покрасить профиль в свой цвет?',
+    a: 'Да. Профили окрашиваются порошковой полимерной краской, доступна индивидуальная покраска по каталогам RAL/NCS под ваш интерьер.',
+  },
+  {
+    q: 'Сколько стоит алюминиевая перегородка?',
+    a: 'Цена зависит от размеров проёма, типа профиля, стекла и системы открывания, поэтому считается индивидуально по вашим размерам. Пришлите размеры проёма — сделаем расчёт в течение дня, бесплатно.',
+  },
+  {
+    q: 'Вы делаете перегородки по индивидуальным чертежам?',
+    a: 'Да, изготавливаем перегородки по индивидуальным размерам и чертежам: от простых экранов до комбинаций «дверь + гардеробная» в едином стиле.',
+  },
+  {
+    q: 'Кто устанавливает перегородку?',
+    a: 'Монтаж по Челябинску выполняет наша бригада — те же специалисты ведут заказ от замера до установки, с гарантией на работы.',
+  },
 ]
 
 const structuredData = {
@@ -54,6 +82,16 @@ const structuredData = {
   },
 }
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: partitionsFaq.map(f => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+}
+
 /* Превью для бенто-плиток — заранее сгенерированные маленькие копии
    (public/renders/alum-covers/N-preview.webp), см. README в той же папке. */
 const renderPreviews = renderGallery.slice(0, 3).map(img => ({
@@ -69,7 +107,7 @@ const renderLightbox = renderGallery
   canonical={canonicalUrl}
   ogImage={imgs.hero}
   preloadImage={imgs.hero}
-  structuredData={structuredData}
+  structuredData={[structuredData, faqSchema]}
 >
   <SectionNav />
 
@@ -466,6 +504,13 @@ const renderLightbox = renderGallery
           Гид по зонированию алюминиевыми перегородками →
         </a>
       </p>
+    </div>
+  </section>
+
+  <!-- FAQ (SEO — FAQPage schema + аккордеон) -->
+  <section class="section bg-white">
+    <div class="container">
+      <FaqAccordion items={partitionsFaq} />
     </div>
   </section>
 

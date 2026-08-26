@@ -9,8 +9,12 @@ import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import SectionNav from '../components/partitions/SectionNav.astro'
 import CatalogClient from '../components/catalog/CatalogClient.vue'
 import SeriesCard from '../components/catalog/SeriesCard.astro'
+import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import { getCatalogCards, getSeriesCardsData } from '../lib/catalog-data'
 import { getSeriesSpec, coatingGroupCopy } from '../data/series-descriptions'
+import { DOOR_CATEGORIES } from '../data/door-categories'
+import { COLOR_CATEGORIES } from '../data/color-categories'
+import { STYLE_CATEGORIES } from '../data/style-categories'
 
 const { cards, error } = await getCatalogCards()
 const seriesCardsData = getSeriesCardsData(cards)
@@ -20,6 +24,13 @@ const seriesCardsData = getSeriesCardsData(cards)
    известных покрытий, всё остальное — следом по алфавиту, чтобы новая
    группа (напр. будущее покрытие) не потерялась молча. ── */
 const COATING_ORDER = ['emalex', 'emal', 'protach', 'pet']
+
+/* coatingSlug → слаг SEO-лендинга покрытия (/catalog/<slug>), см.
+   src/data/door-categories.ts — единый источник, не дублируем маппинг. */
+const COATING_LANDING_SLUG = Object.fromEntries(
+  DOOR_CATEGORIES.map(c => [c.coatingSlug, c.slug])
+) as Record<string, string>
+
 
 /* Мягкий цветовой акцент группы по покрытию — та же логика, что и бейджи
    цвета серии на карточках товара (CatalogProductCard.vue): каждое
@@ -96,6 +107,33 @@ const breadcrumbItems = [
   { label: 'Каталог' },
 ]
 
+const catalogFaq = [
+  {
+    q: 'Сколько стоит межкомнатная дверь с установкой?',
+    a: 'Итоговая цена складывается из полотна, погонажа (короб, наличники, добор), фурнитуры и монтажа — и зависит от серии и покрытия. Цены на полотна каждой модели указаны в каталоге, а полный комплект удобно посчитать в калькуляторе на странице модели. Точный расчёт под ваш проём — бесплатно после замера.',
+  },
+  {
+    q: 'Какое покрытие выбрать — эмаль, ПЭТ, Эмалекс или Протач?',
+    a: 'Эмаль — гладкая окрашенная поверхность и широкая палитра, классика. ПЭТ — самое стойкое к царапинам и отпечаткам, выбор для семей с детьми и животными. Эмалекс — гладкое полимерное покрытие, устойчивое к влаге и царапинам, по виду близко к эмали, но практичнее по цене. Протач — плотное покрытие с текстурой, стойкое к износу. Образцы всех покрытий можно посмотреть вживую в салоне на Братьев Кашириных.',
+  },
+  {
+    q: 'Есть ли двери в наличии в Челябинске?',
+    a: 'Да, часть популярных моделей держим на складе в Челябинске — их можно забрать без ожидания производства. Наличие конкретной модели и цвета уточняйте у менеджера, актуальные складские акции публикуем на главной странице.',
+  },
+  {
+    q: 'Вы делаете замер и установку?',
+    a: 'Да. Замер по Челябинску — бесплатный при заказе дверей. Монтаж выполняет наша бригада с гарантией на работы: те же специалисты, что помогают с подбором, ведут заказ до установленной двери.',
+  },
+  {
+    q: 'Можно ли заказать дверь нестандартного размера?',
+    a: 'Да, полотна изготавливаются под заказ по нестандартной высоте и ширине. Доплаты за ширину 900 мм у ВФД нет. Возможные размеры и сроки для конкретной серии подскажет менеджер при расчёте.',
+  },
+  {
+    q: 'Как посчитать полную стоимость комплекта?',
+    a: 'На странице каждой модели есть калькулятор: выбираете цвет, короб, наличники, доборы, тип петель и замок — и сразу видите итоговую сумму комплекта. Это ориентир до замера; финальную смету составляем после бесплатного замера проёмов.',
+  },
+]
+
 const structuredData = canonicalUrl ? [
   {
     '@context': 'https://schema.org',
@@ -115,12 +153,21 @@ const structuredData = canonicalUrl ? [
     url: canonicalUrl,
     numberOfItems: cards.length,
   },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: catalogFaq.map(f => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
 ] : undefined
 ---
 
 <BaseLayout
-  title="Каталог дверей — ВФД на Кашириных"
-  description="Каталог межкомнатных и входных дверей с ценами. Серии Иннова, Линеа и другие. Салон ВФД в Челябинске."
+  title="Купить межкомнатные двери в Челябинске — каталог и цены | ВФД"
+  description="Межкомнатные двери в Челябинске от официального дилера ВФД: каталог с ценами, покрытия эмаль, ПЭТ, Эмалекс, Протач. Бесплатный замер, монтаж, салон на Братьев Кашириных."
   canonical={canonicalUrl}
   structuredData={structuredData}
 >
@@ -187,7 +234,12 @@ const structuredData = canonicalUrl ? [
                     {group.minPrice ? `от ${fmt(group.minPrice)}` : `${group.series.length} ${group.series.length === 1 ? 'серия' : 'серий'}`}
                     {group.minPrice && <span class="ml-1 text-xs font-semibold opacity-70">за полотно</span>}
                   </p>
-                  <a href={`/catalog/?coating=${group.slug}#catalog-title`} class="btn btn-primary w-fit">Смотреть модели</a>
+                  <a
+                    href={COATING_LANDING_SLUG[group.slug] ? `/catalog/${COATING_LANDING_SLUG[group.slug]}/` : `/catalog/?coating=${group.slug}#catalog-title`}
+                    class="btn btn-primary w-fit"
+                  >
+                    Смотреть модели
+                  </a>
                 </div>
               </div>
               {group.series.map((s, i) => <SeriesCard series={s} priority={groupIndex === 0 && i < 2} />)}
@@ -212,6 +264,38 @@ const structuredData = canonicalUrl ? [
           </div>
           )
         })}
+
+        <div class="mt-2 mb-8 md:mb-10">
+          <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по цвету</p>
+          <ul class="flex flex-wrap gap-2.5" role="list">
+            {COLOR_CATEGORIES.map(c => (
+              <li>
+                <a
+                  href={`/catalog/${c.slug}/`}
+                  class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700"
+                >
+                  {c.h1.replace(' в Челябинске', '')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="mt-2 mb-8 md:mb-10">
+          <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по стилю</p>
+          <ul class="flex flex-wrap gap-2.5" role="list">
+            {STYLE_CATEGORIES.map(c => (
+              <li>
+                <a
+                  href={`/catalog/${c.slug}/`}
+                  class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700"
+                >
+                  {c.h1.replace(' в Челябинске', '')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   )}
@@ -230,4 +314,11 @@ const structuredData = canonicalUrl ? [
       />
     </div>
   </div>
+
+  <!-- FAQ (SEO — FAQPage schema + аккордеон) -->
+  <section class="section">
+    <div class="container">
+      <FaqAccordion items={catalogFaq} />
+    </div>
+  </section>
 </BaseLayout>
