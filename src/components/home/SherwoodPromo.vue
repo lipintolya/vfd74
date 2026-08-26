@@ -7,8 +7,8 @@ import { useScrollReveal } from '../../composables/useScrollReveal'
  * лежит во всю ширину карточки в почти естественных пропорциях, а не в
  * боковой колонке (там object-cover зумил её до одной двери). Ссылок на
  * каталог пока нет намеренно: моделей серии ещё нет в каталоге, блок
- * имиджевый. Когда серия появится — добавить CTA по образцу
- * MirrorDoorPromo.vue.
+ * имиджевый — вместо CTA тег «Новинка. Скоро в каталоге». Когда серия
+ * появится — заменить тег на CTA по образцу MirrorDoorPromo.vue.
  */
 
 const CDN = 'https://storage.yandexcloud.net/vfd74ru/promo_main/sherwood/'
@@ -51,20 +51,11 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             height="941"
             class="absolute inset-0 h-full w-full object-cover"
           />
-          <!-- CTA на тёмной зоне обложки — белый ghost, как в херо.
-               Только sm+: на телефонах кнопке на фото не хватает места,
-               там она в контенте ниже. -->
-          <a
-            href="https://vk.com/vfddoors74"
-            target="_blank"
-            rel="noopener"
-            class="btn btn-ghost absolute bottom-[8%] left-[4%] hidden! px-6! py-3! text-sm! lg:inline-flex!"
-          >
-            Узнать больше
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
+          <!-- Тег вместо CTA — серии пока нет в каталоге, ссылке некуда вести. -->
+          <span class="absolute bottom-[8%] left-[4%] inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md">
+            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" aria-hidden="true"></span>
+            Новинка. Скоро в каталоге
+          </span>
         </div>
 
         <!-- Контент -->
@@ -121,18 +112,11 @@ const { sectionRef, visible } = useScrollReveal(0.15)
               Откройте для себя разницу текстур.
               Найдите свой оттенок характера.
             </p>
-            <!-- Мобильный CTA — в потоке контента, как у MirrorDoorPromo -->
-            <a
-              href="https://vk.com/vfddoors74"
-              target="_blank"
-              rel="noopener"
-              class="mt-5 flex h-13 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800 sm:max-w-xs lg:hidden"
-            >
-              Узнать больше
-              <svg class="h-4.5 w-4.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
+            <!-- Мобильный тег — на фото ему не хватает места -->
+            <span class="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium tracking-wide text-slate-700 lg:hidden">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" aria-hidden="true"></span>
+              Новинка. Скоро в каталоге
+            </span>
           </div>
         </div>
       </div>
