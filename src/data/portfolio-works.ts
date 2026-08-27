@@ -54,6 +54,25 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-10-18-aspen-old-gold-matt',
+    date:        '2026-10-18',
+    label:       '18.10.2026',
+    title:       'Монтаж перегородки Aspen в цвете Old Gold Matt',
+    description: 'Установка алюминиевой перегородки Aspen, профиль Grafia, декор R12, цвет Old Gold Matt, стекло Satinato Bianco. Два полотна с открыванием в угол вправо. ЖК Привилегия, Челябинск.',
+    category:    'partitions',
+    objectType:  'apartment',
+    location:    'Челябинск, ЖК Привилегия',
+    story:       'Элегантное решение для зонирования пространства — стильная и функциональная перегородка Aspen в изысканном золотом оттенке с матовым стеклом.',
+    model:       'Aspen',
+    features:    ['Профиль Grafia', 'Декор R12', 'Цвет Old Gold Matt', 'Стекло Satinato Bianco', 'Ручка RD03 (300 мм)', '2 трека', 'Открывание — два полотна в угол вправо'],
+    tags:        ['Перегородка', 'Квартира'],
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/partition/UEvgoB7D3CP-KR7frI473Mhu1y4O_fOcbWRrP4NcEV711I2VSvpQwxEhWxrhdpF_5PvWTiDr0Li_WqYBLpM-Vg_z.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/partition/_xg_Zu5H7-MaO4zCTQUVa_abuTWvm9Fs8MjQRxNaNsWNyHMJSHf9ytnbFutnmsi6YUorOTQ82snBdAVAZYkAqKud.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/partition/oeHTJXcYD72CvwGP0NePoHGom86OsJqE-G8JEtq4a3d_PWKfbRP-vLF336YPtX1Ro5FHjgy9G8rGQEvS8FiqY1KX.webp',
+    ],
+  },
+  {
     id:          '2025-07-25-balance-twin-sharkskin',
     date:        '2025-07-25',
     label:       '25.07.2025',
