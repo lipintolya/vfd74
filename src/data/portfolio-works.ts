@@ -54,6 +54,28 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-08-26-feniks-2-serebro',
+    date:        '2026-08-26',
+    label:       '26.08.2026',
+    title:       'Монтаж эмалевых дверей Феникс 2 в цвете «Серебро»',
+    description: 'Установка межкомнатных дверей Феникс 2 с покрытием эмаль в цвете «Серебро». Классический филёнчатый дизайн, прочное щитовое полотно. Монтаж в Челябинске.',
+    category:    'interior',
+    objectType:  'apartment',
+    location:    'Челябинск',
+    story:       'Выполнили монтаж межкомнатных дверей Феникс 2 в цвете «Серебро» — классический филёнчатый рисунок полотна хорошо вписался в светлый интерьер прихожей и коридора. Прочное щитовое полотно на основе плиты МДФ и инженерного массива с наполнением тамбуратом мелких сот обеспечивает стабильную геометрию и хорошую звукоизоляцию. Классический или неоклассический дизайн модели одинаково уместен и в современных, и в традиционных интерьерах. Работы выполнены аккуратно и в срок: демонтаж старых конструкций, подготовка проёмов, установка коробки, полотен и регулировка фурнитуры.',
+    model:       'Феникс 2',
+    features:    ['Цвет «Серебро»', 'Покрытие эмаль', 'Классический филёнчатый дизайн', 'Щитовое полотно на МДФ и инженерном массиве'],
+    tags:        ['Квартира', 'Эмаль', 'Классика'],
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/2O_3moxea9jLTgH8uZbsCVECujmF4v2E8dAsl3IohqVkozfek8vkSMU-5ubzeHE-84tIMAWD5FI_0U8-suQqLLWL.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/E5FNEFcfZphYbLe9YGLcTyfCsFPA4uG2-F-pSDi47iv-fhZCDOUODwRE_Os-0_nzLJ0SZFY5XcidTqGLIy9wU2et.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/GMFqIw4_x64U-8TcHUnBZt7DYDeVcedpxCmMuuiq0wAwqdeR7GtO2cFzr68Qkuee1fyLGgtN83jUUGUsQQ-bCBpR.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/IVsphjirBh3wRehCgrC4LM1dVJQxJIgWR6UcKEcTO8LvPwkXxQz3f4RCBNZjdN8is8pdeWyeBi4X4nMF0m3oC9i1.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/lFe6P3BUlaJAmy5KSaBdIVhWisGrXRv6uTSoUEzjuTt8wdqzdK8-Ca8zYvADwEqYd4-0RaA83LY31wYYvtrUVcYZ.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/mzQm4g9IS_8lw7o3oFaPW_NkxrotZkJdHli1SOsdVOOa4qFKLiW5SpVouSqtkK2-p2mCDmTY3pmhmNhUIBDbnXI4.webp',
+    ],
+  },
+  {
     id:          '2026-03-09-elegant-2-atum-pro-red-oak',
     date:        '2026-03-09',
     label:       '09.03.2026',
