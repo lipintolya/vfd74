@@ -54,6 +54,24 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2025-07-25-balance-twin-sharkskin',
+    date:        '2025-07-25',
+    label:       '25.07.2025',
+    title:       'Монтаж входной двери Balance Twin в цвете PVC Sharkskin',
+    description: 'Установка входной двери Balance Twin — стальное полотно 112 мм, короб 117 мм, три контура уплотнения. Внутренняя панель Glanta Emalex Ice. Монтаж на Братьев Кашириных, Челябинск.',
+    category:    'entrance',
+    objectType:  'apartment',
+    location:    'Челябинск, ул. Братьев Кашириных',
+    story:       'Balance Twin — дверь, которая дарит квартире уверенность и комфорт. Мощное стальное полотно в 112 мм и крепкий короб 117 мм общей массой 108 кг надёжно стоят на страже безопасности. Конструкция усилена лонжероном, рёбрами жёсткости и профилем по петлевой стороне, а три петли на подшипниках и три противосъёмных штыря обеспечивают дополнительную защиту от взлома. Два замка Гардиан (сувальдный 4 класса, цилиндровый 3 класса), ночная задвижка, цилиндр ключ-вертушок и панорамный глазок с броненакладкой дополняют эту защиту. Три контура уплотнения и комбинированное утепление из минеральной плиты и пенополистирола избавляют от шума, сквозняков и холода, создавая внутри идеальный микроклимат. Цвет полотна снаружи — PVC Sharkskin, внутренняя панель — Glanta Emalex Ice.',
+    model:       'Balance Twin',
+    features:    ['Цвет PVC Sharkskin', 'Внутренняя панель Glanta Emalex Ice', 'Полотно 112 мм, короб 117 мм, масса 108 кг', 'Два замка Гардиан + ночная задвижка', 'Три контура уплотнения'],
+    tags:        ['Входная дверь', 'Квартира'],
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/metal/25.07.25/RzrpB87m9cVsoMMoyzHj0V_8u-yIeT9kENDZ0YATIokYuHyFb4L12u64a_-5_pKLt4BVUPvjZkUfRFuFfFKnshuh.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/metal/25.07.25/YlaM9Daz1helkM9jhpcUin87NbjbdGXkVu__fyTURxOFoITfdWG-x2ZQwT_CTIUKSM6RdblVF1BTWx4LHz5dP_co.webp',
+    ],
+  },
+  {
     id:          '2026-08-26-feniks-2-serebro',
     date:        '2026-08-26',
     label:       '26.08.2026',
