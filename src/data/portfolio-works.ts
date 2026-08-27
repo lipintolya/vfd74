@@ -54,9 +54,9 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
-    id:          '2026-10-18-aspen-old-gold-matt',
-    date:        '2026-10-18',
-    label:       '18.10.2026',
+    id:          '2025-10-18-aspen-old-gold-matt',
+    date:        '2025-10-18',
+    label:       '18.10.2025',
     title:       'Монтаж перегородки Aspen в цвете Old Gold Matt',
     description: 'Установка алюминиевой перегородки Aspen, профиль Grafia, декор R12, цвет Old Gold Matt, стекло Satinato Bianco. Два полотна с открыванием в угол вправо. ЖК Привилегия, Челябинск.',
     category:    'partitions',
