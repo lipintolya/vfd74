@@ -49,7 +49,7 @@ onMounted(() => {
 })
 const glassOnly     = ref(false)
 const searchQuery   = ref('')
-const sortBy        = ref<CatalogSort>('price_asc')
+const sortBy        = ref<CatalogSort>('popular')
 const currentPage   = ref(1)
 // 24 = кратно и 2, и 3, и 4 колонкам грида (sm/lg/xl) — последняя строка
 // страницы всегда заполнена целиком, без одинокой карточки в углу
@@ -84,7 +84,18 @@ const filteredCards = computed(() => {
 
   // Сортировка по цене — всегда по цене за полотно (card.price), не за комплект:
   // комплект зависит от цвета/покрытия и не задаёт единый порядок по всему каталогу.
-  if (sortBy.value === 'price_asc')
+  if (sortBy.value === 'popular')
+    // Серии из popular-series.ts — вперёд (сейчас есть в наличии/в работе),
+    // внутри группы — по цене по возрастанию. Дефолт каталога: раньше им
+    // была чистая price_asc, из-за неё каталог открывался Протач-сериями
+    // (Некст и т.п. — самые дешёвые, но не в наличии), это не в интересах
+    // салона.
+    result = [...result].sort((a, b) => {
+      const byPopularity = Number(b.isPopular) - Number(a.isPopular)
+      if (byPopularity !== 0) return byPopularity
+      return (a.price ?? 999999) - (b.price ?? 999999)
+    })
+  else if (sortBy.value === 'price_asc')
     result = [...result].sort((a, b) => (a.price ?? 999999) - (b.price ?? 999999))
   else if (sortBy.value === 'price_desc')
     result = [...result].sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
@@ -103,7 +114,7 @@ const resetFilters = () => {
   activeColor.value   = ''
   glassOnly.value     = false
   searchQuery.value   = ''
-  sortBy.value        = 'price_asc'
+  sortBy.value        = 'popular'
 }
 
 const hasActiveFilters = computed(() =>
@@ -176,6 +187,7 @@ watch(
       <label class="flex items-center gap-2.5">
         <span class="text-step-1 font-semibold text-slate-600">Сортировка:</span>
         <select v-model="sortBy" class="min-h-11.5 min-w-62 rounded-lg border-2 border-slate-200 bg-white px-4 text-step-1 font-semibold text-ink focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/15">
+          <option value="popular">Популярные</option>
           <option value="price_asc">Цена: по возрастанию</option>
           <option value="price_desc">Цена: по убыванию</option>
           <option value="name">По названию</option>

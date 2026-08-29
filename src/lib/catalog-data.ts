@@ -9,6 +9,7 @@ import { buildModelSlugMap } from './slugify'
 import { getSeriesSpec } from '../data/series-descriptions'
 import { adjustPrice } from './price-adjustments'
 import { isNewModel } from './new-models'
+import { isPopularSeries } from './popular-series'
 import { formatTrim } from './trim-labels'
 import type { CatalogCardItem } from '../components/catalog/types'
 
@@ -138,6 +139,7 @@ export async function getCatalogCards(): Promise<{
       price:       adjustPrice(seriesSlug, row.price_rrp ?? null),
       hasGlass:    model.has_glass ?? false,
       isNew:       isNewModel(model.id),
+      isPopular:   isPopularSeries(seriesSlug),
     })
   }
 

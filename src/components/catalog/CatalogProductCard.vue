@@ -139,13 +139,19 @@ const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug))
            оставалось места, имя обрезалось до одной буквы. Теперь оба
            флагом друг под другом у левого края — конкурируют за высоту,
            не за ширину, и каждый читается полностью в любую сторону. -->
-      <div class="absolute left-0 top-3 flex max-w-[85%] flex-col items-start gap-1">
-        <span class="max-w-full truncate rounded-r-full px-3 py-1 text-xs font-medium uppercase tracking-wide" :class="seriesBadgeClass">{{ card.series }}</span>
+      <div class="absolute left-0 top-3 flex max-w-[88%] flex-col items-start gap-1">
+        <span class="max-w-full truncate rounded-r-full px-2.5 py-0.5 text-[0.625rem] font-medium uppercase tracking-wide" :class="seriesBadgeClass">{{ card.series }}</span>
         <span
           v-if="card.isNew"
-          class="max-w-full truncate rounded-r-full bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-sm"
+          class="max-w-full truncate rounded-r-full bg-red-600 px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wide text-white shadow-sm"
         >
           Новинка
+        </span>
+        <span
+          v-else-if="card.isPopular"
+          class="max-w-full truncate rounded-r-full bg-teal-600 px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wide text-white shadow-sm"
+        >
+          Выбор покупателей
         </span>
       </div>
 

@@ -28,6 +28,8 @@ export interface CatalogCardItem {
   hasGlass: boolean
   /** Бейдж "Новинка" — см. src/lib/new-models.ts */
   isNew: boolean
+  /** Бейдж "Выбор покупателей" — см. src/lib/popular-series.ts */
+  isPopular: boolean
 }
 
 export interface CatalogFilterOption {
@@ -37,4 +39,4 @@ export interface CatalogFilterOption {
   count?: number
 }
 
-export type CatalogSort = 'price_asc' | 'price_desc' | 'name'
+export type CatalogSort = 'popular' | 'price_asc' | 'price_desc' | 'name'
