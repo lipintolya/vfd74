@@ -11,7 +11,7 @@ import { isPromoActive } from '../lib/promo-dates'
 // applySecretPromo сама перестанет применяться, ничего вручную
 // возвращать не нужно.
 export const SECRET_PROMO_DISCOUNT    = 0.08
-export const SECRET_PROMO_VALID_UNTIL = '2026-08-31'
+export const SECRET_PROMO_VALID_UNTIL = '2026-08-30'
 export const SECRET_PROMO_ACTIVE      = isPromoActive(SECRET_PROMO_VALID_UNTIL)
 
 /** Скидка -8%, округление вверх до 10 ₽ (та же схема, что в calcCustomPrice).

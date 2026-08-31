@@ -44,7 +44,7 @@ export const PROMOS: Promo[] = [
     ctaText: 'Узнать наличие',
     ctaLink: '/contacts/',
     discount: '-10%',
-    validUntil: '2026-08-31',
+    validUntil: '2026-08-30',
   },
   {
     id: 3,
@@ -56,7 +56,7 @@ export const PROMOS: Promo[] = [
     ctaText: 'Смотреть «Секрет»',
     ctaLink: '/catalog/skrytye-dveri/',
     discount: '-8%',
-    validUntil: '2026-08-31',
+    validUntil: '2026-08-30',
   },
   {
     id: 4,
@@ -68,7 +68,7 @@ export const PROMOS: Promo[] = [
     ctaText: 'Смотреть в каталоге',
     ctaLink: 'https://vfd74.ru/catalog/series/basic/',
     discount: '-8%',
-    validUntil: '2026-08-31',
+    validUntil: '2026-08-30',
   },
   {
     id: 5,
@@ -80,7 +80,7 @@ export const PROMOS: Promo[] = [
     ctaText: 'Смотреть Эмалекс ЕС2',
     ctaLink: '/catalog/series/emalex/',
     discount: '-8%',
-    validUntil: '2026-08-31',
+    validUntil: '2026-08-30',
   },
   {
     id: 6,
@@ -92,6 +92,6 @@ export const PROMOS: Promo[] = [
     ctaText: 'Смотреть Урбан',
     ctaLink: '/catalog/series/urban/',
     discount: '-8%',
-    validUntil: '2026-08-31',
+    validUntil: '2026-08-30',
   },
 ]
