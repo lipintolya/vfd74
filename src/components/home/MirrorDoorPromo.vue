@@ -12,7 +12,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
   <section ref="sectionEl" class="section bg-white" aria-labelledby="reflex-promo-heading">
     <div class="container">
       <div
-        class="grid grid-cols-1 overflow-hidden rounded-2xl border border-slate-200 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none lg:grid-cols-[1fr_1.1fr]"
+        class="grid grid-cols-1 items-start overflow-hidden rounded-2xl border border-slate-200 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none lg:grid-cols-[1fr_1.1fr] lg:items-stretch"
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
         <!-- Контент -->
@@ -85,7 +85,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         </div>
 
         <!-- Фото -->
-        <div class="order-1 relative aspect-square lg:order-2 lg:aspect-auto">
+        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto lg:max-h-125">
           <img
             :src="REFLEX_IMAGE"
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"

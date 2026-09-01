@@ -2,7 +2,6 @@
 import '../styles/global.css'
 import Header from '../components/layout/Header.vue'
 import Footer from '../components/layout/Footer.vue'
-import AnnouncementBanner from '../components/layout/AnnouncementBanner.astro'
 import YandexMetrika from '../components/analytics/YandexMetrika.astro'
 import BackToTop from '../components/ui/BackToTop.astro'
 
@@ -109,7 +108,6 @@ const structuredDataJson = structuredData
       class="flex-1 relative overflow-x-hidden"
       style="padding-top: var(--header-height, 88px)"
     >
-      <AnnouncementBanner />
       <slot />
     </main>
 

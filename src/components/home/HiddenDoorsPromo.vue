@@ -18,12 +18,17 @@ const { sectionRef, visible } = useScrollReveal(0.15)
   <section ref="sectionEl" class="section bg-white" aria-labelledby="hidden-doors-heading">
     <div class="container">
       <div
-        class="grid grid-cols-1 overflow-hidden rounded-2xl border border-slate-200 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none lg:grid-cols-[1.1fr_1fr]"
+        class="grid grid-cols-1 items-start overflow-hidden rounded-2xl border border-slate-200 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none lg:grid-cols-[1.1fr_1fr] lg:items-stretch"
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
         <!-- Фото — без текстового оверлея, суть продукта в том, что дверь
-             сливается со стеной -->
-        <div class="relative aspect-square lg:aspect-auto">
+             сливается со стеной. Раньше aspect-square до lg и lg:aspect-auto
+             (тянулось на всю высоту текстовой колонки — на десктопе с 4
+             пунктами преимуществ + ценами колонка высокая, фото выходило
+             непропорционально крупным) — теперь высота ограничена своим
+             аспектом на всех брейкпоинтах, колонки не растягиваются друг под
+             друга (items-start). -->
+        <div class="relative aspect-4/3 sm:aspect-video lg:aspect-auto lg:max-h-125">
           <img
             :src="COVER_IMAGE"
             alt="Скрытая дверь серии «Секрет» — полотно заподлицо со стеной"

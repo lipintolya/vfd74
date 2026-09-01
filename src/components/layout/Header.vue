@@ -34,7 +34,7 @@ const SOCIAL_NETWORKS = [
 const CONTACTS = {
   phones:   companyLegalInfo.contacts.phone,
   address:  `${companyLegalInfo.address.legal} (${companyLegalInfo.address.entrance})`,
-  worktime: `${companyLegalInfo.workingHours.summer.weekdays.label}  ·  ${companyLegalInfo.workingHours.summer.saturday.label}  ·  Вс: по предварительной записи`,
+  worktime: `${companyLegalInfo.workingHours.winter.weekdays.label}  ·  Сб–Вс: ${companyLegalInfo.workingHours.winter.saturday.opens}–${companyLegalInfo.workingHours.winter.saturday.closes}`,
   email:    companyLegalInfo.contacts.email,
 }
 
@@ -55,9 +55,8 @@ const CATALOG_DROPDOWN = [
 ] as const
 
 const WORK_SCHEDULE = {
-  weekday: { open: 10, close: 20 },  // Пн-Пт: 10:00-20:00
-  saturday: { open: 11, close: 16 }, // Сб: 11:00-16:00
-  sunday: { open: 0, close: 0 },     // Вс: закрыто
+  weekday: { open: 10, close: 20 }, // Пн-Пт: 10:00-20:00
+  weekend: { open: 10, close: 18 }, // Сб-Вс: 10:00-18:00
 } as const
 
 /* ============================================================
@@ -91,9 +90,8 @@ const isActive = (href: string) => currentPath.value === href
    ============================================================ */
 const getScheduleForDay = (date: Date) => {
   const day = date.getDay()
-  if (day === 0) return WORK_SCHEDULE.sunday    // Воскресенье
-  if (day === 6) return WORK_SCHEDULE.saturday  // Суббота
-  return WORK_SCHEDULE.weekday                   // Пн-Пт
+  if (day === 0 || day === 6) return WORK_SCHEDULE.weekend // Сб-Вс
+  return WORK_SCHEDULE.weekday                               // Пн-Пт
 }
 
 const schedule = computed(() => getScheduleForDay(now.value))
@@ -101,8 +99,6 @@ const schedule = computed(() => getScheduleForDay(now.value))
 const isOpen = computed(() => {
   const h = now.value.getHours()
   const s = schedule.value
-  // Воскресенье всегда закрыто
-  if (s === WORK_SCHEDULE.sunday) return false
   return h >= s.open && h < s.close
 })
 
@@ -122,28 +118,15 @@ const closedMessage = computed(() => {
   const h = now.value.getHours()
   const s = schedule.value
 
-  // Воскресенье (особый режим — по предварительной записи)
-  if (s === WORK_SCHEDULE.sunday) {
-    const nextOpen = WORK_SCHEDULE.weekday.open
-    return `Вс: по предварительной записи · Откроемся завтра в ${String(nextOpen).padStart(2, '0')}:00`
-  }
-
   // Ещё не наступило время открытия сегодня
   if (h < s.open) {
     return `Закрыто · Откроемся сегодня в ${String(s.open).padStart(2, '0')}:00`
   }
 
-  // Уже закрылись — смотрим на завтра
+  // Уже закрылись — смотрим на завтра (открытие в 10:00 каждый день недели)
   const tomorrow = new Date(now.value)
   tomorrow.setDate(tomorrow.getDate() + 1)
-  const tomorrowSchedule = getScheduleForDay(tomorrow)
-
-  if (tomorrowSchedule === WORK_SCHEDULE.sunday) {
-    const nextOpen = WORK_SCHEDULE.weekday.open
-    return `Закрыто · Откроемся в пн в ${String(nextOpen).padStart(2, '0')}:00`
-  }
-
-  const nextOpen = tomorrowSchedule.open
+  const nextOpen = getScheduleForDay(tomorrow).open
   return `Закрыто · Откроемся завтра в ${String(nextOpen).padStart(2, '0')}:00`
 })
 
