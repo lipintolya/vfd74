@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: '/partitions/', label: 'Перегородки' },
   { href: '/designers/',  label: 'Дизайнерам' },
   { href: '/about/',      label: 'О нас' },
+  { href: '/reviews/',    label: 'Отзывы' },
   { href: '/contacts/',   label: 'Контакты' },
 ] as const
 

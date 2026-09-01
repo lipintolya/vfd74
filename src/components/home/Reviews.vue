@@ -3,6 +3,11 @@ import { computed, reactive, ref, onMounted, onUnmounted } from 'vue'
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import { reviews, type ReviewPlatform, type Review } from '../../data/reviews'
 
+/* headingTag — на главной секция идёт под общим h1 страницы, поэтому её
+   заголовок h2 (по умолчанию). На отдельной /reviews/ этот заголовок —
+   единственный и главный на странице, поэтому там передаём 'h1'. */
+withDefaults(defineProps<{ headingTag?: 'h1' | 'h2' }>(), { headingTag: 'h2' })
+
 const PLATFORM_META: Record<ReviewPlatform, { label: string; logo: string }> = {
   yandex: { label: 'Яндекс Карты', logo: 'https://storage.yandexcloud.net/vfd74ru/info/reviews/yandex_logo.webp' },
   '2gis':  { label: '2ГИС',        logo: 'https://storage.yandexcloud.net/vfd74ru/info/reviews/2gis_logo.webp' },
@@ -123,9 +128,9 @@ onUnmounted(() => {
           <p class="t-eyebrow mb-3">
             Отзывы клиентов
           </p>
-          <h2 id="reviews-heading" class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
+          <component :is="headingTag" id="reviews-heading" class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
             Репутация, подтверждённая фактами
-          </h2>
+          </component>
           <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">
             Публикуем только верифицированные отзывы с Яндекс Карт и 2ГИС. Сохраняем оригинальные фотографии работ и даты публикаций для полной прозрачности.
           </p>

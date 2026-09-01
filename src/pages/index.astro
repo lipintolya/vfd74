@@ -4,6 +4,7 @@
  * Header больше не нужен здесь — он подключён в BaseLayout.
  */
 import BaseLayout from '../layouts/BaseLayout.astro'
+import { reviews } from '../data/reviews'
 import HeroSlider from '../components/home/HeroSlider.vue'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import HiddenDoorsPromo from '../components/home/HiddenDoorsPromo.vue'
@@ -74,7 +75,7 @@ const localBusinessSchema = {
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '4.9',
-    reviewCount: '4',
+    reviewCount: String(reviews.length),
     bestRating: '5',
   },
   sameAs: [
