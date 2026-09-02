@@ -50,6 +50,26 @@ export default defineMarkdocConfig({
       },
     },
 
+    // Сетка равных фото-плиток (2-3 в ряд, квадрат + cover — разные по
+    // пропорциям фото всегда одинаковой ширины/высоты, без искажений)
+    // {% photogrid cols=3 %}{% photo src="..." alt="..." href="/models/..." /%}{% /photogrid %}
+    photogrid: {
+      render: component('./src/components/articles/PhotoGrid.astro'),
+      attributes: {
+        cols: { type: Number, default: 3 },
+      },
+    },
+    photo: {
+      render: component('./src/components/articles/Photo.astro'),
+      selfClosing: true,
+      attributes: {
+        src:     { type: String, required: true },
+        alt:     { type: String },
+        caption: { type: String },
+        href:    { type: String },
+      },
+    },
+
     // Слайдер реализованных проектов перегородок (кураторская подборка
     // фото из cases в src/data/partitions.ts) — {% projectsSlider /%}
     projectsSlider: {
