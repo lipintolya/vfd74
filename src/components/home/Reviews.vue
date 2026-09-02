@@ -174,7 +174,7 @@ onUnmounted(() => {
           v-for="review in sortedReviews"
           :key="review.id"
           data-review-card
-          class="flex w-70 shrink-0 snap-start flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:w-80"
+          class="flex w-70 shrink-0 snap-start flex-col gap-3 rounded-2xl bg-[#1A191C] p-6 sm:w-80"
           itemprop="itemListElement"
           itemscope
           itemtype="https://schema.org/Review"
@@ -191,12 +191,12 @@ onUnmounted(() => {
                 loading="lazy"
                 decoding="async"
               />
-              <span class="text-xs font-semibold text-slate-600">{{ PLATFORM_META[review.platform].label }}</span>
+              <span class="text-xs font-semibold text-slate-300">{{ PLATFORM_META[review.platform].label }}</span>
             </span>
             <time
               v-if="review.date"
               :datetime="review.date"
-              class="shrink-0 text-xs text-slate-400"
+              class="shrink-0 text-xs text-slate-500"
               itemprop="datePublished"
             >{{ formatDate(review.date) }}</time>
           </div>
@@ -218,7 +218,7 @@ onUnmounted(() => {
 
           <!-- Author -->
           <span
-            class="text-sm font-semibold text-slate-900"
+            class="text-sm font-semibold text-white"
             itemprop="author"
             itemscope
             itemtype="https://schema.org/Person"
@@ -233,7 +233,7 @@ onUnmounted(() => {
 
           <!-- Text -->
           <p
-            class="line-clamp-6 flex-1 text-sm leading-relaxed text-slate-700"
+            class="line-clamp-6 flex-1 text-sm leading-relaxed text-slate-400"
             itemprop="reviewBody"
           >{{ review.text }}</p>
 

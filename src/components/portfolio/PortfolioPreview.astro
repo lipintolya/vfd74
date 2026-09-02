@@ -82,7 +82,7 @@ const totalWord = total === 1 ? 'фотоотчёт' : total < 5 ? 'фотоот
   }
   @media (min-width: 640px) { .pp-strip { grid-template-columns: repeat(4, 1fr); } }
 
-  .pp-card { display: block; text-decoration: none; }
+  .pp-card { display: block; min-width: 0; text-decoration: none; }
 
   .pp-card__frame {
     display: block;
@@ -103,6 +103,7 @@ const totalWord = total === 1 ? 'фотоотчёт' : total < 5 ? 'фотоот
   .pp-card__caption { display: block; padding-top: 0.75rem; }
   .pp-card__title {
     display: block;
+    overflow-wrap: break-word;
     font-size: 0.8125rem;
     font-weight: 600;
     line-height: 1.4;
