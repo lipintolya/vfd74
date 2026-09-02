@@ -35,6 +35,10 @@ const CONTACTS = {
   address: companyLegalInfo.address.legal,
 }
 
+const { lat, lng } = companyLegalInfo.address.coordinates
+const MAP_EMBED_URL = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=16&pt=${lng}%2C${lat}&l=map&source=constructor`
+const MAP_LINK = 'https://yandex.ru/maps/-/CPTwZPi-'
+
 /* ============================================================
    Legal modal
    ============================================================ */
@@ -208,8 +212,49 @@ onUnmounted(() => {
 
         </div>
 
+        <!-- ── Как нас найти: адрес + мини-карта ── -->
+        <div class="mt-12 pt-10 border-t border-white/10 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.3fr] lg:items-center lg:gap-10">
+          <div>
+            <h2 class="text-sm font-semibold text-white mb-4 uppercase tracking-widest">
+              Как нас найти
+            </h2>
+            <p class="text-base font-medium text-white">{{ CONTACTS.address }}</p>
+            <p class="mt-1 text-sm text-white/50">{{ companyLegalInfo.address.entrance }}</p>
+            <a
+              :href="MAP_LINK"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-teal-400 hover:text-teal-300 transition-colors duration-200"
+            >
+              Построить маршрут
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+          <div class="relative h-48 sm:h-56 rounded-xl overflow-hidden border border-white/10 bg-white/5">
+            <iframe
+              :src="MAP_EMBED_URL"
+              title="Карта проезда — ВФД на Кашириных, Челябинск"
+              width="100%"
+              height="100%"
+              loading="lazy"
+              style="border: none; pointer-events: none;"
+              aria-hidden="true"
+              tabindex="-1"
+            />
+            <a
+              :href="MAP_LINK"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="absolute inset-0"
+              aria-label="Открыть карту с расположением салона на Яндекс Картах (открывается в новой вкладке)"
+            />
+          </div>
+        </div>
+
         <!-- ── Bottom bar ── -->
-        <div class="mt-12 pt-6 border-t border-white/10
+        <div class="mt-8 pt-6 border-t border-white/10
                     flex flex-col sm:flex-row gap-3
                     sm:items-center sm:justify-between
                     text-xs text-white/40">
