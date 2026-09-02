@@ -252,9 +252,10 @@ onUnmounted(stop)
           <!-- Bottom row -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
 
-            <!-- О компании -->
-            <div class="relative overflow-hidden rounded-2xl min-h-44 vfd-gradient-card">
-              <div class="absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-black/25" aria-hidden="true" />
+            <!-- О компании — тёмный фон по образцу карточек «Почему выбирают
+                 нас» на /contacts/ (wtg-card--3, #18181a), а не teal-градиент. -->
+            <div class="relative overflow-hidden rounded-2xl min-h-44" style="background-color: #18181a">
+              <div class="absolute inset-0 bg-linear-to-br from-white/8 via-transparent to-black/25" aria-hidden="true" />
               <div class="relative z-10 h-full p-6 flex flex-col justify-between text-white min-h-44">
                 <div>
                   <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Салон ВФД на Кашириных</p>
@@ -359,37 +360,11 @@ onUnmounted(stop)
   outline-offset: 2px;
 }
 
-/* ════ «О компании» — анимированный градиент из тонов teal (без сторонних либ) ════
-   Один элемент, один composited-слой: несколько radial-gradient в одном
-   background-image поверх сплошного фона — дешевле, чем blur()+несколько div
-   (аналитический градиент против дорогого гауссова размытия по пикселям).
-   Анимируется background-position (панорамирование слоёв по своему,
-   заведомо большему background-size) — репейнт идёт только внутри контейнера,
-   contain изолирует его от остального layout. */
-.vfd-gradient-card {
-  isolation: isolate;
-  contain: layout paint style;
-  background-color: #005f5a; /* teal-800 */
-  background-image:
-    radial-gradient(circle at 50% 50%, #46ecd566, transparent 70%),
-    radial-gradient(circle at 10% 10%, #022f2e99, transparent 60%),
-    radial-gradient(circle at 90% 90%, #00968980, transparent 65%),
-    radial-gradient(circle at 30% 80%, #00bba74d, transparent 55%),
-    radial-gradient(circle at 80% 15%, #46ecd54d, transparent 55%);
-  background-size: 200% 200%, 180% 180%, 190% 190%, 170% 170%, 160% 160%;
-  animation: vfd-gradient-pan 26s ease-in-out infinite alternate;
-}
-@keyframes vfd-gradient-pan {
-  0%   { background-position: 50% 50%, 10% 10%, 90% 90%, 30% 80%, 80% 15%; }
-  100% { background-position: 60% 38%, 25% 22%, 72% 78%, 46% 64%, 62% 32%; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .dot,
   .hero-slide,
   .hero-content-enter-active,
-  .hero-content-leave-active,
-  .vfd-gradient-card {
+  .hero-content-leave-active {
     transition: none;
     animation: none;
   }
