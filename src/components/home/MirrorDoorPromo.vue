@@ -84,11 +84,8 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           </a>
         </div>
 
-        <!-- Фото — фикс. aspect-video на всех брейкпоинтах: lg:aspect-auto
-             lg:max-h-125 при items-stretch растягивал контейнер под высоту
-             текстовой колонки, object-cover кадрировал под непредсказуемое
-             соотношение вместо реальных пропорций фото 1920:1080. -->
-        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2">
+        <!-- Фото -->
+        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto lg:max-h-125">
           <img
             :src="REFLEX_IMAGE"
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
