@@ -9,15 +9,19 @@ import {
 } from '../../data/hardware'
 
 /* ============================================================
-   Единственный экземпляр этого компонента на страницу (только на
-   странице товара — с карточек каталога убрали, там ломал вёрстку),
-   поэтому свой Teleport безопасен: баг "Cannot read properties of
-   null (reading insertBefore)" (см. фикс WorksGallery) бьёт только
-   когда ОДИН И ТОТ ЖЕ Teleport-компонент смонтирован несколькими
-   экземплярами внутри одного v-for — здесь этого нет.
+   mounted — гейт для Teleport ниже, прокинут пропом от родителя
+   (ProductColorPicker уже маунтит один mounted-ref сам, не плодим
+   второй onMounted-обработчик на то же самое). Без гейта Teleport
+   попадает в SSR-разметку client:load-компонента как placeholder и
+   конфликтует с местом, куда Astro вставляет свой служебный <style>
+   для astro-island — Vue при гидратации ловит hydration node mismatch,
+   и первый клик после этого не открывает модалку (помогает только
+   полная перезагрузка страницы). Тот же паттерн, что в Reviews.vue и
+   FigureLightbox.vue.
    ============================================================ */
 const props = defineProps<{
   open:        boolean
+  mounted:     boolean
   modelName:   string
   photo:       string
   coatingSlug: string
@@ -162,7 +166,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport v-if="mounted" to="body">
     <Transition name="calc-fade">
       <div
         v-if="open"

@@ -53,11 +53,20 @@ const normalizeHex = (hex: string) => {
   return /^#[0-9a-fA-F]{3,6}$/.test(v) ? v : '#cccccc'
 }
 
-/* ── Зум фото на весь экран — Teleport один на компонент (ProductColorPicker
-   монтируется 1 раз на страницу товара), поэтому даже на client:load
-   безопасно: проблема Teleport+SSR-хайдрейшн проявляется только когда
-   несколько экземпляров делят один Teleport-таргет (см. фикс WorksGallery
-   на /catalog/skrytye-dveri — там их было 4). ── */
+/* ── mounted-гейт для обоих Teleport ниже (зум-фото и калькулятор). Раньше
+   считали, что проблема Teleport+SSR-хайдрейшн бьёт только при нескольких
+   экземплярах одного Teleport-таргета (см. фикс WorksGallery) — но баг был
+   и здесь при единственном экземпляре: на client:load Teleport попадает в
+   SSR-разметку как placeholder, конфликтует с местом, куда Astro вставляет
+   свой служебный <style> для astro-island, и Vue при гидратации ловит
+   hydration node mismatch — первый клик после этого либо не открывает
+   модалку, либо открывает с потерянными обработчиками, помогает только
+   полная перезагрузка. Тот же гейт, что уже применён в Reviews.vue и
+   FigureLightbox.vue: рендерим Teleport только после реального маунта на
+   клиенте, SSR отдаёт вообще без него. ── */
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
+
 const zoomOpen = ref(false)
 const openZoom = () => {
   if (!displayPhoto.value) return
@@ -77,9 +86,8 @@ onUnmounted(() => {
   if (shareCopiedTimer) clearTimeout(shareCopiedTimer)
 })
 
-/* ── Калькулятор стоимости — свой единственный Teleport-модал (компонент
-   монтируется 1 раз на страницу товара), безопасно на client:load по той же
-   причине, что и зум фото выше. ── */
+/* ── Калькулятор стоимости — свой единственный Teleport-модал, тот же
+   mounted-гейт передаётся ему пропом ниже. ── */
 const calcOpen = ref(false)
 
 /* ── Поделиться ссылкой на модель — Web Share API на устройствах, где он
@@ -143,7 +151,7 @@ const shareModel = async () => {
     </div>
 
     <!-- Зум-модалка -->
-    <Teleport to="body">
+    <Teleport v-if="mounted" to="body">
       <Transition name="zoom-fade">
         <div
           v-if="zoomOpen"
@@ -249,6 +257,7 @@ const shareModel = async () => {
 
     <PriceCalculatorModal
       :open="calcOpen"
+      :mounted="mounted"
       :model-name="modelName"
       :photo="displayPhoto"
       :coating-slug="selected.coatingSlug"

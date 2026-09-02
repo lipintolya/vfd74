@@ -9,7 +9,9 @@ export default defineMarkdocConfig({
       render: component('./src/components/articles/Figure.astro'),
       selfClosing: true,
       attributes: {
-        src:     { type: String, required: true },
+        // Не required: без src рендерится плейсхолдер «Фото скоро» — см.
+        // комментарий в Figure.astro.
+        src:     { type: String },
         alt:     { type: String },
         caption: { type: String },
         wide:    { type: Boolean, default: false },
