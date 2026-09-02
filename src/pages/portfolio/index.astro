@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import PortfolioGrid from '../../components/portfolio/PortfolioGrid.vue'
+import QuoteCta from '../../components/ui/QuoteCta.astro'
 import { PORTFOLIO_WORKS } from '../../data/portfolio-works'
 
 const works = [...PORTFOLIO_WORKS].sort(
@@ -47,53 +48,16 @@ const breadcrumbSchema = {
 
       <PortfolioGrid works={works} client:visible />
 
-      <!-- CTA — перелинковка на каталог по категориям, тот же ink-стиль,
-           что на странице отдельной работы (portfolio/[slug].astro). -->
-      <div class="mt-14 overflow-hidden rounded-2xl bg-ink p-6 sm:p-8 md:mt-16">
-        <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p class="text-lg font-semibold text-white">Понравился результат?</p>
-            <p class="mt-1 max-w-md text-sm leading-relaxed text-white/60">
-              Все модели, которые видите на фото, в наличии в шоуруме — выбирайте по каталогу или приезжайте посмотреть вживую.
-            </p>
-          </div>
-          <a
-            href="/catalog/"
-            class="inline-flex flex-none items-center justify-center gap-2 rounded-full bg-teal-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-400"
-          >
-            Смотреть каталог
-            <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div>
-
-        <ul class="mt-6 grid grid-cols-2 gap-3 border-t border-white/10 pt-6 sm:grid-cols-4" role="list">
-          <li>
-            <a href="/catalog/" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-[oklch(50.5%_0.213_27.518)]" aria-hidden="true" />
-              Межкомнатные
-            </a>
-          </li>
-          <li>
-            <a href="/catalog/skrytye-dveri/" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" aria-hidden="true" />
-              Скрытые двери
-            </a>
-          </li>
-          <li>
-            <a href="/partitions/" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500" aria-hidden="true" />
-              Перегородки
-            </a>
-          </li>
-          <li>
-            <a href="/vhodnye-dveri/" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" aria-hidden="true" />
-              Входные двери
-            </a>
-          </li>
-        </ul>
+      <div class="mt-14 md:mt-16">
+        <QuoteCta
+          image="https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/2O_3moxea9jLTgH8uZbsCVECujmF4v2E8dAsl3IohqVkozfek8vkSMU-5ubzeHE-84tIMAWD5FI_0U8-suQqLLWL.webp"
+          title="Понравился результат?"
+          description="Все модели, которые видите на фото, в наличии в шоуруме — выбирайте по каталогу или приезжайте посмотреть вживую"
+          primaryHref="https://t.me/vfddoors74"
+          primaryLabel="Написать в Telegram"
+          secondaryHref="/catalog/"
+          secondaryLabel="Смотреть каталог"
+        />
       </div>
 
     </div>
