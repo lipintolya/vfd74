@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import type { PortfolioWork, WorkCategory } from '../../data/portfolio-works'
-import { CATEGORY_LABELS, CATEGORY_BADGE_COLORS } from '../../data/portfolio-works'
+import { CATEGORY_LABELS, CATEGORY_TEXT_COLORS } from '../../data/portfolio-works'
 
 const props = defineProps<{ works: PortfolioWork[] }>()
 
@@ -44,6 +44,16 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
   partitions: '/partitions/',
   entrance:   '/vhodnye-dveri/',
 }
+
+/* Цветовой акцент категории — тонкое кольцо вокруг превью-фото вместо
+   отдельной точки-маркера перед подписью (точки перед словами — типичный
+   AI-slop-паттерн, глаз сразу считывает шаблонность). */
+const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
+  interior:   'outline-[oklch(50.5%_0.213_27.518)]',
+  hidden:     'outline-teal-600',
+  partitions: 'outline-indigo-600',
+  entrance:   'outline-amber-600',
+}
 </script>
 
 <template>
@@ -75,13 +85,10 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
           class="pf-cat"
           @click="(e) => { if (!CATEGORY_HREF[key]) { e.preventDefault(); selectAndScroll(key) } }"
         >
-          <span class="pf-cat__thumb">
+          <span class="pf-cat__thumb" :class="CATEGORY_RING_COLORS[key]">
             <img :src="CATEGORY_COVERS[key]" :alt="CATEGORY_LABELS[key]" loading="lazy" decoding="async" />
           </span>
-          <span class="pf-cat__label">
-            <span class="pf-cat__dot" :class="CATEGORY_BADGE_COLORS[key]" aria-hidden="true" />
-            {{ CATEGORY_LABELS[key] }}
-          </span>
+          <span class="pf-cat__label">{{ CATEGORY_LABELS[key] }}</span>
           <span class="pf-cat__count">{{ CATEGORY_HREF[key] ? 'В каталоге' : `${countOf(key)} ${countOf(key) === 1 ? 'работа' : 'работ'}` }}</span>
         </a>
       </li>
@@ -105,10 +112,7 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
         <span class="pf-card__caption">
           <span class="pf-card__title">{{ work.title }}</span>
           <span class="pf-card__meta">
-            <span class="pf-card__cat">
-              <span class="pf-cat__dot" :class="CATEGORY_BADGE_COLORS[work.category]" aria-hidden="true" />
-              {{ CATEGORY_LABELS[work.category] }}
-            </span>
+            <span class="pf-card__cat" :class="CATEGORY_TEXT_COLORS[work.category]">{{ CATEGORY_LABELS[work.category] }}</span>
             <span class="pf-card__date">{{ work.label }}</span>
           </span>
         </span>
@@ -194,6 +198,9 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
   border-radius: 0.5rem;
   overflow: hidden;
   background: #f1f0ec;
+  outline-width: 2px;
+  outline-style: solid;
+  outline-offset: 2px;
 }
 .pf-cat__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .pf-cat__label {
@@ -208,12 +215,6 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.pf-cat__dot {
-  flex-shrink: 0;
-  width: 0.4375rem;
-  height: 0.4375rem;
-  border-radius: 9999px;
 }
 .pf-cat__count {
   display: none;
@@ -285,7 +286,6 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--color-fg-subtle);
 }
 .pf-card__date {
   flex-shrink: 0;

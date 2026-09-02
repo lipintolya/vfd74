@@ -1,5 +1,5 @@
 ---
-import { PORTFOLIO_WORKS, CATEGORY_LABELS, CATEGORY_BADGE_COLORS } from '../../data/portfolio-works'
+import { PORTFOLIO_WORKS, CATEGORY_LABELS, CATEGORY_TEXT_COLORS } from '../../data/portfolio-works'
 
 const preview = [...PORTFOLIO_WORKS]
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -55,8 +55,7 @@ const totalWord = total === 1 ? 'фотоотчёт' : total < 5 ? 'фотоот
               <span class="pp-card__caption">
                 <span class="pp-card__title">{work.title}</span>
                 <span class="pp-card__meta">
-                  <span class="pp-card__cat">
-                    <span class={`pp-dot ${CATEGORY_BADGE_COLORS[work.category]}`} aria-hidden="true" />
+                  <span class={`pp-card__cat ${CATEGORY_TEXT_COLORS[work.category]}`}>
                     {CATEGORY_LABELS[work.category]}
                   </span>
                   <span class="pp-card__date">{work.label}</span>
@@ -131,7 +130,6 @@ const totalWord = total === 1 ? 'фотоотчёт' : total < 5 ? 'фотоот
     letter-spacing: 0.03em;
     color: var(--color-fg-subtle);
   }
-  .pp-dot { flex-shrink: 0; width: 0.4375rem; height: 0.4375rem; border-radius: 9999px; }
   .pp-card__date {
     flex-shrink: 0;
     font-size: 0.6875rem;

@@ -25,6 +25,15 @@ export const CATEGORY_BADGE_COLORS: Record<WorkCategory, string> = {
   entrance:   'bg-amber-600',                   // тёплый янтарный — входная группа
 }
 
+/** Тот же цветовой код категории, но как цвет текста подписи — вместо
+    отдельной точки-маркера перед словом (убрали как AI-slop-паттерн). */
+export const CATEGORY_TEXT_COLORS: Record<WorkCategory, string> = {
+  interior:   'text-[oklch(50.5%_0.213_27.518)]',
+  hidden:     'text-teal-600',
+  partitions: 'text-indigo-600',
+  entrance:   'text-amber-600',
+}
+
 export const OBJECT_TYPE_LABELS: Record<ObjectType, string> = {
   apartment:  'Квартира',
   house:      'Частный дом',
