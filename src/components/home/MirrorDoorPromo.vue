@@ -84,8 +84,10 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           </a>
         </div>
 
-        <!-- Фото -->
-        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto lg:max-h-125">
+        <!-- Фото — lg:aspect-auto + items-stretch на родителе тянет фото на
+             всю высоту текстовой колонки, без потолка (было lg:max-h-125,
+             из-за которого фото не дотягивалось до низа карточки). -->
+        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto">
           <img
             :src="REFLEX_IMAGE"
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
