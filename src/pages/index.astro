@@ -18,6 +18,8 @@ import LatestArticles from '../components/home/LatestArticles.astro'
 import PortfolioPreview from '../components/portfolio/PortfolioPreview.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import { faqs } from '../components/home/faq-data'
+import HowWeWork from '../components/home/HowWeWork.astro'
+import { howToSchema } from '../data/how-it-works'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
@@ -91,10 +93,11 @@ const localBusinessSchema = {
 <BaseLayout
   title="Купить двери в Челябинске — входные и межкомнатные двери"
   description="Входные и межкомнатные двери в Челябинске — каталог, цены и установка"
-  structuredData={[faqSchema, localBusinessSchema]}
+  structuredData={[faqSchema, localBusinessSchema, howToSchema]}
   preloadHero={true}
 >
   <HeroSlider client:load />
+  <HowWeWork />
   <SherwoodPromo client:visible />
   <PromoStripBanner />
   <HiddenDoorsPromo client:visible />

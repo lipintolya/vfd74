@@ -1,16 +1,33 @@
 ---
 import type { Step } from '../../data/partitions'
 
-interface Props { items: Step[] }
-const { items } = Astro.props
+interface Props {
+  items: Step[]
+  /** Тёмные плитки (#18181a — тот же тон, что у карточек «Гарантия» на
+      /contacts/ и «О компании» на главной) вместо светлых карточек по
+      умолчанию. Логика reveal-анимации и разметка общие для обоих видов. */
+  dark?: boolean
+}
+const { items, dark = false } = Astro.props
 ---
 
-<ol class="ps" role="list">
+<ol class:list={['ps', { 'ps--dark': dark }]} role="list">
   {items.map((s, i) => (
     <li class="ps-card" style={`--stagger:${i * 90}ms`}>
       <span class="ps-bg-num" aria-hidden="true">{s.num}</span>
+      {s.image && (
+        <img
+          class="ps-corner-img"
+          src={s.image}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          style={s.imageWidth ? `width:${s.imageWidth}` : undefined}
+        />
+      )}
       <div class="ps-head">
-        <span class="ps-badge" aria-hidden="true">{s.num}</span>
+        {!dark && <span class="ps-badge" aria-hidden="true">{s.num}</span>}
         <h3 class="ps-title">{s.title}</h3>
       </div>
       <p class="ps-text">{s.text}</p>
@@ -61,6 +78,7 @@ const { items } = Astro.props
   /* Призрачный номер на фоне */
   .ps-bg-num {
     position: absolute;
+    z-index: 0;
     top: -0.5rem;
     right: 0.875rem;
     font-size: clamp(5rem, 9vw, 8rem);
@@ -77,6 +95,7 @@ const { items } = Astro.props
     align-items: flex-start;
     gap: 0.875rem;
     position: relative;
+    z-index: 1;
   }
 
   .ps-badge {
@@ -111,6 +130,8 @@ const { items } = Astro.props
   }
 
   .ps-text {
+    position: relative;
+    z-index: 1;
     margin: 0;
     font-size: clamp(0.875rem, 1.15vw, 0.9375rem);
     color: #475569;
@@ -127,6 +148,29 @@ const { items } = Astro.props
     margin-top: auto;
     padding-top: 0.875rem;
     border-top: 1px solid #f1f5f9;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Декоративное фото шага — в углу, позади текста (paint-порядок: раньше
+     в DOM, чем ps-head/ps-text/ps-list → визуально под ними), проступает
+     в пустом месте плитки. */
+  .ps-corner-img {
+    position: absolute;
+    z-index: 0;
+    right: -0.5rem;
+    bottom: -0.5rem;
+    width: clamp(7.5rem, 17vw, 11.5rem);
+    height: auto;
+    object-fit: contain;
+    opacity: 0.9;
+    pointer-events: none;
+    user-select: none;
+    transition: transform 400ms ease;
+    will-change: transform;
+  }
+  .ps-card:hover .ps-corner-img {
+    transform: rotate(25deg);
   }
 
   .ps-item {
@@ -151,6 +195,51 @@ const { items } = Astro.props
     .ps-card { gap: 0.875rem; }
   }
 
+  /* ── Тёмный вариант (dark prop) ── */
+  .ps--dark .ps-card {
+    background: #18181a;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+  }
+  /* Hover-подсветка — псевдоэлемент с opacity-переходом, а не анимация
+     background напрямую: браузеры не умеют плавно интерполировать между
+     сплошным цветом и градиентом через background/background-image. */
+  .ps--dark .ps-card::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: linear-gradient(155deg, transparent 40%, rgba(20, 184, 166, 0.16) 100%);
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+  .ps--dark .ps-card:hover::before {
+    opacity: 1;
+  }
+  .ps--dark .ps-card:hover {
+    border-color: rgba(45, 212, 191, 0.4);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+  .ps--dark .ps-bg-num {
+    color: rgba(255, 255, 255, 0.1);
+  }
+  .ps--dark .ps-badge {
+    background: rgba(45, 212, 191, 0.12);
+    border-color: rgba(45, 212, 191, 0.3);
+    color: #2dd4bf;
+  }
+  .ps--dark .ps-card:hover .ps-badge {
+    background: #14b8a6;
+    border-color: #14b8a6;
+    color: #0b0b0c;
+  }
+  .ps--dark .ps-title { color: #fff; }
+  .ps--dark .ps-text  { color: rgba(255, 255, 255, 0.6); }
+  .ps--dark .ps-list  { border-top-color: rgba(255, 255, 255, 0.1); }
+  .ps--dark .ps-item  { color: rgba(255, 255, 255, 0.7); }
+  .ps--dark .ps-check { color: #2dd4bf; }
+
   /* ── Scroll-reveal ── */
   .ps.js-reveal .ps-card {
     opacity: 0;
@@ -167,9 +256,34 @@ const { items } = Astro.props
     transform: none;
   }
 
+  /* ── Тач-устройства: hover недоступен (залипает после тапа или не
+     срабатывает вовсе) — тот же наклон фото + teal-подсветка проигрывается
+     один раз коротким «миганием» сразу после появления карточки в скролле,
+     тем же IntersectionObserver, что и сам reveal. Только (hover: none),
+     на десктопе эффект остаётся честным :hover. */
+  @media (hover: none) {
+    .ps-card.is-visible .ps-corner-img {
+      animation: ps-corner-flourish 900ms ease 400ms 1;
+    }
+    .ps--dark .ps-card.is-visible::before {
+      animation: ps-tint-flourish 900ms ease 400ms 1;
+    }
+  }
+  @keyframes ps-corner-flourish {
+    0%, 100% { transform: rotate(0deg); }
+    50%      { transform: rotate(25deg); }
+  }
+  @keyframes ps-tint-flourish {
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 1; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .ps.js-reveal .ps-card { opacity: 1; transform: none; transition: none; }
     .ps-card { transition: none; }
+    .ps-corner-img { transition: none; animation: none; }
+    .ps-card:hover .ps-corner-img { transform: none; }
+    .ps--dark .ps-card::before { animation: none; }
   }
 </style>
 
