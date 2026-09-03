@@ -210,6 +210,8 @@ export interface Step {
       общий размер из ProcessSteps.astro; нужен, когда конкретный кадр
       визуально крупнее/мельче остальных при одинаковой ширине контейнера. */
   imageWidth?: string
+  /** Ссылка-действие внизу плитки — опционально. */
+  cta?: { label: string; href: string; external?: boolean }
 }
 
 export const steps: Step[] = [

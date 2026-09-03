@@ -1,4 +1,7 @@
 import type { Step } from './partitions'
+import { companyLegalInfo } from '../lib/contacts-data'
+
+const phone = companyLegalInfo.contacts.phone[0]!
 
 /* «Как мы работаем» на главной — общий процесс покупки (двери, скрытые
    двери, перегородки), в отличие от steps в partitions.ts (тот описывает
@@ -14,7 +17,7 @@ export const howItWorksSteps: Step[] = [
       'Работаем с дизайн-проектами и архитекторами',
       'Бесплатно, без обязательств',
     ],
-    image: 'https://storage.yandexcloud.net/vfd74ru/features/kursor.webp',
+    cta: { label: 'Смотреть каталог', href: '/catalog/' },
   },
   {
     num:   '02',
@@ -27,6 +30,7 @@ export const howItWorksSteps: Step[] = [
       'Бесплатно, независимо от заказа',
     ],
     image: 'https://storage.yandexcloud.net/vfd74ru/features/roulette-.webp',
+    cta: { label: 'Позвонить', href: `tel:${phone.raw}` },
   },
   {
     num:   '03',
@@ -39,6 +43,7 @@ export const howItWorksSteps: Step[] = [
       'Проверка фурнитуры при сдаче',
     ],
     image: 'https://storage.yandexcloud.net/vfd74ru/features/1milwaukke.webp',
+    cta: { label: 'Смотреть работы', href: '/portfolio/' },
   },
   {
     num:   '04',
@@ -50,7 +55,7 @@ export const howItWorksSteps: Step[] = [
       'Постгарантийная поддержка',
       'Обращение напрямую в салон, без посредников',
     ],
-    image: 'https://storage.yandexcloud.net/vfd74ru/features/garantya-.webp',
+    cta: { label: 'О компании', href: '/about/' },
   },
 ]
 
