@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import type { PortfolioWork, WorkCategory } from '../../data/portfolio-works'
-import { CATEGORY_LABELS, CATEGORY_TEXT_COLORS } from '../../data/portfolio-works'
+import { CATEGORY_LABELS } from '../../data/portfolio-works'
 
 const props = defineProps<{ works: PortfolioWork[] }>()
 
@@ -44,16 +44,6 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
   partitions: '/partitions/',
   entrance:   '/vhodnye-dveri/',
 }
-
-/* Цветовой акцент категории — тонкое кольцо вокруг превью-фото вместо
-   отдельной точки-маркера перед подписью (точки перед словами — типичный
-   AI-slop-паттерн, глаз сразу считывает шаблонность). */
-const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
-  interior:   'outline-[oklch(50.5%_0.213_27.518)]',
-  hidden:     'outline-teal-600',
-  partitions: 'outline-indigo-600',
-  entrance:   'outline-amber-600',
-}
 </script>
 
 <template>
@@ -85,7 +75,7 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
           class="pf-cat"
           @click="(e) => { if (!CATEGORY_HREF[key]) { e.preventDefault(); selectAndScroll(key) } }"
         >
-          <span class="pf-cat__thumb" :class="CATEGORY_RING_COLORS[key]">
+          <span class="pf-cat__thumb">
             <img :src="CATEGORY_COVERS[key]" :alt="CATEGORY_LABELS[key]" loading="lazy" decoding="async" />
           </span>
           <span class="pf-cat__label">{{ CATEGORY_LABELS[key] }}</span>
@@ -112,7 +102,7 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
         <span class="pf-card__caption">
           <span class="pf-card__title">{{ work.title }}</span>
           <span class="pf-card__meta">
-            <span class="pf-card__cat" :class="CATEGORY_TEXT_COLORS[work.category]">{{ CATEGORY_LABELS[work.category] }}</span>
+            <span class="pf-card__cat">{{ CATEGORY_LABELS[work.category] }}</span>
             <span class="pf-card__date">{{ work.label }}</span>
           </span>
         </span>
@@ -173,6 +163,7 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
   padding: 0;
   list-style: none;
 }
+.pf-cat-row > li { min-width: 0; }
 @media (min-width: 640px) {
   .pf-cat-row { grid-template-columns: repeat(4, 1fr); }
 }
@@ -198,9 +189,6 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
   border-radius: 0.5rem;
   overflow: hidden;
   background: #f1f0ec;
-  outline-width: 2px;
-  outline-style: solid;
-  outline-offset: 2px;
 }
 .pf-cat__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .pf-cat__label {
@@ -239,6 +227,7 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
 
 .pf-card {
   display: block;
+  min-width: 0;
   text-decoration: none;
 }
 .pf-card__frame {
@@ -263,6 +252,7 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
 }
 .pf-card__title {
   display: block;
+  overflow-wrap: break-word;
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.4;
@@ -273,11 +263,12 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
 
 .pf-card__meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.25rem 0.5rem;
   margin-top: 0.375rem;
 }
+@media (min-width: 640px) { .pf-card__meta { flex-wrap: nowrap; justify-content: space-between; } }
 .pf-card__cat {
   display: flex;
   align-items: center;
@@ -286,6 +277,7 @@ const CATEGORY_RING_COLORS: Record<WorkCategory, string> = {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  color: var(--color-fg-subtle);
 }
 .pf-card__date {
   flex-shrink: 0;
