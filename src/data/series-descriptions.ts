@@ -546,6 +546,12 @@ const coatingFallbacks: Record<string, Omit<SeriesSpec, 'tagline' | 'description
     edge:      'Эко-материал в цвет полотна',
     thickness: '37',
   },
+  ekoshpon: {
+    coating:   'Экошпон: декоративная плёнка с реалистичной древесной текстурой и фактурным тиснением «в поры» — передаёт рисунок натурального шпона без его капризов в уходе',
+    material:  'Тамбурат с особым, малым размером сот. В основе прочная плита ХДФ и инженерный массив',
+    edge:      'Кромка в цвет полотна',
+    thickness: '37',
+  },
 }
 
 export function getSeriesSpec(seriesSlug: string, coatingSlug: string): SeriesSpec {
