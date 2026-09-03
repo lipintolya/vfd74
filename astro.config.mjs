@@ -28,7 +28,7 @@ export default defineConfig({
         if (u === 'https://vfd74.ru/' || u === 'https://vfd74.ru') {
           return { ...item, changefreq: 'weekly', priority: 1.0 }
         }
-        if (/\/(catalog|about|contacts|partitions|vhodnye-dveri)\/?$/.test(u)) {
+        if (/\/(catalog|about|contacts|partitions|vhodnye-dveri|designers)\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }
         }
         if (/\/catalog\/series(\/.+)?\/?$/.test(u)) {
