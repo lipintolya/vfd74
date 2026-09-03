@@ -22,11 +22,16 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
         <!-- Фото — без текстового оверлея, суть продукта в том, что дверь
-             сливается со стеной. lg:aspect-auto + items-stretch на родителе
-             тянет фото на всю высоту текстовой колонки — без потолка по
-             высоте: с потолком (было lg:max-h-125) фото не дотягивалось до
-             низа карточки и выглядело подвешенным. -->
-        <div class="relative aspect-4/3 sm:aspect-video lg:aspect-auto">
+             сливается со стеной. lg:aspect-auto растягивал div на всю высоту
+             текстовой колонки через items-stretch — блок выходил заметно
+             выше Hero/ProcessSteps, непропорционально вытянутый. Без
+             lg:aspect-auto наследуется честный sm:aspect-video (16:9) —
+             тот же масштаб, что у фото в Hero. img внутри абсолютный и сам
+             не даёт div высоты, поэтому у div должен быть явный
+             aspect-ratio, а не только stretch от родителя. lg:self-center —
+             если текстовая колонка выше кадра, фото центрируется равными
+             отступами, а не «подвешивается» снизу. -->
+        <div class="relative aspect-4/3 sm:aspect-video lg:self-center">
           <img
             :src="COVER_IMAGE"
             alt="Скрытая дверь серии «Секрет» — полотно заподлицо со стеной"
@@ -39,7 +44,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         </div>
 
         <!-- Контент -->
-        <div class="flex flex-col gap-5 p-8 sm:gap-6 sm:p-10">
+        <div class="flex flex-col gap-4 p-6 sm:gap-5 sm:p-8">
           <div>
             <h2
               id="hidden-doors-heading"
@@ -52,7 +57,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="flex flex-col gap-3 border-y border-slate-100 py-4 sm:gap-3.5 sm:py-5" role="list">
+          <ul class="flex flex-col gap-2 border-y border-slate-100 py-3 sm:gap-2.5 sm:py-4" role="list">
             <BenefitItem text="Полностью алюминиевый короб">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 8l9-5 9 5-9 5-9-5Z"/>
@@ -108,7 +113,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
 
           <a
             href="/catalog/skrytye-dveri/"
-            class="flex h-14 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800"
+            class="flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800"
           >
             Смотреть скрытые двери
             <svg class="h-4.5 w-4.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">

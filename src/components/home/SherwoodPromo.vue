@@ -53,7 +53,6 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           />
           <!-- Тег вместо CTA — серии пока нет в каталоге, ссылке некуда вести. -->
           <span class="absolute bottom-[8%] left-[4%] inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md">
-            <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-400" aria-hidden="true"></span>
             Новинка. Скоро в каталоге
           </span>
         </div>
@@ -114,7 +113,6 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
             <!-- Мобильный тег — на фото ему не хватает места -->
             <span class="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium tracking-wide text-slate-700 lg:hidden">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" aria-hidden="true"></span>
               Новинка. Скоро в каталоге
             </span>
           </div>

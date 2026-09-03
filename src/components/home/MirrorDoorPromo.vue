@@ -16,7 +16,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
         <!-- Контент -->
-        <div class="order-2 flex flex-col gap-5 p-8 sm:gap-6 sm:p-10 lg:order-1">
+        <div class="order-2 flex flex-col gap-4 p-6 sm:gap-5 sm:p-8 lg:order-1">
           <div>
             <p class="t-eyebrow mb-2">Новинка</p>
             <h2
@@ -32,7 +32,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="flex flex-col gap-3 border-y border-slate-100 py-4 sm:gap-3.5 sm:py-5" role="list">
+          <ul class="flex flex-col gap-2 border-y border-slate-100 py-3 sm:gap-2.5 sm:py-4" role="list">
             <BenefitItem text="Зеркало во всю высоту полотна">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="6" y="2" width="12" height="20" rx="1.5"/>
@@ -75,7 +75,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
 
           <a
             href="/catalog/skrytye-dveri/#reflex"
-            class="flex h-14 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800"
+            class="flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800"
           >
             Смотреть «Рефлекс»
             <svg class="h-4.5 w-4.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -84,10 +84,16 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           </a>
         </div>
 
-        <!-- Фото — lg:aspect-auto + items-stretch на родителе тянет фото на
-             всю высоту текстовой колонки, без потолка (было lg:max-h-125,
-             из-за которого фото не дотягивалось до низа карточки). -->
-        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto">
+        <!-- Фото — lg:aspect-auto растягивал div через items-stretch на всю
+             высоту текстовой колонки — блок выходил заметно выше
+             Hero/ProcessSteps, непропорционально вытянутый. Без
+             lg:aspect-auto наследуется честный sm:aspect-video (16:9), тот
+             же масштаб, что у фото в Hero; img внутри абсолютный и сам не
+             даёт div высоты, поэтому нужен явный aspect-ratio, а не только
+             stretch от родителя. lg:self-center — если текстовая колонка
+             выше кадра, фото центрируется равными отступами, а не
+             «подвешивается» снизу. -->
+        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:self-center">
           <img
             :src="REFLEX_IMAGE"
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
