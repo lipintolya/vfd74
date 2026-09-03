@@ -22,16 +22,12 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
         <!-- Фото — без текстового оверлея, суть продукта в том, что дверь
-             сливается со стеной. lg:aspect-auto растягивал div на всю высоту
-             текстовой колонки через items-stretch — блок выходил заметно
-             выше Hero/ProcessSteps, непропорционально вытянутый. Без
-             lg:aspect-auto наследуется честный sm:aspect-video (16:9) —
-             тот же масштаб, что у фото в Hero. img внутри абсолютный и сам
-             не даёт div высоты, поэтому у div должен быть явный
-             aspect-ratio, а не только stretch от родителя. lg:self-center —
-             если текстовая колонка выше кадра, фото центрируется равными
-             отступами, а не «подвешивается» снизу. -->
-        <div class="relative aspect-4/3 sm:aspect-video lg:self-center">
+             сливается со стеной. lg:aspect-auto + items-stretch на родителе
+             тянет фото на всю высоту текстовой колонки (без зазора сверху/
+             снизу) — после сокращения отступов колонки (p-8, компактный
+             чек-лист) высота уже соразмерна Hero, растяжка больше не
+             выглядит непропорционально вытянутой. -->
+        <div class="relative aspect-4/3 sm:aspect-video lg:aspect-auto">
           <img
             :src="COVER_IMAGE"
             alt="Скрытая дверь серии «Секрет» — полотно заподлицо со стеной"

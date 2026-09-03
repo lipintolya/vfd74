@@ -84,16 +84,11 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           </a>
         </div>
 
-        <!-- Фото — lg:aspect-auto растягивал div через items-stretch на всю
-             высоту текстовой колонки — блок выходил заметно выше
-             Hero/ProcessSteps, непропорционально вытянутый. Без
-             lg:aspect-auto наследуется честный sm:aspect-video (16:9), тот
-             же масштаб, что у фото в Hero; img внутри абсолютный и сам не
-             даёт div высоты, поэтому нужен явный aspect-ratio, а не только
-             stretch от родителя. lg:self-center — если текстовая колонка
-             выше кадра, фото центрируется равными отступами, а не
-             «подвешивается» снизу. -->
-        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:self-center">
+        <!-- Фото — lg:aspect-auto + items-stretch на родителе тянет фото на
+             всю высоту текстовой колонки (без зазора сверху/снизу) — после
+             сокращения отступов колонки высота уже соразмерна Hero,
+             растяжка больше не выглядит непропорционально вытянутой. -->
+        <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto">
           <img
             :src="REFLEX_IMAGE"
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
