@@ -193,6 +193,10 @@ const { items, dark = false } = Astro.props
   @media (max-width: 640px) {
     .ps { grid-template-columns: 1fr; }
     .ps-card { gap: 0.875rem; }
+    /* Узкая колонка — декоративному фото некуда деться без наезда на
+       текст или неряшливого кропа. Плитка остаётся с призрачной цифрой
+       и reveal-анимацией, просто без фото. */
+    .ps-corner-img { display: none; }
   }
 
   /* ── Тёмный вариант (dark prop) ── */
