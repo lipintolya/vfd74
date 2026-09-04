@@ -64,7 +64,7 @@ export interface Accessory {
   price:    number | null
 }
 
-export type CoatingSlug = 'pet' | 'emal' | 'emalex' | 'protach'
+export type CoatingSlug = 'pet' | 'emal' | 'emalex' | 'protach' | 'ekoshpon'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Базовый комплект погонажа — цена для базового цвета покрытия. Используется
@@ -73,10 +73,11 @@ export type CoatingSlug = 'pet' | 'emal' | 'emalex' | 'protach'
 // чтобы текст на карточке товара и в таблице цен не расходился.
 // ─────────────────────────────────────────────────────────────────────────────
 export const BASE_KIT_PRICE: Record<CoatingSlug, number> = {
-  pet:     5_387,
-  emal:    6_384,
-  emalex:  5_145,
-  protach: 3_840,
+  pet:      5_387,
+  emal:     6_384,
+  emalex:   5_145,
+  protach:  3_840,
+  ekoshpon: 5_150,
 }
 export const BASE_KIT_DESCRIPTION = 'дверной короб 2,5 шт, наличники с обеих сторон 5 шт'
 
@@ -224,5 +225,25 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
     { name: 'Соединитель для доборов 35х4х2100',                        category: 'dobor',      unit: 'шт',       price: 45 },
 
     { name: 'Притворная планка 30х10х2100',                              category: 'decorative', unit: 'шт',       price: 300 },
+  ],
+
+  // ── Экошпон (Урбан Древесный) — исходные цены даны за компл. 2,5 шт,
+  // не пересчитывались на 1 шт (риск ошибки округления), это отражено в name.
+  ekoshpon: [
+    { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`,                        category: 'kit',        unit: 'комплект', price: BASE_KIT_PRICE.ekoshpon },
+
+    { name: 'Коробка КБТ№43П 80х32х2100 (компл. 2,5 шт)',                          category: 'box',        unit: 'комплект', price: 2_510 },
+    { name: 'Комплект коробки КБКМ№02/41 75х38х2100 компланарный (компл. 2,5 шт)', category: 'box',        unit: 'комплект', price: 3_890 },
+
+    { name: 'Наличник НТ№22 70х8х2140 (компл. 2,5 шт)',                            category: 'nalichnik',  unit: 'комплект', price: 1_320 },
+    { name: 'Комплект наличника КН№01 90х10х2140 компланарный (компл. 2,5 шт)',    category: 'nalichnik',  unit: 'комплект', price: 2_210 },
+
+    { name: 'Комплект компланарного погонажа реверс (ЗПСП 2 шт, AGB 2.0), кор. 2,5 шт + нал. 2,5 шт, под заказ', category: 'decorative', unit: 'комплект', price: 7_020 },
+
+    { name: 'Добор ДПТ№2 100х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 1_970 },
+    { name: 'Добор ДПТ№2 150х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 2_570 },
+    { name: 'Добор ДПТ№2 200х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 3_030 },
+    { name: 'Добор ДПТ№2 300х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 5_160 },
+    { name: 'Соединитель для доборов 35х4х2100',        category: 'dobor', unit: 'шт',       price: 50 },
   ],
 }
