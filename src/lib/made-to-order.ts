@@ -9,6 +9,7 @@
 export const MADE_TO_ORDER_SERIES: ReadonlySet<string> = new Set([
   'next',
   'smart',
+  'urban-drevesnyy',
 ])
 
 export const isMadeToOrder = (seriesSlug: string): boolean => MADE_TO_ORDER_SERIES.has(seriesSlug)
