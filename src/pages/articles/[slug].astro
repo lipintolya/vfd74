@@ -2,16 +2,25 @@
 import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import FaqAccordion from '../../components/ui/FaqAccordion.astro'
+import ArticleCard from '../../components/articles/ArticleCard.astro'
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles')
   return articles.map((article) => {
     const slug = article.id
-    return { params: { slug }, props: { article } }
+    return { params: { slug }, props: { article, allArticles: articles } }
   })
 }
 
-const { article } = Astro.props
+const { article, allArticles } = Astro.props
+
+/* Читайте также — 3 других статьи, свежие сверху. Со временем статей
+   станет больше 4 — тогда есть смысл подбирать по теме, а не просто
+   «остальные», но пока их 6, ротации достаточно. */
+const relatedArticles = allArticles
+  .filter(a => a.id !== article.id)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3)
 const { Content } = await render(article)
 
 const slug = article.id
@@ -134,8 +143,30 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
             </section>
           )}
 
+          <!-- Читайте также — перелинковка между статьями -->
+          {relatedArticles.length > 0 && (
+            <section class="article-related mt-14 border-t border-slate-200 pt-10" aria-label="Читайте также">
+              <h2 class="mb-6 text-xl font-medium tracking-tight text-slate-900">Читайте также</h2>
+              <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
+                {relatedArticles.map((related) => (
+                  <li>
+                    <ArticleCard
+                      href={`/articles/${related.id}/`}
+                      title={related.data.title}
+                      description={related.data.description}
+                      publishDate={related.data.publishDate}
+                      coverImage={related.data.coverImage}
+                      coverImageAlt={related.data.coverImageAlt}
+                      loading="lazy"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           <!-- Back link -->
-          <div class="mt-14 border-t border-slate-200 pt-8">
+          <div class="mt-10 pt-2">
             <a
               href="/articles/"
               class="inline-flex items-center gap-2 text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors"
@@ -269,4 +300,7 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
 
   /* ── FAQ ── */
   .article-faq { max-width: 80rem; margin-inline: auto; margin-top: 3rem; }
+
+  /* ── Читайте также ── */
+  .article-related { max-width: 80rem; margin-inline: auto; }
 </style>
