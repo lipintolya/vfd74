@@ -14,6 +14,9 @@ import { createClient } from '@supabase/supabase-js';
    картинок в sitemap: try/catch не должен уронить всю сборку сайта, как
    уже случалось с getStaticPaths при обрыве связи с Supabase. */
 function readEnvVar(name) {
+  // На проде переменные заданы настоящим process.env (без физического
+  // .env-файла в чекауте) — проверяем его первым.
+  if (process.env[name]) return process.env[name]
   for (const file of ['.env.local', '.env']) {
     try {
       const content = readFileSync(new URL(file, import.meta.url), 'utf8')
