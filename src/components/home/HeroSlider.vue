@@ -24,8 +24,8 @@ const slides: Slide[] = [
        никуда не делся. */
     id: 1,
     image: 'https://storage.yandexcloud.net/vfd74ru/promo_main/main_render_innova.webp',
-    title: 'Купить двери в Челябинске',
-    subtitle: 'Официальный дилер ВФД',
+    title: 'ВФД на Кашириных — двери в Челябинске',
+    subtitle: 'Официальный дилер',
     description: 'Подберём дверь для дома или квартиры: каталог моделей, цены и установка',
     cta: 'Смотреть каталог',
     ctaHref: '/catalog/',
