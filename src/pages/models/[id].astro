@@ -203,12 +203,15 @@ const breadcrumbSchema = {
   })),
 }
 
+const productImages = [...new Set(colors.map(c => c.photo).filter(Boolean))]
+
 const structuredData = [breadcrumbSchema, {
   '@context': 'https://schema.org',
   '@type':    'Product',
   name:        model.name,
   description: pageDesc,
   url:         canonicalUrl,
+  image:       productImages,
   brand:       { '@type': 'Brand', name: 'ВФД' },
   offers: {
     '@type':        'Offer',
