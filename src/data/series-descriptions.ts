@@ -551,6 +551,7 @@ const coatingFallbacks: Record<string, Omit<SeriesSpec, 'tagline' | 'description
     material:  'Тамбурат с особым, малым размером сот. В основе прочная плита ХДФ и инженерный массив',
     edge:      'Эко-материал в цвет полотна',
     thickness: '37',
+    heroImage: 'https://storage.yandexcloud.net/vfd74ru/catalog/urban_wood/urban_z/urban_cover_wood.webp',
   },
 }
 
@@ -559,12 +560,14 @@ export function getSeriesSpec(seriesSlug: string, coatingSlug: string): SeriesSp
 
   const fallback = coatingFallbacks[coatingSlug] ?? {}
   return {
-    tagline:     '',
-    description: '',
-    features:    [],
-    coating:     fallback.coating   ?? '',
-    material:    fallback.material  ?? '',
-    edge:        fallback.edge      ?? '',
-    thickness:   fallback.thickness ?? '37',
+    tagline:      '',
+    description:  '',
+    features:     [],
+    coating:      fallback.coating      ?? '',
+    material:     fallback.material     ?? '',
+    edge:         fallback.edge         ?? '',
+    thickness:    fallback.thickness    ?? '37',
+    heroImage:    fallback.heroImage,
+    previewImage: fallback.previewImage,
   }
 }
