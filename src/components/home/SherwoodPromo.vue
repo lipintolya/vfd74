@@ -1,19 +1,24 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useScrollReveal } from '../../composables/useScrollReveal'
 
 /**
  * Промо серии «Урбан Древесный» — коллекция оттенков Шервуд.
  * Стоит между хиро и плашкой акций. Обложка ландшафтная (16:9), поэтому
  * лежит во всю ширину карточки в почти естественных пропорциях, а не в
- * боковой колонке (там object-cover зумил её до одной двери). Ссылок на
- * каталог пока нет намеренно: моделей серии ещё нет в каталоге, блок
- * имиджевый — вместо CTA тег «Новинка. Скоро в каталоге». Когда серия
- * появится — заменить тег на CTA по образцу MirrorDoorPromo.vue.
+ * боковой колонке (там object-cover зумил её до одной двери). Серия уже
+ * в каталоге (/catalog/series/urban-drevesnyy/) — тег стал ссылкой,
+ * обложка — автослайдером из нескольких кадров.
  */
 
 const CDN = 'https://storage.yandexcloud.net/vfd74ru/promo_main/sherwood/'
+const WOOD_CDN = 'https://storage.yandexcloud.net/vfd74ru/catalog/urban_wood/urban_z/'
 
-const COVER = `${CDN}sherwood_promo.webp`
+const SLIDES = [
+  `${CDN}sherwood_promo.webp`,
+  `${WOOD_CDN}urban_cover_wood.webp`,
+  `${WOOD_CDN}wood_render.webp`,
+]
 
 interface Shade {
   name: string
@@ -29,6 +34,23 @@ const SHADES: Shade[] = [
 ]
 
 const { sectionRef, visible } = useScrollReveal(0.15)
+
+/* Автослайдер — тот же приём кросс-фейда, что в HeroSlider.vue (все кадры
+   в стеке, активный получает opacity:1), только проще: без ручного
+   управления, просто листает по кругу. Останавливается при
+   prefers-reduced-motion. */
+const activeSlide = ref(0)
+let timer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  timer = setInterval(() => {
+    activeSlide.value = (activeSlide.value + 1) % SLIDES.length
+  }, 4000)
+})
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
+})
 </script>
 
 <template>
@@ -39,22 +61,29 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
         <!-- Фото — ландшафтное, во всю ширину, без агрессивного кропа.
-             Поверх — затемнение и 4 двери коллекции, проявляются по очереди
-             (CSS transition + transition-delay, без JS-анимаций). -->
+             Автослайдер из нескольких кадров, кросс-фейд. -->
         <div class="relative aspect-3/2 sm:aspect-21/10 lg:aspect-3/1">
           <img
-            :src="COVER"
+            v-for="(src, i) in SLIDES"
+            :key="src"
+            :src="src"
             alt="Дверь серии Урбан Древесный с текстурой дерева коллекции Шервуд в интерьере"
-            loading="lazy"
+            :loading="i === 0 ? 'eager' : 'lazy'"
             decoding="async"
             width="1672"
             height="941"
-            class="absolute inset-0 h-full w-full object-cover"
+            class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out"
+            :class="i === activeSlide ? 'opacity-100' : 'opacity-0'"
           />
-          <!-- Тег вместо CTA — серии пока нет в каталоге, ссылке некуда вести. -->
-          <span class="absolute bottom-[8%] left-[4%] inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md">
-            Новинка. Скоро в каталоге
-          </span>
+          <a
+            href="/catalog/series/urban-drevesnyy/"
+            class="absolute bottom-[8%] left-[4%] z-10 inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md transition-colors hover:bg-black/45"
+          >
+            Смотреть в каталоге
+            <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
         </div>
 
         <!-- Контент -->
@@ -111,10 +140,16 @@ const { sectionRef, visible } = useScrollReveal(0.15)
               Откройте для себя разницу текстур.
               Найдите свой оттенок характера.
             </p>
-            <!-- Мобильный тег — на фото ему не хватает места -->
-            <span class="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium tracking-wide text-slate-700 lg:hidden">
-              Новинка. Скоро в каталоге
-            </span>
+            <!-- Мобильная ссылка — на фото ей не хватает места -->
+            <a
+              href="/catalog/series/urban-drevesnyy/"
+              class="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium tracking-wide text-slate-700 transition-colors hover:border-teal-500 hover:bg-teal-50 lg:hidden"
+            >
+              Смотреть в каталоге
+              <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
           </div>
         </div>
       </div>
