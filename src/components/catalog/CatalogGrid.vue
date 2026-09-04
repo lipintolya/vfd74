@@ -36,9 +36,10 @@ onUnmounted(() => {
 <template>
   <div class="grid grid-cols-2 gap-5 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4" aria-live="polite">
     <CatalogProductCard
-      v-for="card in cards"
+      v-for="(card, index) in cards"
       :key="card.id"
       :card="card"
+      :priority="index < 4"
       :is-kit-open="openKitId === card.id"
       :is-dimmed="openKitId !== null && openKitId !== card.id"
       @kit-toggle="openKitId = openKitId === card.id ? null : card.id"

@@ -4,11 +4,17 @@ import { calcKitPrice, BASE_KIT_DESCRIPTION } from '../../data/accessories'
 import { isMadeToOrder } from '../../lib/made-to-order'
 import type { CatalogCardItem } from './types'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   card: CatalogCardItem
   isKitOpen: boolean
   isDimmed: boolean
-}>()
+  /** Первый экран сетки — грузим фото сразу, не lazy, иначе тормозим LCP
+      (браузер лишний раз решает, "не пора ли ещё" грузить видимую с
+      первого кадра картинку). */
+  priority?: boolean
+}>(), {
+  priority: false,
+})
 
 const emit = defineEmits<{
   'kit-toggle': []
@@ -121,7 +127,8 @@ const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug))
         :src="activePhoto"
         :alt="`${card.name} — ${activeColorName}`"
         class="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
-        loading="lazy"
+        :loading="priority ? 'eager' : 'lazy'"
+        :fetchpriority="priority ? 'high' : undefined"
         decoding="async"
         width="320"
         height="420"
