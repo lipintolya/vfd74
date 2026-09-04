@@ -77,7 +77,7 @@ onUnmounted(() => {
           />
           <a
             href="/catalog/series/urban-drevesnyy/"
-            class="absolute bottom-[8%] left-[4%] z-10 inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md transition-colors hover:bg-black/45"
+            class="absolute bottom-[8%] left-[4%] z-10 hidden items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md transition-colors hover:bg-black/45 lg:inline-flex"
           >
             Смотреть в каталоге
             <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
