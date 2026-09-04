@@ -147,7 +147,7 @@ const shareModel = async () => {
         </svg>
       </div>
 
-      <span v-if="madeToOrder" class="color-picker__order-badge bg-blue-400 text-white">Под заказ</span>
+      <span v-if="madeToOrder" class="color-picker__order-badge bg-fg text-white">Под заказ</span>
     </div>
 
     <!-- Зум-модалка -->
@@ -356,7 +356,7 @@ const shareModel = async () => {
   color: #d1d5db;
 }
 
-/* Цвет — utility-классы Tailwind (bg-blue-400) в шаблоне, тут только форма/
+/* Цвет — utility-классы Tailwind (bg-fg) в шаблоне, тут только форма/
    позиция: справа снизу от фото, симметрично зум-подсказке слева. */
 .color-picker__order-badge {
   position: absolute;

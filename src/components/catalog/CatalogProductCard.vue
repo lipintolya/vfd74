@@ -157,7 +157,7 @@ const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug))
 
       <span
         v-if="madeToOrder"
-        class="absolute right-0 bottom-3 max-w-[85%] truncate rounded-l-full bg-blue-400 px-3 py-1 text-xs font-medium uppercase tracking-wide text-white shadow-sm"
+        class="absolute right-0 bottom-3 max-w-[85%] truncate rounded-l-full bg-fg px-3 py-1 text-xs font-medium uppercase tracking-wide text-white shadow-sm"
       >
         Под заказ
       </span>
