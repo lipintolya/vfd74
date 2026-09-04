@@ -176,7 +176,7 @@ const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug))
           v-for="(swatch, idx) in visibleSwatches"
           :key="swatch.name"
           type="button"
-          class="h-4.5 w-4.5 shrink-0 rounded-full transition-transform active:scale-90"
+          class="h-4.5 w-4.5 shrink-0 rounded-full transition-transform active:scale-90 lg:h-5.5 lg:w-5.5"
           :class="[
             idx === activeSwatchIdx ? 'ring-2 ring-offset-1 ring-teal-600' : '',
             swatch.available === false
