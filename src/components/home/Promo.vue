@@ -96,16 +96,17 @@ function toggleExpanded(id: string) {
             :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
             :style="{ transitionDelay: visible ? `${index * 100}ms` : '0ms' }"
           >
-            <!-- Image — крупнее, чем раньше: без всегда видимого описания
-                 карточка стала короче, картинка компенсирует высоту. -->
-            <div class="relative h-96 w-full overflow-hidden bg-gray-100">
+            <!-- Image — аспект вместо фикс. высоты: карточка одной ширины
+                 на каждом брейкпоинте (grid-cols-1/2/3), но h-96 давал бы
+                 разное соотношение сторон на разной ширине карточки. -->
+            <div class="relative aspect-4/3 w-full overflow-hidden bg-gray-100">
               <img
                 :src="promo.image"
                 :alt="promo.title"
                 loading="lazy"
                 decoding="async"
                 width="600"
-                height="384"
+                height="450"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
 
