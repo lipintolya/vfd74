@@ -141,7 +141,7 @@ onUnmounted(() => {
               Найдите свой оттенок характера.
             </p>
             <!-- Мобильная ссылка — на фото ей не хватает места -->
-            <a href="/catalog/series/urban-drevesnyy/" class="btn btn-outline mt-5 lg:hidden">
+            <a href="/catalog/series/urban-drevesnyy/" class="btn btn-primary mt-5 lg:hidden">
               Смотреть в каталоге
               <svg viewBox="0 0 16 16" fill="none" class="btn-arrow-icon" aria-hidden="true">
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
