@@ -229,7 +229,17 @@ body {
 
 /* ============================================================
    Shared utility classes
+
+   В @layer components (см. комментарий выше, перед первым таким
+   блоком) — без этого неслоистые правила (эта секция была объявлена
+   без layer) перебивают Tailwind-утилиты по спецификации CSS Cascade
+   Layers независимо от порядка в файле: например .btn{display:
+   inline-flex} побеждал Tailwind-утилиты hidden/lg:inline-flex на
+   кнопках, которые должны были переключаться по брейкпоинту, а не
+   показываться всегда. Одноимённые @layer-блоки объединяются, второй
+   не создаёт новый уровень приоритета.
    ============================================================ */
+@layer components {
 
 .container {
   width: 100%;
@@ -378,7 +388,9 @@ body {
   transition: transform var(--duration-base) var(--ease-out);
 }
 .btn-accent:hover .btn-arrow-icon,
-.btn-ghost:hover .btn-arrow-icon {
+.btn-ghost:hover .btn-arrow-icon,
+.btn-primary:hover .btn-arrow-icon,
+.btn-outline:hover .btn-arrow-icon {
   transform: translateX(2px);
 }
 
@@ -513,4 +525,6 @@ body {
   color: #d1d5db;
   font-size: 1rem;
   font-weight: 300;
+}
+
 }

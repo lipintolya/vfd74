@@ -77,10 +77,10 @@ onUnmounted(() => {
           />
           <a
             href="/catalog/series/urban-drevesnyy/"
-            class="absolute bottom-[8%] left-[4%] z-10 hidden items-center gap-2 rounded-full border border-white/25 bg-black/25 px-4 py-2 text-sm font-medium tracking-wide text-white backdrop-blur-md transition-colors hover:bg-black/45 lg:inline-flex"
+            class="btn btn-ghost absolute bottom-[8%] left-[4%] z-10 hidden lg:inline-flex"
           >
             Смотреть в каталоге
-            <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" class="btn-arrow-icon" aria-hidden="true">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
@@ -93,7 +93,7 @@ onUnmounted(() => {
               <p class="t-eyebrow mb-2">Серия Урбан Древесный</p>
               <h2
                 id="sherwood-promo-heading"
-                class="text-2xl font-medium leading-tight tracking-tight text-slate-900 sm:text-3xl lg:text-4xl"
+                class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"
               >
                 Характер интерьера — в&nbsp;текстуре дерева
               </h2>
@@ -141,12 +141,9 @@ onUnmounted(() => {
               Найдите свой оттенок характера.
             </p>
             <!-- Мобильная ссылка — на фото ей не хватает места -->
-            <a
-              href="/catalog/series/urban-drevesnyy/"
-              class="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium tracking-wide text-slate-700 transition-colors hover:border-teal-500 hover:bg-teal-50 lg:hidden"
-            >
+            <a href="/catalog/series/urban-drevesnyy/" class="btn btn-outline mt-5 lg:hidden">
               Смотреть в каталоге
-              <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+              <svg viewBox="0 0 16 16" fill="none" class="btn-arrow-icon" aria-hidden="true">
                 <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </a>

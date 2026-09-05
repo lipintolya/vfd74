@@ -21,7 +21,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             <p class="t-eyebrow mb-2">Новинка</p>
             <h2
               id="reflex-promo-heading"
-              class="text-2xl font-medium leading-tight tracking-tight text-slate-900 sm:text-3xl"
+              class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"
             >
               Скрытая дверь с зеркалом «Рефлекс»
             </h2>
@@ -73,12 +73,9 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </div>
           </div>
 
-          <a
-            href="/catalog/skrytye-dveri/#reflex"
-            class="flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-900 text-base font-medium text-white transition-colors hover:bg-slate-800"
-          >
+          <a href="/catalog/skrytye-dveri/#reflex" class="btn btn-primary w-full">
             Смотреть «Рефлекс»
-            <svg class="h-4.5 w-4.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
