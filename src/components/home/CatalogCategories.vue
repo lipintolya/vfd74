@@ -73,7 +73,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         >
           <a
             :href="CATEGORIES[0]!.href"
-            class="group relative flex h-full min-h-80 flex-col overflow-hidden rounded-3xl no-underline md:min-h-105 lg:min-h-135 focus-visible:outline-2 focus-visible:outline-teal-500 focus-visible:outline-offset-3"
+            class="group relative flex h-full aspect-4/3 flex-col overflow-hidden rounded-3xl no-underline md:aspect-auto md:min-h-105 lg:min-h-135 focus-visible:outline-2 focus-visible:outline-teal-500 focus-visible:outline-offset-3"
             :aria-label="CATEGORIES[0]!.title"
           >
             <!-- Background -->
@@ -117,7 +117,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           >
             <a
               :href="cat.href"
-              class="group relative flex h-full min-h-56 flex-col overflow-hidden rounded-3xl no-underline md:min-h-50 lg:min-h-63.75 focus-visible:outline-2 focus-visible:outline-teal-500 focus-visible:outline-offset-3"
+              class="group relative flex h-full aspect-3/2 flex-col overflow-hidden rounded-3xl no-underline md:aspect-auto md:min-h-50 lg:min-h-63.75 focus-visible:outline-2 focus-visible:outline-teal-500 focus-visible:outline-offset-3"
               :aria-label="cat.title"
             >
               <!-- Background -->
