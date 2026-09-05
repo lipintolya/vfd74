@@ -46,7 +46,7 @@ onMounted(() => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   timer = setInterval(() => {
     activeSlide.value = (activeSlide.value + 1) % SLIDES.length
-  }, 4000)
+  }, 5000)
 })
 onUnmounted(() => {
   if (timer) clearInterval(timer)
@@ -72,7 +72,7 @@ onUnmounted(() => {
             decoding="async"
             width="1672"
             height="941"
-            class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out"
+            class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1250 ease-in-out"
             :class="i === activeSlide ? 'opacity-100' : 'opacity-0'"
           />
           <a
