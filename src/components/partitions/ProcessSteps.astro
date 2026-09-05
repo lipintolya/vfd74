@@ -240,9 +240,12 @@ const { items, dark = false } = Astro.props
     /* «Как мы работаем» на главной (dark) — 4 карточки с абзацем + 4
        пункта списка на мобильном превращались в лонгрид. Абзац дублирует
        суть заголовка и списка — на мобильном оставляем только заголовок
-       и компактный список, абзац остаётся в HowTo-разметке для SEO. */
+       и до 3 пунктов списка, абзац и 4-й пункт остаются в HowTo-разметке
+       для SEO и на десктопе. */
     .ps--dark .ps-text { display: none; }
-    .ps--dark .ps-list { padding-top: 0; border-top: none; margin-top: 0; }
+    .ps--dark .ps-card { padding: 1.25rem; gap: 0.625rem; }
+    .ps--dark .ps-list { padding-top: 0; border-top: none; margin-top: 0; gap: 0.4rem; }
+    .ps--dark .ps-item:nth-child(n + 4) { display: none; }
   }
 
   /* ── Тёмный вариант (dark prop) ── */
