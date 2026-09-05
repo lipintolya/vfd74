@@ -5,6 +5,9 @@
  * Изначально писалась только под /partitions/, теперь принимает `items`
  * снаружи, чтобы тот же паттерн переиспользовать на /catalog/ (Серии/Каталог)
  * без копипасты компонента.
+ *
+ * Пилюля по ширине равна своему содержимому (w-fit), а не всему .container —
+ * с 2 пунктами (/catalog/) полноширинный бар выглядел пустым посередине.
  */
 interface Props {
   items?: { id: string; label: string }[]
@@ -24,16 +27,21 @@ const {
 
 <nav
   id="pt-snav"
-  class="pt-snav"
+  class="pt-snav fixed inset-x-0 z-45 -translate-y-2 px-4 opacity-0 transition-[opacity,transform] duration-200 ease-out pointer-events-none"
+  style={`top: var(--header-height, 88px)`}
   aria-label="Разделы страницы"
   aria-hidden="true"
 >
   <div class="container">
-    <div class="pt-snav__pill">
-      <ul class="pt-snav__list" role="list">
+    <div class="mx-auto flex w-fit max-w-full items-center gap-0.5 rounded-full border border-slate-200/70 bg-white/80 p-1.5 shadow-[0_8px_28px_rgba(15,23,42,0.12)] backdrop-blur-lg">
+      <ul class="pt-snav__list flex min-w-0 list-none items-center gap-0.5 overflow-x-auto" role="list">
         {items.map(it => (
           <li>
-            <a href={`#${it.id}`} class="pt-snav__link" data-snav={it.id}>
+            <a
+              href={`#${it.id}`}
+              class="pt-snav__link inline-block whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-150"
+              data-snav={it.id}
+            >
               {it.label}
             </a>
           </li>
@@ -41,12 +49,12 @@ const {
       </ul>
       <button
         id="pt-snav-close"
-        class="pt-snav__close"
+        class="ml-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-fg-subtle transition-colors duration-150 hover:bg-red-50 hover:text-red-500"
         type="button"
         aria-label="Скрыть навигационное меню"
         title="Скрыть навигационное меню"
       >
-        <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <svg viewBox="0 0 14 14" fill="none" class="h-3 w-3" aria-hidden="true">
           <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
       </button>
@@ -55,89 +63,30 @@ const {
 </nav>
 
 <style>
-  .pt-snav {
-    position: fixed;
-    top: var(--header-height, 88px);
-    left: 0;
-    right: 0;
-    z-index: 45;
-    padding: 0.5rem 0;
-    opacity: 0;
-    transform: translateY(-8px);
-    pointer-events: none;
-    transition: opacity 220ms ease, transform 220ms ease;
-  }
+  /* Видимость двигаем через JS-класс, а не инлайн-стиль, — переключается
+     чаще, чем рендерится компонент. */
   .pt-snav.pt-snav--visible {
     opacity: 1;
     transform: none;
     pointer-events: auto;
   }
 
-  /* Пилюля — повторяет стиль хедера */
-  .pt-snav__pill {
-    border-radius: 9999px;
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
-    padding: 0.3rem 0.5rem;
-    overflow: hidden;
-  }
-
-  .pt-snav__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    gap: 0.125rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
+  .pt-snav__list { scrollbar-width: none; }
   .pt-snav__list::-webkit-scrollbar { display: none; }
 
+  /* Активный/hover-цвет — завязан на токены темы. Composite-селектор
+     .pt-snav__link.pt-snav--active специфичнее, чем :hover на одном
+     классе, поэтому активный пункт не перекрашивается при наведении. */
   .pt-snav__link {
-    display: inline-block;
-    padding: 0.3rem 0.875rem;
-    border-radius: 9999px;
-    font-size: 0.8125rem;
-    font-weight: 600;
-    color: #64748b;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background 150ms ease, color 150ms ease;
+    color: var(--color-fg-muted);
   }
-  .pt-snav__link:hover { background: #f0fdfa; color: #0d9488; }
+  .pt-snav__link:hover {
+    background: var(--color-accent-light);
+    color: var(--color-accent-hover);
+  }
   .pt-snav__link.pt-snav--active {
-    background: #0d9488;
+    background: var(--color-accent-hover);
     color: #fff;
-  }
-
-  /* Пилюля: flex чтобы кнопка закрытия прижималась вправо */
-  .pt-snav__pill {
-    display: flex;
-    align-items: center;
-  }
-  .pt-snav__list { flex: 1; min-width: 0; }
-
-  .pt-snav__close {
-    flex-shrink: 0;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 9999px;
-    border: none;
-    background: transparent;
-    color: #94a3b8;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    margin-left: 0.25rem;
-    transition: background 150ms ease, color 150ms ease;
-  }
-  .pt-snav__close svg { width: 0.75rem; height: 0.75rem; }
-  .pt-snav__close:hover {
-    background: #fee2e2;
-    color: #ef4444;
   }
 </style>
 
