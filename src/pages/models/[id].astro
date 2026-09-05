@@ -97,45 +97,10 @@ export async function getStaticPaths() {
     }
   }
 
+  /* Показываем только реально сфотканные цвета — свотч без фото сбивает
+     покупателя с толку (выглядит как рабочий вариант, а на деле «по запросу»). */
   for (const entry of modelMap.values()) {
-    for (const color of entry.colors) color.available = true
-  }
-
-  /* ── Добиваем цвета покрытия, для которых у ЭТОЙ модели ещё нет фото —
-     available:false (см. ColorVariant.available в ProductColorPicker.vue).
-     Та же логика, что в src/lib/catalog-data.ts::getCatalogCards — фабрика
-     делает двери во всех цветах покрытия, фото присылает не сразу под
-     каждую модель, без этого цвет молча пропадает из свотчей. ── */
-  const { data: allColorsRaw } = await supabase
-    .from('colors')
-    .select('id, name, hex_preview, coatings ( slug )')
-
-  const colorsByCoatingSlug = new Map<string, { id: string; name: string; hex: string }[]>()
-  for (const row of (allColorsRaw ?? [])) {
-    const coatingSlug = (row as any).coatings?.slug
-    if (!coatingSlug || !row.name) continue
-    const list = colorsByCoatingSlug.get(coatingSlug) ?? []
-    if (!list.some(c => c.name === row.name)) {
-      list.push({ id: row.id, name: row.name, hex: normalizeHex(row.hex_preview) })
-    }
-    colorsByCoatingSlug.set(coatingSlug, list)
-  }
-
-  for (const entry of modelMap.values()) {
-    const coatingColors = colorsByCoatingSlug.get(entry.coatingSlug) ?? []
-    const existingNames = new Set(entry.colors.map(c => c.name))
-    for (const c of coatingColors) {
-      if (existingNames.has(c.name)) continue
-      entry.colors.push({
-        id:          c.id,
-        name:        c.name,
-        hex:         c.hex,
-        photo:       '',
-        price:       null,
-        coatingSlug: entry.coatingSlug,
-        available:   false,
-      })
-    }
+    entry.colors = entry.colors.filter(c => Boolean(c.photo))
   }
 
   /* ── Читаемые слаги вместо UUID: имя модели + серия, с защитой от коллизий ── */

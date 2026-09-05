@@ -75,36 +75,16 @@ export async function getCatalogCards(): Promise<{
     colorsByModel.set(model.id, list)
 
     const swatches = colorSwatchesByModel.get(model.id) ?? []
-    if (!swatches.some(s => s.name === color.name)) {
+    if (row.photo_url && !swatches.some(s => s.name === color.name)) {
       swatches.push({
         name:      color.name,
         hex:       normalizeHexColor(color.hex_preview),
         price:     adjustPrice(seriesSlug, row.price_rrp ?? null),
-        photo:     row.photo_url ?? '',
+        photo:     row.photo_url,
         available: true,
       })
     }
     colorSwatchesByModel.set(model.id, swatches)
-  }
-
-  /* ── Полный список цветов по покрытию (не только те, что уже сфотканы
-     под конкретную модель) — фабрика делает двери во всех цветах покрытия,
-     фото просто присылает не сразу под каждый размер/модель. Без этого
-     цвет, для которого ещё нет фото именно у этой модели, молча исчезает
-     из свотчей — выглядит так, будто модель в этом цвете не существует. ── */
-  const { data: allColorsRaw } = await supabase
-    .from('colors')
-    .select('name, hex_preview, coatings ( slug )')
-
-  const colorsByCoatingSlug = new Map<string, { name: string; hex: string }[]>()
-  for (const row of (allColorsRaw ?? [])) {
-    const coatingSlug = (row.coatings as any)?.slug
-    if (!coatingSlug || !row.name) continue
-    const list = colorsByCoatingSlug.get(coatingSlug) ?? []
-    if (!list.some(c => c.name === row.name)) {
-      list.push({ name: row.name, hex: normalizeHexColor(row.hex_preview) })
-    }
-    colorsByCoatingSlug.set(coatingSlug, list)
   }
 
   /* ── Нормализуем: 1 модель = 1 карточка (первый цвет — для витрины) ── */
@@ -134,25 +114,13 @@ export async function getCatalogCards(): Promise<{
       colorHex:    normalizeHexColor(color.hex_preview),
       trim:        formatTrim(model.trim),
       colorNames:  colorsByModel.get(model.id) ?? [color.name],
-      colorSwatches: colorSwatchesByModel.get(model.id) ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: true }],
+      colorSwatches: colorSwatchesByModel.get(model.id) ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url) }],
       photo:       row.photo_url  ?? '',
       price:       adjustPrice(seriesSlug, row.price_rrp ?? null),
       hasGlass:    model.has_glass ?? false,
       isNew:       isNewModel(model.id),
       isPopular:   isPopularSeries(seriesSlug),
     })
-  }
-
-  /* ── Добиваем свотчи цветами покрытия, для которых у ЭТОЙ модели ещё нет
-     фото — available:false, не участвуют в фильтре (см. colorNames выше,
-     он строится ДО этого шага и не видит добавленное). ── */
-  for (const card of cards) {
-    const coatingColors = colorsByCoatingSlug.get(card.coatingSlug) ?? []
-    const existingNames = new Set(card.colorSwatches.map(s => s.name))
-    for (const c of coatingColors) {
-      if (existingNames.has(c.name)) continue
-      card.colorSwatches.push({ name: c.name, hex: c.hex, price: null, photo: '', available: false })
-    }
   }
 
   /* ── Читаемые слаги вместо UUID — та же функция, что и в /models/[id].astro,
