@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import {
   SECRET_MIN_BLADE_PRICE, SECRET_MIN_KIT_PRICE,
@@ -7,11 +8,33 @@ import {
 } from '../../data/skrytye-dveri-products'
 import BenefitItem from './BenefitItem.vue'
 
-const COVER_IMAGE = 'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/secret_render_cover.webp'
+const INVISIBLE_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
+
+const SLIDES = [
+  'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/secret_render_cover.webp',
+  `${INVISIBLE_CDN}B2AB966B-4BC6-43E2-AEAA-7DA6B3CEDCC5.webp`,
+  `${INVISIBLE_CDN}937DECDF-6886-48EB-80B6-3495AA998F94.webp`,
+]
 
 const fmt = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
 
 const { sectionRef, visible } = useScrollReveal(0.15)
+
+/* Автослайдер — тот же приём кросс-фейда, что в SherwoodPromo.vue: все
+   кадры в стеке, активный получает opacity:1. Останавливается при
+   prefers-reduced-motion. */
+const activeSlide = ref(0)
+let timer: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  timer = setInterval(() => {
+    activeSlide.value = (activeSlide.value + 1) % SLIDES.length
+  }, 4000)
+})
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
+})
 </script>
 
 <template>
@@ -29,13 +52,16 @@ const { sectionRef, visible } = useScrollReveal(0.15)
              выглядит непропорционально вытянутой. -->
         <div class="relative aspect-4/3 sm:aspect-video lg:aspect-auto">
           <img
-            :src="COVER_IMAGE"
+            v-for="(src, i) in SLIDES"
+            :key="src"
+            :src="src"
             alt="Скрытая дверь серии «Секрет» — полотно заподлицо со стеной"
             loading="lazy"
             decoding="async"
             width="1672"
             height="941"
-            class="absolute inset-0 h-full w-full object-cover"
+            class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out"
+            :class="i === activeSlide ? 'opacity-100' : 'opacity-0'"
           />
         </div>
 
