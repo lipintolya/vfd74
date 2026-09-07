@@ -13,6 +13,13 @@ import {
 ============================================================ */
 const lightboxIndex = ref<number | null>(null)
 
+/* SSR рендерит лайтбокс закрытым, но Teleport-в-body всё равно попадает в
+   SSR-разметку как placeholder и коллизирует со служебной разметкой Astro
+   (astro-island/astro-slot) — Vue при гидратации ловит "Hydration node
+   mismatch" (см. тот же фикс в Reviews.vue). Лайтбокс нужен только после
+   клика, поэтому держим Teleport вне SSR/гидратации вовсе. */
+const mounted = ref(false)
+
 const openLightbox = (index: number) => {
   lightboxIndex.value = index
   document.body.style.overflow = 'hidden'
@@ -40,7 +47,10 @@ const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'ArrowRight') nextImage()
 }
 
-onMounted(() => window.addEventListener('keydown', handleKeydown))
+onMounted(() => {
+  mounted.value = true
+  window.addEventListener('keydown', handleKeydown)
+})
 onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 
@@ -440,7 +450,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     <!-- ======================================================
          LIGHTBOX
     ======================================================= -->
-    <Teleport to="body">
+    <Teleport v-if="mounted" to="body">
 
       <div
         v-if="lightboxIndex !== null"
