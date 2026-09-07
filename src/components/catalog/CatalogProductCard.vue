@@ -158,7 +158,7 @@ const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug))
           v-else-if="card.isPopular"
           class="max-w-full truncate rounded-r-full bg-teal-600 px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wide text-white shadow-sm"
         >
-          Выбор покупателей
+          Выбор клиентов
         </span>
       </div>
 
