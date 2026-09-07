@@ -105,14 +105,27 @@ export const companyLegalInfo = {
 }
 
 /**
+ * Летний график (companyLegalInfo.workingHours.summer) действует июнь–август,
+ * зимний (winter) — сентябрь–май. Раньше getFormattedHours/getIsOpenNow
+ * читали только .summer напрямую — вне летних месяцев показывали (и
+ * объявляли "открыто/закрыто" по) заведомо неверному графику, например
+ * "Вс: выходной" зимой, когда по факту салон работает 10:00–18:00.
+ */
+const getActiveWorkingHours = (date: Date = new Date()) => {
+  const month = date.getMonth() + 1 // 1–12
+  const isSummer = month >= 6 && month <= 8
+  return isSummer ? companyLegalInfo.workingHours.summer : companyLegalInfo.workingHours.winter
+}
+
+/**
  * Часы работы в форматированном виде для UI
  */
 export const getFormattedHours = () => {
-  const hours = companyLegalInfo.workingHours.summer
+  const hours = getActiveWorkingHours()
   return [
     { day: 'Пн–Пт', time: `${hours.weekdays.opens}–${hours.weekdays.closes}` },
     { day: 'Сб', time: `${hours.saturday.opens}–${hours.saturday.closes}` },
-    { day: 'Вс', time: hours.sunday.label, note: hours.sunday.note },
+    { day: 'Вс', time: hours.sunday.label, note: 'note' in hours.sunday ? hours.sunday.note : undefined },
   ]
 }
 
@@ -122,40 +135,48 @@ export const getFormattedHours = () => {
 export const getIsOpenNow = (): { isOpen: boolean; status: string } => {
   const now = new Date()
   const day = now.getDay() // 0 = воскресенье, 1 = понедельник...
-  const hours = now.getHours()
+  const hoursNow = now.getHours()
   const minutes = now.getMinutes()
-  const currentTime = hours * 100 + minutes
+  const currentTime = hoursNow * 100 + minutes
+  const hours = getActiveWorkingHours(now)
 
-  // Выходной - воскресенье
-  if (day === 0) {
-    return { isOpen: false, status: 'Выходной (по записи)' }
-  }
-
-  // Будни (пн-пт): 10:00-20:00
+  // Будни (пн-пт)
   if (day >= 1 && day <= 5) {
-    const openTime = 1000
-    const closeTime = 2000
+    const openTime = Number(hours.weekdays.opens.replace(':', ''))
+    const closeTime = Number(hours.weekdays.closes.replace(':', ''))
     if (currentTime >= openTime && currentTime < closeTime) {
       return { isOpen: true, status: 'Открыто' }
     }
     if (currentTime < openTime) {
-      return { isOpen: false, status: 'Откроемся в 10:00' }
+      return { isOpen: false, status: `Откроемся в ${hours.weekdays.opens}` }
     }
-    return { isOpen: false, status: 'Закрыто · Откроемся завтра в 10:00' }
+    return { isOpen: false, status: `Закрыто · Откроемся завтра в ${hours.weekdays.opens}` }
   }
 
-  // Суббота: 11:00-16:00
+  // Суббота
   if (day === 6) {
-    const openTime = 1100
-    const closeTime = 1600
+    const openTime = Number(hours.saturday.opens.replace(':', ''))
+    const closeTime = Number(hours.saturday.closes.replace(':', ''))
     if (currentTime >= openTime && currentTime < closeTime) {
       return { isOpen: true, status: 'Открыто' }
     }
     if (currentTime < openTime) {
-      return { isOpen: false, status: 'Откроемся в 11:00' }
+      return { isOpen: false, status: `Откроемся в ${hours.saturday.opens}` }
     }
-    return { isOpen: false, status: 'Закрыто · Откроемся в пн в 10:00' }
+    return { isOpen: false, status: `Закрыто · Откроемся в вс в ${hours.sunday.opens ?? hours.weekdays.opens}` }
   }
 
-  return { isOpen: false, status: 'Информация недоступна' }
+  // Воскресенье — летом выходной, зимой рабочий день
+  if ('opens' in hours.sunday) {
+    const openTime = Number(hours.sunday.opens.replace(':', ''))
+    const closeTime = Number(hours.sunday.closes.replace(':', ''))
+    if (currentTime >= openTime && currentTime < closeTime) {
+      return { isOpen: true, status: 'Открыто' }
+    }
+    if (currentTime < openTime) {
+      return { isOpen: false, status: `Откроемся в ${hours.sunday.opens}` }
+    }
+    return { isOpen: false, status: `Закрыто · Откроемся завтра в ${hours.weekdays.opens}` }
+  }
+  return { isOpen: false, status: 'Выходной (по записи)' }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import {
   companyInfo,
   director,
@@ -7,6 +7,14 @@ import {
   requisites,
   paymentMethods,
 } from './about-data'
+import { getFormattedHours } from '../../lib/contacts-data'
+
+/* Часы работы — из единого источника (contacts-data.ts), с учётом сезона
+   (летний/зимний график), а не статичной строкой на карточке. */
+const workingHoursDisplay = computed(() => {
+  const [weekdays, saturday, sunday] = getFormattedHours()
+  return `${weekdays.day}: ${weekdays.time}, ${saturday.day}: ${saturday.time}, ${sunday.time}`
+})
 
 /* ============================================================
    Lightbox
@@ -162,7 +170,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               </span>
 
               <strong>
-                {{ companyInfo.workingHours }}
+                {{ workingHoursDisplay }}
               </strong>
             </div>
 
