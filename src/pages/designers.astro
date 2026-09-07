@@ -12,7 +12,10 @@ const TG    = 'https://t.me/vfddoors74'
    ИЗОБРАЖЕНИЯ
    ════════════════════════════════════════════════════════════ */
 const HERO_SLIDER_IMAGES = [
-  'https://storage.yandexcloud.net/catalog-vfd/designers/image.webp',
+  // Локальная копия — оригинал на CDN весил 1.3МБ (см. gen-render-gallery.mjs
+  // для похожего прецедента с проблемными remote-картинками): пересжат
+  // sharp'ом до webp q80, 1672×941 без изменений, итог ~70КБ.
+  '/renders/hero/designers-hero.webp',
   'https://storage.yandexcloud.net/catalog-vfd/designers/image2.webp',
 ]
 const CATALOG_HREF = 'https://crm.vfd.ru/~W8Bcr'
@@ -285,6 +288,8 @@ const structuredData = canonicalUrl ? [
             src={HERO_SLIDER_IMAGES[0]}
             alt="Интерьер с дверями и перегородками ВФД"
             class="absolute inset-0 w-full h-full object-cover object-center"
+            width="1672"
+            height="941"
             loading="eager"
             fetchpriority="high"
             decoding="async"
