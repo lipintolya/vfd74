@@ -186,12 +186,20 @@ watch(
 
       <label class="flex items-center gap-2.5">
         <span class="text-step-1 font-semibold text-slate-600">Сортировка:</span>
-        <select v-model="sortBy" class="min-h-11.5 min-w-62 rounded-lg border-2 border-slate-200 bg-white px-4 text-step-1 font-semibold text-ink focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/15">
-          <option value="popular">Популярные</option>
-          <option value="price_asc">Цена: по возрастанию</option>
-          <option value="price_desc">Цена: по убыванию</option>
-          <option value="name">По названию</option>
-        </select>
+        <span class="relative inline-flex min-w-62">
+          <select
+            v-model="sortBy"
+            class="min-h-11.5 w-full appearance-none rounded-lg border-2 border-slate-200 bg-white py-0 pl-4 pr-10 text-step-1 font-semibold text-ink focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/15"
+          >
+            <option value="popular">Популярные</option>
+            <option value="price_asc">Цена: по возрастанию</option>
+            <option value="price_desc">Цена: по убыванию</option>
+            <option value="name">По названию</option>
+          </select>
+          <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
       </label>
     </div>
 
