@@ -268,7 +268,7 @@ onBeforeUnmount(stopCycle)
                   v-for="(img, imgIdx) in feature.images"
                   :key="img"
                   type="button"
-                  class="flex h-4 w-4 items-center justify-center"
+                  class="flex h-6 w-6 items-center justify-center"
                   :aria-label="`Фото ${imgIdx + 1}`"
                   @click.stop="setImage(idx, imgIdx)"
                 >

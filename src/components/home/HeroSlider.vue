@@ -336,14 +336,21 @@ onUnmounted(stop)
   transform: translateY(10px);
 }
 
-/* Dots navigation */
+/* Dots navigation — визуально точка остаётся 8px (background-clip:
+   content-box), но паддинг расширяет реальную кликабельную/тач-область
+   до 24px (минимум WCAG 2.5.8) без изменения вида. */
 .dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  /* box-sizing:border-box (глобальный preflight) — width задаёт ПОЛНЫЙ
+     бокс вместе с padding, поэтому здесь итоговая тач-зона (1.5rem=24px),
+     а не размер видимой точки. Видимый кружок — 1.5rem - 2×0.5rem = 0.5rem,
+     ровно как раньше. */
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.5rem;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
+  background-clip: content-box;
   border: none;
-  padding: 0;
   cursor: pointer;
   transition: background-color 300ms ease-out, transform 200ms ease-out;
 }
