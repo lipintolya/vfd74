@@ -254,20 +254,22 @@ const structuredData = canonicalUrl ? [
           Полная палитра покрытия — фабрика делает двери в любом из этих цветов,
           даже если фото конкретной модели в этом оттенке пока нет в каталоге.
         </p>
-        <!-- Тот же язык карточки, что у CatalogProductCard/PortfolioPreview —
-             rounded-2xl border-slate-200 модуль снаружи, hover:border-teal-200
-             hover:shadow-lg на каждой плитке — не голые кружки на фоне секции. -->
+        <!-- Точка в белом боксе смотрелась слабо — маленький акцент в
+             пустой карточке. Вместо этого структура настоящей товарной
+             карточки (CatalogProductCard): цвет сам занимает верх карточки
+             (на месте фото, которого для этого оттенка ещё нет), подпись
+             снизу. Тот же самый узнаваемый паттерн сайта, не новый. -->
         <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-8">
           <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4" role="list">
             {paletteColors.map(color => (
               <li>
-                <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 transition hover:border-teal-200 hover:shadow-lg hover:-translate-y-0.5">
+                <div class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-teal-200 hover:shadow-lg hover:-translate-y-0.5">
                   <span
-                    class="h-10 w-10 shrink-0 rounded-full shadow-[inset_0_0_0_1px_rgba(15,23,42,0.12)]"
+                    class="block aspect-square w-full transition-transform duration-300 group-hover:scale-105"
                     style={`background-color:${color.hex}`}
                     aria-hidden="true"
                   />
-                  <span class="text-sm font-medium text-slate-900">{color.name}</span>
+                  <span class="block px-3 py-2.5 text-sm font-medium text-slate-900 sm:px-4 sm:py-3">{color.name}</span>
                 </div>
               </li>
             ))}
