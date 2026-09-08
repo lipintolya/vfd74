@@ -230,12 +230,12 @@ const structuredData = canonicalUrl ? [
              тише — перекличка с сайтом, а не карточка в третий раз. -->
         <dl class="sr-specs divide-y divide-slate-200">
           {characteristics.map((row, i) => (
-            <div class="py-7 first:pt-0 last:pb-0">
+            <div class="group -mx-5 rounded-xl px-5 py-7 transition-colors duration-200 first:pt-0 last:pb-0 lg:hover:bg-slate-50">
               <dt class="mb-2 flex items-baseline gap-3">
-                <span class="text-sm font-semibold tabular-nums text-teal-600/60">{String(i + 1).padStart(2, '0')}</span>
-                <span class="text-lg font-semibold text-slate-900">{row.label}</span>
+                <span class="text-sm font-semibold tabular-nums text-teal-600/60 transition-colors duration-200 group-hover:text-teal-600">{String(i + 1).padStart(2, '0')}</span>
+                <span class="text-lg font-semibold text-slate-900 transition-colors duration-200 group-hover:text-teal-700">{row.label}</span>
               </dt>
-              <dd class="m-0 max-w-3xl text-base leading-relaxed text-slate-600">{row.value}</dd>
+              <dd class="m-0 text-base leading-relaxed text-slate-600">{row.value}</dd>
             </div>
           ))}
         </dl>
