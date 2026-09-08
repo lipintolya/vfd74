@@ -502,7 +502,11 @@ const shareModel = async () => {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  /* Тот же приём глубины, что у крупных выкрасок на странице серии
+     (.sr-colors__dot) — единый язык формы/тени по сайту. */
+  box-shadow:
+    inset 0 0 0 1px rgba(15, 23, 42, 0.1),
+    0 2px 6px -2px rgba(15, 23, 42, 0.22);
   flex-shrink: 0;
 }
 
