@@ -220,11 +220,22 @@ const structuredData = canonicalUrl ? [
     <section id="specs" class="section sr-section">
       <div class="container">
         <h2 class="sr-h2">Характеристики</h2>
-        <dl class="sr-specs">
-          {characteristics.map(row => (
-            <div class="sr-specs__row">
-              <dt class="sr-specs__label">{row.label}</dt>
-              <dd class="sr-specs__value">{row.value}</dd>
+        <!-- Не третья карточная сетка подряд — «Особенности» и «Доступные
+             цвета» уже её использовали, повтор был бы монотонным (и данные
+             тут другой природы: где-то абзац, где-то «39 мм»). Редакторский
+             список: тонкий teal-номер + крупный тёмный лейбл как заголовок,
+             значение — обычным текстом ниже, разделители только между
+             пунктами (divide-y), не рамка на каждый ряд. Номер — та же идея,
+             что и ghost-цифры в «Как мы работаем» (ProcessSteps), только
+             тише — перекличка с сайтом, а не карточка в третий раз. -->
+        <dl class="sr-specs divide-y divide-slate-200">
+          {characteristics.map((row, i) => (
+            <div class="py-7 first:pt-0 last:pb-0">
+              <dt class="mb-2 flex items-baseline gap-3">
+                <span class="text-sm font-semibold tabular-nums text-teal-600/60">{String(i + 1).padStart(2, '0')}</span>
+                <span class="text-lg font-semibold text-slate-900">{row.label}</span>
+              </dt>
+              <dd class="m-0 max-w-3xl text-base leading-relaxed text-slate-600">{row.value}</dd>
             </div>
           ))}
         </dl>
@@ -428,23 +439,9 @@ const structuredData = canonicalUrl ? [
   grid-column: 1 / -1;
 }
 
-/* ── Specs ────────────────────────────────────────────────────── */
-.sr-specs {
-  margin: 0;
-  border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  overflow: hidden;
-}
-.sr-specs__row {
-  display: grid;
-  grid-template-columns: 12rem 1fr;
-  gap: 1rem;
-  padding: 1rem 1.375rem;
-}
-.sr-specs__row + .sr-specs__row { border-top: 1px solid #f1f5f9; }
-
-.sr-specs__label { margin: 0; font-size: 0.875rem; font-weight: 600; color: #94a3b8; }
-.sr-specs__value { margin: 0; font-size: 0.9375rem; color: #334155; line-height: 1.6; }
+/* ── Specs ────────────────────────────────────────────────────────
+   Разметка/типографика/разделители — на Tailwind-утилитах (divide-y)
+   прямо в шаблоне, здесь ничего не осталось. */
 
 /* ── Grid ─────────────────────────────────────────────────────── */
 .sr-grid-wrap { margin-top: 0.5rem; }
@@ -468,6 +465,5 @@ const structuredData = canonicalUrl ? [
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sr-cta { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.75rem 1.5rem; }
-  .sr-specs__row { grid-template-columns: 1fr; gap: 0.25rem; }
 }
 </style>
