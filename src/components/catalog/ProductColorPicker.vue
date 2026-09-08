@@ -214,18 +214,21 @@ const shareModel = async () => {
       />
     </div>
 
-    <!-- Также доступные цвета покрытия — справочный текст, не свотч: фото под
-         эту модель ещё не прислали, кликать/выбирать здесь нечего. -->
-    <p v-if="extraColors && extraColors.length > 0" class="color-picker__extra-colors">
-      Также доступны цвета покрытия (под заказ, фото уточняйте у консультанта):
-      <span
-        v-for="(color, i) in extraColors"
-        :key="color.name"
-        class="color-picker__extra-color"
-      >
-        <span class="color-picker__extra-dot" :style="{ backgroundColor: normalizeHex(color.hex) }" aria-hidden="true" />{{ color.name }}<span v-if="i < extraColors.length - 1">, </span>
-      </span>
-    </p>
+    <!-- Также доступные цвета покрытия — тот же паттерн, что у свотчей выше
+         (кружок + подпись, обёрнутым рядом), но справочный текст, не свотч:
+         фото под эту модель ещё не прислали, кликать/выбирать здесь нечего. -->
+    <div v-if="extraColors && extraColors.length > 0" class="color-picker__extra-colors">
+      <p class="color-picker__extra-colors-label">Также доступны цвета покрытия (под заказ, фото уточняйте у консультанта):</p>
+      <div class="color-picker__extra-colors-list">
+        <span
+          v-for="color in extraColors"
+          :key="color.name"
+          class="color-picker__extra-color"
+        >
+          <span class="color-picker__extra-dot" :style="{ backgroundColor: normalizeHex(color.hex) }" aria-hidden="true" />{{ color.name }}
+        </span>
+      </div>
+    </div>
 
     <!-- Калькулятор — отдельным приглашением, не наравне с контактными кнопками:
          это другое по смыслу действие (инструмент, а не связь с салоном), поэтому
@@ -475,19 +478,29 @@ const shareModel = async () => {
 
 .color-picker__extra-colors {
   margin: 0;
+}
+.color-picker__extra-colors-label {
+  margin: 0 0 0.625rem;
   font-size: 0.8125rem;
-  line-height: 1.6;
+  line-height: 1.5;
   color: #64748b;
+}
+.color-picker__extra-colors-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 .color-picker__extra-color {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: #334155;
 }
 .color-picker__extra-dot {
   display: inline-block;
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
   flex-shrink: 0;
