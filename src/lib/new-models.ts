@@ -29,6 +29,7 @@ export const NEW_MODEL_IDS: ReadonlySet<string> = new Set([
   'c7acd318-5e69-4623-9aee-6b905b352d60', // Урбан 2V, вишня, серебро+молдинг (Экошпон)
   '52617548-0a2e-4e50-adec-bccfa42c627c', // Урбан 2V, вишня, чёрная+молдинг (Экошпон)
   'ed416ecb-4a51-4a3b-996a-dc2f55a34fce', // Урбан 2H, бурбон, золото+молдинг (Экошпон)
+  '4fc7a08a-9216-4b29-a6d4-3473517e897c', // Техно 1 (Эмалекс)
 ])
 
 export const isNewModel = (modelId: string): boolean => NEW_MODEL_IDS.has(modelId)
