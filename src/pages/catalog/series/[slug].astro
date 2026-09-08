@@ -8,7 +8,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../../components/ui/Breadcrumbs.astro'
 import CatalogGrid from '../../../components/catalog/CatalogGrid.vue'
 import InfoImageViewer from '../../../components/catalog/InfoImageViewer.vue'
-import { getCatalogCards, getSeriesList, getSeriesCards } from '../../../lib/catalog-data'
+import { getCatalogCards, getSeriesList, getSeriesCards, getColorsByCoatingSlug } from '../../../lib/catalog-data'
 import { getSeriesSpec } from '../../../data/series-descriptions'
 import type { CatalogCardItem } from '../../../components/catalog/types'
 
@@ -29,9 +29,10 @@ interface Props {
 
 const { series, cards } = Astro.props as Props
 
-const seriesCards = getSeriesCards(cards, series.slug)
-const spec        = getSeriesSpec(series.slug, series.coatingSlug)
-const heroImage   = spec.heroImage || seriesCards[0]?.photo || ''
+const seriesCards   = getSeriesCards(cards, series.slug)
+const spec          = getSeriesSpec(series.slug, series.coatingSlug)
+const heroImage     = spec.heroImage || seriesCards[0]?.photo || ''
+const paletteColors = await getColorsByCoatingSlug(series.coatingSlug)
 
 const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
 
@@ -60,6 +61,7 @@ const jumpLinks = [
   spec.description       && { href: '#about',    label: 'О коллекции' },
   spec.features.length   && { href: '#features', label: 'Особенности' },
   characteristics.length && { href: '#specs',    label: 'Характеристики' },
+  paletteColors.length    && { href: '#colors',   label: 'Доступные цвета' },
   { href: '#models', label: 'Модели' },
 ].filter(Boolean) as { href: string; label: string }[]
 
@@ -218,6 +220,29 @@ const structuredData = canonicalUrl ? [
             </div>
           ))}
         </dl>
+      </div>
+    </section>
+  )}
+
+  <!-- ══════════════════════════════════════════════
+       ДОСТУПНЫЕ ЦВЕТА
+  ══════════════════════════════════════════════ -->
+  {paletteColors.length > 0 && (
+    <section id="colors" class="section sr-section">
+      <div class="container">
+        <h2 class="sr-h2">Доступные цвета</h2>
+        <p class="sr-p sr-p--tight">
+          Полная палитра покрытия — фабрика делает двери в любом из этих цветов,
+          даже если фото конкретной модели в этом оттенке пока нет в каталоге.
+        </p>
+        <ul class="sr-colors" role="list">
+          {paletteColors.map(color => (
+            <li class="sr-colors__item">
+              <span class="sr-colors__dot" style={`background-color:${color.hex}`} aria-hidden="true" />
+              <span>{color.name}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )}
@@ -412,6 +437,33 @@ const structuredData = canonicalUrl ? [
   padding: 1rem 1.375rem;
 }
 .sr-specs__row + .sr-specs__row { border-top: 1px solid #f1f5f9; }
+
+/* ── Доступные цвета ──────────────────────────────────────────── */
+.sr-colors {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.625rem 1rem;
+}
+.sr-colors__item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  color: #334155;
+}
+.sr-colors__dot {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
 .sr-specs__label { margin: 0; font-size: 0.875rem; font-weight: 600; color: #94a3b8; }
 .sr-specs__value { margin: 0; font-size: 0.9375rem; color: #334155; line-height: 1.6; }
 

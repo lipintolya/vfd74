@@ -7,6 +7,7 @@ import ProductColorPicker from '../../components/catalog/ProductColorPicker.vue'
 import type { ColorVariant } from '../../components/catalog/ProductColorPicker.vue'
 import PlinthSection from '../../components/catalog/PlinthSection.astro'
 import { getSeriesSpec } from '../../data/series-descriptions'
+import { getColorsByCoatingSlug } from '../../lib/catalog-data'
 import { adjustPrice } from '../../lib/price-adjustments'
 import { isNewModel } from '../../lib/new-models'
 import { accessoriesByCoating, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
@@ -44,6 +45,7 @@ export async function getStaticPaths() {
     coatingSlug: string
     colors:      ColorVariant[]
     minPrice:    number | null
+    extraColors: { name: string; hex: string }[]
   }
 
   const modelMap = new Map<string, ModelEntry>()
@@ -74,6 +76,7 @@ export async function getStaticPaths() {
         coatingSlug: coating?.slug    ?? '',
         colors:      [],
         minPrice:    null,
+        extraColors: [],
       })
     }
 
@@ -103,6 +106,20 @@ export async function getStaticPaths() {
     entry.colors = entry.colors.filter(c => Boolean(c.photo))
   }
 
+  /* «Также доступны цвета» — полная палитра покрытия за вычетом уже
+     сфотканных у этой модели, справочным текстом (не свотчем/кнопкой —
+     см. ProductColorPicker.vue), чтобы не выглядело кликабельным вариантом. */
+  const paletteByCoating = new Map<string, { name: string; hex: string }[]>()
+  for (const entry of modelMap.values()) {
+    if (!entry.coatingSlug) continue
+    if (!paletteByCoating.has(entry.coatingSlug)) {
+      paletteByCoating.set(entry.coatingSlug, await getColorsByCoatingSlug(entry.coatingSlug))
+    }
+    const palette = paletteByCoating.get(entry.coatingSlug)!
+    const ownNames = new Set(entry.colors.map(c => c.name))
+    entry.extraColors = palette.filter(c => !ownNames.has(c.name))
+  }
+
   /* ── Читаемые слаги вместо UUID: имя модели + серия, с защитой от коллизий ── */
   const slugMap = buildModelSlugMap(
     [...modelMap.values()].map(entry => ({
@@ -124,7 +141,7 @@ export async function getStaticPaths() {
   ]
 }
 
-const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug } = Astro.props
+const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug, extraColors } = Astro.props
 
 const spec        = getSeriesSpec(seriesSlug, coatingSlug)
 const accessories = accessoriesByCoating[coatingSlug as CoatingSlug] ?? []
@@ -214,6 +231,7 @@ const structuredData = [breadcrumbSchema, {
         <ProductColorPicker
           client:load
           colors={colors}
+          extraColors={extraColors}
           modelName={model.name}
           seriesSlug={seriesSlug}
         />

@@ -195,3 +195,28 @@ export function getSeriesCardsData(cards: CatalogCardItem[]): SeriesCardData[] {
     }
   })
 }
+
+/** Полная палитра цветов покрытия (не только сфотканные под конкретную
+    модель) — для информационного блока «Доступные цвета» на странице серии
+    и модели. Фабрика делает двери во всех цветах покрытия, фото под каждую
+    модель присылает не сразу — это просто справочный список названий, без
+    привязки к конкретному товару/фото. */
+export async function getColorsByCoatingSlug(coatingSlug: string): Promise<{ name: string; hex: string }[]> {
+  if (!coatingSlug) return []
+
+  const { data, error } = await supabase
+    .from('colors')
+    .select('name, hex_preview, coatings ( slug )')
+
+  if (error) console.error('Supabase error:', error.message)
+
+  const seen = new Set<string>()
+  const result: { name: string; hex: string }[] = []
+  for (const row of (data ?? [])) {
+    if ((row.coatings as any)?.slug !== coatingSlug || !row.name) continue
+    if (seen.has(row.name)) continue
+    seen.add(row.name)
+    result.push({ name: row.name, hex: normalizeHexColor(row.hex_preview) })
+  }
+  return result.sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+}

@@ -8,10 +8,10 @@ export interface ColorVariant {
   photo:       string
   price:       number | null
   coatingSlug: string
-  /** false — цвет заведён у покрытия серии, но фото под эту модель фабрика
-      ещё не прислала. Свотч всё равно показываем (см. .astro, который его
-      добавляет), просто без фото/цены — иначе выглядит так, будто модель
-      в этом цвете не выпускается вовсе. */
+  /** Зарезервировано под будущий сценарий частично доступных цветов —
+      сейчас .astro отдаёт только сфотканные (available всегда true/undefined).
+      Цвета без фото показаны отдельным справочным блоком (extraColors), не
+      свотчем — см. ниже. */
   available?:  boolean
 }
 
@@ -21,9 +21,12 @@ import { isMadeToOrder } from '../../lib/made-to-order'
 import PriceCalculatorModal from './PriceCalculatorModal.vue'
 
 const props = defineProps<{
-  colors:     ColorVariant[]
-  modelName:  string
-  seriesSlug: string
+  colors:      ColorVariant[]
+  /** Остальные цвета покрытия, для которых у ЭТОЙ модели пока нет фото —
+      справочный список, не свотч (см. блок ниже под color-picker__swatches). */
+  extraColors?: { name: string; hex: string }[]
+  modelName:   string
+  seriesSlug:  string
 }>()
 
 const madeToOrder = isMadeToOrder(props.seriesSlug)
@@ -210,6 +213,19 @@ const shareModel = async () => {
         @click="selectedIdx = i"
       />
     </div>
+
+    <!-- Также доступные цвета покрытия — справочный текст, не свотч: фото под
+         эту модель ещё не прислали, кликать/выбирать здесь нечего. -->
+    <p v-if="extraColors && extraColors.length > 0" class="color-picker__extra-colors">
+      Также доступны цвета покрытия (под заказ, фото уточняйте у консультанта):
+      <span
+        v-for="(color, i) in extraColors"
+        :key="color.name"
+        class="color-picker__extra-color"
+      >
+        <span class="color-picker__extra-dot" :style="{ backgroundColor: normalizeHex(color.hex) }" aria-hidden="true" />{{ color.name }}<span v-if="i < extraColors.length - 1">, </span>
+      </span>
+    </p>
 
     <!-- Калькулятор — отдельным приглашением, не наравне с контактными кнопками:
          это другое по смыслу действие (инструмент, а не связь с салоном), поэтому
@@ -455,6 +471,26 @@ const shareModel = async () => {
 .color-picker__swatch:focus-visible {
   outline: 2px solid #14b8a6;
   outline-offset: 3px;
+}
+
+.color-picker__extra-colors {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: #64748b;
+}
+.color-picker__extra-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.color-picker__extra-dot {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
 }
 
 .color-picker__calc-promo {
