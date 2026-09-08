@@ -235,14 +235,25 @@ const structuredData = canonicalUrl ? [
           Полная палитра покрытия — фабрика делает двери в любом из этих цветов,
           даже если фото конкретной модели в этом оттенке пока нет в каталоге.
         </p>
-        <ul class="sr-colors" role="list">
-          {paletteColors.map(color => (
-            <li class="sr-colors__item">
-              <span class="sr-colors__dot" style={`background-color:${color.hex}`} aria-hidden="true" />
-              <span class="sr-colors__name">{color.name}</span>
-            </li>
-          ))}
-        </ul>
+        <!-- Тот же язык карточки, что у CatalogProductCard/PortfolioPreview —
+             rounded-2xl border-slate-200 модуль снаружи, hover:border-teal-200
+             hover:shadow-lg на каждой плитке — не голые кружки на фоне секции. -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-8">
+          <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4" role="list">
+            {paletteColors.map(color => (
+              <li>
+                <div class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 transition hover:border-teal-200 hover:shadow-lg hover:-translate-y-0.5">
+                  <span
+                    class="h-10 w-10 shrink-0 rounded-full shadow-[inset_0_0_0_1px_rgba(15,23,42,0.12)]"
+                    style={`background-color:${color.hex}`}
+                    aria-hidden="true"
+                  />
+                  <span class="text-sm font-medium text-slate-900">{color.name}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )}
@@ -438,49 +449,6 @@ const structuredData = canonicalUrl ? [
 }
 .sr-specs__row + .sr-specs__row { border-top: 1px solid #f1f5f9; }
 
-/* ── Доступные цвета ──────────────────────────────────────────────
-   Приём «малярных выкрасок» — крупный кружок с тенью + подпись под ним,
-   без рамок-боксов на каждый цвет (карточка-на-цвет читалась как таблица
-   из 2000х). Форма кружка та же, что у реальных свотчей выбора цвета
-   (.color-picker__swatch) — единый язык формы по сайту. ── */
-.sr-colors {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.75rem 1.5rem;
-}
-.sr-colors__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  width: 6rem;
-  text-align: center;
-}
-.sr-colors__dot {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 23, 42, 0.08),
-    0 6px 16px -4px rgba(15, 23, 42, 0.18);
-  transition: transform 200ms ease, box-shadow 200ms ease;
-}
-.sr-colors__item:hover .sr-colors__dot {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 23, 42, 0.1),
-    0 12px 26px -6px rgba(15, 23, 42, 0.3);
-}
-.sr-colors__name {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  line-height: 1.35;
-  color: #334155;
-}
 .sr-specs__label { margin: 0; font-size: 0.875rem; font-weight: 600; color: #94a3b8; }
 .sr-specs__value { margin: 0; font-size: 0.9375rem; color: #334155; line-height: 1.6; }
 
