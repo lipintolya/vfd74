@@ -80,10 +80,11 @@ const slides: Slide[] = [
 ]
 
 /* ── Slider state ── */
-const activeIndex = ref(0)
-const touchStartX = ref(0)
-const touchStartY = ref(0)
-const isPaused    = ref(false)
+const activeIndex     = ref(0)
+const touchStartX     = ref(0)
+const touchStartY     = ref(0)
+const isPaused        = ref(false)
+const autoplayEnabled = ref(true)
 
 const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0])
 
@@ -103,6 +104,7 @@ const onTouchStart = (e: TouchEvent) => {
   if (!e.touches[0]) return
   touchStartX.value = e.touches[0].clientX
   touchStartY.value = e.touches[0].clientY
+  isPaused.value = true
   stop()
 }
 
@@ -113,7 +115,7 @@ const onTouchEnd = (e: TouchEvent) => {
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
     dx > 0 ? next() : prev()
   }
-  setTimeout(start, 400)
+  setTimeout(() => { isPaused.value = false; start() }, 400)
 }
 
 const onKeyDown = (e: KeyboardEvent) => {
@@ -123,6 +125,7 @@ const onKeyDown = (e: KeyboardEvent) => {
 
 onMounted(() => {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  autoplayEnabled.value = !prefersReduced
   if (!prefersReduced) start()
 })
 onUnmounted(stop)
@@ -214,7 +217,16 @@ onUnmounted(stop)
               class="dot"
               :class="i === activeIndex ? 'dot-active' : ''"
               @click="goTo(i)"
-            />
+            >
+              <span class="dot-visual" aria-hidden="true">
+                <span
+                  v-if="i === activeIndex && autoplayEnabled && !isPaused"
+                  :key="activeIndex"
+                  class="dot-progress"
+                  :style="{ animationDuration: `${SLIDER_INTERVAL_MS}ms` }"
+                />
+              </span>
+            </button>
           </div>
         </div>
 
@@ -336,39 +348,67 @@ onUnmounted(stop)
   transform: translateY(10px);
 }
 
-/* Dots navigation — визуально точка остаётся 8px (background-clip:
-   content-box), но паддинг расширяет реальную кликабельную/тач-область
-   до 24px (минимум WCAG 2.5.8) без изменения вида. */
+/* Dots navigation — кнопка (тач-область) держит фикс. 24px (минимум WCAG
+   2.5.8) и никогда не меняет размер, чтобы не скакал хитбокс. Активность
+   показывает вложенный .dot-visual: вытягивается в пилюлю вместо
+   раздувания в крупный шар — заметно, но не "кричит" на весь экран. */
 .dot {
-  /* box-sizing:border-box (глобальный preflight) — width задаёт ПОЛНЫЙ
-     бокс вместе с padding, поэтому здесь итоговая тач-зона (1.5rem=24px),
-     а не размер видимой точки. Видимый кружок — 1.5rem - 2×0.5rem = 0.5rem,
-     ровно как раньше. */
   width: 1.5rem;
   height: 1.5rem;
-  padding: 0.5rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
-  background-clip: content-box;
+  background: transparent;
   border: none;
   cursor: pointer;
-  transition: background-color 300ms ease-out, transform 200ms ease-out;
 }
-.dot:hover {
-  background: rgba(255, 255, 255, 0.6);
-  transform: scale(1.2);
+.dot-visual {
+  position: relative;
+  width: 0.5rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  overflow: hidden;
+  transition: width 250ms ease, background-color 250ms ease;
 }
-.dot-active {
-  background: #fff;
-  transform: scale(1.3);
+.dot:hover .dot-visual {
+  background: rgba(255, 255, 255, 0.7);
+}
+.dot-active .dot-visual {
+  width: 1.375rem;
+  background: rgba(255, 255, 255, 0.35);
 }
 .dot:focus-visible {
   outline: 2px solid #fff;
-  outline-offset: 2px;
+  outline-offset: 3px;
+  border-radius: 50%;
+}
+
+/* Полоса прогресса внутри активной пилюли — растёт слева направо синхронно
+   с интервалом автопрокрутки (SLIDER_INTERVAL_MS передаётся инлайн-стилем,
+   не задублирован в CSS), даёт видимую, непрерывную анимацию слайдера, а
+   не только редкий кросс-фейд раз в 9с. Останавливается вместе с таймером
+   (наведение/тач — прогресс размонтируется через v-if, полоса не бежит
+   впустую, пока автопрокрутка на паузе). */
+.dot-progress {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border-radius: inherit;
+  transform-origin: left center;
+  animation-name: dot-progress-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes dot-progress-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dot,
+  .dot-visual,
   .hero-slide,
   .hero-content-enter-active,
   .hero-content-leave-active {
