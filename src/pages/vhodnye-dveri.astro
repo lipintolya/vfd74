@@ -218,10 +218,12 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
               {ENTRANCE_DOOR_MODELS.map((model, i) => (
                 <button
                   type="button"
-                  class:list={['hero-dot h-2 w-2 rounded-full border border-white/70 transition-colors', i === 0 ? 'bg-white' : 'bg-white/30']}
+                  class="hero-dot dot-nav__btn flex h-6 w-6 items-center justify-center"
                   data-idx={i}
                   aria-label={model.name}
-                />
+                >
+                  <span class:list={['dot-nav__item', i === 0 && 'dot-nav__item--active']} />
+                </button>
               ))}
             </div>
           )}
@@ -371,15 +373,16 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
   const heroImgs  = document.querySelectorAll<HTMLImageElement>('.hero-render')
   const heroSwipe = document.getElementById('hero-swipe')
 
+  let heroIdx = 0
   const setActiveHero = (idx: number) => {
+    heroIdx = idx
     const idxStr = String(idx)
     heroImgs.forEach(img => {
       img.classList.toggle('opacity-100', img.dataset.idx === idxStr)
       img.classList.toggle('opacity-0', img.dataset.idx !== idxStr)
     })
     heroDots.forEach(d => {
-      d.classList.toggle('bg-white', d.dataset.idx === idxStr)
-      d.classList.toggle('bg-white/30', d.dataset.idx !== idxStr)
+      d.querySelector('.dot-nav__item')?.classList.toggle('dot-nav__item--active', d.dataset.idx === idxStr)
     })
   }
 
@@ -404,10 +407,8 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
       const dy = touchStartY - e.changedTouches[0].clientY
       if (Math.abs(dx) <= Math.abs(dy) || Math.abs(dx) <= SWIPE_THRESHOLD) return
 
-      const activeDot = document.querySelector<HTMLButtonElement>('.hero-dot.bg-white')
-      const curIdx = Number(activeDot?.dataset.idx ?? 0)
       const total = heroImgs.length
-      const nextIdx = dx > 0 ? (curIdx + 1) % total : (curIdx - 1 + total) % total
+      const nextIdx = dx > 0 ? (heroIdx + 1) % total : (heroIdx - 1 + total) % total
       setActiveHero(nextIdx)
     })
   }

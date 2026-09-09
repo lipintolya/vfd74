@@ -268,13 +268,13 @@ onBeforeUnmount(stopCycle)
                   v-for="(img, imgIdx) in feature.images"
                   :key="img"
                   type="button"
-                  class="flex h-6 w-6 items-center justify-center"
+                  class="dot-nav__btn flex h-6 w-6 items-center justify-center"
                   :aria-label="`Фото ${imgIdx + 1}`"
                   @click.stop="setImage(idx, imgIdx)"
                 >
                   <span
-                    class="h-1.5 w-1.5 rounded-full transition-colors duration-200"
-                    :class="imgIdx === activeImage[idx] ? 'bg-white' : 'bg-white/40'"
+                    class="dot-nav__item"
+                    :class="{ 'dot-nav__item--active': imgIdx === activeImage[idx] }"
                   />
                 </button>
               </div>

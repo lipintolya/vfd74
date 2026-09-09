@@ -269,8 +269,8 @@ onUnmounted(() => {
               <span
                 v-for="(photo, i) in review.photos"
                 :key="photo"
-                class="h-1.5 w-1.5 rounded-full transition-colors"
-                :class="i === getActiveIdx(review.id) ? 'bg-white' : 'bg-white/50'"
+                class="dot-nav__item"
+                :class="{ 'dot-nav__item--active': i === getActiveIdx(review.id) }"
               />
             </div>
           </div>
