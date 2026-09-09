@@ -252,6 +252,12 @@ const shareModel = async () => {
     <!-- CTA -->
     <div class="color-picker__cta">
       <a href="https://t.me/vfddoors74" target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
+      <a href="https://vk.com/vfddoors74" target="_blank" rel="noopener" class="btn btn-outline color-picker__social-btn" aria-label="Написать в VK">
+        <img src="/icons/b_vk_logo.webp" alt="" width="18" height="18" />
+      </a>
+      <a href="https://max.ru/id452402308842_biz" target="_blank" rel="noopener" class="btn btn-outline color-picker__social-btn" aria-label="Написать в MAX">
+        <img src="/icons/b_max_logo.webp" alt="" width="18" height="18" />
+      </a>
       <a :href="`tel:${phone.raw}`" class="btn btn-outline">
         <svg class="color-picker__phone-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 0 1 2-2h2.28a1 1 0 0 1 .95.68l1.1 3.3a1 1 0 0 1-.44 1.18l-1.7 1a11.05 11.05 0 0 0 5.6 5.6l1-1.7a1 1 0 0 1 1.18-.44l3.3 1.1a1 1 0 0 1 .68.95V19a2 2 0 0 1-2 2h-1C9.72 21 3 14.28 3 6V5Z" />
@@ -602,6 +608,11 @@ const shareModel = async () => {
   flex: 0 0 auto;
   padding: 0.6rem;
 }
+.color-picker__social-btn {
+  flex: 0 0 auto;
+  padding: 0.6rem;
+}
+.color-picker__social-btn img { width: 1.1rem; height: 1.1rem; }
 .color-picker__share-btn svg { width: 1.1rem; height: 1.1rem; }
 .color-picker__share-tip {
   position: absolute;

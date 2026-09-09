@@ -21,6 +21,17 @@
                 </svg>
               </a>
               <a
+                href="https://vk.com/vfddoors74"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+              >
+                Написать в VK
+                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+              <a
                 href="https://max.ru/id452402308842_biz"
                 target="_blank"
                 rel="noopener noreferrer"

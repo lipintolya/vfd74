@@ -102,6 +102,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
                 Написать в Telegram
               </a>
 
+              <a href="https://vk.com/vfddoors74" target="_blank" rel="noopener" class="hero-btn hero-btn--secondary hero-btn--icon" aria-label="Написать в VK">
+                <img src="/icons/b_vk_logo.webp" alt="" width="20" height="20" />
+              </a>
+
+              <a href="https://max.ru/id452402308842_biz" target="_blank" rel="noopener" class="hero-btn hero-btn--secondary hero-btn--icon" aria-label="Написать в MAX">
+                <img src="/icons/b_max_logo.webp" alt="" width="20" height="20" />
+              </a>
+
               <a
                 href="https://yandex.ru/maps/-/CPTwZPi-"
                 target="_blank"
@@ -630,6 +638,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
   color: #0f172a;
   background: white;
 }
+
+.hero-btn--icon {
+  min-width: 54px;
+  padding: 0;
+}
+.hero-btn--icon img { width: 20px; height: 20px; }
 
 .hero-btn--secondary:hover {
   border-color: #14b8a6;

@@ -9,6 +9,8 @@ import { companyLegalInfo } from '../lib/contacts-data'
 
 const PHONE = companyLegalInfo.contacts.phone[0]!.raw
 const TG    = 'https://t.me/vfddoors74'
+const VK    = 'https://vk.com/vfddoors74'
+const MAX   = 'https://max.ru/id452402308842_biz'
 
 const heroModel = ENTRANCE_DOOR_MODELS[0]!
 const minPrice  = Math.min(...ENTRANCE_DOOR_MODELS.map(minPriceOf))
@@ -184,9 +186,15 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
             дизайн под интерьер и защита от промерзания. Честная фиксированная цена —
             платите только за то, что выбрали.
           </p>
-          <div class="flex gap-2.5 flex-wrap">
+          <div class="flex gap-2.5 flex-wrap items-center">
             <a href={TG} target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
             <a href={`tel:${PHONE}`} class="btn btn-outline">Позвонить</a>
+            <a href={VK} target="_blank" rel="noopener" class="btn btn-outline btn-icon" aria-label="Написать в VK">
+              <img src="/icons/b_vk_logo.webp" alt="" width="18" height="18" />
+            </a>
+            <a href={MAX} target="_blank" rel="noopener" class="btn btn-outline btn-icon" aria-label="Написать в MAX">
+              <img src="/icons/b_max_logo.webp" alt="" width="18" height="18" />
+            </a>
           </div>
         </div>
 

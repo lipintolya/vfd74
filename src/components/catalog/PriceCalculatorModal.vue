@@ -92,14 +92,15 @@ const total = computed(() => props.bladePrice + lines.value.reduce((sum, l) => s
 
 /* ============================================================
    "Отправить запрос" — бэкенда нет, поэтому собираем расчёт текстом
-   и открываем Telegram с готовым сообщением (?text= — подтверждено,
-   работает). ВК убрали: проверили оба диплинка (vk.me/<screen_name>
-   и vk.ru/write-<id>), ни один не подставляет текст в диалог — у ВК
-   для этого нет простого URL-параметра, только официальный JS-виджет
-   CommunityMessages (сторонний скрипт, другая архитектура) — решили
-   не тащить его ради одного канала. Копируем текст в буфер и на клик
-   по Telegram — просто на случай, если предзаполнение не сработает
-   в конкретном браузере/клиенте.
+   и открываем мессенджер с готовым сообщением. Telegram поддерживает
+   ?text= — подставляется прямо в диалог. У VK/MAX такого URL-параметра
+   нет (для VK проверяли оба диплинка, vk.me/<screen_name> и
+   vk.ru/write-<id> — ни один текст не подставляет; официальный способ —
+   JS-виджет CommunityMessages, отдельный скрипт, не стали тащить ради
+   этого). Поэтому для всех трёх кнопок клик ещё и копирует текст расчёта
+   в буфер — в Telegram это просто подстраховка (вдруг ?text= не сработает
+   в конкретном браузере), а для VK/MAX это единственный способ передать
+   готовый текст: пользователь открывает диалог и вставляет вручную.
    ============================================================ */
 const calcMessage = computed(() => {
   const parts: string[] = [
@@ -114,6 +115,8 @@ const calcMessage = computed(() => {
 })
 
 const telegramHref = computed(() => `https://t.me/vfddoors74?text=${encodeURIComponent(calcMessage.value)}`)
+const vkHref  = 'https://vk.com/vfddoors74'
+const maxHref = 'https://max.ru/id452402308842_biz'
 
 /** Best-effort — если буфер недоступен (нет разрешения/старый браузер),
     просто ничего не происходит, переход по ссылке всё равно сработает. */
@@ -309,11 +312,27 @@ onUnmounted(() => {
                     @click="copyCalcMessage"
                   >
                     <img src="/icons/b_tg_logo.webp" alt="" width="20" height="20" />
-                    Написать в Telegram
+                    Telegram
+                  </a>
+                  <a
+                    :href="vkHref" target="_blank" rel="noopener"
+                    class="calc-send__btn" aria-label="Написать в VK (текст расчёта скопируется в буфер)"
+                    @click="copyCalcMessage"
+                  >
+                    <img src="/icons/b_vk_logo.webp" alt="" width="20" height="20" />
+                    VK
+                  </a>
+                  <a
+                    :href="maxHref" target="_blank" rel="noopener"
+                    class="calc-send__btn" aria-label="Написать в MAX (текст расчёта скопируется в буфер)"
+                    @click="copyCalcMessage"
+                  >
+                    <img src="/icons/b_max_logo.webp" alt="" width="20" height="20" />
+                    MAX
                   </a>
                 </div>
                 <p class="calc-send__hint" :class="{ 'calc-send__hint--copied': copied }">
-                  {{ copied ? 'Текст расчёта скопирован' : 'Откроется Telegram с готовым текстом расчёта' }}
+                  {{ copied ? 'Текст расчёта скопирован — вставьте в сообщение' : 'Текст расчёта скопируется в буфер — вставьте в сообщение' }}
                 </p>
               </div>
             </div>
@@ -563,10 +582,11 @@ onUnmounted(() => {
 }
 .calc-send__row {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.625rem;
 }
 .calc-send__btn {
-  flex: 1;
+  flex: 1 1 6rem;
   display: flex;
   align-items: center;
   justify-content: center;

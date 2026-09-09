@@ -328,9 +328,20 @@ const toggleTab = (tab: InfoTab) => { infoTab.value = infoTab.value === tab ? nu
               <span class="text-[0.6875rem] font-medium text-slate-500">Звонок</span>
             </a>
           </div>
-          <div class="hidden flex-wrap gap-2.5 sm:flex">
+          <div class="hidden flex-wrap items-center gap-2.5 sm:flex">
             <a :href="telegramHref" target="_blank" rel="noopener" class="btn btn-primary active:scale-95">Написать в Telegram</a>
             <a :href="`tel:${phone.raw}`" class="btn btn-outline active:scale-95">{{ phone.label }}</a>
+            <a
+              v-for="s in SOCIAL_NETWORKS.filter(n => n.name !== 'Telegram')"
+              :key="s.name"
+              :href="s.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              :aria-label="`Написать в ${s.label}`"
+              class="btn btn-outline entrance-social-btn active:scale-95"
+            >
+              <img :src="s.icon" alt="" width="18" height="18" />
+            </a>
           </div>
         </div>
 
@@ -402,6 +413,15 @@ const toggleTab = (tab: InfoTab) => { infoTab.value = infoTab.value === tab ? nu
 </template>
 
 <style scoped>
+/* Компактная квадратная кнопка-иконка для VK/MAX рядом с текстовой
+   Telegram-кнопкой — тот же .btn-outline, что и остальные CTA, просто
+   без текста и с уменьшенным паддингом под 18px иконку. */
+.entrance-social-btn {
+  flex: 0 0 auto;
+  padding: 0.65rem;
+}
+.entrance-social-btn img { width: 1.125rem; height: 1.125rem; }
+
 .photo-fade-enter-active,
 .photo-fade-leave-active { transition: opacity 200ms ease; }
 .photo-fade-enter-from,
