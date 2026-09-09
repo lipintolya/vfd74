@@ -253,6 +253,7 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
 .pf-card__title {
   display: block;
   overflow-wrap: break-word;
+  text-wrap: balance;
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.4;
