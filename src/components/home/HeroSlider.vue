@@ -366,18 +366,19 @@ onUnmounted(stop)
 }
 .dot-visual {
   position: relative;
-  width: 0.5rem;
+  width: 0.375rem;
   height: 0.375rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transition: width 250ms ease, background-color 250ms ease;
 }
 .dot:hover .dot-visual {
-  background: rgba(255, 255, 255, 0.7);
+  background: #fff;
 }
 .dot-active .dot-visual {
-  width: 1.375rem;
+  width: 1.25rem;
   background: rgba(255, 255, 255, 0.35);
 }
 .dot:focus-visible {
