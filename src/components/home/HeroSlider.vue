@@ -353,6 +353,8 @@ onUnmounted(stop)
    показывает вложенный .dot-visual: вытягивается в пилюлю вместо
    раздувания в крупный шар — заметно, но не "кричит" на весь экран. */
 .dot {
+  appearance: none;
+  -webkit-appearance: none;
   width: 1.5rem;
   height: 1.5rem;
   padding: 0;
@@ -361,6 +363,8 @@ onUnmounted(stop)
   justify-content: center;
   border-radius: 50%;
   background: transparent;
+  background-image: none;
+  box-shadow: none;
   border: none;
   cursor: pointer;
 }
