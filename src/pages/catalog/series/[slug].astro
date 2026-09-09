@@ -279,8 +279,10 @@ const structuredData = canonicalUrl ? [
           <!-- Фикс. максимум ширины трека (не 1fr) — плитки не растягиваются
                вслед за шириной контейнера, остаются компактным свотчем на
                любом экране (см. .sr-colors-grid в <style> ниже). Подпись —
-               фикс. min-height + line-clamp-2, чтобы «Белый» и «Тёмно-
-               бежевый» давали карточки одной высоты, а не вразнобой. -->
+               фикс. min-height + line-clamp-3 (самое длинное название,
+               «Эмалекс тёмно-бежевый», реально занимает 3 строки на узкой
+               карточке — с line-clamp-2 обрезалось), чтобы «Белый» и
+               «Тёмно-бежевый» давали карточки одной высоты, а не вразнобой. -->
           <ul class="sr-colors-grid sr-collapsible__content" data-collapsible-content role="list">
             {paletteColors.map(color => (
               <li>
@@ -290,8 +292,8 @@ const structuredData = canonicalUrl ? [
                     style={`background-color:${color.hex}`}
                     aria-hidden="true"
                   />
-                  <span class="flex min-h-11 items-center px-2.5 py-2 text-xs font-medium leading-snug text-slate-900 sm:text-sm">
-                    <span class="line-clamp-2">{color.name}</span>
+                  <span class="flex min-h-18 items-center px-2.5 py-2 text-xs font-medium leading-snug text-slate-900 sm:text-sm">
+                    <span class="line-clamp-3">{color.name}</span>
                   </span>
                 </div>
               </li>
