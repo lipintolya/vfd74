@@ -200,13 +200,25 @@ export function getSeriesCardsData(cards: CatalogCardItem[]): SeriesCardData[] {
     модель) — для информационного блока «Доступные цвета» на странице серии
     и модели. Фабрика делает двери во всех цветах покрытия, фото под каждую
     модель присылает не сразу — это просто справочный список названий, без
-    привязки к конкретному товару/фото. */
-export async function getColorsByCoatingSlug(coatingSlug: string): Promise<{ name: string; hex: string }[]> {
+    привязки к конкретному товару/фото.
+
+    Цвет, который реально используется только ОДНОЙ серией этого покрытия
+    (напр. эксклюзивная палитра Техно — тёмно-бежевый/голубой/зелёный),
+    не показываем в палитре ДРУГИХ серий — там его на самом деле нельзя
+    заказать. Правило выведено из реальных данных (сколько разных серий
+    ссылаются на цвет через model_colors), а не захардкожено по названию —
+    само разрулится для любых будущих эксклюзивов. Цвет без единой
+    привязки к модели (ещё не запущен ни в одной серии) не исключается —
+    это справочный «скоро будет», а не чей-то эксклюзив. */
+export async function getColorsByCoatingSlug(
+  coatingSlug: string,
+  currentSeriesSlug?: string,
+): Promise<{ name: string; hex: string }[]> {
   if (!coatingSlug) return []
 
   const { data, error } = await supabase
     .from('colors')
-    .select('name, hex_preview, coatings ( slug )')
+    .select('name, hex_preview, coatings ( slug ), model_colors ( models ( series ( slug ) ) )')
 
   if (error) console.error('Supabase error:', error.message)
 
@@ -215,6 +227,13 @@ export async function getColorsByCoatingSlug(coatingSlug: string): Promise<{ nam
   for (const row of (data ?? [])) {
     if ((row.coatings as any)?.slug !== coatingSlug || !row.name) continue
     if (seen.has(row.name)) continue
+
+    const modelColors = (row.model_colors as any[]) ?? []
+    const seriesSlugs = new Set(
+      modelColors.map(mc => mc.models?.series?.slug).filter(Boolean),
+    )
+    if (seriesSlugs.size === 1 && !seriesSlugs.has(currentSeriesSlug)) continue
+
     seen.add(row.name)
     result.push({ name: row.name, hex: normalizeHexColor(row.hex_preview) })
   }

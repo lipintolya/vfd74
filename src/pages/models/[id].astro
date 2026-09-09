@@ -112,10 +112,14 @@ export async function getStaticPaths() {
   const paletteByCoating = new Map<string, { name: string; hex: string }[]>()
   for (const entry of modelMap.values()) {
     if (!entry.coatingSlug) continue
-    if (!paletteByCoating.has(entry.coatingSlug)) {
-      paletteByCoating.set(entry.coatingSlug, await getColorsByCoatingSlug(entry.coatingSlug))
+    // Ключ кэша включает серию — цвет, эксклюзивный для одной серии
+    // покрытия, не должен утекать в «также доступны» у других серий
+    // (см. фильтр по seriesSlugs.size===1 в getColorsByCoatingSlug).
+    const cacheKey = `${entry.coatingSlug}::${entry.seriesSlug}`
+    if (!paletteByCoating.has(cacheKey)) {
+      paletteByCoating.set(cacheKey, await getColorsByCoatingSlug(entry.coatingSlug, entry.seriesSlug))
     }
-    const palette = paletteByCoating.get(entry.coatingSlug)!
+    const palette = paletteByCoating.get(cacheKey)!
     const ownNames = new Set(entry.colors.map(c => c.name))
     entry.extraColors = palette.filter(c => !ownNames.has(c.name))
   }

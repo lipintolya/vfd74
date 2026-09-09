@@ -32,7 +32,7 @@ const { series, cards } = Astro.props as Props
 const seriesCards   = getSeriesCards(cards, series.slug)
 const spec          = getSeriesSpec(series.slug, series.coatingSlug)
 const heroImage     = spec.heroImage || seriesCards[0]?.photo || ''
-const paletteColors = await getColorsByCoatingSlug(series.coatingSlug)
+const paletteColors = await getColorsByCoatingSlug(series.coatingSlug, series.slug)
 
 const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
 
