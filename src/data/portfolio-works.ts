@@ -63,6 +63,24 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-09-06-r1-emalex-seryy',
+    date:        '2026-09-06',
+    label:       '06.09.2026',
+    title:       'Монтаж межкомнатных дверей Р1 в цвете Эмалекс «Серый»',
+    description: 'Установка межкомнатных дверей модели Р1 с покрытием Эмалекс «Серый» в частном доме, посёлок Барышево. Сдержанный серый оттенок гармонично вписался в интерьер.',
+    category:    'interior',
+    objectType:  'house',
+    location:    'Челябинская область, п. Барышево',
+    story:       'Установили межкомнатные двери в частном доме — модель Р1 в покрытии Эмалекс «Серый». Сдержанный серый оттенок гармонично вписался в интерьер, добавив пространству современный и стильный вид. Красивые двери — та самая деталь, которая завершает интерьер и создаёт ощущение целостности пространства.',
+    model:       'Р1',
+    features:    ['Модель Р1', 'Покрытие Эмалекс «Серый»'],
+    tags:        ['Частный дом', 'Эмаль'],
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/6.09.26/Ir_zdmGZWYk2hAjBrdmneS_TmLsCyMud6uTRUik81Wl4xtenJkBpZjOZSNxotjLByyCETk75zwhdvPjAm6sIOllh.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/6.09.26/MmR_QiEUwtn2edaaK0Wkj1EVILFHJRvkVfKnPZF4cuSbS7RoAJk2Z0FaI1GXNXoYwp_EI17SKC8-pz12zYQ_57_g.webp',
+    ],
+  },
+  {
     id:          '2025-10-18-aspen-old-gold-matt',
     date:        '2025-10-18',
     label:       '18.10.2025',
