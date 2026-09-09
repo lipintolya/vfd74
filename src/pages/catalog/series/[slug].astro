@@ -276,25 +276,27 @@ const structuredData = canonicalUrl ? [
              (на месте фото, которого для этого оттенка ещё нет), подпись
              снизу. Тот же самый узнаваемый паттерн сайта, не новый. -->
         <div class="sr-collapsible" data-collapsible>
-          <div class="sr-collapsible__content rounded-2xl border border-slate-200 bg-white p-5 sm:p-8" data-collapsible-content>
-            <!-- Фикс. максимум ширины трека (не 1fr) — плитки не растягиваются
-                 вслед за шириной контейнера, остаются компактным свотчем на
-                 любом экране (см. .sr-colors-grid в <style> ниже). -->
-            <ul class="sr-colors-grid" role="list">
-              {paletteColors.map(color => (
-                <li>
-                  <div class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-teal-200 hover:shadow-lg hover:-translate-y-0.5">
-                    <span
-                      class="block aspect-square w-full transition-transform duration-300 group-hover:scale-105"
-                      style={`background-color:${color.hex}`}
-                      aria-hidden="true"
-                    />
-                    <span class="block px-2.5 py-2 text-xs font-medium text-slate-900 sm:text-sm">{color.name}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <!-- Фикс. максимум ширины трека (не 1fr) — плитки не растягиваются
+               вслед за шириной контейнера, остаются компактным свотчем на
+               любом экране (см. .sr-colors-grid в <style> ниже). Подпись —
+               фикс. min-height + line-clamp-2, чтобы «Белый» и «Тёмно-
+               бежевый» давали карточки одной высоты, а не вразнобой. -->
+          <ul class="sr-colors-grid sr-collapsible__content" data-collapsible-content role="list">
+            {paletteColors.map(color => (
+              <li>
+                <div class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-teal-200 hover:shadow-lg hover:-translate-y-0.5">
+                  <span
+                    class="block aspect-square w-full transition-transform duration-300 group-hover:scale-105"
+                    style={`background-color:${color.hex}`}
+                    aria-hidden="true"
+                  />
+                  <span class="flex min-h-11 items-center px-2.5 py-2 text-xs font-medium leading-snug text-slate-900 sm:text-sm">
+                    <span class="line-clamp-2">{color.name}</span>
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
           <button type="button" class="sr-collapsible__toggle md:hidden" data-collapsible-toggle aria-expanded="false">
             <span data-collapsible-label>Показать полностью</span>
             <svg class="sr-collapsible__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -494,23 +496,11 @@ const structuredData = canonicalUrl ? [
    совсем, если контент и так короче порога — см. <script> ниже. */
 @media (max-width: 767px) {
   .sr-collapsible__content {
-    position: relative;
     max-height: 15rem;
     overflow: hidden;
   }
-  .sr-collapsible__content::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0 0;
-    height: 3.5rem;
-    background: linear-gradient(to top, #fff, rgba(255,255,255,0));
-    pointer-events: none;
-  }
   .sr-collapsible.is-expanded .sr-collapsible__content {
     max-height: none;
-  }
-  .sr-collapsible.is-expanded .sr-collapsible__content::after {
-    display: none;
   }
 }
 .sr-collapsible__toggle {
