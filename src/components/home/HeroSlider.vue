@@ -214,15 +214,17 @@ onUnmounted(stop)
               role="tab"
               :aria-label="`Слайд ${i + 1}: ${slide.title}`"
               :aria-selected="i === activeIndex"
-              class="dot"
-              :class="i === activeIndex ? 'dot-active' : ''"
+              class="dot-nav__btn"
               @click="goTo(i)"
             >
-              <span class="dot-visual" aria-hidden="true">
+              <span
+                class="dot-nav__item dot-nav__item--progress"
+                :class="{ 'dot-nav__item--active': i === activeIndex }"
+              >
                 <span
                   v-if="i === activeIndex && autoplayEnabled && !isPaused"
                   :key="activeIndex"
-                  class="dot-progress"
+                  class="dot-nav__progress"
                   :style="{ animationDuration: `${SLIDER_INTERVAL_MS}ms` }"
                 />
               </span>
@@ -348,72 +350,10 @@ onUnmounted(stop)
   transform: translateY(10px);
 }
 
-/* Dots navigation — кнопка (тач-область) держит фикс. 24px (минимум WCAG
-   2.5.8) и никогда не меняет размер, чтобы не скакал хитбокс. Активность
-   показывает вложенный .dot-visual: вытягивается в пилюлю вместо
-   раздувания в крупный шар — заметно, но не "кричит" на весь экран. */
-.dot {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: transparent;
-  background-image: none;
-  box-shadow: none;
-  border: none;
-  cursor: pointer;
-}
-.dot-visual {
-  position: relative;
-  width: 0.375rem;
-  height: 0.375rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  transition: width 250ms ease, background-color 250ms ease;
-}
-.dot:hover .dot-visual {
-  background: #fff;
-}
-.dot-active .dot-visual {
-  width: 1.25rem;
-  background: rgba(255, 255, 255, 0.35);
-}
-.dot:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
-  border-radius: 50%;
-}
-
-/* Полоса прогресса внутри активной пилюли — растёт слева направо синхронно
-   с интервалом автопрокрутки (SLIDER_INTERVAL_MS передаётся инлайн-стилем,
-   не задублирован в CSS), даёт видимую, непрерывную анимацию слайдера, а
-   не только редкий кросс-фейд раз в 9с. Останавливается вместе с таймером
-   (наведение/тач — прогресс размонтируется через v-if, полоса не бежит
-   впустую, пока автопрокрутка на паузе). */
-.dot-progress {
-  position: absolute;
-  inset: 0;
-  background: #fff;
-  border-radius: inherit;
-  transform-origin: left center;
-  animation-name: dot-progress-fill;
-  animation-timing-function: linear;
-  animation-fill-mode: forwards;
-}
-@keyframes dot-progress-fill {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
+/* Точки-навигация — общий вид и прогресс-бар вынесены в global.css
+   (.dot-nav__btn/.dot-nav__item/.dot-nav__progress), единая система для
+   всех автослайдеров сайта (Hero, HiddenDoorsPromo, SherwoodPromo). */
 @media (prefers-reduced-motion: reduce) {
-  .dot-visual,
   .hero-slide,
   .hero-content-enter-active,
   .hero-content-leave-active {

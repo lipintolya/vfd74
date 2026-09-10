@@ -19,6 +19,7 @@ const SLIDES = [
   `${WOOD_CDN}urban_cover_wood.webp`,
   `${WOOD_CDN}wood_render.webp`,
 ]
+const SLIDE_INTERVAL_MS = 5000
 
 interface Shade {
   name: string
@@ -36,21 +37,27 @@ const SHADES: Shade[] = [
 const { sectionRef, visible } = useScrollReveal(0.15)
 
 /* Автослайдер — тот же приём кросс-фейда, что в HeroSlider.vue (все кадры
-   в стеке, активный получает opacity:1), только проще: без ручного
-   управления, просто листает по кругу. Останавливается при
-   prefers-reduced-motion. */
-const activeSlide = ref(0)
+   в стеке, активный получает opacity:1), плюс те же точки-навигация
+   (.dot-nav__* в global.css) — ручное управление и пауза при наведении/тач,
+   как у остальных автослайдеров сайта. */
+const activeSlide      = ref(0)
+const isPaused         = ref(false)
+const autoplayEnabled  = ref(true)
 let timer: ReturnType<typeof setInterval> | undefined
 
+const next  = () => { activeSlide.value = (activeSlide.value + 1) % SLIDES.length }
+const stop  = () => { if (timer) { clearInterval(timer); timer = undefined } }
+const start = () => { stop(); if (autoplayEnabled.value) timer = setInterval(next, SLIDE_INTERVAL_MS) }
+const goTo  = (i: number) => { activeSlide.value = i; start() }
+
+const onPauseStart = () => { isPaused.value = true;  stop() }
+const onPauseEnd   = () => { isPaused.value = false; start() }
+
 onMounted(() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  timer = setInterval(() => {
-    activeSlide.value = (activeSlide.value + 1) % SLIDES.length
-  }, 5000)
+  autoplayEnabled.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  start()
 })
-onUnmounted(() => {
-  if (timer) clearInterval(timer)
-})
+onUnmounted(stop)
 </script>
 
 <template>
@@ -62,7 +69,13 @@ onUnmounted(() => {
       >
         <!-- Фото — ландшафтное, во всю ширину, без агрессивного кропа.
              Автослайдер из нескольких кадров, кросс-фейд. -->
-        <div class="relative aspect-3/2 sm:aspect-21/10 lg:aspect-3/1">
+        <div
+          class="relative aspect-3/2 sm:aspect-21/10 lg:aspect-3/1"
+          @mouseenter="onPauseStart"
+          @mouseleave="onPauseEnd"
+          @touchstart.passive="onPauseStart"
+          @touchend.passive="onPauseEnd"
+        >
           <img
             v-for="(src, i) in SLIDES"
             :key="src"
@@ -84,6 +97,32 @@ onUnmounted(() => {
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
+
+          <!-- Dots — общий вид/механика с HeroSlider.vue (.dot-nav__* в global.css) -->
+          <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2" role="tablist" aria-label="Навигация по фото">
+            <button
+              v-for="(src, i) in SLIDES"
+              :key="src"
+              type="button"
+              role="tab"
+              :aria-label="`Фото ${i + 1}`"
+              :aria-selected="i === activeSlide"
+              class="dot-nav__btn"
+              @click="goTo(i)"
+            >
+              <span
+                class="dot-nav__item dot-nav__item--progress"
+                :class="{ 'dot-nav__item--active': i === activeSlide }"
+              >
+                <span
+                  v-if="i === activeSlide && autoplayEnabled && !isPaused"
+                  :key="activeSlide"
+                  class="dot-nav__progress"
+                  :style="{ animationDuration: `${SLIDE_INTERVAL_MS}ms` }"
+                />
+              </span>
+            </button>
+          </div>
         </div>
 
         <!-- Контент -->

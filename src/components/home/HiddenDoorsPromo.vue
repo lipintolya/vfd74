@@ -14,27 +14,35 @@ const SLIDES = [
   'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/secret_render_cover.webp',
   `${INVISIBLE_CDN}B2AB966B-4BC6-43E2-AEAA-7DA6B3CEDCC5.webp`,
   `${INVISIBLE_CDN}937DECDF-6886-48EB-80B6-3495AA998F94.webp`,
+  `${INVISIBLE_CDN}reverse_render_11zon.webp`,
 ]
+const SLIDE_INTERVAL_MS = 5000
 
 const fmt = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
 
 const { sectionRef, visible } = useScrollReveal(0.15)
 
-/* Автослайдер — тот же приём кросс-фейда, что в SherwoodPromo.vue: все
-   кадры в стеке, активный получает opacity:1. Останавливается при
-   prefers-reduced-motion. */
-const activeSlide = ref(0)
+/* Автослайдер — тот же приём кросс-фейда, что в SherwoodPromo.vue, плюс
+   точки-навигация того же вида, что в HeroSlider.vue (пилюля с прогресс-
+   баром на активной точке) — единый язык слайдеров по всему сайту. */
+const activeSlide     = ref(0)
+const isPaused        = ref(false)
+const autoplayEnabled = ref(true)
 let timer: ReturnType<typeof setInterval> | undefined
 
+const next  = () => { activeSlide.value = (activeSlide.value + 1) % SLIDES.length }
+const stop  = () => { if (timer) { clearInterval(timer); timer = undefined } }
+const start = () => { stop(); if (autoplayEnabled.value) timer = setInterval(next, SLIDE_INTERVAL_MS) }
+const goTo  = (i: number) => { activeSlide.value = i; start() }
+
+const onPauseStart = () => { isPaused.value = true;  stop() }
+const onPauseEnd   = () => { isPaused.value = false; start() }
+
 onMounted(() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  timer = setInterval(() => {
-    activeSlide.value = (activeSlide.value + 1) % SLIDES.length
-  }, 5000)
+  autoplayEnabled.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  start()
 })
-onUnmounted(() => {
-  if (timer) clearInterval(timer)
-})
+onUnmounted(stop)
 </script>
 
 <template>
@@ -50,7 +58,13 @@ onUnmounted(() => {
              снизу) — после сокращения отступов колонки (p-8, компактный
              чек-лист) высота уже соразмерна Hero, растяжка больше не
              выглядит непропорционально вытянутой. -->
-        <div class="relative aspect-4/3 sm:aspect-video lg:aspect-auto">
+        <div
+          class="relative aspect-4/3 sm:aspect-video lg:aspect-auto"
+          @mouseenter="onPauseStart"
+          @mouseleave="onPauseEnd"
+          @touchstart.passive="onPauseStart"
+          @touchend.passive="onPauseEnd"
+        >
           <img
             v-for="(src, i) in SLIDES"
             :key="src"
@@ -63,6 +77,32 @@ onUnmounted(() => {
             class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1250 ease-in-out"
             :class="i === activeSlide ? 'opacity-100' : 'opacity-0'"
           />
+
+          <!-- Dots — общий вид/механика с HeroSlider.vue (.dot-nav__* в global.css) -->
+          <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2" role="tablist" aria-label="Навигация по фото">
+            <button
+              v-for="(src, i) in SLIDES"
+              :key="src"
+              type="button"
+              role="tab"
+              :aria-label="`Фото ${i + 1}`"
+              :aria-selected="i === activeSlide"
+              class="dot-nav__btn"
+              @click="goTo(i)"
+            >
+              <span
+                class="dot-nav__item dot-nav__item--progress"
+                :class="{ 'dot-nav__item--active': i === activeSlide }"
+              >
+                <span
+                  v-if="i === activeSlide && autoplayEnabled && !isPaused"
+                  :key="activeSlide"
+                  class="dot-nav__progress"
+                  :style="{ animationDuration: `${SLIDE_INTERVAL_MS}ms` }"
+                />
+              </span>
+            </button>
+          </div>
         </div>
 
         <!-- Контент -->
