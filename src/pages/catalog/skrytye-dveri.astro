@@ -7,6 +7,7 @@ import ColorSelector      from '../../components/catalog/ColorSelector.vue'
 import InfoImageViewer    from '../../components/catalog/InfoImageViewer.vue'
 import WorksGallery      from '../../components/catalog/WorksGallery.vue'
 import PromoBanner       from '../../components/ui/PromoBanner.vue'
+import PhotoAutoplaySlider from '../../components/ui/PhotoAutoplaySlider.vue'
 import { INVISIBLE_WORKS } from '../../data/skrytye-dveri-works'
 import { PROMOS } from '../../data/promos'
 import {
@@ -42,6 +43,14 @@ import {
 } from '../../data/skrytye-dveri-products'
 
 const secretPromo = PROMOS.find(p => p.id === 3)
+
+const REFLEX_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
+const REFLEX_IMAGES = [
+  `${REFLEX_CDN}2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp`,
+  `${REFLEX_CDN}A158F8FC-901B-4262-BDF6-D68E573300C8.webp`,
+  `${REFLEX_CDN}41CFB5EC-5142-462A-A702-E9AECDE149AD.webp`,
+  REFLEX_IMAGE,
+]
 
 const PHONE = '+79000297888'
 const TG    = 'https://t.me/vfddoors74'
@@ -456,13 +465,10 @@ const structuredData = canonicalUrl ? [
 
         <article class="sd-product">
           <div class="sd-product__photo">
-            <img
-              src={REFLEX_IMAGE}
+            <PhotoAutoplaySlider
+              client:visible
+              images={REFLEX_IMAGES}
               alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
-              loading="lazy"
-              decoding="async"
-              width="1920"
-              height="1080"
             />
           </div>
           <div class="sd-product__info">
@@ -935,18 +941,19 @@ const structuredData = canonicalUrl ? [
 .sd-product--rev > * { direction: ltr; }
 
 .sd-product__photo {
+  position: relative;
   overflow: hidden;
   background: #f8fafc;
+  min-height: 28rem;
 }
-.sd-product__photo > img {
+.sd-product__photo img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  min-height: 28rem;
   transition: transform 450ms ease;
 }
-.sd-product:hover .sd-product__photo > img { transform: scale(1.03); }
+.sd-product:hover .sd-product__photo img { transform: scale(1.03); }
 
 .sd-product__info {
   padding: clamp(2rem, 4vw, 3.5rem);
@@ -1273,7 +1280,7 @@ const structuredData = canonicalUrl ? [
 @media (max-width: 768px) {
   .sd-product { grid-template-columns: 1fr; direction: ltr; }
   .sd-product--rev { direction: ltr; }
-  .sd-product__photo > img { min-height: 16rem; }
+  .sd-product__photo { min-height: 16rem; }
   .sd-product__info { padding: 1.75rem 1.5rem; }
   .sd-cta { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.75rem 1.5rem; }
   .sd-product__price { gap: 1.25rem; }
