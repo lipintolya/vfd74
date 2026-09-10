@@ -119,9 +119,13 @@ const breadcrumbSchema = {
         </div>
       </div>
 
-        <!-- CTA — сплошная плашка ink, не пастельный градиент: акцент только
-             на кнопке. -->
-        <div class="mt-12 overflow-hidden rounded-2xl bg-ink p-6 sm:p-8">
+        <!-- CTA — сплошная тёмная плашка #212124, тот же тон, что у всех
+             остальных CTA-панелей сайта (HeroSlider «О компании», ContactsSection,
+             CTA на /catalog/skrytye-dveri/, /catalog/decor/, /catalog/series/[slug]/).
+             Раньше здесь была bg-ink (#0f172a, синеватый slate) и кнопки на голых
+             Tailwind-цветах — выбивались из фирменной палитры. Кнопки — общие
+             .btn/.btn-ghost/.btn-icon, как в той же CTA-плашке на skrytye-dveri.astro. -->
+        <div class="pw-cta mt-12 overflow-hidden rounded-2xl p-6 sm:p-8">
           <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p class="text-lg font-semibold text-white">Хотите такой же результат?</p>
@@ -130,36 +134,16 @@ const breadcrumbSchema = {
               </p>
             </div>
             <div class="flex flex-col gap-3 sm:flex-none sm:flex-row">
-              <a
-                href={`tel:${phone.raw}`}
-                class="inline-flex items-center justify-center gap-2 rounded-full bg-teal-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-400"
-              >
+              <a href={`tel:${phone.raw}`} class="btn pw-cta__phone">
                 {phone.label}
               </a>
-              <a
-                href="https://t.me/vfddoors74"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center justify-center gap-2 rounded-full border-[1.5px] border-white/20 px-6 py-3 text-sm font-semibold text-white transition-colors hover:border-white/50"
-              >
+              <a href="https://t.me/vfddoors74" target="_blank" rel="noopener" class="btn btn-ghost">
                 Написать в Telegram
               </a>
-              <a
-                href="https://vk.com/vfddoors74"
-                target="_blank"
-                rel="noopener"
-                aria-label="Написать в VK"
-                class="inline-flex items-center justify-center rounded-full border-[1.5px] border-white/20 p-3 transition-colors hover:border-white/50"
-              >
+              <a href="https://vk.com/vfddoors74" target="_blank" rel="noopener" class="btn btn-ghost btn-icon" aria-label="Написать в VK">
                 <img src="/icons/w_vk.webp" alt="" width="18" height="18" />
               </a>
-              <a
-                href="https://max.ru/id452402308842_biz"
-                target="_blank"
-                rel="noopener"
-                aria-label="Написать в MAX"
-                class="inline-flex items-center justify-center rounded-full border-[1.5px] border-white/20 p-3 transition-colors hover:border-white/50"
-              >
+              <a href="https://max.ru/id452402308842_biz" target="_blank" rel="noopener" class="btn btn-ghost btn-icon" aria-label="Написать в MAX">
                 <img src="/icons/w_max.webp" alt="" width="18" height="18" />
               </a>
             </div>
@@ -195,6 +179,20 @@ const breadcrumbSchema = {
 </BaseLayout>
 
 <style>
+  .pw-cta {
+    background: #212124;
+  }
+  /* Телефон — единственная сплошная кнопка в блоке (акцент на главном
+     действии), берёт токен --color-accent, а не голый Tailwind teal-500 —
+     тот же цвет, что и везде в фирменной палитре, hover темнее, а не светлее. */
+  .pw-cta__phone {
+    background: var(--color-accent);
+    color: #fff;
+  }
+  .pw-cta__phone:hover {
+    background: var(--color-accent-hover);
+  }
+
   .pw-specs {
     margin: 0;
     padding: 0;
