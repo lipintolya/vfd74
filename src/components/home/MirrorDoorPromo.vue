@@ -2,6 +2,15 @@
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import { REFLEX_IMAGE, REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE } from '../../data/skrytye-dveri-products'
 import BenefitItem from './BenefitItem.vue'
+import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
+
+const REFLEX_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
+const SLIDES = [
+  `${REFLEX_CDN}2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp`,
+  `${REFLEX_CDN}A158F8FC-901B-4262-BDF6-D68E573300C8.webp`,
+  `${REFLEX_CDN}41CFB5EC-5142-462A-A702-E9AECDE149AD.webp`,
+  REFLEX_IMAGE,
+]
 
 const fmt = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
 
@@ -86,14 +95,9 @@ const { sectionRef, visible } = useScrollReveal(0.15)
              сокращения отступов колонки высота уже соразмерна Hero,
              растяжка больше не выглядит непропорционально вытянутой. -->
         <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto">
-          <img
-            :src="REFLEX_IMAGE"
+          <PhotoAutoplaySlider
+            :images="SLIDES"
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
-            loading="lazy"
-            decoding="async"
-            width="1920"
-            height="1080"
-            class="absolute inset-0 h-full w-full object-cover"
           />
         </div>
       </div>
