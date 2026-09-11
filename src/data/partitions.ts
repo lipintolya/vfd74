@@ -398,6 +398,33 @@ export const cases: ProjectCase[] = [
       { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/cafedral_steklo(4).webp', alt: 'Дверь с фрамугой и стеклом «Кафедрал» в интерьере' },
     ],
   },
+  {
+    id: 'three-leaves',
+    side: 'left',
+    sliderTone: 'dark',
+    eyebrow: { kind: 'badge', text: 'Реализованный проект', tone: 'teal' },
+    titleHtml: 'Три створки —<br/>одно движение',
+    paragraphs: [
+      'Синхронное открывание позволяет сдвигать все полотна одновременно и полностью освобождать проход. Так же точно система работает и в обратную сторону.',
+      'В этом проекте — каркас в оттенке Gold Matt и стекло-триплекс с сеткой. Металл, стекло и графичный рисунок становятся частью архитектуры интерьера.',
+    ],
+    noteHtml: 'Размеры, варианты стекла и цвета профиля подбираем под ваш проект.',
+    social: true,
+    images: [
+      {
+        src: 'https://storage.yandexcloud.net/vfd74ru/alum_cover/alum/2026-09-11%2010.34.50.webp',
+        alt: 'Алюминиевая перегородка Gold Matt — три синхронные створки, фото 1',
+      },
+      {
+        src: 'https://storage.yandexcloud.net/vfd74ru/alum_cover/alum/2026-09-11%2010.34.55.webp',
+        alt: 'Алюминиевая перегородка Gold Matt со стеклом триплекс с сеткой — фото 2',
+      },
+      {
+        src: 'https://storage.yandexcloud.net/vfd74ru/alum_cover/alum/2026-09-11%2010.35.01.webp',
+        alt: 'Три створки алюминиевой перегородки со стеклом триплекс — фото 3',
+      },
+    ],
+  },
 ]
 
 /* ── Спотлайт системы Aspen — отдельный промо-блок внизу страницы,
