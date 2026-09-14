@@ -12,7 +12,6 @@ interface Props {
   noIndex?:       boolean
   canonical?:     string
   structuredData?: Record<string, unknown> | Record<string, unknown>[]
-  preloadHero?:   boolean
   preloadImage?:  string
 }
 
@@ -23,7 +22,6 @@ const {
   noIndex      = false,
   canonical,
   structuredData,
-  preloadHero  = false,
   preloadImage,
 } = Astro.props
 
@@ -83,13 +81,6 @@ const structuredDataJson = structuredData
     <link rel="preload" as="font" type="font/woff2" href="/fonts/onest-cyrillic-wght-normal.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/onest-latin-wght-normal.woff2" crossorigin />
 
-    {preloadHero && (
-      <link
-        rel="preload" as="image"
-        href="https://storage.yandexcloud.net/catalog-vfd/renders/hero-cover.webp"
-        fetchpriority="high"
-      />
-    )}
     {preloadImage && (
       <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
     )}

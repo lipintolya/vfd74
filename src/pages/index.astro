@@ -6,6 +6,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { reviews } from '../data/reviews'
 import HeroSlider from '../components/home/HeroSlider.vue'
+import { HERO_COVER_IMAGE } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import HiddenDoorsPromo from '../components/home/HiddenDoorsPromo.vue'
 import MirrorDoorPromo from '../components/home/MirrorDoorPromo.vue'
@@ -94,7 +95,7 @@ const localBusinessSchema = {
   title="ВФД на Кашириных — двери в Челябинске"
   description="Фирменный салон ВФД на Братьев Кашириных, 131Б в Челябинске — входные и межкомнатные двери, каталог, цены, установка."
   structuredData={[faqSchema, localBusinessSchema, howToSchema]}
-  preloadHero={true}
+  preloadImage={HERO_COVER_IMAGE}
 >
   <HeroSlider client:load />
   <HowWeWork />

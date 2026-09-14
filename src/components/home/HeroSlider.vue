@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { HERO_COVER_IMAGE } from '../../data/hero-image'
 
 const SLIDER_INTERVAL_MS = 9000
 const SWIPE_THRESHOLD    = 50
@@ -23,7 +24,7 @@ const slides: Slide[] = [
        (крутится через 9с и доступен по точкам навигации), сам по себе он
        никуда не делся. */
     id: 1,
-    image: 'https://storage.yandexcloud.net/vfd74ru/promo_main/main_render_innova.webp',
+    image: HERO_COVER_IMAGE,
     title: 'ВФД на Кашириных — двери в Челябинске',
     subtitle: 'Официальный дилер',
     description: 'Подберём дверь для дома или квартиры: каталог моделей, цены и установка',
@@ -240,7 +241,7 @@ onUnmounted(stop)
             <img
               src="https://storage.yandexcloud.net/catalog-vfd/covers/alum-hero.webp"
               alt=""
-              loading="lazy"
+              loading="eager"
               decoding="async"
               class="absolute inset-0 w-full h-full object-cover object-center"
               aria-hidden="true"
@@ -290,7 +291,7 @@ onUnmounted(stop)
               <img
                 src="https://storage.yandexcloud.net/catalog-vfd/covers/ourworks.webp"
                 alt=""
-                loading="lazy"
+                loading="eager"
                 decoding="async"
                 class="absolute inset-0 w-full h-full object-cover object-center"
                 aria-hidden="true"
