@@ -31,14 +31,14 @@ const archivedPromos = PROMOS
         </div>
       ) : (
         <ul class="pa-grid" role="list">
-          {archivedPromos.map(promo => (
+          {archivedPromos.map((promo, index) => (
             <li>
               <div class="pa-card">
                 <div class="pa-image-wrap">
                   <img
                     src={promo.image}
                     alt={promo.title}
-                    loading="lazy"
+                    loading={index < 3 ? 'eager' : 'lazy'}
                     decoding="async"
                     width="600"
                     height="288"

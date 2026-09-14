@@ -89,12 +89,13 @@ const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
          пропорция 3:4 стабильна для всех карточек — ряд карточек читается
          как ряд дверных полотен, а не произвольная фотогалерея. -->
     <div ref="gridEl" class="pf-grid scroll-mt-24">
-      <a v-for="work in filtered" :key="work.id" :href="`/portfolio/${work.id}/`" class="pf-card group">
+      <a v-for="(work, index) in filtered" :key="work.id" :href="`/portfolio/${work.id}/`" class="pf-card group">
         <span class="pf-card__frame">
           <img
             :src="`/renders/portfolio/${work.id}.webp`"
             :alt="work.title"
-            loading="lazy"
+            :loading="index < 4 ? 'eager' : 'lazy'"
+            :fetchpriority="index < 4 ? 'high' : undefined"
             decoding="async"
             class="pf-card__img"
           />

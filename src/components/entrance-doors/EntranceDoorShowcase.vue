@@ -3,9 +3,12 @@ import { ref, computed, nextTick } from 'vue'
 import { getSkin, type EntranceDoorModel } from '../../data/entrance-doors'
 import { companyLegalInfo } from '../../lib/contacts-data'
 
-const props = defineProps<{
-  model: EntranceDoorModel
-}>()
+const props = withDefaults(defineProps<{
+  model:  EntranceDoorModel
+  /** true — только для первой карточки в списке /vhodnye-dveri/, если она
+      попадает в первый экран; остальные ниже по странице остаются lazy. */
+  eager?: boolean
+}>(), { eager: false })
 
 const phone = companyLegalInfo.contacts.phone[0]!
 
@@ -161,7 +164,8 @@ const toggleTab = (tab: InfoTab) => { infoTab.value = infoTab.value === tab ? nu
             :src="model.doorImage"
             :alt="`${model.name} — вид снаружи`"
             class="absolute inset-0 h-full w-full object-contain"
-            loading="lazy"
+            :loading="props.eager ? 'eager' : 'lazy'"
+            :fetchpriority="props.eager ? 'high' : undefined"
             decoding="async"
           />
           <img

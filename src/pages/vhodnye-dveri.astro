@@ -299,9 +299,9 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
       </div>
 
       <div id="catalog-list" class="flex flex-col gap-16 lg:gap-20">
-        {ENTRANCE_DOOR_MODELS.map(model => (
+        {ENTRANCE_DOOR_MODELS.map((model, i) => (
           <article id={model.id} class="scroll-mt-24" data-purpose={model.purpose}>
-            <EntranceDoorShowcase model={model} client:load />
+            <EntranceDoorShowcase model={model} eager={i === 0} client:load />
           </article>
         ))}
       </div>

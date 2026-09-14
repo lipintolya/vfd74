@@ -132,6 +132,7 @@ const shareModel = async () => {
           width="600"
           height="780"
           loading="eager"
+          fetchpriority="high"
           decoding="async"
         />
         <span class="color-picker__zoom-hint" aria-hidden="true">

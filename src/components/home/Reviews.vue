@@ -6,7 +6,14 @@ import { reviews, type ReviewPlatform, type Review } from '../../data/reviews'
 /* headingTag — на главной секция идёт под общим h1 страницы, поэтому её
    заголовок h2 (по умолчанию). На отдельной /reviews/ этот заголовок —
    единственный и главный на странице, поэтому там передаём 'h1'. */
-withDefaults(defineProps<{ headingTag?: 'h1' | 'h2' }>(), { headingTag: 'h2' })
+/* eagerFirst — на /reviews/ карусель идёт первым контентом страницы (видна
+   без скролла), первые фото должны грузиться eager. На главной секция
+   Reviews ниже сгиба (client:visible) — там всё должно оставаться lazy,
+   поэтому дефолт false и включаем только явно на странице отзывов. */
+const props = withDefaults(defineProps<{ headingTag?: 'h1' | 'h2'; eagerFirst?: boolean }>(), {
+  headingTag: 'h2',
+  eagerFirst: false,
+})
 
 const PLATFORM_META: Record<ReviewPlatform, { label: string; logo: string }> = {
   yandex: { label: 'Яндекс Карты', logo: 'https://storage.yandexcloud.net/vfd74ru/info/reviews/yandex_logo.webp' },
@@ -171,7 +178,7 @@ onUnmounted(() => {
         itemtype="https://schema.org/ItemList"
       >
         <li
-          v-for="review in sortedReviews"
+          v-for="(review, index) in sortedReviews"
           :key="review.id"
           data-review-card
           class="flex w-70 shrink-0 snap-start flex-col gap-3 rounded-2xl bg-[#1A191C] p-6 sm:w-80"
@@ -254,7 +261,7 @@ onUnmounted(() => {
               <img
                 :src="review.photos[getActiveIdx(review.id)]"
                 :alt="`Фото от клиента ${review.name} — отзыв о ВФД`"
-                loading="lazy"
+                :loading="props.eagerFirst && index < 5 ? 'eager' : 'lazy'"
                 decoding="async"
                 width="320"
                 height="320"
