@@ -68,7 +68,11 @@ const jumpLinks = [
 ].filter(Boolean) as { href: string; label: string }[]
 
 const pageTitle = `Двери серии ${series.name} — цены, характеристики | ВФД Челябинск`
-const pageDesc  = spec.description ||
+/* Короткая генерация всегда в meta — та же причина, что на models/[id].astro:
+   spec.description (маркетинговый текст серии) длиннее ~155 символов нормы
+   SERP-сниппета и не упоминает город/цену — Google обрежет её на середине
+   фразы. spec.description остаётся на странице как есть (блок "О коллекции"). */
+const pageDesc  =
   `Двери серии ${series.name} в салоне ВФД на Кашириных. ${series.modelCount} ${series.modelCount === 1 ? 'модель' : 'моделей'}${series.minPrice ? `, цены от ${fmt(series.minPrice)}` : ''}.`
 
 const structuredData = canonicalUrl ? [

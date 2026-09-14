@@ -168,7 +168,15 @@ const seriesPart    = seriesName ? `серия ${seriesName}` : ''
 const coatingPart   = coatingName
 
 const pageTitle     = [model.name, seriesPart, coatingPart].filter(Boolean).join(' — ') + ' | ВФД Челябинск'
-const pageDesc      = spec.description ||
+
+/* Meta description — ВСЕГДА уникальная генерация по конкретной модели, а не
+   spec.description: тот текст — маркетинговое описание СЕРИИ (series-descriptions.ts),
+   общее на десятки моделей одной серии+покрытия. Раньше он приоритетно шёл в
+   <meta description> — дубль сниппета у всех этих моделей разом, без города/
+   "купить" (не для того написан) и обрезался Google на середине фразы (300-600
+   символов против ~155 нормы). spec.description остаётся только как текст на
+   странице (блок "Смотреть описание" ниже) — там его длина и стиль к месту. */
+const pageDesc      =
   `Дверь ${model.name}${seriesName ? ` серии ${seriesName}` : ''}${coatingName ? `, ${coatingName}` : ''}${priceStr ? `. Цена ${priceStr}` : ''}. Купить в салоне ВФД в Челябинске.`
 
 const breadcrumbs = [
