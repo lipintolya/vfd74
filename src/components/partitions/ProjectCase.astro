@@ -4,8 +4,12 @@ import FeatureList from './FeatureList.astro'
 import IconTelegram from '../ui/icons/IconTelegram.astro'
 import type { ProjectCase } from '../../data/partitions'
 
-interface Props { data: ProjectCase }
-const { data } = Astro.props
+interface Props {
+  data:   ProjectCase
+  /** true — для спотлайта сразу под hero (виден без скролла), см. PhotoSlider.astro */
+  eager?: boolean
+}
+const { data, eager = false } = Astro.props
 
 const badgeTone = {
   amber: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -28,6 +32,7 @@ const socials = [
         tone={data.sliderTone}
         indicator={data.social ? 'dots' : 'counter'}
         class="pt-case-media"
+        eager={eager}
       />
 
       <!-- Текстовая карточка -->

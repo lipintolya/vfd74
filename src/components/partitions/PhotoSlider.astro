@@ -8,8 +8,12 @@ interface Props {
   tone?:      'dark' | 'light'
   indicator?: 'dots' | 'counter'
   class?:     string
+  /** true — первый кадр слайдера уходит с loading="eager"/fetchpriority="high"
+      (слайдер виден сразу при заходе на страницу, напр. спотлайт сразу под hero).
+      По умолчанию false — все кадры lazy, верно для слайдеров ниже по странице. */
+  eager?:     boolean
 }
-const { images, tone = 'dark', indicator = 'counter', class: cls = '' } = Astro.props
+const { images, tone = 'dark', indicator = 'counter', class: cls = '', eager = false } = Astro.props
 ---
 <div
   class:list={[
@@ -19,8 +23,17 @@ const { images, tone = 'dark', indicator = 'counter', class: cls = '' } = Astro.
   ]}
 >
   <div class="pt-stat-slides">
-    {images.map(img => (
-      <img src={img.src} alt={img.alt} class="pt-stat-slide" loading="lazy" decoding="async" width="1080" height="1920" />
+    {images.map((img, i) => (
+      <img
+        src={img.src}
+        alt={img.alt}
+        class="pt-stat-slide"
+        loading={eager && i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={eager && i === 0 ? 'high' : undefined}
+        decoding="async"
+        width="1080"
+        height="1920"
+      />
     ))}
   </div>
 
