@@ -187,14 +187,18 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
             платите только за то, что выбрали.
           </p>
           <div class="flex gap-2.5 flex-wrap items-center">
-            <a href={TG} target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
+            <a href={TG} target="_blank" rel="noopener" class="btn btn-primary w-full sm:w-auto">Написать в Telegram</a>
             <a href={`tel:${PHONE}`} class="btn btn-outline">Позвонить</a>
-            <a href={VK} target="_blank" rel="noopener" class="btn btn-outline btn-icon" aria-label="Написать в VK">
-              <img src="/icons/b_vk_logo.webp" alt="" width="18" height="18" />
-            </a>
-            <a href={MAX} target="_blank" rel="noopener" class="btn btn-outline btn-icon" aria-label="Написать в MAX">
-              <img src="/icons/b_max_logo.webp" alt="" width="18" height="18" />
-            </a>
+            {/* VK+MAX — один флекс-элемент для переноса: на узких экранах должны
+               уезжать на новую строку вместе, а не по одной иконке-сироте. */}
+            <div class="flex shrink-0 gap-2.5">
+              <a href={VK} target="_blank" rel="noopener" class="btn btn-outline btn-icon" aria-label="Написать в VK">
+                <img src="/icons/b_vk_logo.webp" alt="" width="18" height="18" />
+              </a>
+              <a href={MAX} target="_blank" rel="noopener" class="btn btn-outline btn-icon" aria-label="Написать в MAX">
+                <img src="/icons/b_max_logo.webp" alt="" width="18" height="18" />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -331,6 +335,35 @@ const structuredData = [breadcrumbSchema, faqSchema, serviceSchema, ...productSc
   <section class="section bg-white">
     <div class="container">
       <FaqAccordion items={faq} />
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       CTA — та же плашка, что на /catalog/skrytye-dveri/ и в портфолио:
+       страница раньше уходила из FAQ прямо в футер, без финального призыва
+  ══════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <div class="flex flex-col gap-6 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8" style="background: #212124">
+        <div>
+          <h2 class="text-2xl font-medium text-white sm:text-3xl">Рассчитаем бесплатно</h2>
+          <p class="mt-2 max-w-md text-sm text-white/60 sm:text-base">
+            Замер по Челябинску, точная стоимость, подбор накладки и цвета.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2.5">
+          <a href={TG} target="_blank" rel="noopener" class="btn btn-ghost w-full sm:w-auto">Написать в Telegram</a>
+          <a href={`tel:${PHONE}`} class="btn btn-ghost">Позвонить</a>
+          <div class="flex shrink-0 gap-2.5">
+            <a href={VK} target="_blank" rel="noopener" class="btn btn-ghost btn-icon" aria-label="Написать в VK">
+              <img src="/icons/w_vk.webp" alt="" width="18" height="18" />
+            </a>
+            <a href={MAX} target="_blank" rel="noopener" class="btn btn-ghost btn-icon" aria-label="Написать в MAX">
+              <img src="/icons/w_max.webp" alt="" width="18" height="18" />
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
