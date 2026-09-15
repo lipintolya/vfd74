@@ -272,7 +272,9 @@ const structuredData = [breadcrumbSchema, {
             {coatingName && <span class="product-badge product-badge--muted">{coatingName}</span>}
           </div>
 
-          <h1 class="product-title">{model.name}</h1>
+          <h1 class="product-title">
+            {model.name}{coatingName && <span class="product-title__coating"> — {coatingName}</span>}
+          </h1>
 
           {spec.description && (
             <details class="product-description">
@@ -436,6 +438,14 @@ const structuredData = [breadcrumbSchema, {
   letter-spacing: -0.03em;
   color: #0f172a;
   margin: 0 0 1rem;
+}
+/* Покрытие в самом H1, не только в бейдже сверху — модели с коротким кодом
+   (Р1, Е1, НР2) сами по себе не различимы в поиске без бренда покрытия,
+   а именно так их и ищут («эмалекс р1»). Визуально второстепенно —
+   приглушённым цветом, вес остаётся на названии модели. */
+.product-title__coating {
+  color: #64748b;
+  font-weight: 400;
 }
 
 .product-description {
