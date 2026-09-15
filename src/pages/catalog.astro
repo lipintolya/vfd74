@@ -36,13 +36,13 @@ const COATING_LANDING_SLUG = Object.fromEntries(
    цвета серии на карточках товара (CatalogProductCard.vue): каждое
    покрытие получает свой оттенок, чтобы группы отличались с первого
    взгляда, а не только текстом заголовка. */
-const COATING_ACCENT: Record<string, { panel: string; card: string; label: string; dot: string; price: string }> = {
-  emalex:  { panel: 'border-blue-200 bg-blue-50/50',       card: 'border-blue-200 bg-blue-100/70',       label: 'text-blue-700',    dot: 'bg-blue-500',    price: 'text-blue-900/70' },
-  pet:     { panel: 'border-rose-200 bg-rose-50/50',       card: 'border-rose-200 bg-rose-100/70',       label: 'text-rose-700',    dot: 'bg-rose-500',    price: 'text-rose-900/70' },
-  protach: { panel: 'border-violet-200 bg-violet-50/50',   card: 'border-violet-200 bg-violet-100/70',   label: 'text-violet-700',  dot: 'bg-violet-500',  price: 'text-violet-900/70' },
-  emal:    { panel: 'border-slate-400 bg-slate-200/60',    card: 'border-slate-500 bg-slate-300/80',     label: 'text-slate-800',   dot: 'bg-slate-700',   price: 'text-slate-900' },
+const COATING_ACCENT: Record<string, { panel: string; card: string; label: string; price: string }> = {
+  emalex:  { panel: 'border-blue-200 bg-blue-50/50',       card: 'border-blue-200 bg-blue-100/70',       label: 'text-blue-700',    price: 'text-blue-900/70' },
+  pet:     { panel: 'border-rose-200 bg-rose-50/50',       card: 'border-rose-200 bg-rose-100/70',       label: 'text-rose-700',    price: 'text-rose-900/70' },
+  protach: { panel: 'border-violet-200 bg-violet-50/50',   card: 'border-violet-200 bg-violet-100/70',   label: 'text-violet-700',  price: 'text-violet-900/70' },
+  emal:    { panel: 'border-slate-400 bg-slate-200/60',    card: 'border-slate-500 bg-slate-300/80',     label: 'text-slate-800',   price: 'text-slate-900' },
 }
-const DEFAULT_ACCENT = { panel: 'border-slate-200 bg-slate-50/60', card: 'border-slate-200 bg-white', label: 'text-slate-400', dot: 'bg-slate-400', price: 'text-slate-500' }
+const DEFAULT_ACCENT = { panel: 'border-slate-200 bg-slate-50/60', card: 'border-slate-200 bg-white', label: 'text-slate-400', price: 'text-slate-500' }
 
 const seriesCoatingGroups = [...new Map(
   seriesCardsData.map(s => [s.coatingSlug, { slug: s.coatingSlug, name: s.coatingName }])
@@ -201,14 +201,12 @@ const structuredData = canonicalUrl ? [
              сразу к нужной панели, а не пролистывать все подряд. */}
           <ul class="mt-5 flex flex-wrap gap-2" role="list" aria-label="Перейти к покрытию">
             {seriesCoatingGroups.map(group => {
-              const accent = COATING_ACCENT[group.slug] ?? DEFAULT_ACCENT
               return (
                 <li>
                   <a
                     href={`#panel-${group.slug}`}
-                    class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300"
+                    class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300"
                   >
-                    <span class={`h-1.5 w-1.5 rounded-full ${accent.dot}`} aria-hidden="true" />
                     {group.name}
                   </a>
                 </li>
@@ -233,8 +231,7 @@ const structuredData = canonicalUrl ? [
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
               <div class={`col-span-2 flex h-full flex-col justify-between gap-6 rounded-2xl border p-5 sm:col-span-1 sm:p-7 ${accent.card}`}>
                 <div>
-                  <p class={`m-0 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide ${accent.label}`}>
-                    <span class={`h-1.5 w-1.5 rounded-full ${accent.dot}`} aria-hidden="true"></span>
+                  <p class={`m-0 mb-2 text-xs font-semibold uppercase tracking-wide ${accent.label}`}>
                     Покрытие
                   </p>
                   <h2 class="m-0 mb-3 text-2xl font-medium text-ink sm:text-3xl">{group.name}</h2>
