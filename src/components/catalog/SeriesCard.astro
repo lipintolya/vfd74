@@ -46,7 +46,6 @@ const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
   </div>
   <div class="flex flex-1 flex-col gap-1 p-4 sm:p-5">
     <span class="text-lg font-semibold text-ink sm:text-xl">{s.name}</span>
-    {s.tagline && <span class="line-clamp-3 text-sm leading-snug text-slate-500 sm:line-clamp-2">{s.tagline}</span>}
     <span class="mt-auto pt-2">
       <span class="text-lg font-bold text-ink sm:text-xl">
         {s.minPrice ? `от ${fmt(s.minPrice)}` : `${s.modelCount} ${s.modelCount === 1 ? 'модель' : 'моделей'}`}

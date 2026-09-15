@@ -158,7 +158,10 @@ const structuredData = canonicalUrl ? [
     <section id="about" class="section sr-section">
       <div class="container">
         <h2 class="sr-h2">О коллекции</h2>
-        <p class="sr-p">{spec.description}</p>
+        <details class="sr-desc">
+          <summary class="sr-desc__toggle">Читать описание</summary>
+          <p class="sr-p sr-desc__text">{spec.description}</p>
+        </details>
         {spec.infoImage && (
           <InfoImageViewer
             client:only="vue"
@@ -383,6 +386,35 @@ const structuredData = canonicalUrl ? [
   line-height: 1.75;
 }
 .sr-p--tight { margin-bottom: 1.5rem; }
+
+/* Длинный маркетинговый текст свёрнут по умолчанию — тот же паттерн
+   диклоужера, что у "Смотреть описание" на /models/[id]/. */
+.sr-desc { margin: 0 0 1.5rem; }
+.sr-desc__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0d9488;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+.sr-desc__toggle:hover { color: #0f766e; }
+.sr-desc__toggle::-webkit-details-marker { display: none; }
+.sr-desc__toggle::after {
+  content: '';
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 200ms ease;
+}
+.sr-desc[open] > .sr-desc__toggle::after { transform: rotate(-135deg); }
+.sr-desc__text { margin-top: 0.75rem; }
 
 /* ── Hero ─────────────────────────────────────────────────────── */
 /* Заезжает под фикс. хедер (тот всегда position:fixed + полупрозрачный
