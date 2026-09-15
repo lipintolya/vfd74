@@ -13,4 +13,14 @@ export const MADE_TO_ORDER_SERIES: ReadonlySet<string> = new Set([
   'tehno',
 ])
 
-export const isMadeToOrder = (seriesSlug: string): boolean => MADE_TO_ORDER_SERIES.has(seriesSlug)
+/** Точечное исключение: конкретная модель+цвет реально в наличии на складе,
+    хотя остальные модели/цвета серии — под заказ (MADE_TO_ORDER_SERIES бьёт
+    только по серии целиком). Ключ — `${models.id}:${colors.name}`. */
+export const IN_STOCK_OVERRIDE: ReadonlySet<string> = new Set([
+  '4fc7a08a-9216-4b29-a6d4-3473517e897c:Эмалекс белый', // Техно 1, белый — в наличии
+])
+
+export const isMadeToOrder = (seriesSlug: string, modelId?: string, colorName?: string): boolean => {
+  if (modelId && colorName && IN_STOCK_OVERRIDE.has(`${modelId}:${colorName}`)) return false
+  return MADE_TO_ORDER_SERIES.has(seriesSlug)
+}

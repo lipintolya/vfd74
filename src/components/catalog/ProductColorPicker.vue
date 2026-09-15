@@ -26,16 +26,19 @@ const props = defineProps<{
       справочный список, не свотч (см. блок ниже под color-picker__swatches). */
   extraColors?: { name: string; hex: string }[]
   modelName:   string
+  modelId:     string
   seriesSlug:  string
 }>()
-
-const madeToOrder = isMadeToOrder(props.seriesSlug)
 
 const phone = companyLegalInfo.contacts.phone[0]!
 
 const selectedIdx = ref(0)
 
 const selected = computed(() => props.colors[selectedIdx.value] ?? props.colors[0])
+
+/* Реактивно на выбранный цвет — точечное исключение "в наличии" (см.
+   IN_STOCK_OVERRIDE) относится к конкретной модели+цвету, не ко всей серии. */
+const madeToOrder = computed(() => isMadeToOrder(props.seriesSlug, props.modelId, selected.value.name))
 
 /* Фото не пропадает при выборе цвета без снимка — остаётся фото первого
    сфотканного цвета вместо пустого плейсхолдера. */

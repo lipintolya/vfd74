@@ -106,7 +106,7 @@ const seriesBadgeClass = computed(() => {
   return 'bg-slate-700 text-white'
 })
 
-const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug))
+const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug, props.card.id, activeColorName.value))
 </script>
 
 <template>
