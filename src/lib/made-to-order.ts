@@ -24,3 +24,12 @@ export const isMadeToOrder = (seriesSlug: string, modelId?: string, colorName?: 
   if (modelId && colorName && IN_STOCK_OVERRIDE.has(`${modelId}:${colorName}`)) return false
   return MADE_TO_ORDER_SERIES.has(seriesSlug)
 }
+
+/** Цвет из IN_STOCK_OVERRIDE — первым в списке (свотчи/пикер): логично
+    показать сразу то, что реально на складе, а не то, что первым пришло
+    из Supabase. Остальной порядок не трогает (стабильно). */
+export function withInStockFirst<T extends { name: string }>(modelId: string, colors: T[]): T[] {
+  const idx = colors.findIndex(c => IN_STOCK_OVERRIDE.has(`${modelId}:${c.name}`))
+  if (idx <= 0) return colors
+  return [colors[idx]!, ...colors.slice(0, idx), ...colors.slice(idx + 1)]
+}

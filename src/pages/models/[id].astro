@@ -13,6 +13,7 @@ import { isNewModel } from '../../lib/new-models'
 import { accessoriesByCoating, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
 import type { AccessoryCategory, CoatingSlug } from '../../data/accessories'
 import { formatTrim } from '../../lib/trim-labels'
+import { withInStockFirst } from '../../lib/made-to-order'
 
 export async function getStaticPaths() {
   const { data, error } = await supabase
@@ -105,6 +106,12 @@ export async function getStaticPaths() {
      покупателя с толку (выглядит как рабочий вариант, а на деле «по запросу»). */
   for (const entry of modelMap.values()) {
     entry.colors = entry.colors.filter(c => Boolean(c.photo))
+  }
+
+  /* Цвет из IN_STOCK_OVERRIDE — первым в пикере (по умолчанию выбран при
+     открытии страницы): логично открывать сразу тем, что есть на складе. */
+  for (const entry of modelMap.values()) {
+    entry.colors = withInStockFirst(entry.model.id, entry.colors)
   }
 
   /* «Также доступны цвета» — полная палитра покрытия за вычетом уже

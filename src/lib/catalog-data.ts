@@ -11,6 +11,7 @@ import { adjustPrice } from './price-adjustments'
 import { isNewModel } from './new-models'
 import { isPopularSeries } from './popular-series'
 import { formatTrim } from './trim-labels'
+import { withInStockFirst } from './made-to-order'
 import type { CatalogCardItem } from '../components/catalog/types'
 
 const normalizeHexColor = (value: string | null | undefined) => {
@@ -86,6 +87,9 @@ export async function getCatalogCards(): Promise<{
     }
     colorSwatchesByModel.set(model.id, swatches)
   }
+  for (const [modelId, swatches] of colorSwatchesByModel) {
+    colorSwatchesByModel.set(modelId, withInStockFirst(modelId, swatches))
+  }
 
   /* ── Нормализуем: 1 модель = 1 карточка (первый цвет — для витрины) ── */
   const cards: CatalogCardItem[] = []
@@ -102,6 +106,13 @@ export async function getCatalogCards(): Promise<{
     const coating = series?.coatings ?? color?.coatings as any
     const seriesSlug = series?.slug ?? ''
 
+    /* Обложка карточки — первый свотч из (уже переставленного withInStockFirst)
+       списка, а не просто первая встреченная строка из Supabase: иначе цвет
+       "в наличии" был бы первым в пикере, но карточка каталога всё равно
+       открывалась бы другим цветом-обложкой. */
+    const swatches = colorSwatchesByModel.get(model.id)
+    const cover = swatches?.[0]
+
     cards.push({
       id:          model.id,
       slug:        '',
@@ -110,13 +121,13 @@ export async function getCatalogCards(): Promise<{
       seriesSlug,
       coating:     coating?.name  ?? '—',
       coatingSlug: coating?.slug  ?? '',
-      colorName:   color.name,
-      colorHex:    normalizeHexColor(color.hex_preview),
+      colorName:   cover?.name ?? color.name,
+      colorHex:    cover?.hex  ?? normalizeHexColor(color.hex_preview),
       trim:        formatTrim(model.trim),
       colorNames:  colorsByModel.get(model.id) ?? [color.name],
-      colorSwatches: colorSwatchesByModel.get(model.id) ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url) }],
-      photo:       row.photo_url  ?? '',
-      price:       adjustPrice(seriesSlug, row.price_rrp ?? null),
+      colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url) }],
+      photo:       cover?.photo ?? row.photo_url ?? '',
+      price:       cover?.price ?? adjustPrice(seriesSlug, row.price_rrp ?? null),
       hasGlass:    model.has_glass ?? false,
       isNew:       isNewModel(model.id),
       isPopular:   isPopularSeries(seriesSlug),
