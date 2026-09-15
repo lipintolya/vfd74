@@ -10,6 +10,7 @@ import { HERO_COVER_IMAGE } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import HiddenDoorsPromo from '../components/home/HiddenDoorsPromo.vue'
 import MirrorDoorPromo from '../components/home/MirrorDoorPromo.vue'
+import TehnoPromo from '../components/home/TehnoPromo.vue'
 import Features from '../components/home/Features.vue'
 import CatalogCategories from '../components/home/CatalogCategories.vue'
 import Promo from '../components/home/Promo.vue'
@@ -20,8 +21,22 @@ import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import { faqs } from '../components/home/faq-data'
 import HowWeWork from '../components/home/HowWeWork.astro'
 import { howToSchema } from '../data/how-it-works'
+import { getCatalogCards } from '../lib/catalog-data'
+import { calcKitPrice } from '../data/accessories'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
+
+/* Цена промо-плитки «Техно» — живой запрос к тому же Supabase-каталогу,
+   что и /catalog/ (getCatalogCards), а не число в коде: обложка карточки
+   у "Техно 1" уже переставлена на цвет из наличия (см. withInStockFirst
+   в catalog-data.ts), так что card.price/card.colorName здесь — это именно
+   белый. Комплект считаем той же формулой, что везде (calcKitPrice). */
+const { cards: catalogCards } = await getCatalogCards()
+const tehnoCard = catalogCards.find(c => c.seriesSlug === 'tehno' && c.name === 'Техно 1')
+const tehnoBladePrice = tehnoCard?.price ?? null
+const tehnoKitPrice = tehnoCard?.price
+  ? tehnoCard.price + calcKitPrice(tehnoCard.coatingSlug, tehnoCard.colorName)
+  : null
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -113,6 +128,7 @@ const localBusinessSchema = {
 >
   <HeroSlider client:load />
   <HowWeWork />
+  <TehnoPromo bladePrice={tehnoBladePrice} kitPrice={tehnoKitPrice} client:visible />
   <PromoStripBanner />
   <HiddenDoorsPromo client:visible />
   <MirrorDoorPromo client:visible />
