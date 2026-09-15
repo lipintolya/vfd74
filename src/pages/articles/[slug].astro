@@ -80,6 +80,9 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
   title={`${article.data.title} — ВФД Челябинск`}
   description={article.data.description}
   structuredData={structuredData}
+  ogType="article"
+  publishedTime={article.data.publishDate.toISOString()}
+  ogImage={article.data.coverImage ? new URL(article.data.coverImage, Astro.site).href : undefined}
 >
   <article>
 

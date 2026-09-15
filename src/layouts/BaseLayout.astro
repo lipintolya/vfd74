@@ -4,25 +4,31 @@ import Header from '../components/layout/Header.vue'
 import Footer from '../components/layout/Footer.vue'
 import YandexMetrika from '../components/analytics/YandexMetrika.astro'
 import BackToTop from '../components/ui/BackToTop.astro'
+import { HERO_COVER_IMAGE } from '../data/hero-image'
 
 interface Props {
   title?:         string
   description?:   string
   ogImage?:       string
+  ogType?:        'website' | 'article'
   noIndex?:       boolean
   canonical?:     string
   structuredData?: Record<string, unknown> | Record<string, unknown>[]
   preloadImage?:  string
+  /** ISO-дата публикации — только для ogType="article" (og:article:published_time) */
+  publishedTime?: string
 }
 
 const {
   title        = 'Двери ВФД на Кашириных — Салон дверей в Челябинске',
   description  = 'Фирменный салон дверей и алюминиевых перегородок на Братьев Кашириных 131Б. Работаем с 2014 года.',
-  ogImage      = 'https://storage.yandexcloud.net/catalog-vfd/renders/hero-cover.webp',
+  ogImage      = HERO_COVER_IMAGE,
+  ogType       = 'website',
   noIndex      = false,
   canonical,
   structuredData,
   preloadImage,
+  publishedTime,
 } = Astro.props
 
 const effectiveCanonical = canonical ?? (Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined)
@@ -42,9 +48,10 @@ const structuredDataJson = structuredData
     <meta property="og:title"        content={title} />
     <meta property="og:description"  content={description} />
     <meta property="og:image"        content={ogImage} />
-    <meta property="og:image:width"  content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:type"         content="website" />
+    <meta property="og:type"         content={ogType} />
+    {ogType === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
     <meta property="og:locale"       content="ru_RU" />
     <meta property="og:site_name"    content="Салон дверей ВФД" />
     <meta name="theme-color"         content="#f8f9fa" />
