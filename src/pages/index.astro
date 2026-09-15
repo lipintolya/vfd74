@@ -56,6 +56,10 @@ const localBusinessSchema = {
   telephone: ['+79000297888', '+79630807888'],
   email: 'vfddoors74@mail.ru',
   image: 'https://storage.yandexcloud.net/vfd74ru/promo_main/main_render_innova.webp',
+  /* logo — отдельно от image: Google берёт его для бренд-логотипа в Knowledge
+     Panel/поиске, PNG-растр (см. logo-schema.png — тот же файл, что у
+     BlogPosting.publisher.logo на статьях, единый источник бренд-лого). */
+  logo: 'https://vfd74.ru/logo-schema.png',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'ул. Братьев Кашириных, 131Б',
