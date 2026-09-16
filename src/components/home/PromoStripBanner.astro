@@ -2,8 +2,10 @@
 /**
  * src/components/home/PromoStripBanner.astro
  *
- * Плашка-анонс акций между хиро и остальным контентом главной. Ведёт к
- * блоку #promo (Promo.vue).
+ * Компактная строка-анонс акций между хиро и остальным контентом главной.
+ * Ведёт к блоку #promo (Promo.vue). Раньше была высокая тёмная секция
+ * с фоновой картинкой интерьера, несвязанной с конкретными акциями —
+ * заменена на тонкий info-bar с реальной актуальной акцией.
  *
  * Переход — не обычный якорь: страница длинная (~9-10к px), а ниже
  * PromoStripBanner ещё лежат несколько client:visible/client:idle
@@ -15,40 +17,23 @@
  * Мгновенный прыжок (behavior:'instant') снимает саму возможность гонки —
  * он не анимируется, значит нечему "не долетать".
  */
-
-const IMAGE = 'https://storage.yandexcloud.net/vfd74ru/promo_main/F3563280-790C-49CB-A81E-00ED9A0D2A3B.webp'
 ---
 
-<div class="pt-6 sm:pt-8">
+<div class="promo-strip-wrap">
   <div class="container">
     <a
       href="#promo"
-      class="promo-strip grid grid-cols-1 overflow-hidden rounded-2xl bg-[#18181b] no-underline sm:grid-cols-[3fr_4fr] sm:items-stretch"
+      class="promo-strip group flex flex-col items-start gap-3 rounded-2xl bg-[#18181b] px-6 py-6 no-underline sm:flex-row sm:items-center sm:justify-between sm:px-9 sm:py-7"
     >
-      <div class="order-2 flex flex-col items-start justify-center gap-4 px-5 py-4 sm:order-1 sm:px-8 sm:py-6 lg:px-10 lg:py-8">
-        <div>
-          <p class="mb-2 text-step-0 font-medium tracking-[0.01em] text-white/60">Спецпредложения</p>
-          <h2 class="text-3xl font-medium leading-tight tracking-tight text-white md:text-4xl">Акции</h2>
-          <p class="mt-2 text-base text-white/60 sm:text-lg">Скидки на популярные модели дверей — успейте до конца месяца</p>
-        </div>
-        <span class="btn btn-ghost shrink-0" aria-hidden="true">
-          Смотреть акции
-          <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </span>
-      </div>
-      <div class="order-1 aspect-21/9 overflow-hidden sm:order-2 sm:aspect-auto sm:h-auto">
-        <img
-          src={IMAGE}
-          alt="Акции и спецпредложения ВФД"
-          loading="lazy"
-          decoding="async"
-          width="900"
-          height="386"
-          class="promo-strip__image h-full w-full object-cover transition-transform duration-500 ease-out"
-        />
-      </div>
+      <p class="text-base font-medium text-white sm:text-lg">
+        Бесплатный замер по Челябинску — при заказе межкомнатных дверей
+      </p>
+      <span class="promo-strip__cta inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-teal-400 transition-transform group-hover:translate-x-0.5">
+        Все акции
+        <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
     </a>
   </div>
 </div>
@@ -64,11 +49,3 @@ const IMAGE = 'https://storage.yandexcloud.net/vfd74ru/promo_main/F3563280-790C-
     })
   })
 </script>
-
-<style>
-  /* Единственное, что неудобно чистым Tailwind без произвольных
-     селекторов, — ховер дочерней картинки от ховера ссылки-обёртки. */
-  .promo-strip:hover .promo-strip__image {
-    transform: scale(1.04);
-  }
-</style>

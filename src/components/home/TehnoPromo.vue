@@ -45,7 +45,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         <!-- Контент -->
         <div class="flex flex-col gap-4 p-6 sm:gap-5 sm:p-8">
           <div>
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-teal-700">Новинка</p>
+            <p class="t-eyebrow mb-2">Новинка</p>
             <h2
               id="tehno-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"
@@ -69,7 +69,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
                 <path d="M12 3.5c3.2 4.2 5.5 7.1 5.5 10.2a5.5 5.5 0 1 1-11 0c0-3.1 2.3-6 5.5-10.2Z"/>
               </svg>
             </BenefitItem>
-            <BenefitItem v-if="benefits[2]" :text="benefits[2].title">
+            <BenefitItem v-if="benefits[2]" text="Защита от УФ-лучей">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="4"/>
                 <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.1 5.1l2.1 2.1M16.8 16.8l2.1 2.1M5.1 18.9l2.1-2.1M16.8 7.2l2.1-2.1"/>
@@ -77,8 +77,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </BenefitItem>
           </ul>
 
-          <div class="inline-flex w-fit items-center gap-1.5 self-start rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
-            <span class="h-1.5 w-1.5 rounded-full bg-teal-500"></span>
+          <div class="inline-flex w-fit items-center self-start rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
             Техно 1, белый — в наличии на складе
           </div>
 

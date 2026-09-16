@@ -45,7 +45,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         <!-- Контент -->
         <div class="flex flex-col gap-4 p-6 sm:gap-5 sm:p-8">
           <div>
-            <p class="t-eyebrow mb-2">Скрытые двери</p>
+            <p class="t-eyebrow mb-2">В наличии</p>
             <h2
               id="hidden-doors-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"
@@ -89,9 +89,9 @@ const { sectionRef, visible } = useScrollReveal(0.15)
 
           <div
             v-if="SECRET_PROMO_ACTIVE"
-            class="inline-flex w-fit items-center gap-1.5 self-start rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700"
+            class="inline-flex w-fit items-center self-start rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700"
           >
-            🔥 Акция -8% до 31 августа
+            Акция −8% до 31 августа
           </div>
 
           <div>

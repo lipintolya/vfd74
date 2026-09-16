@@ -24,12 +24,12 @@
     "deploy": "git push production main"
   },
   "dependencies": {
-    "@astrojs/markdoc": "^2.0.1",
-    "@astrojs/sitemap": "^3.7.3",
-    "@astrojs/vue": "^7.0.0",
+    "@astrojs/markdoc": "^2.0.9",
+    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/vue": "^7.0.2",
     "@supabase/supabase-js": "^2.106.0",
     "@tailwindcss/vite": "^4.3.0",
-    "astro": "^7.0.4",
+    "astro": "^7.3.2",
     "tailwindcss": "^4.3.0",
     "vue": "^3.5.34"
   }

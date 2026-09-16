@@ -283,7 +283,7 @@ onUnmounted(() => {
                    transition-colors duration-300 ease-in-out
                    group-hover:text-teal-600"
           >
-            ВФД НА КАШИРИНЫХ
+            ДВЕРИ НА КАШИРИНЫХ
           </span>
         </a>
 
