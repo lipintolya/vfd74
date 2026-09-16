@@ -94,6 +94,27 @@ const structuredData = canonicalUrl ? [
     url: canonicalUrl,
     numberOfItems: seriesCards.length,
   },
+  /* ItemList с Product/Offer на каждую модель серии — компактный список
+     (в отличие от /catalog/ с 300+ моделей, где ItemList такого размера
+     раздул бы страницу без выгоды), даёт карусель товаров в выдаче. */
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Модели серии ${series.name}`,
+    itemListElement: seriesCards.map((card, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Product',
+        name: card.name,
+        url: new URL(`/models/${card.slug}/`, canonicalUrl).href,
+        image: card.photo || undefined,
+        ...(card.price
+          ? { offers: { '@type': 'Offer', price: card.price, priceCurrency: 'RUB', availability: 'https://schema.org/InStoreOnly' } }
+          : {}),
+      },
+    })),
+  },
 ] : undefined
 ---
 

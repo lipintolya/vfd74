@@ -8,6 +8,7 @@
  * что на /catalog/?coating=...). Описание покрытия (tagline/benefits/closing)
  * берётся напрямую из coatingGroupCopy — единый источник с /catalog.
  */
+import { getCollection } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../ui/Breadcrumbs.astro'
 import SeriesCard from './SeriesCard.astro'
@@ -37,6 +38,13 @@ const benefits = copy?.benefits ?? []
 const prices = seriesCardsData.map(s => s.minPrice).filter((p): p is number => p != null)
 const minPrice = prices.length ? Math.min(...prices) : null
 const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
+
+/* Статья по теме — та же перелинковка каталог → блог, что на моделях
+   (models/[id].astro): ищем статью, чей relatedSeriesSlugs пересекается
+   с сериями этого покрытия. */
+const landingSeriesSlugs = new Set(seriesCardsData.map(s => s.slug))
+const allArticles = await getCollection('articles')
+const relatedArticle = allArticles.find(a => a.data.relatedSeriesSlugs?.some(s => landingSeriesSlugs.has(s)))
 
 /* Фильтры для CatalogClient — те же опции, что на /catalog/, лендинг
    только меняет стартовое состояние (initialCoating) и контент вокруг. */
@@ -168,9 +176,71 @@ const structuredData = canonicalUrl ? [
     </div>
   </div>
 
+  {relatedArticle && (
+    <section class="section">
+      <div class="container">
+        <a href={`/articles/${relatedArticle.id}/`} class="related-article-card">
+          <span class="related-article-card__eyebrow">Статья по теме</span>
+          <span class="related-article-card__title">{relatedArticle.data.title}</span>
+          <span class="related-article-card__cta">
+            Читать
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </section>
+  )}
+
   <section class="section">
     <div class="container">
       <FaqAccordion items={category.faq} />
     </div>
   </section>
 </BaseLayout>
+
+<style>
+.related-article-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  text-decoration: none;
+  transition: border-color 200ms ease, background-color 200ms ease;
+}
+.related-article-card:hover {
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+.related-article-card__eyebrow {
+  flex-basis: 100%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #64748b;
+}
+.related-article-card__title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+.related-article-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0d9488;
+}
+.related-article-card__cta svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+</style>
