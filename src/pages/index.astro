@@ -23,6 +23,7 @@ import HowWeWork from '../components/home/HowWeWork.astro'
 import { howToSchema } from '../data/how-it-works'
 import { getCatalogCards } from '../lib/catalog-data'
 import { calcKitPrice } from '../data/accessories'
+import { companyLegalInfo } from '../lib/contacts-data'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
@@ -87,20 +88,10 @@ const localBusinessSchema = {
     latitude: 55.172868,
     longitude: 61.306572,
   },
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '10:00',
-      closes: '20:00',
-    },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Saturday', 'Sunday'],
-      opens: '10:00',
-      closes: '18:00',
-    },
-  ],
+  openingHoursSpecification: companyLegalInfo.schemaOrgHours.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    ...h,
+  })),
   foundingDate: '2014',
   priceRange: '₽₽',
   aggregateRating: {

@@ -90,45 +90,20 @@
           <div class="mb-8">
             <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Часы работы</h3>
             <div class="rounded-3xl bg-fg p-6 lg:p-8">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-widest text-teal-400 mb-4">Июнь – август</p>
-                  <div class="space-y-3">
-                    <div class="flex items-baseline justify-between gap-3">
-                      <span class="text-sm text-white/55">Пн–Пт</span>
-                      <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–20:00</span>
-                    </div>
-                    <div class="flex items-baseline justify-between gap-3">
-                      <span class="text-sm text-white/55">Сб</span>
-                      <span class="text-2xl font-medium text-white tracking-tight tabular-nums">11:00–16:00</span>
-                    </div>
-                    <div class="flex items-baseline justify-between gap-3">
-                      <span class="text-sm text-white/55">Вс</span>
-                      <span class="text-2xl font-medium text-white tracking-tight">Выходной</span>
-                    </div>
-                  </div>
+              <div class="space-y-3">
+                <div class="flex items-baseline justify-between gap-3">
+                  <span class="text-sm text-white/55">Пн–Пт</span>
+                  <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–20:00</span>
                 </div>
-                <div>
-                  <p class="text-xs font-semibold uppercase tracking-widest text-teal-400 mb-4">Сентябрь – май</p>
-                  <div class="space-y-3">
-                    <div class="flex items-baseline justify-between gap-3">
-                      <span class="text-sm text-white/55">Пн–Пт</span>
-                      <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–20:00</span>
-                    </div>
-                    <div class="flex items-baseline justify-between gap-3">
-                      <span class="text-sm text-white/55">Сб</span>
-                      <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–18:00</span>
-                    </div>
-                    <div class="flex items-baseline justify-between gap-3">
-                      <span class="text-sm text-white/55">Вс</span>
-                      <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–18:00</span>
-                    </div>
-                  </div>
+                <div class="flex items-baseline justify-between gap-3">
+                  <span class="text-sm text-white/55">Сб</span>
+                  <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–18:00</span>
+                </div>
+                <div class="flex items-baseline justify-between gap-3">
+                  <span class="text-sm text-white/55">Вс</span>
+                  <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–18:00</span>
                 </div>
               </div>
-              <p class="mt-6 pt-6 border-t border-white/10 text-xs text-white/50">
-                По выходным вне графика возможна консультация и посещение по предварительной записи
-              </p>
             </div>
           </div>
 

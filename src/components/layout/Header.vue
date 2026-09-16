@@ -34,7 +34,7 @@ const SOCIAL_NETWORKS = [
 const CONTACTS = {
   phones:   companyLegalInfo.contacts.phone,
   address:  `${companyLegalInfo.address.legal} (${companyLegalInfo.address.entrance})`,
-  worktime: `${companyLegalInfo.workingHours.winter.weekdays.label}  ·  Сб–Вс: ${companyLegalInfo.workingHours.winter.saturday.opens}–${companyLegalInfo.workingHours.winter.saturday.closes}`,
+  worktime: `${companyLegalInfo.workingHours.weekdays.label}  ·  Сб–Вс: ${companyLegalInfo.workingHours.saturday.opens}–${companyLegalInfo.workingHours.saturday.closes}`,
   email:    companyLegalInfo.contacts.email,
 }
 

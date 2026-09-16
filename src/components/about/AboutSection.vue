@@ -9,8 +9,8 @@ import {
 } from './about-data'
 import { getFormattedHours } from '../../lib/contacts-data'
 
-/* Часы работы — из единого источника (contacts-data.ts), с учётом сезона
-   (летний/зимний график), а не статичной строкой на карточке. */
+/* Часы работы — из единого источника (contacts-data.ts), не статичной
+   строкой на карточке, чтобы график не расходился между страницами. */
 const workingHoursDisplay = computed(() => {
   const [weekdays, saturday, sunday] = getFormattedHours()
   return `${weekdays.day}: ${weekdays.time}, ${saturday.day}: ${saturday.time}, ${sunday.time}`
