@@ -1153,16 +1153,46 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     font-size: clamp(2.7rem, 12vw, 4rem);
   }
 
+  .hero-description {
+    margin: 1.5rem 0;
+    line-height: 1.7;
+  }
+
   .hero-stats {
     grid-template-columns: 1fr;
+  }
+
+  .feature-link,
+  .feature-link--large {
+    min-height: 320px;
+  }
+
+  .feature-link__content {
+    padding: 1.25rem;
+  }
+
+  .feature-link h3 {
+    font-size: 1.5rem;
   }
 
   .gallery-grid {
     grid-template-columns: 1fr;
   }
 
+  .director-name {
+    font-size: 2rem;
+  }
+
+  .director-quote {
+    padding: 1.5rem;
+  }
+
   .payment-grid {
     grid-template-columns: 1fr;
+  }
+
+  .payment-card {
+    padding: 1.5rem;
   }
 
   .director-info-grid {
@@ -1172,6 +1202,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
   .requisites-row {
     flex-direction: column;
     gap: 0.5rem;
+    padding: 1rem 1.25rem;
   }
 }
 
