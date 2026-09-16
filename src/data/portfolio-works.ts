@@ -63,6 +63,28 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-09-16-basic-zt-chernaya-kromka',
+    date:        '2026-09-16',
+    label:       '16.09.2026',
+    title:       'Монтаж дверей Бэйсик ЗТ с чёрной алюминиевой кромкой',
+    description: 'Установка межкомнатных дверей модели Бэйсик ЗТ с чёрной алюминиевой кромкой с 4-х сторон в ЖК ЭльТаун (L-Town), Челябинск.',
+    category:    'interior',
+    objectType:  'apartment',
+    location:    'Челябинск, ЖК ЭльТаун (L-Town)',
+    story:       'Установили двери в ЭльТаун — модель Бэйсик ЗТ с чёрной алюминиевой кромкой с 4-х сторон. Серия Бэйсик — это воплощение современного минимализма и практичности: каркасно-щитовая конструкция объединяет чистые геометрические линии и надёжность, делая эти двери идеальным выбором для лофт-пространств и современных интерьеров.',
+    model:       'Бэйсик ЗТ',
+    features:    ['Каркасно-щитовая конструкция', 'Алюминиевая кромка с 4-х сторон, чёрный цвет'],
+    tags:        ['Квартира', 'Минимализм'],
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.07.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.10.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.15.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.17.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.20.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.22.webp',
+    ],
+  },
+  {
     id:          '2026-09-15-ec2-emalex-taupe',
     date:        '2026-09-15',
     label:       '15.09.2026',
