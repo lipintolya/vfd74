@@ -21,6 +21,7 @@
     "sitemap": "echo 'Sitemap generation handled by astro-sitemap integration'",
     "gen:renders": "node scripts/gen-render-gallery.mjs",
     "gen:portfolio-thumbs": "node scripts/gen-portfolio-thumbs.mjs",
+    "gen:hero-mobile": "node scripts/gen-hero-mobile.mjs",
     "deploy": "git push production main"
   },
   "dependencies": {

@@ -6,7 +6,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { reviews } from '../data/reviews'
 import HeroSlider from '../components/home/HeroSlider.vue'
-import { HERO_COVER_IMAGE } from '../data/hero-image'
+import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import HiddenDoorsPromo from '../components/home/HiddenDoorsPromo.vue'
 import MirrorDoorPromo from '../components/home/MirrorDoorPromo.vue'
@@ -115,6 +115,7 @@ const localBusinessSchema = {
   description="ВФД Челябинск — фирменный салон на Братьев Кашириных, 131Б: входные и межкомнатные двери, алюминиевые перегородки. Каталог, цены, бесплатный замер и установка."
   structuredData={[faqSchema, localBusinessSchema, howToSchema]}
   preloadImage={HERO_COVER_IMAGE}
+  preloadImageSrcset={HERO_COVER_IMAGE_SRCSET}
   ogImage={HERO_COVER_IMAGE}
 >
   <HeroSlider client:load />

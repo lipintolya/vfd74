@@ -15,6 +15,11 @@ interface Props {
   canonical?:     string
   structuredData?: Record<string, unknown> | Record<string, unknown>[]
   preloadImage?:  string
+  /** srcset для preloadImage — мобильный LCP грузил тот же ~1670px
+      десктопный файл, что и десктоп (5.2s LCP на throttled 4G вместо
+      2.5s на десктопе). Опционально: только для картинок, у которых
+      есть заранее сгенерированный уменьшенный вариант. */
+  preloadImageSrcset?: string
   /** ISO-дата публикации — только для ogType="article" (og:article:published_time) */
   publishedTime?: string
 }
@@ -28,6 +33,7 @@ const {
   canonical,
   structuredData,
   preloadImage,
+  preloadImageSrcset,
   publishedTime,
 } = Astro.props
 
@@ -89,7 +95,14 @@ const structuredDataJson = structuredData
     <link rel="preload" as="font" type="font/woff2" href="/fonts/onest-latin-wght-normal.woff2" crossorigin />
 
     {preloadImage && (
-      <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
+      <link
+        rel="preload"
+        as="image"
+        href={preloadImage}
+        fetchpriority="high"
+        imagesrcset={preloadImageSrcset}
+        imagesizes={preloadImageSrcset ? '(max-width: 1023px) 100vw, 55vw' : undefined}
+      />
     )}
     {structuredDataJson && (
       <script type="application/ld+json" is:inline set:html={structuredDataJson} />

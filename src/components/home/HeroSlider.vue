@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { HERO_COVER_IMAGE } from '../../data/hero-image'
+import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
 
 const SLIDER_INTERVAL_MS = 9000
 const SWIPE_THRESHOLD    = 50
@@ -161,6 +161,8 @@ onUnmounted(stop)
               v-for="(slide, i) in slides"
               :key="slide.id"
               :src="slide.image"
+              :srcset="i === 0 ? HERO_COVER_IMAGE_SRCSET : undefined"
+              :sizes="i === 0 ? '(max-width: 1023px) 100vw, 55vw' : undefined"
               alt=""
               :fetchpriority="i === 0 ? 'high' : undefined"
               :loading="i === 0 ? 'eager' : 'lazy'"
