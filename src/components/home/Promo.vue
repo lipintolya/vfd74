@@ -91,7 +91,7 @@ function toggleExpanded(id: string) {
         <li
           v-for="(promo, index) in activePromos"
           :key="promo.id"
-          :class="{ 'hidden sm:block': index >= 3 }"
+          v-show="index < 3"
         >
           <div
             class="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-[opacity,transform,border-color,box-shadow] duration-600 ease-out hover:border-teal-400 hover:shadow-lg motion-reduce:transition-none"
@@ -179,10 +179,9 @@ function toggleExpanded(id: string) {
         </li>
       </ul>
 
-      <!-- Мобильный список показывает первые 3 акции — остальные на
-           отдельной странице /akcii/ (весь список активных акций,
-           не обрезанный, в отличие от этой секции на мобильном). -->
-      <div v-if="activePromos.length > 3" class="mt-8 text-center sm:hidden">
+      <!-- Секция показывает первые 3 акции — остальные на отдельной
+           странице /akcii/ (весь список активных акций). -->
+      <div v-if="activePromos.length > 3" class="mt-8 text-center">
         <a
           href="/akcii/"
           class="inline-flex items-center gap-1 text-sm font-semibold text-teal-600 hover:text-teal-700"
