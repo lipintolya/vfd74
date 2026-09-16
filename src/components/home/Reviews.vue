@@ -296,6 +296,15 @@ onUnmounted(() => {
           rel="noopener"
           class="btn btn-outline"
         >
+          <img
+            :src="PLATFORM_META['2gis'].logo"
+            alt=""
+            class="h-5 w-5 shrink-0 rounded-md"
+            width="20"
+            height="20"
+            loading="lazy"
+            decoding="async"
+          />
           2ГИС
         </a>
         <a
@@ -304,6 +313,15 @@ onUnmounted(() => {
           rel="noopener"
           class="btn btn-outline"
         >
+          <img
+            :src="PLATFORM_META.yandex.logo"
+            alt=""
+            class="h-5 w-5 shrink-0 rounded-md"
+            width="20"
+            height="20"
+            loading="lazy"
+            decoding="async"
+          />
           Яндекс Карты
         </a>
       </div>
