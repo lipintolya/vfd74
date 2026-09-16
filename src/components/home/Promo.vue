@@ -41,6 +41,7 @@ function toggleExpanded(id: string) {
   next.has(id) ? next.delete(id) : next.add(id)
   expandedIds.value = next
 }
+
 </script>
 
 <template>
@@ -90,6 +91,7 @@ function toggleExpanded(id: string) {
         <li
           v-for="(promo, index) in activePromos"
           :key="promo.id"
+          :class="{ 'hidden sm:block': index >= 3 }"
         >
           <div
             class="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-[opacity,transform,border-color,box-shadow] duration-600 ease-out hover:border-teal-400 hover:shadow-lg motion-reduce:transition-none"
@@ -176,6 +178,21 @@ function toggleExpanded(id: string) {
           </div>
         </li>
       </ul>
+
+      <!-- Мобильный список показывает первые 3 акции — остальные на
+           отдельной странице /akcii/ (весь список активных акций,
+           не обрезанный, в отличие от этой секции на мобильном). -->
+      <div v-if="activePromos.length > 3" class="mt-8 text-center sm:hidden">
+        <a
+          href="/akcii/"
+          class="inline-flex items-center gap-1 text-sm font-semibold text-teal-600 hover:text-teal-700"
+        >
+          Все акции
+          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
 
     </div>
   </section>
