@@ -158,6 +158,17 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
+/* Заголовки чуть жирнее — 45 из 57 h1-h6 на сайте набраны через
+   font-medium (500), только 12 через font-semibold. Комбинированный
+   селектор (тег+класс) вместо правки всех 49 файлов вручную —
+   тег.font-medium имеет ту же specificity, что и class .font-medium
+   у Tailwind, поэтому важен порядок: этот блок должен идти в конце
+   файла, после @tailwind-слоёв, чтобы победить по каскаду. */
+h1.font-medium, h2.font-medium, h3.font-medium,
+h4.font-medium, h5.font-medium, h6.font-medium {
+  font-weight: 600;
+}
+
 /* ============================================================
    Типографика — семантические роли
 
