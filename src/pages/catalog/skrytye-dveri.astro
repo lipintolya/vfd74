@@ -919,6 +919,12 @@ const structuredData = canonicalUrl ? [
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* На узком мобильном кадре (16:9 в высокий aspect) центр кадра обрезает
+     дверь справа — на десктопе в широком кадре это не заметно. */
+  object-position: 30% center;
+}
+@media (min-width: 641px) {
+  .sd-hero__bg { object-position: center; }
 }
 .sd-hero__grad {
   position: absolute;
