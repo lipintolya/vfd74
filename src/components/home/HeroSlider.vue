@@ -249,9 +249,13 @@ onUnmounted(stop)
           <!-- Перегородки -->
           <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-16/10 sm:aspect-2/1 lg:aspect-auto lg:h-full">
             <img
-              src="https://storage.yandexcloud.net/catalog-vfd/alum/saint_p_alum/tg1.webp"
+              src="/renders/hero/partitions-tg1-960.webp"
+              srcset="/renders/hero/partitions-tg1-640.webp 640w, /renders/hero/partitions-tg1-960.webp 960w"
+              sizes="(max-width: 1023px) 100vw, 40vw"
+              width="960"
+              height="1197"
               alt=""
-              loading="eager"
+              loading="lazy"
               decoding="async"
               class="absolute inset-0 w-full h-full object-cover object-center"
               aria-hidden="true"
@@ -283,7 +287,9 @@ onUnmounted(stop)
                  углу как декоративный акцент «монтаж/установка». -->
             <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-gray-100">
               <img
-                src="https://storage.yandexcloud.net/vfd74ru/Main_page/makita_cover.webp"
+                src="/renders/hero/makita-cover-360.webp"
+                width="360"
+                height="341"
                 alt=""
                 loading="lazy"
                 decoding="async"
