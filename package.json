@@ -25,6 +25,7 @@
     "gen:hero-bento": "node scripts/gen-hero-bento.mjs",
     "gen:about": "node scripts/gen-about-images.mjs",
     "gen:footer-map": "node scripts/gen-footer-map.mjs",
+    "gen:partitions-tracks": "node scripts/gen-partitions-tracks.mjs",
     "deploy": "git push production main"
   },
   "dependencies": {

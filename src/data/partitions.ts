@@ -61,7 +61,9 @@ export const tracks = [
     stat: '1–2', statLbl: 'полотна',
     items: ['Одно полотно — уходит вдоль стены', 'Два полотна — расходятся от центра'],
     imgs: [
-      { src: `${INFO}/alum-first.webp`, alt: '1 трек — пример интерьера' },
+      // Локальный пересжатый файл — оригинал на CDN весил 2МБ при показе
+      // в узкой карточке ~700px (см. scripts/gen-partitions-tracks.mjs).
+      { src: '/renders/partitions/track-1.webp', alt: '1 трек — пример интерьера' },
       { src: `${INFO}/1_scheme.webp`,   alt: 'Схема 1 трека' },
       { src: `${INFO}/one_track.webp`,  alt: 'Направляющая 1 трека' },
     ],
@@ -72,7 +74,7 @@ export const tracks = [
     stat: '2–4', statLbl: 'полотна',
     items: ['Каскад в одну сторону', 'Крайние стационарны — движутся центральные', 'Открывание от центра в обе стороны'],
     imgs: [
-      { src: `${INFO}/alum-second.webp`, alt: '2 трека — пример интерьера' },
+      { src: '/renders/partitions/track-2.webp', alt: '2 трека — пример интерьера' },
       { src: `${INFO}/2_scheme.webp`,    alt: 'Схема 2 треков' },
       { src: `${INFO}/two_track.webp`,   alt: 'Направляющая 2 треков' },
     ],
@@ -83,7 +85,7 @@ export const tracks = [
     stat: '3–6', statLbl: 'полотен',
     items: ['3 полотна — каскад, проём на ширину двух', '6 полотен — две группы от центра'],
     imgs: [
-      { src: `${INFO}/alum-third.webp`,  alt: '3 трека — пример интерьера' },
+      { src: '/renders/partitions/track-3.webp', alt: '3 трека — пример интерьера' },
       { src: `${INFO}/3_scheme.webp`,    alt: 'Схема 3 треков' },
       { src: `${INFO}/three_track.webp`, alt: 'Направляющая 3 треков' },
     ],
