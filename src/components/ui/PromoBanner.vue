@@ -85,7 +85,7 @@ const onDetailsClick = () => {
   width: min(21rem, calc(100vw - 2rem));
   padding: 1.25rem 1.5rem 1.5rem;
   border-radius: 1.25rem;
-  background: #1A191C;
+  background: var(--color-graphite);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 .promo-banner__close {

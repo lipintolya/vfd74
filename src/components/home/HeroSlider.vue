@@ -136,11 +136,11 @@ onUnmounted(stop)
 <template>
   <section class="section">
     <div class="container">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 lg:min-h-130">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-6 lg:min-h-125 xl:min-h-140">
 
         <!-- ══ HERO SLIDER ══ -->
         <div
-          class="lg:col-span-7 relative overflow-hidden rounded-3xl min-h-96 lg:h-auto"
+          class="lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 sm:aspect-3/4 md:aspect-16/11 lg:aspect-auto lg:h-auto"
           role="region"
           aria-label="Слайдер акций и новинок"
           aria-roledescription="carousel"
@@ -178,17 +178,24 @@ onUnmounted(stop)
                бы поверх затемнения ── -->
           <div class="absolute inset-0 z-10 bg-linear-to-t from-black/55 via-black/20 to-black/5" aria-hidden="true" />
 
+          <!-- Slide counter -->
+          <div class="absolute top-5 left-5 sm:top-8 sm:left-8 z-10 flex items-center gap-2 text-white/70 text-sm tabular-nums">
+            <span class="text-white">{{ String(activeIndex + 1).padStart(2, '0') }}</span>
+            <span class="w-5 h-px bg-white/40" aria-hidden="true" />
+            <span>{{ String(slides.length).padStart(2, '0') }}</span>
+          </div>
+
           <!-- Content -->
-          <div class="relative z-10 flex h-full items-end min-h-96 lg:min-h-0">
+          <div class="relative z-10 flex h-full items-end">
             <Transition name="hero-content" mode="out-in">
-              <div :key="currentSlide.id" class="p-6 sm:p-8 lg:p-10 max-w-2xl text-white pb-16" aria-live="polite" aria-atomic="true">
-                <p class="text-xs uppercase tracking-widest text-white/60 mb-2">
+              <div :key="currentSlide.id" class="hero-content-text p-5 sm:p-8 lg:p-10 max-w-2xl text-white pb-14 sm:pb-16" aria-live="polite" aria-atomic="true">
+                <p class="text-xs uppercase tracking-widest text-white/75 mb-2 sm:mb-3">
                   {{ currentSlide.subtitle }}
                 </p>
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-medium mb-3 leading-tight">
+                <h1 class="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-medium mb-3 sm:mb-4 leading-tight">
                   {{ currentSlide.title }}
                 </h1>
-                <p class="text-sm sm:text-base text-white/85 mb-6 leading-relaxed">
+                <p class="text-sm sm:text-base text-white/85 mb-5 sm:mb-6 leading-relaxed max-w-lg">
                   {{ currentSlide.description }}
                 </p>
                 <a
@@ -237,22 +244,22 @@ onUnmounted(stop)
         </div>
 
         <!-- ══ RIGHT BENTO ══ -->
-        <div class="lg:col-span-5 grid grid-rows-2 gap-5 lg:gap-6">
+        <div class="lg:col-span-5 grid grid-rows-2 gap-4 sm:gap-5 lg:gap-6">
 
           <!-- Перегородки -->
-          <div class="relative overflow-hidden rounded-3xl min-h-56">
+          <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-16/10 sm:aspect-2/1 lg:aspect-auto lg:h-full">
             <img
-              src="https://storage.yandexcloud.net/catalog-vfd/covers/alum-hero.webp"
+              src="https://storage.yandexcloud.net/catalog-vfd/alum/saint_p_alum/tg1.webp"
               alt=""
               loading="eager"
               decoding="async"
               class="absolute inset-0 w-full h-full object-cover object-center"
               aria-hidden="true"
             />
-            <div class="absolute inset-0 bg-linear-to-t from-black/55 via-black/20 to-transparent" aria-hidden="true" />
-            <div class="relative z-10 h-full p-6 flex flex-col justify-end text-white min-h-56">
+            <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/35 to-black/5" aria-hidden="true" />
+            <div class="relative z-10 h-full p-5 sm:p-6 flex flex-col justify-end text-white">
               <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Дизайнерские решения</p>
-              <h3 class="text-xl font-medium mb-2 leading-snug">
+              <h3 class="text-lg sm:text-xl font-medium mb-2 leading-snug">
                 Алюминиевые перегородки и системы открывания
               </h3>
               <p class="text-sm text-white/80 mb-4">
@@ -268,20 +275,32 @@ onUnmounted(stop)
           </div>
 
           <!-- Bottom row -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
+          <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
 
-            <!-- О компании — тёмный фон по образцу карточек «Почему выбирают
-                 нас» на /contacts/ (wtg-card--3, #18181a), а не teal-градиент. -->
-            <div class="relative overflow-hidden rounded-2xl min-h-44" style="background-color: #18181a">
-              <div class="absolute inset-0 bg-linear-to-br from-white/8 via-transparent to-black/25" aria-hidden="true" />
-              <div class="relative z-10 h-full p-6 flex flex-col justify-between text-white min-h-44">
+            <!-- Портфолио — светлая карточка, контраст с тёмным слайдером
+                 слева и тёмной карточкой «О компании» рядом. Инструмент
+                 (PNG-подобный webp без фона) прижат к правому нижнему
+                 углу как декоративный акцент «монтаж/установка». -->
+            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-gray-100">
+              <img
+                src="https://storage.yandexcloud.net/vfd74ru/Main_page/makita_cover.webp"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                class="pointer-events-none absolute -right-6 bottom-0 translate-y-1/6 w-40 sm:w-36 lg:w-44"
+                aria-hidden="true"
+              />
+              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-between text-ink">
                 <div>
-                  <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Салон ВФД на Кашириных</p>
-                  <h4 class="font-medium text-base mb-2 leading-snug">Полный цикл: от замера до монтажа</h4>
-                  <p class="text-sm text-white/75">Работаем в Челябинске с 2014 года</p>
+                  <p class="text-xs uppercase tracking-widest text-ink/50 mb-1">Портфолио</p>
+                  <h4 class="font-medium text-sm sm:text-base leading-snug mb-1">Фотоотчёты с объектов</h4>
+                  <p class="text-sm text-ink/60">
+                    <span class="sm:hidden">Живые фото с объектов</span>
+                    <span class="hidden sm:inline">Живые фото с монтажей — помогут определиться с выбором</span>
+                  </p>
                 </div>
-                <a href="/about/" class="btn btn-ghost mt-4">
-                  Подробнее
+                <a href="/portfolio/" class="btn btn-primary mt-4 shrink-0 ring-1 ring-inset ring-white/55">
+                  Смотреть
                   <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -289,19 +308,17 @@ onUnmounted(stop)
               </div>
             </div>
 
-            <!-- Портфолио — тот же тёмный фон, что у «О компании», без
-                 фонового фото (было ourworks.webp с плоским затемнением,
-                 читалось хуже соседней карточки и визуально не сочеталось). -->
-            <div class="relative overflow-hidden rounded-2xl min-h-44" style="background-color: #18181a">
-              <div class="absolute inset-0 bg-linear-to-br from-white/8 via-transparent to-black/25" aria-hidden="true" />
-              <div class="relative z-10 h-full p-6 flex flex-col justify-between text-white min-h-44">
+            <!-- О компании — плоская графит-карточка, тот же тон, что у
+                 остальных тёмных плашек по сайту (см. --color-graphite). -->
+            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-graphite">
+              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-between text-white">
                 <div>
-                  <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Портфолио</p>
-                  <h4 class="font-medium text-base leading-snug mb-1">Фотоотчёты с объектов</h4>
-                  <p class="text-sm text-white/75">Живые фото с монтажей — помогут определиться с выбором</p>
+                  <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Салон ВФД</p>
+                  <h4 class="font-medium text-sm sm:text-base mb-2 leading-snug">Полный цикл: от замера до монтажа</h4>
+                  <p class="text-sm text-white/75">Работаем в Челябинске с 2014 года</p>
                 </div>
-                <a href="/portfolio/" class="btn btn-ghost mt-4">
-                  Смотреть
+                <a href="/about/" class="btn btn-ghost mt-4 shrink-0">
+                  Подробнее
                   <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -322,7 +339,15 @@ onUnmounted(stop)
 /* Container optimization for LCP */
 .lg\:col-span-7 {
   content-visibility: auto;
-  contain-intrinsic-size: auto 520px;
+  contain-intrinsic-size: auto 37.5rem;
+}
+
+/* Подпись/заголовок/описание держатся на градиент-оверлее для контраста,
+   но на светлых участках фото (например, светлая дверь в кадре) этого
+   недостаточно — лёгкая тень подстраховывает читаемость независимо
+   от того, что именно на фото под текстом у конкретного слайда. */
+.hero-content-text {
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
 }
 
 /* Кросс-фейд фона — все слайды в стеке, активный получает opacity:1 */

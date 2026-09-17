@@ -13,6 +13,14 @@
   --color-accent-hover: #0d9488;  /* = teal-600 — hover акцента */
   --color-accent-light: #ccfbf1;  /* = teal-100 — лёгкий фон акцента */
   --color-fg:           #212124;  /* почти чёрный — иконки */
+  --color-graphite:      #18181a; /* тёмные плашки/карточки на светлом фоне —
+     единый тон для всех "тёмных бенто"-карточек по сайту (hero, Features,
+     Reviews, ContactsSection, ProcessSteps, PromoStripBanner) и фона тёмных
+     секций (LatestArticles), было 3 близких хардкод-значения
+     (#18181a/#1A191C/#0B0B0C) в разных компонентах */
+  --color-graphite-card: #232227; /* карточка НА тёмной секции (на тон
+     светлее --color-graphite) — LatestArticles, hover #28272C задан рядом
+     в компоненте (одноразовый, не токенизируем) */
   --color-fg-muted:     #6b7280;  /* = gray-500 — приглушённый текст */
   --color-fg-subtle:    #9ca3af;  /* = gray-400 — очень приглушённый */
   --color-surface:      #ffffff;  /* белый фон карточек */
@@ -68,30 +76,32 @@
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 
-/* Шрифтовая пара: Montserrat (display) — заголовки h1-h6,
-   Manrope — весь остальной текст. */
+/* Шрифтовая пара: Golos Text (display) — заголовки h1-h6,
+   Manrope — весь остальной текст. Golos Text не имеет весов ниже 400
+   (в отличие от Montserrat, который был 100-900) — сайт не использует
+   заголовки легче font-medium(500), так что диапазон 400-900 достаточен. */
 @font-face {
-  font-family: 'Montserrat Variable';
+  font-family: 'Golos Text Variable';
   font-style: normal;
   font-display: swap;
-  font-weight: 100 900;
-  src: url('/fonts/montserrat-cyrillic-ext-wght-normal.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-cyrillic-ext-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
 }
 @font-face {
-  font-family: 'Montserrat Variable';
+  font-family: 'Golos Text Variable';
   font-style: normal;
   font-display: swap;
-  font-weight: 100 900;
-  src: url('/fonts/montserrat-cyrillic-wght-normal.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-cyrillic-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
 }
 @font-face {
-  font-family: 'Montserrat Variable';
+  font-family: 'Golos Text Variable';
   font-style: normal;
   font-display: swap;
-  font-weight: 100 900;
-  src: url('/fonts/montserrat-latin-wght-normal.woff2') format('woff2-variations');
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 
@@ -112,7 +122,7 @@
 
   /* Typography */
   --font-sans:    'Manrope Variable', 'Manrope', 'Segoe UI', system-ui, sans-serif;
-  --font-display: 'Montserrat Variable', 'Montserrat', 'Segoe UI', sans-serif;
+  --font-display: 'Golos Text Variable', 'Golos Text', 'Segoe UI', sans-serif;
 
   /* Radius */
   --radius-card: 1.5rem;
@@ -149,7 +159,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Шрифтовая пара — заголовки на Montserrat (display), весь
+/* Шрифтовая пара — заголовки на Golos Text (display), весь
    остальной текст (body/labels/buttons) остаётся на Manrope через
    html{font-family}. Низкая specificity (тег, не класс) — намеренно:
    компоненты, где на h1-h6 уже стоит своя font-family через утилиту
@@ -305,6 +315,18 @@ h4.font-medium, h5.font-medium, h6.font-medium {
 .section {
   padding-top:    clamp(2.5rem, 4vw, 3.5rem);
   padding-bottom: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+/* Соседние .section складывали padding-bottom + padding-top в двойной
+   отступ (~80-112px) — вторая секция полагается на padding-bottom первой.
+   Vue-острова (client:load/visible/idle) рендерят обёртку <astro-island>
+   вокруг своей .section, поэтому реальные DOM-соседи чаще не два <section>
+   напрямую, а `astro-island` и `section` (в любом порядке) — эти случаи
+   перекрыты через :has() отдельно от прямого .section + .section. */
+.section + .section,
+astro-island:has(> .section) + .section,
+.section + astro-island:has(> .section) > .section {
+  padding-top: 0;
 }
 
 .breadcrumb-bar {

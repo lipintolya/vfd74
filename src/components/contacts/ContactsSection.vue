@@ -330,7 +330,7 @@
 /* Оттенки серого вместо фото — каждая карточка своим тоном */
 .wtg-card--1 { background: #3a3a3d; }
 .wtg-card--2 { background: #29292b; }
-.wtg-card--3 { background: #18181a; }
+.wtg-card--3 { background: var(--color-graphite); }
 
 .wtg-card__body {
   position: relative;

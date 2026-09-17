@@ -12,7 +12,7 @@ const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mon
 ---
 
 {articles.length > 0 && (
-  <section class="section bg-[#0B0B0C]" aria-labelledby="articles-heading">
+  <section class="section bg-graphite" aria-labelledby="articles-heading">
     <div class="container">
 
       <!-- Мобайл-фёрст: заголовок и «Все статьи» в одну строку только от sm, на
@@ -51,7 +51,7 @@ const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mon
             <li>
               <a
                 href={`/articles/${slug}/`}
-                class="group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#232227] shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] transition-colors duration-200 hover:border-white/20 hover:bg-[#28272C] focus-visible:outline-2 focus-visible:outline-teal-400 focus-visible:outline-offset-2 sm:flex-row sm:items-center sm:gap-8 sm:p-6 lg:gap-12 lg:p-10"
+                class="group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-graphite-card shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] transition-colors duration-200 hover:border-white/20 hover:bg-[#28272C] focus-visible:outline-2 focus-visible:outline-teal-400 focus-visible:outline-offset-2 sm:flex-row sm:items-center sm:gap-8 sm:p-6 lg:gap-12 lg:p-10"
               >
                 <div class="flex flex-1 flex-col p-6 sm:p-0">
                   <time

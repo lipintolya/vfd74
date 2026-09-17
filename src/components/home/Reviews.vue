@@ -181,7 +181,7 @@ onUnmounted(() => {
           v-for="(review, index) in sortedReviews"
           :key="review.id"
           data-review-card
-          class="flex w-70 shrink-0 snap-start flex-col gap-3 rounded-2xl bg-[#1A191C] p-6 sm:w-80"
+          class="flex w-70 shrink-0 snap-start flex-col gap-3 rounded-2xl bg-graphite p-6 sm:w-80"
           itemprop="itemListElement"
           itemscope
           itemtype="https://schema.org/Review"

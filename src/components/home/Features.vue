@@ -213,7 +213,7 @@ onBeforeUnmount(stopCycle)
         <li
           v-for="(feature, idx) in FEATURES"
           :key="feature.id"
-          class="group relative flex flex-col overflow-hidden rounded-3xl bg-[#1A191C] transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none"
+          class="group relative flex flex-col overflow-hidden rounded-3xl bg-graphite transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none"
           :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
           :style="{ transitionDelay: visible ? `${idx * 130}ms` : '0ms' }"
           itemprop="item"
