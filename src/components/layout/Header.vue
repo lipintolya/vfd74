@@ -390,7 +390,9 @@ onUnmounted(() => {
                 Связаться
               </button>
 
-              <!-- Contacts popover -->
+              <!-- Contacts popover — outer shell (double-bezel) держит мягкую
+                   подложку и hairline-рамку, inner-карточки внутри группируют
+                   телефоны/адрес отдельно от статуса и CTA. -->
               <Transition name="fade-slide">
                 <div
                   v-if="contactsOpen"
@@ -399,62 +401,72 @@ onUnmounted(() => {
                   role="dialog"
                   aria-label="Контактная информация"
                   aria-modal="false"
-                  class="absolute top-full right-0 mt-2 w-80 rounded-2xl
-                         bg-white border border-gray-100 p-5 z-50"
+                  class="absolute top-full right-0 mt-2.5 w-80 rounded-3xl
+                         bg-white/95 backdrop-blur-xl ring-1 ring-black/5
+                         shadow-[0_24px_60px_-16px_rgba(15,23,42,0.22)] p-1.5 z-50"
                 >
-                  <div class="space-y-4 text-sm">
+                  <div class="rounded-[1.25rem] bg-white p-5 space-y-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
 
                     <div>
-                      <p class="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Телефоны</p>
-                      <a
-                        v-for="p in CONTACTS.phones"
-                        :key="p.raw"
-                        :href="`tel:${p.raw}`"
-                        class="flex items-center gap-2.5 font-semibold text-gray-800 hover:text-teal-600
-                               transition-colors duration-200 py-0.5"
-                      >
-                        <img src="/icons/phone-call.webp" alt="" class="w-6 h-6 shrink-0" loading="eager" fetchpriority="high" />
-                        {{ p.label }}
-                      </a>
+                      <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-[0.14em] mb-2">Телефоны</p>
+                      <div class="flex flex-col gap-1">
+                        <a
+                          v-for="p in CONTACTS.phones"
+                          :key="p.raw"
+                          :href="`tel:${p.raw}`"
+                          class="group flex items-center gap-3 rounded-xl px-2 py-2 -mx-2
+                                 font-semibold text-gray-800 hover:bg-teal-50/70 hover:text-teal-700
+                                 transition-colors duration-200"
+                        >
+                          <img src="/icons/phone-call.webp" alt="" class="w-8 h-8 shrink-0" loading="eager" fetchpriority="high" />
+                          {{ p.label }}
+                        </a>
+                      </div>
                     </div>
 
-                    <div>
-                      <p class="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Адрес</p>
-                      <p class="text-gray-700 leading-snug">{{ CONTACTS.address }}</p>
-                    </div>
-
-                    <div>
-                      <p class="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Время работы</p>
-                      <p class="text-gray-700">{{ CONTACTS.worktime }}</p>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="rounded-xl bg-gray-50 p-3">
+                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1">Адрес</p>
+                        <p class="text-gray-700 leading-snug text-step-0">{{ CONTACTS.address }}</p>
+                      </div>
+                      <div class="rounded-xl bg-gray-50 p-3">
+                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1">Часы работы</p>
+                        <p class="text-gray-700 leading-snug text-step-0">{{ CONTACTS.worktime }}</p>
+                      </div>
                     </div>
 
                     <!-- Open / closed badge -->
                     <div
-                      class="rounded-xl px-3 py-2.5 font-medium"
-                      :class="isOpen ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'"
+                      class="relative overflow-hidden rounded-xl px-3.5 py-3 font-medium"
+                      :class="isOpen ? 'bg-teal-50 text-teal-700' : 'bg-red-50 text-red-700'"
                       aria-live="polite"
                       aria-atomic="true"
                     >
-                      <div class="flex items-center gap-2">
-                        <span
-                          class="w-2 h-2 rounded-full shrink-0"
-                          :class="isOpen ? 'bg-green-500 animate-pulse' : 'bg-red-500'"
-                          aria-hidden="true"
-                        />
+                      <div class="flex items-center gap-2.5">
+                        <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
+                          <span
+                            v-if="isOpen"
+                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75"
+                          />
+                          <span
+                            class="relative inline-flex h-2 w-2 rounded-full"
+                            :class="isOpen ? 'bg-teal-500' : 'bg-red-500'"
+                          />
+                        </span>
                         <span class="flex-1">
                           {{ isOpen ? 'Салон открыт' : closedMessage }}
                         </span>
-                        <span v-if="isOpen && timeUntilCloseText" class="text-xs text-gray-400 shrink-0">
+                        <span v-if="isOpen && timeUntilCloseText" class="text-xs opacity-60 shrink-0">
                           ({{ timeUntilCloseText }})
                         </span>
                       </div>
                     </div>
 
                     <div>
-                      <p class="text-xs text-gray-400 uppercase tracking-wide mb-1.5">Email</p>
+                      <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-[0.14em] mb-1.5">Email</p>
                       <a
                         :href="`mailto:${CONTACTS.email}`"
-                        class="underline underline-offset-2 hover:text-teal-600 transition-colors duration-200"
+                        class="font-medium text-gray-700 underline decoration-gray-300 underline-offset-4 hover:text-teal-600 hover:decoration-teal-400 transition-colors duration-200"
                       >
                         {{ CONTACTS.email }}
                       </a>
@@ -462,10 +474,20 @@ onUnmounted(() => {
 
                     <a
                       href="/contacts/"
-                      class="btn btn-primary w-full justify-center inline-flex items-center"
+                      class="group flex items-center justify-between gap-3 rounded-full bg-ink pl-5 pr-1.5 py-1.5
+                             font-semibold text-white transition-colors duration-200 hover:bg-gray-800"
                       @click="closeContacts(false)"
                     >
                       Перейти к контактам
+                      <span
+                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15
+                               transition-transform duration-200 group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      >
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
+                          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
                     </a>
 
                   </div>
