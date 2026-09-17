@@ -2,7 +2,6 @@
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../../components/ui/FaqAccordion.astro'
-import CoverSwitcher      from '../../components/catalog/CoverSwitcher.vue'
 import ColorSelector      from '../../components/catalog/ColorSelector.vue'
 import InfoImageViewer    from '../../components/catalog/InfoImageViewer.vue'
 import WorksGallery      from '../../components/catalog/WorksGallery.vue'
@@ -198,7 +197,18 @@ const structuredData = canonicalUrl ? [
   ══════════════════════════════════════════════ -->
   <div class="container sd-hero-wrap">
     <section class="sd-hero" aria-label="Двери скрытого монтажа">
-      <CoverSwitcher client:load />
+      <img
+        class="sd-hero__bg"
+        src="https://storage.yandexcloud.net/catalog-vfd/invisible/cover.webp"
+        alt=""
+        aria-hidden="true"
+        width="1672"
+        height="941"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <div class="sd-hero__grad" aria-hidden="true" />
 
       <div class="sd-hero__body">
         <p class="sd-eyebrow">Скрытый монтаж · Челябинск</p>
@@ -902,6 +912,25 @@ const structuredData = canonicalUrl ? [
   align-items: flex-end;
   background: #0f172a;
 }
+.sd-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sd-hero__grad {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.62) 0%,
+    rgba(15, 23, 42, 0.28) 45%,
+    rgba(15, 23, 42, 0.08) 100%
+  );
+}
 .sd-hero__body {
   position: relative;
   z-index: 1;
@@ -1284,16 +1313,6 @@ const structuredData = canonicalUrl ? [
   .sd-product__info { padding: 1.75rem 1.5rem; }
   .sd-cta { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.75rem 1.5rem; }
   .sd-product__price { gap: 1.25rem; }
-}
-@media (max-width: 640px) {
-  /* Hero: переключатель стилей идёт первым элементом потока (см. CoverSwitcher.vue),
-     поэтому секция должна стать column-flex — иначе он стоит вторым в row-направлении
-     и сжимается до нулевой ширины. Заголовок остаётся прижатым к низу карточки. */
-  .sd-hero {
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: space-between;
-  }
 }
 @media (max-width: 560px) {
   /* Спеки — в столбик */
