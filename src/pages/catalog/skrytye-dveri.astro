@@ -177,7 +177,7 @@ const structuredData = canonicalUrl ? [
   title="Скрытые двери в Челябинске — цены и монтаж | ВФД"
   description={`Скрытые двери «Секрет» и «Секрет Реверс» в Челябинске — полотно вровень со стеной, без наличников и видимых петель. Комплект от ${fmt(SECRET_MIN_KIT_PRICE)}. Бесплатный замер, монтаж под ключ.`}
   ogImage={IMAGES.invisible}
-  preloadImage={IMAGES.covers[0].src}
+  preloadImage={IMAGES.heroCover}
   canonical={canonicalUrl}
   structuredData={structuredData}
 >
@@ -199,11 +199,11 @@ const structuredData = canonicalUrl ? [
     <section class="sd-hero" aria-label="Двери скрытого монтажа">
       <img
         class="sd-hero__bg"
-        src="https://storage.yandexcloud.net/catalog-vfd/invisible/cover.webp"
+        src={IMAGES.heroCover}
         alt=""
         aria-hidden="true"
-        width="1672"
-        height="941"
+        width="1920"
+        height="1080"
         loading="eager"
         fetchpriority="high"
         decoding="async"

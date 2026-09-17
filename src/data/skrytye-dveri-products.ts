@@ -41,12 +41,8 @@ export const IMAGES = {
   invisible:    `${CDN}invisible.webp`,
   // Серия «Секрет Реверс» (реверсивный монтаж)
   invisibleRev: `${CDN}invisible_reverse.webp`,
-  // Обложки для свитчера (3 стиля интерьера)
-  covers: [
-    { id: 'modern',  label: 'Современный', src: `${CDN}cover.webp`        },
-    { id: 'loft',    label: 'Лофт',        src: `${CDN}cover_black.webp`   },
-    { id: 'artdeco', label: 'Арт-деко',    src: `${CDN}cover_artdeco.webp` },
-  ],
+  // Обложка hero на /catalog/skrytye-dveri/
+  heroCover: 'https://storage.yandexcloud.net/vfd74ru/invisible/invisible_cover.webp',
   // Портфолио — заменить src когда будут готовы
   portfolio: [
     { src: '', alt: 'Скрытая дверь в гостиной — Челябинск',           caption: 'Гостиная, кромка чёрная'     },
