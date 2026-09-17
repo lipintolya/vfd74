@@ -920,8 +920,9 @@ const structuredData = canonicalUrl ? [
   height: 100%;
   object-fit: cover;
   /* На узком мобильном кадре (16:9 в высокий aspect) центр кадра обрезает
-     дверь справа — на десктопе в широком кадре это не заметно. */
-  object-position: 30% center;
+     саму дверь — она в правой части кадра, на десктопе в широком кадре
+     это не заметно. */
+  object-position: 75% center;
 }
 @media (min-width: 641px) {
   .sd-hero__bg { object-position: center; }
