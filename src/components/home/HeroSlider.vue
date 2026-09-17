@@ -289,17 +289,11 @@ onUnmounted(stop)
               </div>
             </div>
 
-            <!-- Портфолио -->
-            <div class="relative overflow-hidden rounded-2xl min-h-44">
-              <img
-                src="https://storage.yandexcloud.net/catalog-vfd/covers/ourworks.webp"
-                alt=""
-                loading="eager"
-                decoding="async"
-                class="absolute inset-0 w-full h-full object-cover object-center"
-                aria-hidden="true"
-              />
-              <div class="absolute inset-0 bg-black/55" aria-hidden="true" />
+            <!-- Портфолио — тот же тёмный фон, что у «О компании», без
+                 фонового фото (было ourworks.webp с плоским затемнением,
+                 читалось хуже соседней карточки и визуально не сочеталось). -->
+            <div class="relative overflow-hidden rounded-2xl min-h-44" style="background-color: #18181a">
+              <div class="absolute inset-0 bg-linear-to-br from-white/8 via-transparent to-black/25" aria-hidden="true" />
               <div class="relative z-10 h-full p-6 flex flex-col justify-between text-white min-h-44">
                 <div>
                   <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Портфолио</p>
