@@ -35,8 +35,12 @@ const CONTACTS = {
   address: companyLegalInfo.address.legal,
 }
 
-const { lat, lng } = companyLegalInfo.address.coordinates
-const MAP_EMBED_URL = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=16&pt=${lng}%2C${lat}&l=map&source=constructor`
+/* Раньше здесь был живой iframe Yandex Maps (свой JS + тайлы) — карта
+   декоративная (pointer-events:none, aria-hidden, клик ведёт по MAP_LINK
+   отдельной ссылкой), но футер общий для всех ~400 страниц сайта, так что
+   iframe грузился на каждой. Заменён на статичный скриншот Static Maps API
+   (см. scripts/gen-footer-map.mjs) — то же визуально, без JS-рантайма. */
+const MAP_PREVIEW_IMAGE = '/renders/footer-map.webp'
 const MAP_LINK = 'https://yandex.ru/maps/-/CPTwZPi-'
 
 /* ============================================================
@@ -233,15 +237,15 @@ onUnmounted(() => {
             </a>
           </div>
           <div class="relative h-48 sm:h-56 rounded-xl overflow-hidden border border-white/10 bg-white/5">
-            <iframe
-              :src="MAP_EMBED_URL"
-              title="Карта проезда — ВФД на Кашириных, Челябинск"
-              width="100%"
-              height="100%"
+            <img
+              :src="MAP_PREVIEW_IMAGE"
+              alt=""
+              width="650"
+              height="450"
               loading="lazy"
-              style="border: none; pointer-events: none;"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover"
               aria-hidden="true"
-              tabindex="-1"
             />
             <a
               :href="MAP_LINK"
