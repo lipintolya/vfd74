@@ -167,7 +167,7 @@ const structuredData = canonicalUrl ? [
 
       {IMAGES.framuga && (
         <InfoImageViewer
-          client:only="vue"
+          client:visible
           variant="photo"
           images={[{
             src: IMAGES.framuga,
@@ -232,7 +232,7 @@ const structuredData = canonicalUrl ? [
 
       {REYKI_IMAGES.length > 0 && (
         <InfoImageViewer
-          client:only="vue"
+          client:visible
           variant="photo"
           aspectRatio="3 / 4"
           images={REYKI_IMAGES.map((src, i) => ({

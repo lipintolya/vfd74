@@ -63,7 +63,7 @@ const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
 
     {IMAGES.plintus && (
       <InfoImageViewer
-        client:only="vue"
+        client:visible
         variant="photo"
         images={[{
           src: IMAGES.plintus,
