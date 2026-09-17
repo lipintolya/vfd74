@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+
+/* Yandex-карта — тяжёлый сторонний iframe (свой JS + тайлы), грузим только
+   по клику вместо автозагрузки при монтировании острова. */
+const mapLoaded = ref(false)
+</script>
+
 <template>
   <section class="section">
     <div class="container">
@@ -165,15 +173,29 @@
               </a>
             </div>
 
-            <!-- Карта (встроенная) -->
-            <div class="rounded-lg overflow-hidden h-64 bg-gray-100 mb-6">
+            <!-- Карта (встроенная) — тяжёлый сторонний iframe, грузим только
+                 по клику вместо автозагрузки при монтировании острова. -->
+            <div class="relative rounded-lg overflow-hidden h-64 bg-gray-100 mb-6">
               <iframe
+                v-if="mapLoaded"
                 src="https://yandex.ru/map-widget/v1/?ll=61.306572%2C55.172868&amp;z=17&amp;pt=61.306572%2C55.172868&amp;l=map&amp;source=constructor"
                 width="100%"
                 height="100%"
                 frameborder="0"
                 style="border: none;"
               />
+              <button
+                v-else
+                type="button"
+                class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                @click="mapLoaded = true"
+              >
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 21s7-6.5 7-11.5a7 7 0 10-14 0C5 14.5 12 21 12 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <circle cx="12" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.6"/>
+                </svg>
+                <span class="text-sm font-semibold">Открыть карту</span>
+              </button>
             </div>
           </div>
 

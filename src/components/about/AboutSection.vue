@@ -152,7 +152,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               <img
                 :src="galleryImages[0]?.src"
                 :alt="galleryImages[0]?.alt"
+                width="900"
+                height="600"
                 loading="eager"
+                fetchpriority="high"
                 decoding="async"
               />
 
@@ -218,7 +221,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             <img
               :src="galleryImages[1]?.src"
               :alt="galleryImages[1]?.alt"
+              width="700"
+              height="933"
               loading="lazy"
+              decoding="async"
             />
 
             <div class="feature-link__content">
@@ -240,7 +246,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             <img
               :src="galleryImages[2]?.src"
               :alt="galleryImages[2]?.alt"
+              width="700"
+              height="933"
               loading="lazy"
+              decoding="async"
             />
 
             <div class="feature-link__content">
@@ -258,7 +267,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             <img
               :src="galleryImages[3]?.src"
               :alt="galleryImages[3]?.alt"
+              width="700"
+              height="933"
               loading="lazy"
+              decoding="async"
             />
 
             <div class="feature-link__content">
@@ -290,7 +302,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               :src="director.photo"
               :alt="director.name"
               class="director-photo"
+              width="500"
+              height="667"
               loading="lazy"
+              decoding="async"
             />
           </div>
 
@@ -358,7 +373,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             @click="openLightbox(index)"
           >
             <img
-              :src="img.src"
+              :src="img.srcThumb"
               :alt="img.alt"
               loading="lazy"
               decoding="async"
@@ -489,7 +504,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
         </button>
 
         <img
-          :src="galleryImages[lightboxIndex]?.src"
+          :src="galleryImages[lightboxIndex]?.srcFull"
           :alt="galleryImages[lightboxIndex]?.alt"
           class="lightbox-image"
           decoding="async"

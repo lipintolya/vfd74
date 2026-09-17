@@ -22,40 +22,58 @@ export const director = {
   experience: 'Более 20 лет в дверной отрасли',
   quote:
     '«Дверь выбирают не на сезон, а на годы. Поэтому мы не просто показываем каталог, а помогаем найти модель, которая точно подойдёт вашему интерьеру, бюджету и условиям эксплуатации. А наш монтаж — это гарантия качества и надежности.» — Надежда Липина',
-  photo: 'https://storage.yandexcloud.net/catalog-vfd/about_page/director.webp',
+  photo: '/renders/about/director-500.webp',
 }
 
+/* Каждая картинка рендерится в двух местах: маленькое превью (hero/
+   feature-link/нижняя галерея — src, srcThumb) и полноразмерный лайтбокс
+   по клику (srcFull, настоящий оригинал с Yandex Cloud). Оригиналы там
+   лежат в 1920×2560 (300-750КБ) — для превью это в разы больше реального
+   экранного размера, поэтому src/srcThumb — локальные sharp-ресайзы
+   (см. scripts/gen-about-images.mjs). */
 export const galleryImages = [
   {
     id: 1,
-    src: 'https://storage.yandexcloud.net/catalog-vfd/about_page/vfd_out.webp',
+    src: '/renders/about/vfd-out-900.webp',
+    srcThumb: '/renders/about/vfd-out-480.webp',
+    srcFull: 'https://storage.yandexcloud.net/catalog-vfd/about_page/vfd_out.webp',
     alt: 'Вывеска салона ВФД на Кашириных, Челябинск',
   },
   // Для блока IMAGE LINKS GRID — разные ракурсы
   {
     id: 2,
-    src: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-1.webp',
+    src: '/renders/about/g-1-700.webp',
+    srcThumb: '/renders/about/g-1-480.webp',
+    srcFull: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-1.webp',
     alt: 'Общий вид выставочного зала салона ВФД — широкий выбор дверей',
   },
   {
     id: 3,
-    src: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-5.webp',
+    src: '/renders/about/g-5-700.webp',
+    srcThumb: '/renders/about/g-5-480.webp',
+    srcFull: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-5.webp',
     alt: 'Примеры межкомнатных дверей в экспозиции салона ВФД',
   },
   {
     id: 4,
-    src: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-3.webp',
+    src: '/renders/about/g-3-700.webp',
+    srcThumb: '/renders/about/g-3-480.webp',
+    srcFull: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-3.webp',
     alt: 'Образцы фурнитуры и материалов для дверей в салоне ВФД',
   },
   // Для галереи ниже
   {
     id: 5,
-    src: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-2.webp',
+    src: '/renders/about/g-2-480.webp',
+    srcThumb: '/renders/about/g-2-480.webp',
+    srcFull: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-2.webp',
     alt: 'Экспозиция межкомнатных дверей в салоне ВФД',
   },
   {
     id: 6,
-    src: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-6.webp',
+    src: '/renders/about/g-6-480.webp',
+    srcThumb: '/renders/about/g-6-480.webp',
+    srcFull: 'https://storage.yandexcloud.net/catalog-vfd/about_page/g-6.webp',
     alt: 'Интерьер салона ВФД — зона консультаций',
   },
 ]
