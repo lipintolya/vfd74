@@ -8,7 +8,6 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import SectionNav from '../components/partitions/SectionNav.astro'
 import CatalogClient from '../components/catalog/CatalogClient.vue'
-import SeriesCard from '../components/catalog/SeriesCard.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import { getCatalogCards, getSeriesCardsData } from '../lib/catalog-data'
 import { getSeriesSpec, coatingGroupCopy } from '../data/series-descriptions'
@@ -32,17 +31,32 @@ const COATING_LANDING_SLUG = Object.fromEntries(
 ) as Record<string, string>
 
 
-/* Мягкий цветовой акцент группы по покрытию — та же логика, что и бейджи
-   цвета серии на карточках товара (CatalogProductCard.vue): каждое
-   покрытие получает свой оттенок, чтобы группы отличались с первого
-   взгляда, а не только текстом заголовка. */
-const COATING_ACCENT: Record<string, { panel: string; card: string; label: string; price: string }> = {
-  emalex:  { panel: 'border-blue-200 bg-blue-50/50',       card: 'border-blue-200 bg-blue-100/70',       label: 'text-blue-700',    price: 'text-blue-900/70' },
-  pet:     { panel: 'border-rose-200 bg-rose-50/50',       card: 'border-rose-200 bg-rose-100/70',       label: 'text-rose-700',    price: 'text-rose-900/70' },
-  protach: { panel: 'border-violet-200 bg-violet-50/50',   card: 'border-violet-200 bg-violet-100/70',   label: 'text-violet-700',  price: 'text-violet-900/70' },
-  emal:    { panel: 'border-slate-400 bg-slate-200/60',    card: 'border-slate-500 bg-slate-300/80',     label: 'text-slate-800',   price: 'text-slate-900' },
+/* Акцент группы по покрытию — раньше вся панель и карточка красились в
+   насыщенную заливку цвета (bg-blue-100/70 и т.п.), рядом с остальным
+   строгим бело-серым сайтом смотрелось аляписто. Теперь акцент — только
+   тонкая цветная полоска слева (border-l-4, как референс-карточки серий:
+   светлый нейтральный фон + одна цветная деталь) и цвет текста ценника/
+   лейбла; panel/card — единый нейтральный тон для всех покрытий. */
+const COATING_ACCENT: Record<string, { stripe: string; label: string; price: string }> = {
+  emalex:  { stripe: 'border-l-blue-500',   label: 'text-blue-700',   price: 'text-blue-700' },
+  pet:     { stripe: 'border-l-rose-500',   label: 'text-rose-700',   price: 'text-rose-700' },
+  protach: { stripe: 'border-l-violet-500', label: 'text-violet-700', price: 'text-violet-700' },
+  emal:    { stripe: 'border-l-slate-600',  label: 'text-slate-700',  price: 'text-slate-700' },
 }
-const DEFAULT_ACCENT = { panel: 'border-slate-200 bg-slate-50/60', card: 'border-slate-200 bg-white', label: 'text-slate-400', price: 'text-slate-500' }
+const DEFAULT_ACCENT = { stripe: 'border-l-teal-500', label: 'text-teal-700', price: 'text-teal-700' }
+const PANEL = 'border-slate-200 bg-white'
+const PILL_ACCENT = 'bg-graphite shadow-black/20 hover:bg-teal-600'
+
+/* Краткая выжимка покрытия для свёрнутого summary панели — раньше там
+   был только счётчик «N серий», непонятно чем покрытия отличаются друг
+   от друга без раскрытия панели. */
+const COATING_SUMMARY: Record<string, string> = {
+  emalex:  'Полипропилен от Ренолит (Германия)',
+  emal:    'Специальная защитно-декоративная эмаль',
+  protach: 'Двери с эффектом «софт-тач»',
+  pet:     'Современное покрытие повышенной износостойкости',
+  ekoshpon: 'Имитация древесной структуры',
+}
 
 const seriesCoatingGroups = [...new Map(
   seriesCardsData.map(s => [s.coatingSlug, { slug: s.coatingSlug, name: s.coatingName }])
@@ -194,24 +208,38 @@ const structuredData = canonicalUrl ? [
     <div id="series" class="section bg-white" style="padding-bottom: 0; scroll-margin-top: 5.5rem">
       <div class="container">
         <header id="series-title" class="max-w-2xl mb-8 md:mb-10" style="scroll-margin-top: 7.5rem">
-          <p class="t-eyebrow mb-3">Каталог дверей ВФД</p>
-          <h1 class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">Межкомнатные двери в Челябинске</h1>
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p class="t-eyebrow mb-3">Каталог дверей ВФД</p>
+              <h1 class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">Межкомнатные двери в Челябинске</h1>
+            </div>
+            {/* Полные карточки серий (фото+цена каждой) переехали на
+               /catalog/series/ — здесь превью группы компактнее (см. ниже),
+               но кому нужен весь список серий сразу — один клик отсюда. */}
+            <a href="/catalog/series/" class="mt-1 inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-teal-700 hover:text-teal-800">
+              Все серии
+              <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
 
           {/* Быстрый переход по покрытию вместо общей фразы не по делу —
-             сразу к нужной панели, а не пролистывать все подряд. */}
-          <ul class="mt-5 flex flex-wrap gap-2" role="list" aria-label="Перейти к покрытию">
-            {seriesCoatingGroups.map(group => {
-              return (
-                <li>
-                  <a
-                    href={`#panel-${group.slug}`}
-                    class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300"
-                  >
-                    {group.name}
-                  </a>
-                </li>
-              )
-            })}
+             сразу к нужной панели, а не пролистывать все подряд. Цвет
+             пилюли — единый графит (PILL_ACCENT), не цвет группы: пробовали
+             красить каждую в свой акцент (синий/фиолетовый/розовый), рядом
+             друг с другом это читалось пёстро и дёшево, не в языке сайта. */}
+          <ul class="mt-5 flex flex-wrap gap-2.5" role="list" aria-label="Перейти к покрытию">
+            {seriesCoatingGroups.map(group => (
+              <li>
+                <a
+                  href={`#panel-${group.slug}`}
+                  class={`inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold text-white shadow-lg transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:shadow-xl ${PILL_ACCENT}`}
+                >
+                  {group.name}
+                </a>
+              </li>
+            ))}
           </ul>
         </header>
         {seriesCoatingGroups.map((group, groupIndex) => {
@@ -222,14 +250,54 @@ const structuredData = canonicalUrl ? [
              визуально сливался со след. группой, а блок преимуществ читался
              как отдельная, не связанная с группой секция. Цвет панели —
              мягкий акцент по покрытию (та же палитра, что у бейджей серии
-             на карточках товара), чтобы группы отличались с первого взгляда. */
-          <div id={`panel-${group.slug}`} class={`mb-10 scroll-mt-24 rounded-3xl border ${accent.panel} p-4 sm:p-6 last:mb-0`}>
-            {/* Единая wrap-сетка, одинаковая колонность для всех групп — карточки
-               одного размера везде. Первая ячейка — инфо-карточка покрытия
-               (название/описание/цена от/CTA), дальше карточки серий — по
-               референсу (коллекция слева, товары справа в одной ленте). */}
-            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
-              <div class={`col-span-2 flex h-full flex-col justify-between gap-6 rounded-2xl border p-5 sm:col-span-1 sm:p-7 ${accent.card}`}>
+             на карточках товара), чтобы группы отличались с первого взгляда.
+
+             <details> вместо простого div — на мобильном 4 покрытия × сетка
+             карточек серий каждое давали очень длинный скролл до фильтров/
+             каталога. Первая группа раскрыта сразу (самая частая — Эмалекс),
+             остальные свёрнуты до клика; быстрый переход сверху (#panel-slug)
+             ведёт на саму панель, браузер разворачивает details-предка
+             при переходе по якорю нативно, без JS. */
+          <details id={`panel-${group.slug}`} open={groupIndex === 0} class={`group/panel mb-4 scroll-mt-24 rounded-3xl border ${PANEL} p-4 sm:p-6 last:mb-0`}>
+            <summary class={`-m-4 flex cursor-pointer list-none items-center justify-between gap-3 p-4 sm:-m-6 sm:p-6 [&::-webkit-details-marker]:hidden`}>
+              <span class="flex min-w-0 flex-col gap-1">
+                <span class="flex items-center gap-2.5">
+                  <span class="text-lg font-medium text-ink sm:text-xl">{group.name}</span>
+                  <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">{group.series.length} {group.series.length === 1 ? 'серия' : 'серий'}</span>
+                </span>
+                {COATING_SUMMARY[group.slug] && (
+                  <span class="text-sm text-slate-500">{COATING_SUMMARY[group.slug]}</span>
+                )}
+              </span>
+              <span class="flex shrink-0 items-center gap-3">
+                {/* Мини-превью серий группы — раньше свёрнутая панель была
+                   чистым текстом, непонятно что за двери внутри без клика.
+                   До 3 фото внахлёст (avatar-stack), только на самой
+                   панели — превью нужно свёрнутому состоянию, раскрытая
+                   и так показывает полные SeriesCard ниже. */}
+                <span class="hidden -space-x-3 sm:flex">
+                  {group.series.slice(0, 3).map(s => s.cover && (
+                    <span class="h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-slate-100 shadow-sm">
+                      <img src={s.cover} alt="" aria-hidden="true" loading="lazy" decoding="async" width="40" height="40" class="h-full w-full object-cover" />
+                    </span>
+                  ))}
+                </span>
+                <svg class="h-5 w-5 shrink-0 text-graphite transition-transform duration-200 group-open/panel:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </summary>
+            <div class="mt-4 sm:mt-5">
+            {/* Раньше здесь была сетка отдельных SeriesCard (фото+название+цена
+               на каждую серию) — на большом покрытии (Эмаль — 7 серий) это
+               разрасталось в длинную ленту карточек внутри и так уже длинной
+               страницы. Теперь одна карточка на группу: список серий текстом
+               слева (кликабельно, ведёт на страницу серии) + одно
+               представительное фото группы справа — компактнее, при этом
+               видно, что за двери внутри. Полные карточки серий с фото
+               остаются на /catalog/series/. */}
+            <div class={`grid gap-0 overflow-hidden rounded-2xl border border-l-4 sm:grid-cols-2 ${PANEL} ${accent.stripe}`}>
+              <div class="flex flex-col justify-between gap-6 p-5 sm:p-7">
                 <div>
                   <p class={`m-0 mb-2 text-xs font-semibold uppercase tracking-wide ${accent.label}`}>
                     Покрытие
@@ -239,7 +307,7 @@ const structuredData = canonicalUrl ? [
                     <p class="m-0 mb-2 text-sm font-semibold text-ink">{group.tagline}</p>
                   )}
                   {group.description && (
-                    <details class="group/desc m-0">
+                    <details class="group/desc m-0 mb-4">
                       <summary class={`inline-flex cursor-pointer list-none items-center gap-1 text-sm font-semibold [&::-webkit-details-marker]:hidden ${accent.label}`}>
                         Подробнее о покрытии
                         <svg class="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-open/desc:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -249,6 +317,24 @@ const structuredData = canonicalUrl ? [
                       <p class="m-0 mt-2 text-sm leading-relaxed text-slate-700">{group.description}</p>
                     </details>
                   )}
+                  <ul class="m-0 grid gap-1 p-0" role="list">
+                    {group.series.map(s => (
+                      <li>
+                        <a
+                          href={`/catalog/series/${s.slug}/`}
+                          class="group/series-link flex items-center justify-between gap-3 rounded-lg py-2 text-sm text-ink transition-colors hover:bg-white/60"
+                        >
+                          <span class="flex items-center gap-1.5 font-medium">
+                            <svg class={`h-3.5 w-3.5 shrink-0 transition-transform duration-150 group-hover/series-link:translate-x-0.5 ${accent.label}`} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Серия {s.name}
+                          </span>
+                          {s.minPrice && <span class="shrink-0 text-xs font-semibold text-slate-500">от {fmt(s.minPrice)}</span>}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
                 <div class="flex flex-col gap-3">
                   <p class={`m-0 text-lg font-medium sm:text-xl ${accent.price}`}>
@@ -263,11 +349,24 @@ const structuredData = canonicalUrl ? [
                   </a>
                 </div>
               </div>
-              {group.series.map((s, i) => <SeriesCard series={s} priority={groupIndex === 0 && i < 2} />)}
+              {group.series[0]?.cover && (
+                <div class="hidden sm:block">
+                  <img
+                    src={group.series[0].cover}
+                    alt={`Серия ${group.series[0].name} — покрытие ${group.name}`}
+                    loading={groupIndex === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    fetchpriority={groupIndex === 0 ? 'high' : undefined}
+                    width="600"
+                    height="500"
+                    class="h-full w-full object-cover"
+                  />
+                </div>
+              )}
             </div>
 
             {group.benefits.length > 0 && (
-              <details class={`group/benefits mt-6 border-t pt-6 ${accent.panel.split(' ')[0]}`}>
+              <details class="group/benefits mt-6 border-t border-slate-200 pt-6">
                 <summary class={`m-0 flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs font-semibold uppercase tracking-wide [&::-webkit-details-marker]:hidden ${accent.label}`}>
                   Почему выбирают {group.name}
                   <svg class="h-3 w-3 shrink-0 transition-transform duration-200 group-open/benefits:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -287,40 +386,48 @@ const structuredData = canonicalUrl ? [
             {group.closing && (
               <p class="m-0 mt-5 text-sm font-medium leading-relaxed text-slate-700">{group.closing}</p>
             )}
-          </div>
+            </div>
+          </details>
           )
         })}
 
-        <div class="mt-2 mb-8 md:mb-10">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по цвету</p>
-          <ul class="flex flex-wrap gap-2.5" role="list">
-            {COLOR_CATEGORIES.map(c => (
-              <li>
-                <a
-                  href={`/catalog/${c.slug}/`}
-                  class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700"
-                >
-                  {c.h1.replace(' в Челябинске', '')}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <!-- Двери по цвету/стилю — второстепенная SEO-навигация, не основной
+             путь к товару. Раньше это были два блока с flex-wrap на всю
+             ширину (заголовок + до 3 строк пилюль каждый) — на мобильном
+             перед фильтрами набегало ещё пол-экрана. Один компактный блок,
+             списки — горизонтальный скролл вместо переноса строк. -->
+        <div class="mt-2 mb-8 grid gap-4 sm:grid-cols-2 md:mb-10">
+          <div>
+            <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по цвету</p>
+            <ul class="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible" role="list">
+              {COLOR_CATEGORIES.map(c => (
+                <li class="shrink-0">
+                  <a
+                    href={`/catalog/${c.slug}/`}
+                    class="inline-flex items-center whitespace-nowrap rounded-full bg-graphite px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-600"
+                  >
+                    {c.h1.replace(' в Челябинске', '')}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div class="mt-2 mb-8 md:mb-10">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по стилю</p>
-          <ul class="flex flex-wrap gap-2.5" role="list">
-            {STYLE_CATEGORIES.map(c => (
-              <li>
-                <a
-                  href={`/catalog/${c.slug}/`}
-                  class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-teal-400 hover:text-teal-700"
-                >
-                  {c.h1.replace(' в Челябинске', '')}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div>
+            <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по стилю</p>
+            <ul class="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible" role="list">
+              {STYLE_CATEGORIES.map(c => (
+                <li class="shrink-0">
+                  <a
+                    href={`/catalog/${c.slug}/`}
+                    class="inline-flex items-center whitespace-nowrap rounded-full bg-graphite px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-600"
+                  >
+                    {c.h1.replace(' в Челябинске', '')}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

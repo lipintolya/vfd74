@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import CatalogEmptyState from './CatalogEmptyState.vue'
 import CatalogFilters from './CatalogFilters.vue'
 import CatalogGrid from './CatalogGrid.vue'
 import CatalogPagination from './CatalogPagination.vue'
 import type { CatalogCardItem, CatalogFilterOption, CatalogSort } from './types'
 
+/* Мобильные фильтры — полноэкранный bottom-sheet, а не блок, разворачивающийся
+   в общем потоке страницы: тот вариант требовал скроллить мимо всего списка
+   секций фильтра, чтобы увидеть результат применения. Шит открывается поверх
+   контента, скролл body блокируется на время открытия, кнопка внизу шита
+   сразу показывает актуальное число товаров и закрывает шит. */
 const mobileFiltersOpen = ref(false)
+watch(mobileFiltersOpen, (open) => {
+  if (typeof document === 'undefined') return
+  document.body.style.overflow = open ? 'hidden' : ''
+})
+onUnmounted(() => {
+  if (typeof document !== 'undefined') document.body.style.overflow = ''
+})
 
 /* ============================================================
    Props
@@ -121,14 +133,6 @@ const hasActiveFilters = computed(() =>
   Boolean(activeSeries.value || activeCoating.value || activeColor.value || glassOnly.value || searchQuery.value)
 )
 
-const activeSeriesLabel = computed(() =>
-  allSeries.find(item => item.value === activeSeries.value)?.label
-)
-
-const activeCoatingLabel = computed(() =>
-  allCoatings.find(item => item.value === activeCoating.value)?.label
-)
-
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(filteredCards.value.length / itemsPerPage))
 )
@@ -189,7 +193,7 @@ watch(
         <span class="relative inline-flex min-w-62">
           <select
             v-model="sortBy"
-            class="min-h-11.5 w-full appearance-none rounded-lg border-2 border-slate-200 bg-white py-0 pl-4 pr-10 text-step-1 font-semibold text-ink focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/15"
+            class="min-h-11.5 w-full appearance-none rounded-full border-2 border-slate-200 bg-white py-0 pl-4 pr-10 text-step-1 font-semibold text-ink focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/15"
           >
             <option value="popular">Популярные</option>
             <option value="price_asc">Цена: по возрастанию</option>
@@ -205,26 +209,25 @@ watch(
 
     <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-[15rem_1fr] lg:gap-7">
 
-      <div>
-        <!-- Mobile filter toggle -->
-        <button
-          type="button"
-          class="mb-4 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-slate-200 px-4.5 py-2.5 text-sm font-semibold text-slate-600 transition lg:hidden"
-          :class="hasActiveFilters ? 'border-teal-300 text-teal-700' : ''"
-          @click="mobileFiltersOpen = !mobileFiltersOpen"
-        >
-          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" class="w-4 h-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18M7 10h10M11 16h2" />
-          </svg>
-          <span>{{ mobileFiltersOpen ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
-          <span v-if="hasActiveFilters" class="ml-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-teal-600 text-xs font-medium text-white">
-            {{ [activeSeries, activeCoating, activeColor, glassOnly, searchQuery].filter(Boolean).length }}
-          </span>
-        </button>
+      <!-- Mobile filter toggle -->
+      <button
+        type="button"
+        class="flex w-full items-center justify-center gap-2 rounded-full border-2 border-slate-200 px-4.5 py-2.5 text-sm font-semibold text-slate-600 transition lg:hidden"
+        :class="hasActiveFilters ? 'border-teal-300 text-teal-700' : ''"
+        @click="mobileFiltersOpen = true"
+      >
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18M7 10h10M11 16h2" />
+        </svg>
+        <span>Фильтры</span>
+        <span v-if="hasActiveFilters" class="ml-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-teal-600 text-xs font-medium text-white">
+          {{ [activeSeries, activeCoating, activeColor, glassOnly, searchQuery].filter(Boolean).length }}
+        </span>
+      </button>
 
+      <!-- Desktop sidebar — sticky, всегда видим -->
+      <div class="hidden lg:block lg:sticky lg:top-[calc(var(--header-height,88px)+1.25rem)]">
         <CatalogFilters
-          class="lg:block"
-          :class="mobileFiltersOpen ? 'block' : 'hidden'"
           v-model:active-series="activeSeries"
           v-model:active-coating="activeCoating"
           v-model:active-color="activeColor"
@@ -239,6 +242,62 @@ watch(
           @reset="resetFilters"
         />
       </div>
+
+      <!-- Mobile filters — полноэкранный bottom-sheet поверх контента -->
+      <Teleport to="body">
+        <Transition name="cf-backdrop">
+          <div
+            v-if="mobileFiltersOpen"
+            class="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            @click="mobileFiltersOpen = false"
+          />
+        </Transition>
+        <Transition name="cf-sheet">
+          <div
+            v-if="mobileFiltersOpen"
+            class="fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-2xl bg-white shadow-2xl lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Фильтры каталога"
+          >
+            <div class="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
+              <span class="text-base font-medium text-ink">Фильтры</span>
+              <button
+                type="button"
+                class="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
+                aria-label="Закрыть фильтры"
+                @click="mobileFiltersOpen = false"
+              >
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M5 5l10 10M15 5 5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex-1 overflow-y-auto px-1 pb-1">
+              <CatalogFilters
+                class="rounded-none bg-white"
+                v-model:active-series="activeSeries"
+                v-model:active-coating="activeCoating"
+                v-model:active-color="activeColor"
+                v-model:glass-only="glassOnly"
+                v-model:search-query="searchQuery"
+                :series="allSeries"
+                :coatings="allCoatings"
+                :colors="allColors"
+                :total-count="allCards.length"
+                :filtered-count="filteredCards.length"
+                :has-active-filters="hasActiveFilters"
+                @reset="resetFilters"
+              />
+            </div>
+            <div class="border-t border-slate-100 p-4" style="padding-bottom: max(1rem, env(safe-area-inset-bottom))">
+              <button type="button" class="btn btn-primary w-full justify-center" @click="mobileFiltersOpen = false">
+                Показать {{ filteredCards.length }} {{ filteredCards.length === 1 ? 'товар' : 'товаров' }}
+              </button>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
 
       <div class="flex flex-col gap-6">
         <CatalogEmptyState
@@ -260,3 +319,35 @@ watch(
     </div>
   </section>
 </template>
+
+<style scoped>
+/* Bottom-sheet: слайд снизу вверх + фейд бэкдропа. cubic-bezier вместо
+   ease — лёгкий overshoot-эффект физического "шита", а не механический
+   линейный сдвиг. */
+.cf-sheet-enter-active,
+.cf-sheet-leave-active {
+  transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.cf-sheet-enter-from,
+.cf-sheet-leave-to {
+  transform: translateY(100%);
+}
+
+.cf-backdrop-enter-active,
+.cf-backdrop-leave-active {
+  transition: opacity 250ms ease;
+}
+.cf-backdrop-enter-from,
+.cf-backdrop-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-sheet-enter-active,
+  .cf-sheet-leave-active,
+  .cf-backdrop-enter-active,
+  .cf-backdrop-leave-active {
+    transition: none;
+  }
+}
+</style>

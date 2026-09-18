@@ -33,7 +33,7 @@ const {
   aria-hidden="true"
 >
   <div class="container">
-    <div class="mx-auto flex w-fit max-w-full items-center gap-0.5 rounded-full border border-slate-200/70 bg-white/80 p-1.5 shadow-[0_8px_28px_rgba(15,23,42,0.12)] backdrop-blur-lg">
+    <div class="pt-snav__glass mx-auto flex w-fit max-w-full items-center gap-0.5 rounded-full p-1.5">
       <ul class="pt-snav__list flex min-w-0 list-none items-center gap-0.5 overflow-x-auto" role="list">
         {items.map(it => (
           <li>
@@ -71,6 +71,41 @@ const {
     pointer-events: auto;
   }
 
+  /* Liquid-glass — раньше был плоский bg-white/80 + border + один blur,
+     на скролле сливался с фоном страницы и не читался как отдельный
+     плавающий объект. Настоящее стекло — это не просто blur, а три слоя:
+     1) сильный blur+saturate для эффекта préломления фона под собой,
+     2) тонкий градиентный highlight сверху (имитация света, падающего на
+        выпуклую кромку стекла) через ::before,
+     3) многослойная тень — мягкая дальняя (глубина) + резкая близкая
+        (контакт с поверхностью) вместо одной размытой. */
+  .pt-snav__glass {
+    position: relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.55));
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow:
+      0 1px 1px rgba(255,255,255,0.8) inset,
+      0 -1px 1px rgba(15,23,42,0.04) inset,
+      0 10px 30px -8px rgba(15,23,42,0.22),
+      0 2px 8px rgba(15,23,42,0.08);
+  }
+  /* Верхняя световая кромка — тонкая дуга света вдоль верхнего края,
+     как на настоящей выпуклой стеклянной поверхности. */
+  .pt-snav__glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0) 40%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
   .pt-snav__list { scrollbar-width: none; }
   .pt-snav__list::-webkit-scrollbar { display: none; }
 
@@ -78,6 +113,8 @@ const {
      .pt-snav__link.pt-snav--active специфичнее, чем :hover на одном
      классе, поэтому активный пункт не перекрашивается при наведении. */
   .pt-snav__link {
+    position: relative;
+    z-index: 1;
     color: var(--color-fg-muted);
   }
   .pt-snav__link:hover {
@@ -85,8 +122,9 @@ const {
     color: var(--color-accent-hover);
   }
   .pt-snav__link.pt-snav--active {
-    background: var(--color-accent-hover);
+    background: var(--color-graphite);
     color: #fff;
+    box-shadow: 0 2px 8px -2px rgba(24,24,26,0.5);
   }
 </style>
 
