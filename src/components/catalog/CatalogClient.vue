@@ -20,6 +20,19 @@ onUnmounted(() => {
   if (typeof document !== 'undefined') document.body.style.overflow = ''
 })
 
+/* CatalogClient рендерится с SSR (client:idle/client:load — сетка товаров
+   нужна в исходном HTML для SEO), а <Teleport> внутри SSR-компонента ломает
+   хайдрейшн: на сервере его содержимое уходит в отдельный teleports-буфер
+   (в основной HTML-поток попадает только anchor-комментарий), при
+   клиентской гидратации Vue не может сопоставить эту структуру 1:1 и
+   репортит "Hydration completed but contains mismatches" — тот же баг уже
+   был на /catalog/skrytye-dveri с WorksGallery. Рендерим Teleport только
+   после onMounted (isMounted всегда false на SSR и при первом клиентском
+   рендере до хайдрейшна — идентично серверному состоянию, значит самого
+   Teleport в дереве на момент хайдрейшна просто нет, сопоставлять нечего). */
+const isMounted = ref(false)
+onMounted(() => { isMounted.value = true })
+
 /* ============================================================
    Props
    ============================================================ */
@@ -243,8 +256,9 @@ watch(
         />
       </div>
 
-      <!-- Mobile filters — полноэкранный bottom-sheet поверх контента -->
-      <Teleport to="body">
+      <!-- Mobile filters — полноэкранный bottom-sheet поверх контента.
+           isMounted-гейт см. комментарий у объявления isMounted выше. -->
+      <Teleport v-if="isMounted" to="body">
         <Transition name="cf-backdrop">
           <div
             v-if="mobileFiltersOpen"
