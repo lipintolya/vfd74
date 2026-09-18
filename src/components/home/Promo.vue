@@ -31,6 +31,14 @@ onMounted(() => { clientReady.value = true })
 
 const { sectionRef, visible } = useScrollReveal(0.1)
 
+/* Секция показывает только первые 3 акции (остальные — на /akcii/), но
+   раньше рендерились все activePromos через v-show="index < 3": скрытые
+   карточки оставались в DOM, а их <img loading="lazy"> всё равно грузились
+   браузером в части случаев (display:none не всегда исключает элемент из
+   lazy-loading intersection). Срез по .slice() не создаёт лишний DOM и не
+   качает картинки, которые пользователь не увидит. */
+const visiblePromos = computed(() => activePromos.value.slice(0, 3))
+
 /* Описание скрыто за кнопкой «Узнать больше» — карточки короче и не давят
    текстом, картинка при этом крупнее (см. h-96 ниже), чтобы карточка не
    выглядела куце. Set пересоздаём целиком на каждый toggle — мутация
@@ -89,9 +97,8 @@ function toggleExpanded(id: string) {
         role="list"
       >
         <li
-          v-for="(promo, index) in activePromos"
+          v-for="(promo, index) in visiblePromos"
           :key="promo.id"
-          v-show="index < 3"
         >
           <div
             class="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-[opacity,transform,border-color,box-shadow] duration-600 ease-out hover:border-teal-400 hover:shadow-lg motion-reduce:transition-none"
@@ -104,6 +111,8 @@ function toggleExpanded(id: string) {
             <div class="relative aspect-4/3 w-full overflow-hidden bg-gray-100">
               <img
                 :src="promo.image"
+                :srcset="promo.imageSrcset"
+                sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
                 :alt="promo.title"
                 loading="lazy"
                 decoding="async"

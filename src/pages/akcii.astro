@@ -35,6 +35,8 @@ const activePromos = PROMOS
                 <div class="pa-image-wrap">
                   <img
                     src={promo.image}
+                    srcset={promo.imageSrcset}
+                    sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
                     alt={promo.title}
                     loading={index < 3 ? 'eager' : 'lazy'}
                     decoding="async"
