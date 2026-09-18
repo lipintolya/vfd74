@@ -281,31 +281,37 @@ onUnmounted(stop)
           <!-- Bottom row -->
           <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
 
-            <!-- Портфолио — светлая карточка, контраст с тёмным слайдером
-                 слева и тёмной карточкой «О компании» рядом. Инструмент
-                 (PNG-подобный webp без фона) прижат к правому нижнему
-                 углу как декоративный акцент «монтаж/установка». -->
-            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-gray-100">
+            <!-- Портфолио — тёмная карточка с фото рендера (та же схема
+                 фото+градиент, что у «Перегородок» выше), а не инструмент
+                 на сером фоне: инструмент выбивался из ряда «интерьер /
+                 текст на графите» и не читался как часть бренда. Локальные
+                 640w/960w срезы через gen-hero-bento.mjs — оригинал с
+                 Yandex Cloud 1024×1536/117KB кратно крупнее реального
+                 размера показа карточки. -->
+            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full">
               <img
-                src="/renders/hero/makita-cover-360.webp"
-                width="360"
-                height="341"
+                src="/renders/hero/portfolio-cover-960.webp"
+                srcset="/renders/hero/portfolio-cover-640.webp 640w, /renders/hero/portfolio-cover-960.webp 960w"
+                sizes="(max-width: 1023px) 50vw, 20vw"
+                width="960"
+                height="1440"
                 alt=""
                 loading="lazy"
                 decoding="async"
-                class="pointer-events-none absolute -right-6 bottom-0 translate-y-1/6 w-40 sm:w-36 lg:w-44"
+                class="absolute inset-0 w-full h-full object-cover object-center"
                 aria-hidden="true"
               />
-              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-between text-ink">
-                <div>
-                  <p class="text-xs uppercase tracking-widest text-ink/50 mb-1">Портфолио</p>
-                  <h4 class="font-medium text-sm sm:text-base leading-snug mb-1">Фотоотчёты с объектов</h4>
-                  <p class="text-sm text-ink/60">
+              <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/40 to-black/10" aria-hidden="true" />
+              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-end text-white">
+                <div class="min-h-18 sm:min-h-21">
+                  <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Портфолио</p>
+                  <h4 class="font-medium text-sm sm:text-base leading-snug mb-1 line-clamp-2">Фотоотчёты с объектов</h4>
+                  <p class="text-sm text-white/75 line-clamp-2">
                     <span class="sm:hidden">Живые фото с объектов</span>
                     <span class="hidden sm:inline">Живые фото с монтажей — помогут определиться с выбором</span>
                   </p>
                 </div>
-                <a href="/portfolio/" class="btn btn-primary mt-4 shrink-0 ring-1 ring-inset ring-white/55">
+                <a href="/portfolio/" class="btn btn-ghost shrink-0 mt-4">
                   Смотреть
                   <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -317,13 +323,13 @@ onUnmounted(stop)
             <!-- О компании — плоская графит-карточка, тот же тон, что у
                  остальных тёмных плашек по сайту (см. --color-graphite). -->
             <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-graphite">
-              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-between text-white">
-                <div>
+              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-end text-white">
+                <div class="min-h-18 sm:min-h-21">
                   <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Салон ВФД</p>
-                  <h4 class="font-medium text-sm sm:text-base mb-2 leading-snug">Полный цикл: от замера до монтажа</h4>
-                  <p class="text-sm text-white/75">Работаем в Челябинске с 2014 года</p>
+                  <h4 class="font-medium text-sm sm:text-base mb-1 leading-snug line-clamp-2">Полный цикл: от замера до монтажа</h4>
+                  <p class="text-sm text-white/75 line-clamp-2">Работаем в Челябинске с 2014 года</p>
                 </div>
-                <a href="/about/" class="btn btn-ghost mt-4 shrink-0">
+                <a href="/about/" class="btn btn-ghost shrink-0 mt-4">
                   Подробнее
                   <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>

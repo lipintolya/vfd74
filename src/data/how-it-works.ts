@@ -17,6 +17,7 @@ export const howItWorksSteps: Step[] = [
       'Работаем с дизайн-проектами и архитекторами',
       'Бесплатно, без обязательств',
     ],
+    image: '/renders/how-it-works/catalog-main-368.webp',
     cta: { label: 'Смотреть каталог', href: '/catalog/' },
   },
   {
@@ -55,6 +56,7 @@ export const howItWorksSteps: Step[] = [
       'Постгарантийная поддержка',
       'Обращение напрямую в салон, без посредников',
     ],
+    image: '/renders/how-it-works/garantee-main-368.webp',
     cta: { label: 'О компании', href: '/about/' },
   },
 ]

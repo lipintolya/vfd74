@@ -26,6 +26,8 @@
     "gen:about": "node scripts/gen-about-images.mjs",
     "gen:footer-map": "node scripts/gen-footer-map.mjs",
     "gen:partitions-tracks": "node scripts/gen-partitions-tracks.mjs",
+    "gen:how-it-works": "node scripts/gen-how-it-works-images.mjs",
+    "gen:promo": "node scripts/gen-promo-images.mjs",
     "deploy": "git push production main"
   },
   "dependencies": {
