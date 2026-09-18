@@ -35,11 +35,13 @@ const {
   <div class="container">
     {/* max-w-full один не спасал от переполнения на узких экранах — бар
        физически вылезал за .container вправо, обрезая крестик/последний
-       пункт без возможности их увидеть. flex-wrap вместо горизонтального
-       скролла — если пункты не влезают в одну строку, список переносится
-       на вторую строку внутри той же pill-панели, ничего не обрезается и
-       не уезжает за край экрана. */}
-    <div class="pt-snav__glass mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-0.5 rounded-[1.75rem] p-1.5">
+       пункт без возможности их увидеть. На мобильном при нехватке места
+       список переносится на новую строку внутри той же панели (flex-wrap);
+       rounded-2xl вместо капсульного rounded-full — на 2+ строках капсула
+       смотрелась как вытянутый овал, а не два аккуратных ряда. На desktop
+       (sm:) пункты почти всегда помещаются в одну строку — там оставлена
+       капсула. */}
+    <div class="pt-snav__glass mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-0.5 rounded-2xl p-1.5 sm:rounded-full">
       <ul class="pt-snav__list flex flex-wrap list-none items-center justify-center gap-0.5" role="list">
         {items.map(it => (
           <li>

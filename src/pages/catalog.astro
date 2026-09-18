@@ -392,16 +392,16 @@ const structuredData = canonicalUrl ? [
         })}
 
         <!-- Двери по цвету/стилю — второстепенная SEO-навигация, не основной
-             путь к товару. Раньше это были два блока с flex-wrap на всю
-             ширину (заголовок + до 3 строк пилюль каждый) — на мобильном
-             перед фильтрами набегало ещё пол-экрана. Один компактный блок,
-             списки — горизонтальный скролл вместо переноса строк. -->
+             путь к товару. Горизонтальный скролл на мобильном убран —
+             непонятно было, что список вообще скроллится, ничего не
+             намекало на свайп. Простой flex-wrap на всех брейкпоинтах:
+             не влезает в строку — переносится на следующую. -->
         <div class="mt-2 mb-8 grid gap-4 sm:grid-cols-2 md:mb-10">
           <div class="min-w-0">
             <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по цвету</p>
-            <ul class="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible" role="list">
+            <ul class="flex flex-wrap gap-2" role="list">
               {COLOR_CATEGORIES.map(c => (
-                <li class="shrink-0">
+                <li>
                   <a
                     href={`/catalog/${c.slug}/`}
                     class="inline-flex items-center whitespace-nowrap rounded-full bg-graphite px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-600"
@@ -415,9 +415,9 @@ const structuredData = canonicalUrl ? [
 
           <div class="min-w-0">
             <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по стилю</p>
-            <ul class="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible" role="list">
+            <ul class="flex flex-wrap gap-2" role="list">
               {STYLE_CATEGORIES.map(c => (
-                <li class="shrink-0">
+                <li>
                   <a
                     href={`/catalog/${c.slug}/`}
                     class="inline-flex items-center whitespace-nowrap rounded-full bg-graphite px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-600"
