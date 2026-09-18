@@ -32,10 +32,14 @@ const SOCIAL_NETWORKS = [
 ] as const
 
 const CONTACTS = {
-  phones:   companyLegalInfo.contacts.phone,
-  address:  `${companyLegalInfo.address.legal} (${companyLegalInfo.address.entrance})`,
-  worktime: `${companyLegalInfo.workingHours.weekdays.label}  ·  Сб–Вс: ${companyLegalInfo.workingHours.saturday.opens}–${companyLegalInfo.workingHours.saturday.closes}`,
-  email:    companyLegalInfo.contacts.email,
+  phones:  companyLegalInfo.contacts.phone,
+  address: companyLegalInfo.address.legal,
+  entrance: companyLegalInfo.address.entrance,
+  /** Будни/выходные — отдельные строки, а не одна склеенная через «·»:
+      на узкой карточке попапа она переносилась посередине слова, неровно. */
+  worktimeWeekdays: companyLegalInfo.workingHours.weekdays.label,
+  worktimeWeekend:  `Сб–Вс: ${companyLegalInfo.workingHours.saturday.opens}–${companyLegalInfo.workingHours.saturday.closes}`,
+  email:   companyLegalInfo.contacts.email,
 }
 
 const NAV_LINKS = [
@@ -424,14 +428,20 @@ onUnmounted(() => {
                       </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
-                      <div class="rounded-xl bg-gray-50 p-3">
-                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1">Адрес</p>
-                        <p class="text-gray-700 leading-snug text-step-0">{{ CONTACTS.address }}</p>
+                    <!-- Раньше это были две узкие колонки (grid-cols-2) —
+                         пятистрочный адрес с "вход со стороны" и часы работы
+                         в одну склеенную через «·» строку рвались неровно на
+                         такой ширине. Вертикальный стек читается спокойнее. -->
+                    <div class="flex flex-col gap-2.5">
+                      <div class="rounded-xl bg-gray-50 p-3.5">
+                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Адрес</p>
+                        <p class="text-gray-800 leading-snug text-step-0">{{ CONTACTS.address }}</p>
+                        <p class="text-gray-500 leading-snug text-xs mt-0.5">{{ CONTACTS.entrance }}</p>
                       </div>
-                      <div class="rounded-xl bg-gray-50 p-3">
-                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1">Часы работы</p>
-                        <p class="text-gray-700 leading-snug text-step-0">{{ CONTACTS.worktime }}</p>
+                      <div class="rounded-xl bg-gray-50 p-3.5">
+                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Часы работы</p>
+                        <p class="text-gray-800 leading-snug text-step-0">{{ CONTACTS.worktimeWeekdays }}</p>
+                        <p class="text-gray-500 leading-snug text-xs mt-0.5">{{ CONTACTS.worktimeWeekend }}</p>
                       </div>
                     </div>
 
