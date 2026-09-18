@@ -391,12 +391,38 @@ const structuredData = canonicalUrl ? [
           )
         })}
 
-        <!-- Двери по цвету/стилю — второстепенная SEO-навигация, не основной
-             путь к товару. Горизонтальный скролл на мобильном убран —
+        <!-- Двери по покрытию/цвету/стилю — второстепенная SEO-навигация, не
+             основной путь к товару. Горизонтальный скролл на мобильном убран —
              непонятно было, что список вообще скроллится, ничего не
              намекало на свайп. Простой flex-wrap на всех брейкпоинтах:
-             не влезает в строку — переносится на следующую. -->
-        <div class="mt-2 mb-8 grid gap-4 sm:grid-cols-2 md:mb-10">
+             не влезает в строку — переносится на следующую.
+
+             «По покрытию» — не все DOOR_CATEGORIES автоматически (тут уже
+             есть полноценные quick-jump пилюли по покрытию вверху страницы,
+             дублировать все 5 незачем), только 3 конкретных лендинга с
+             формулировкой под пользу, а не название материала —
+             «Не оставляют отпечатков» продаёт лучше, чем «Двери ПЭТ». -->
+        <div class="mt-2 mb-8 grid gap-4 sm:grid-cols-3 md:mb-10">
+          <div class="min-w-0">
+            <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по покрытию</p>
+            <ul class="flex flex-wrap gap-2" role="list">
+              {[
+                { slug: 'dveri-emal',     label: 'Двери в эмали' },
+                { slug: 'dveri-ekoshpon', label: 'Двери экошпон' },
+                { slug: 'dveri-pet',      label: 'Не оставляют отпечатков' },
+              ].map(c => (
+                <li>
+                  <a
+                    href={`/catalog/${c.slug}/`}
+                    class="inline-flex items-center whitespace-nowrap rounded-full bg-graphite px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-teal-600"
+                  >
+                    {c.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div class="min-w-0">
             <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по цвету</p>
             <ul class="flex flex-wrap gap-2" role="list">

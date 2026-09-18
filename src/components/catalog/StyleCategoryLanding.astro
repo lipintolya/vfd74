@@ -4,7 +4,10 @@
  *
  * Шаблон SEO-лендингов /catalog/<slug> по стилю интерьера (см.
  * src/data/style-categories.ts — там же объяснение источника серий).
- * Карточки отбираются по членству seriesSlug в category.seriesSlugs.
+ * Карточки отбираются по членству seriesSlug в category.seriesSlugs, либо,
+ * если у категории задан colorFilter (напр. «скандинавский стиль» = белый
+ * цвет + Эмалекс/Эмаль), тем же принципом substring-матча по цвету, что и
+ * ColorCategoryLanding.astro — см. комментарии там же.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../ui/Breadcrumbs.astro'
@@ -20,9 +23,41 @@ interface Props {
 
 const { category, cards } = Astro.props
 
-const matchedCards = cards.filter(c => category.seriesSlugs.includes(c.seriesSlug))
+const colorFilter = category.colorFilter
+const matchesColor = (name: string) =>
+  colorFilter ? colorFilter.colorKeywords.some(kw => name.toLowerCase().includes(kw.toLowerCase())) : false
 
-/* Фильтры — только из уже отобранной подборки серий. */
+/* Тот же приём, что в ColorCategoryLanding: переставляем совпавший цвет на
+   первое место, чтобы превью карточки показывало именно тот оттенок, из-за
+   которого она попала в подборку, а не дефолтный colorSwatches[0]. */
+const withMatchedColorFirst = (card: CatalogCardItem): CatalogCardItem => {
+  const idx = card.colorSwatches.findIndex(s => s.available && matchesColor(s.name))
+  const fallbackIdx = idx !== -1 ? idx : card.colorSwatches.findIndex(s => matchesColor(s.name))
+  if (fallbackIdx <= 0) return card
+
+  const swatch = card.colorSwatches[fallbackIdx]!
+  const reordered = [
+    swatch,
+    ...card.colorSwatches.slice(0, fallbackIdx),
+    ...card.colorSwatches.slice(fallbackIdx + 1),
+  ]
+  return {
+    ...card,
+    colorSwatches: reordered,
+    photo: swatch.photo || card.photo,
+    price: swatch.available === false ? card.price : (swatch.price ?? card.price),
+    colorName: swatch.name,
+    colorHex: swatch.hex,
+  }
+}
+
+const matchedCards = colorFilter
+  ? cards
+      .filter(c => colorFilter.coatingSlugs.includes(c.coatingSlug) && c.colorNames.some(matchesColor))
+      .map(withMatchedColorFirst)
+  : cards.filter(c => category.seriesSlugs.includes(c.seriesSlug))
+
+/* Фильтры — только из уже отобранной подборки. */
 const allSeries = [...new Map(
   matchedCards.filter(c => c.seriesSlug).map(c => [c.seriesSlug, { label: c.series, value: c.seriesSlug }])
 ).values()]
@@ -30,7 +65,8 @@ const allCoatings = [...new Map(
   matchedCards.filter(c => c.coatingSlug).map(c => [c.coatingSlug, { label: c.coating, value: c.coatingSlug }])
 ).values()]
 const allColors = [...new Map(
-  matchedCards.flatMap(c => c.colorSwatches.filter(s => s.available).map(s => [s.name, { label: s.name, value: s.name, color: s.hex }] as const))
+  matchedCards.flatMap(c => c.colorSwatches.filter(s => s.available && (!colorFilter || matchesColor(s.name)))
+    .map(s => [s.name, { label: s.name, value: s.name, color: s.hex }] as const))
 ).values()]
 
 const canonicalUrl = Astro.site ? new URL(`/catalog/${category.slug}/`, Astro.site).href : undefined
