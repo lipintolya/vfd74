@@ -5,8 +5,7 @@ import { companyLegalInfo } from '../../lib/contacts-data'
 /* ============================================================
    Constants
    ============================================================ */
-const HEADER_HEIGHT     = 72
-const HEADER_TOP_OFFSET = 16
+const headerEl = ref<HTMLElement | null>(null)
 
 const LOGO_URL = '/svg/logo.svg'
 
@@ -137,15 +136,23 @@ const closedMessage = computed(() => {
 /* ============================================================
    Handlers
    ============================================================ */
-const setHeaderVar = () =>
-  document.documentElement.style.setProperty(
-    '--header-height',
-    `${HEADER_HEIGHT + HEADER_TOP_OFFSET}px`
-  )
+/* Раньше высота считалась хардкодом (72 + 16px top-offset), без учёта
+   env(safe-area-inset-top) — на iOS с чёлкой/Dynamic Island реальный низ
+   шапки оказывался кратно ниже расчётных 88px, и SectionNav (плавающая
+   пилюля-навигация на /catalog, /partitions), позиционированный по
+   --header-height, наслаивался прямо на шапку вместо появления под ней.
+   Меряем реальный DOM-элемент — единственный источник истины, учитывающий
+   safe-area, перенос строк и любые будущие правки разметки шапки. */
+const setHeaderVar = () => {
+  if (!headerEl.value) return
+  const rect = headerEl.value.getBoundingClientRect()
+  document.documentElement.style.setProperty('--header-height', `${Math.ceil(rect.bottom)}px`)
+}
 
 const onScroll = () => { scrolled.value = window.scrollY > 20 }
 
 const onResize = () => {
+  setHeaderVar()
   if (window.innerWidth >= 1280) {
     closeMobileMenu()
     // Закрываем contacts-попап тоже — он hidden на мобильном через CSS,
@@ -214,6 +221,7 @@ const callPrimary = () => {
 onMounted(() => {
   currentPath.value = window.location.pathname
   setHeaderVar()
+  nextTick(setHeaderVar)
   window.addEventListener('scroll',  onScroll,       { passive: true })
   window.addEventListener('keydown', onKeydown)
   window.addEventListener('resize',  onResize,       { passive: true })
@@ -234,6 +242,7 @@ onUnmounted(() => {
 
 <template>
   <header
+    ref="headerEl"
     class="fixed inset-x-0 z-50"
     :style="{
       top: 'calc(env(safe-area-inset-top, 0px) + 1rem)',

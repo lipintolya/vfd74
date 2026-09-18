@@ -33,8 +33,14 @@ const {
   aria-hidden="true"
 >
   <div class="container">
-    <div class="pt-snav__glass mx-auto flex w-fit max-w-full items-center gap-0.5 rounded-full p-1.5">
-      <ul class="pt-snav__list flex min-w-0 list-none items-center gap-0.5 overflow-x-auto" role="list">
+    {/* max-w-full один не спасал от переполнения на узких экранах — бар
+       физически вылезал за .container вправо, обрезая крестик/последний
+       пункт без возможности их увидеть. flex-wrap вместо горизонтального
+       скролла — если пункты не влезают в одну строку, список переносится
+       на вторую строку внутри той же pill-панели, ничего не обрезается и
+       не уезжает за край экрана. */}
+    <div class="pt-snav__glass mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-0.5 rounded-[1.75rem] p-1.5">
+      <ul class="pt-snav__list flex flex-wrap list-none items-center justify-center gap-0.5" role="list">
         {items.map(it => (
           <li>
             <a
@@ -105,9 +111,6 @@ const {
     mask-composite: exclude;
     pointer-events: none;
   }
-
-  .pt-snav__list { scrollbar-width: none; }
-  .pt-snav__list::-webkit-scrollbar { display: none; }
 
   /* Активный/hover-цвет — завязан на токены темы. Composite-селектор
      .pt-snav__link.pt-snav--active специфичнее, чем :hover на одном
