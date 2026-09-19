@@ -11,7 +11,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import SectionHeading from '../components/partitions/SectionHeading.astro'
-import FaqAccordion from '../components/ui/FaqAccordion.astro'
+
+const HERO_IMAGE = 'https://storage.yandexcloud.net/vfd74ru/factory/factory_main.webp'
 
 const title       = 'О фабрике ВФД — производитель межкомнатных дверей | Челябинск'
 const description = 'Владимирская фабрика дверей — один из крупнейших производителей межкомнатных дверей в России: 32 000 м² производства, 850 сотрудников, 1200+ моделей. Официальный дилер в Челябинске — салон на Братьев Кашириных.'
@@ -54,29 +55,6 @@ const productionFeatures = [
   },
 ]
 
-const faq = [
-  {
-    q: 'ВФД в Челябинске — это сам завод или дилер?',
-    a: 'Салон на Братьев Кашириных, 131Б — официальный дилер Владимирской фабрики дверей в Челябинске, не производственная площадка. Само производство находится во Владимире; в Челябинске работает шоурум с выставочными образцами, консультацией, замером и монтажом.',
-  },
-  {
-    q: 'Где производятся двери ВФД?',
-    a: 'На собственных производственных мощностях Владимирской фабрики дверей — предприятие работает с 2002 года и занимает около 32 000 м².',
-  },
-  {
-    q: 'Почему у фабрики такой большой модельный ряд?',
-    a: 'Фабрика с 2002 года постоянно расширяет линейку — сейчас в каталоге более 1200 моделей разных серий, покрытий и ценовых сегментов, от бюджетных до премиальных.',
-  },
-  {
-    q: 'Можно ли посмотреть двери фабрики вживую в Челябинске?',
-    a: 'Да, в салоне на Братьев Кашириных, 131Б выставлены реальные образцы моделей и покрытий — приезжайте сравнить материалы и оттенки вживую, без заказа наугад по фото.',
-  },
-  {
-    q: 'Чем отличается покупка у дилера от покупки напрямую с завода?',
-    a: 'Дилер в Челябинске — это возможность увидеть и потрогать двери перед покупкой, получить консультацию, бесплатный замер и монтаж на месте, без необходимости взаимодействовать с заводом напрямую или ждать доставку из другого региона дольше обычного.',
-  },
-]
-
 const structuredData = canonicalUrl ? [
   {
     '@context': 'https://schema.org',
@@ -86,15 +64,6 @@ const structuredData = canonicalUrl ? [
       position: index + 1,
       name: item.label,
       item: item.href ? new URL(item.href, canonicalUrl).href : canonicalUrl,
-    })),
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faq.map(f => ({
-      '@type': 'Question',
-      name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a },
     })),
   },
   {
@@ -125,18 +94,38 @@ const structuredData = canonicalUrl ? [
   ══════════════════════════════════════════════ -->
   <section class="section bg-white">
     <div class="container">
-      <div class="max-w-3xl">
-        <p class="t-eyebrow block mb-3">Производитель · Владимирская фабрика дверей</p>
-        <h1 class="t-h1 mb-4">Фабрика, которая делает двери ВФД</h1>
-        <p class="mb-6 t-lead text-slate-600">
-          Владимирская фабрика дверей работает с 2002 года и выросла из небольшого столярного
-          производства в одного из крупнейших изготовителей межкомнатных дверей в России и СНГ.
-          В Челябинске продукцию фабрики представляет официальный дилер — салон на Братьев Кашириных.
+      <p class="t-eyebrow block mb-3">Производитель · Владимирская фабрика дверей</p>
+      <h1 class="t-h1 mb-6 max-w-3xl">Фабрика, которая делает двери ВФД</h1>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+        <p class="m-0 t-lead text-slate-600">
+          Владимирская фабрика дверей работает с 2002 года. Начав как небольшое столярное
+          производство, компания выросла в одного из крупнейших изготовителей межкомнатных
+          дверей в России и СНГ — с собственными цехами, автоматизированными линиями и штатом
+          в сотни специалистов деревообработки.
         </p>
-        <div class="flex gap-2.5 flex-wrap">
-          <a href="/catalog/" class="btn btn-primary">Смотреть каталог дверей</a>
-          <a href="/contacts/" class="btn btn-outline">Адрес салона в Челябинске</a>
-        </div>
+        <p class="m-0 t-lead text-slate-600">
+          Сегодня продукция фабрики поставляется дилерам по всей стране и в 10 стран за
+          рубежом. В Челябинске её представляет официальный дилер — салон на Братьев
+          Кашириных, где можно увидеть модели вживую, получить консультацию, бесплатный
+          замер и монтаж без обращения напрямую на завод.
+        </p>
+      </div>
+      <div class="mt-6 flex gap-2.5 flex-wrap">
+        <a href="/catalog/" class="btn btn-primary">Смотреть каталог дверей</a>
+        <a href="/contacts/" class="btn btn-outline">Адрес салона в Челябинске</a>
+      </div>
+
+      <div class="mt-10 lg:mt-12 overflow-hidden rounded-3xl">
+        <img
+          src={HERO_IMAGE}
+          alt="Производство Владимирской фабрики дверей"
+          width="2205"
+          height="1103"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="w-full h-auto object-cover"
+        />
       </div>
 
       <div class="mt-12 lg:mt-16 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 lg:gap-x-12">
@@ -154,7 +143,7 @@ const structuredData = canonicalUrl ? [
   <!-- ══════════════════════════════════════════════
        ПРОИЗВОДСТВО
   ══════════════════════════════════════════════ -->
-  <section class="section bg-slate-50">
+  <section class="section bg-white">
     <div class="container">
       <SectionHeading
         eyebrow="Производство"
@@ -197,7 +186,7 @@ const structuredData = canonicalUrl ? [
   <!-- ══════════════════════════════════════════════
        МОСТИК К ДИЛЕРУ В ЧЕЛЯБИНСКЕ
   ══════════════════════════════════════════════ -->
-  <section class="section bg-slate-50">
+  <section class="section bg-white">
     <div class="container">
       <div class="rounded-3xl border border-slate-200 bg-white p-[clamp(1.5rem,4vw,3rem)]">
         <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-10 items-center">
@@ -218,11 +207,5 @@ const structuredData = canonicalUrl ? [
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="section bg-white">
-    <div class="container">
-      <FaqAccordion items={faq} />
-    </div>
-  </section>
 
 </BaseLayout>
