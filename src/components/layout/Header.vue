@@ -57,6 +57,11 @@ const CATALOG_DROPDOWN = [
   { href: '/catalog/decor/',         label: 'Декор',         desc: 'Плинтус, фрамуги, рейки' },
 ] as const
 
+const ABOUT_DROPDOWN = [
+  { href: '/about/',     label: 'О салоне',   desc: 'Адрес, реквизиты, руководство' },
+  { href: '/o-fabrike/', label: 'О фабрике',  desc: 'Производитель дверей ВФД' },
+] as const
+
 const WORK_SCHEDULE = {
   weekday: { open: 10, close: 20 }, // Пн-Пт: 10:00-20:00
   weekend: { open: 10, close: 18 }, // Сб-Вс: 10:00-18:00
@@ -70,6 +75,8 @@ const mobileOpen   = ref(false)
 const contactsOpen = ref(false)
 const catalogOpen  = ref(false)
 let   catalogTimer: ReturnType<typeof setTimeout> | null = null
+const aboutOpen    = ref(false)
+let   aboutTimer: ReturnType<typeof setTimeout> | null = null
 const logoLoaded   = ref(false)
 const logoError    = ref(false)
 
@@ -193,6 +200,9 @@ const toggleMobileMenu = () => mobileOpen.value ? closeMobileMenu() : openMobile
 const openCatalog  = () => { if (catalogTimer !== null) clearTimeout(catalogTimer); catalogOpen.value = true }
 const closeCatalog = () => { catalogTimer = setTimeout(() => { catalogOpen.value = false }, 150) }
 
+const openAbout  = () => { if (aboutTimer !== null) clearTimeout(aboutTimer); aboutOpen.value = true }
+const closeAbout = () => { aboutTimer = setTimeout(() => { aboutOpen.value = false }, 150) }
+
 const openContacts = async () => {
   contactsOpen.value = true
   await nextTick()
@@ -237,6 +247,7 @@ onUnmounted(() => {
   document.body.style.overflow = ''
   if (timerId !== null) clearInterval(timerId)
   if (catalogTimer !== null) clearTimeout(catalogTimer)
+  if (aboutTimer !== null) clearTimeout(aboutTimer)
 })
 </script>
 
@@ -306,7 +317,7 @@ onUnmounted(() => {
 
             <!-- Обычная ссылка -->
             <a
-              v-if="link.href !== '/catalog/'"
+              v-if="link.href !== '/catalog/' && link.href !== '/about/'"
               :href="link.href"
               class="transition-colors duration-200"
               :class="isActive(link.href)
@@ -317,7 +328,7 @@ onUnmounted(() => {
 
             <!-- Каталог с дропдауном -->
             <div
-              v-else
+              v-else-if="link.href === '/catalog/'"
               class="relative"
               @mouseenter="openCatalog"
               @mouseleave="closeCatalog"
@@ -361,6 +372,60 @@ onUnmounted(() => {
                            transition-colors duration-150 text-left"
                     role="menuitem"
                     @click="catalogOpen = false"
+                  >
+                    <span class="text-sm font-semibold text-gray-900">{{ item.label }}</span>
+                    <span class="text-xs text-gray-400 mt-0.5">{{ item.desc }}</span>
+                  </a>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- О нас с дропдауном (О салоне / О фабрике) -->
+            <div
+              v-else
+              class="relative"
+              @mouseenter="openAbout"
+              @mouseleave="closeAbout"
+              @focusin="openAbout"
+              @focusout="closeAbout"
+            >
+              <a
+                :href="link.href"
+                class="flex items-center gap-0.5 transition-colors duration-200"
+                :class="currentPath.startsWith('/about') || currentPath.startsWith('/o-fabrike')
+                  ? 'text-gray-900 font-semibold'
+                  : 'text-gray-500 hover:text-gray-900'"
+                :aria-current="isActive(link.href) ? 'page' : undefined"
+                :aria-haspopup="true"
+                :aria-expanded="aboutOpen"
+              >
+                {{ link.label }}
+                <svg
+                  class="w-3.5 h-3.5 transition-transform duration-200"
+                  :class="{ 'rotate-180': aboutOpen }"
+                  viewBox="0 0 24 24" fill="none"
+                  aria-hidden="true"
+                >
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </a>
+
+              <Transition name="fade-slide">
+                <div
+                  v-if="aboutOpen"
+                  class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 rounded-2xl
+                         bg-white border border-gray-100 shadow-lg shadow-black/5 p-1.5 z-50"
+                  role="menu"
+                  aria-label="О компании"
+                >
+                  <a
+                    v-for="item in ABOUT_DROPDOWN"
+                    :key="item.href"
+                    :href="item.href"
+                    class="flex flex-col px-3.5 py-2.5 rounded-xl hover:bg-gray-50
+                           transition-colors duration-150 text-left"
+                    role="menuitem"
+                    @click="aboutOpen = false"
                   >
                     <span class="text-sm font-semibold text-gray-900">{{ item.label }}</span>
                     <span class="text-xs text-gray-400 mt-0.5">{{ item.desc }}</span>
@@ -652,6 +717,16 @@ onUnmounted(() => {
               <!-- Подразделы каталога -->
               <ul v-if="link.href === '/catalog/'" class="mb-3 -mt-1 space-y-0.5" role="list">
                 <li v-for="item in CATALOG_DROPDOWN" :key="item.href">
+                  <a
+                    :href="item.href"
+                    class="block rounded-xl px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:bg-white/5 hover:text-white/90"
+                    @click="closeMobileMenu"
+                  >{{ item.label }}</a>
+                </li>
+              </ul>
+              <!-- Подразделы «О нас» -->
+              <ul v-if="link.href === '/about/'" class="mb-3 -mt-1 space-y-0.5" role="list">
+                <li v-for="item in ABOUT_DROPDOWN" :key="item.href">
                   <a
                     :href="item.href"
                     class="block rounded-xl px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:bg-white/5 hover:text-white/90"
