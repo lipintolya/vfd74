@@ -226,7 +226,7 @@ onBeforeUnmount(stopCycle)
              прямо на белом фоне секции, без ощущения объекта. Внутренний
              блок скруглён на padding меньше внешнего (концентрические
              радиусы), поэтому рамка равномерна по всему периметру. -->
-        <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(1.75rem-0.375rem)] bg-graphite">
+        <div class="relative flex h-full flex-col overflow-hidden rounded-[1.375rem] bg-graphite">
           <!-- Фото — во всю ширину карточки, без отступов, статично, переключение
                по клику на точку/стрелку или свайпом на тач (мобайл-фёрст: фото
                задаёт форму карточки, текст под ним в своём паддинге). -->

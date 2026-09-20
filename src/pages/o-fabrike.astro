@@ -1,22 +1,25 @@
 ---
 /**
  * src/pages/o-fabrike.astro
- * Имиджевый SEO-лендинг про завод-производитель (Владимирская фабрика
+ * Имиджевый SEO-лендинг про завод-производителя (Владимирская фабрика
  * дверей) — не путать с /about/ (про салон ВФД в Челябинске: адрес,
- * реквизиты, руководство). Факты о заводе (год основания, площадь,
- * штат, сеть дилеров) — с официального сайта vfd.ru/about. Страница
- * говорит о фабрике в третьем лице ("фабрика", "завод"), а не "мы" —
- * vfd74.ru является официальным дилером, не самим производителем.
+ * реквизиты, руководство). Факты о заводе — с официального сайта
+ * vfd.ru/about. Страница говорит о фабрике в третьем лице ("фабрика"),
+ * а не "мы" — vfd74.ru официальный дилер, не сам производитель.
  */
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import SectionHeading from '../components/partitions/SectionHeading.astro'
+import { companyLegalInfo } from '../lib/contacts-data'
 
 const HERO_IMAGE = 'https://storage.yandexcloud.net/vfd74ru/factory/factory_main.webp'
 
-const title       = 'О фабрике ВФД — производитель межкомнатных дверей | Челябинск'
-const description = 'Владимирская фабрика дверей — один из крупнейших производителей межкомнатных дверей в России: 32 000 м² производства, 850 сотрудников, 1200+ моделей. Официальный дилер в Челябинске — салон на Братьев Кашириных.'
+const title       = 'Владимирская фабрика дверей (ВФД) — о производителе | Официальный дилер в Челябинске'
+const description = 'Кто производит двери ВФД: производство с 2002 года, собственные цеха и обработка стекла, 1200+ моделей. Официальный дилер в Челябинске — салон на Братьев Кашириных: замер, доставка, монтаж.'
 const canonicalUrl = Astro.site ? new URL('/o-fabrike/', Astro.site).href : undefined
+
+const phone = companyLegalInfo.contacts.phone[0]!
+const hours = companyLegalInfo.workingHours
 
 const breadcrumbItems = [
   { label: 'Главная', href: '/' },
@@ -24,35 +27,42 @@ const breadcrumbItems = [
 ]
 
 const factoryStats = [
-  { val: '2002',   lbl: 'год основания',        desc: 'Начинали с небольшого столярного производства' },
-  { val: '32 000', lbl: 'м² производства',       desc: 'Собственные производственные площади' },
-  { val: '850+',   lbl: 'сотрудников',           desc: 'Специалисты деревообработки и контроля качества' },
-  { val: '1200+',  lbl: 'моделей в каталоге',    desc: 'Постоянно обновляемый модельный ряд' },
+  { val: '2002',    lbl: 'год основания',           desc: 'Первый деревообрабатывающий цех во Владимирской области' },
+  { val: '38 000',  lbl: 'м² производственные площадки', desc: 'Собственные цеха, без аутсорса основного производства' },
+  { val: '850',     lbl: 'специалистов',             desc: 'Деревообработка, сборка, контроль качества' },
+  { val: '1200+',   lbl: 'моделей в каталоге',       desc: 'Модельный ряд обновляется каждый сезон' },
 ]
 
-const scaleStats = [
-  { val: '2000+', lbl: 'точек продаж', desc: 'Дилерская сеть по всей России' },
-  { val: '10',    lbl: 'региональных складов', desc: 'Быстрая логистика в удалённые регионы' },
-  { val: '10',    lbl: 'стран поставки', desc: 'Продукция фабрики представлена и за пределами России' },
-]
+const FACTORY_CDN = 'https://storage.yandexcloud.net/vfd74ru/factory/'
 
 const productionFeatures = [
   {
-    title: 'Автоматизированное оборудование',
-    text: 'Производственные линии на современном оборудовании немецких и итальянских брендов — точность геометрии полотна и стабильное качество от партии к партии.',
+    title: 'Автоматизированные линии',
+    text: 'Основное оборудование — немецкое и итальянское. Это то, что напрямую видно покупателю: точная геометрия полотна, ровные примыкания и одинаковый результат от партии к партии.',
+    image: `${FACTORY_CDN}card_1.webp`,
   },
   {
-    title: 'Собственное стекольное производство',
-    text: 'Фабрика самостоятельно обрабатывает стекло для остеклённых моделей — это независимость от внешних поставщиков и больше свободы в дизайне дверей со стеклом.',
+    title: 'Собственная обработка стекла',
+    text: 'Стекло для остеклённых моделей фабрика режет и обрабатывает сама. Отсюда — свобода в рисунке и размерах вставок и отсутствие срывов сроков по вине стороннего поставщика.',
+    image: `${FACTORY_CDN}card_2.webp`,
   },
   {
-    title: 'Контроль качества на каждом этапе',
-    text: 'Отдельная команда следит за соответствием материалов и готовых полотен стандартам фабрики — от входного контроля сырья до финальной проверки перед отгрузкой.',
+    title: 'Контроль на входе и на выходе',
+    text: 'Проверяется и сырьё, и готовое полотно перед отгрузкой. Для покупателя это минимальный процент брака при приёмке — то, из-за чего обычно сдвигается монтаж.',
+    image: `${FACTORY_CDN}card_3.webp`,
   },
   {
-    title: 'Постоянная разработка новых покрытий',
-    text: 'Собственный R&D-отдел тестирует новые материалы и текстуры — так в модельном ряду появляются актуальные покрытия вроде Эмалекс и Протач.',
+    title: 'Собственная разработка покрытий',
+    text: 'Фабрика тестирует новые материалы и текстуры и выпускает свои линейки покрытий — например, Эмалекс и Протач, помимо классических ПВХ, полипропилена, финиш-плёнки и эмали.',
+    image: `${FACTORY_CDN}card_4.webp`,
   },
+]
+
+const dealerPoints = [
+  'Экспозиция — покрытия и фурнитуру можно посмотреть и потрогать, а не выбирать по фото на экране',
+  'Бесплатный замер на объекте с расчётом комплектации',
+  'Монтаж собственной бригадой, а не подрядчиками со стороны',
+  'Гарантия и на полотно, и на установку — вопросы решаются в Челябинске, без переписки с заводом',
 ]
 
 const structuredData = canonicalUrl ? [
@@ -71,7 +81,7 @@ const structuredData = canonicalUrl ? [
     '@type': 'Organization',
     name: 'Владимирская фабрика дверей',
     foundingDate: '2002',
-    description: 'Производитель межкомнатных дверей — 32 000 м² производственных площадей, более 1200 моделей, дилерская сеть свыше 2000 точек продаж в России и за рубежом.',
+    description: 'Производитель межкомнатных дверей — 38 000 м² производственных площадок, более 1200 моделей, дилерская сеть свыше 2000 точек продаж в России и за рубежом.',
   },
 ] : undefined
 ---
@@ -89,30 +99,27 @@ const structuredData = canonicalUrl ? [
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       HERO
-  ══════════════════════════════════════════════ -->
+  <!-- HERO -->
   <section class="section bg-white">
     <div class="container">
       <p class="t-eyebrow block mb-3">Производитель · Владимирская фабрика дверей</p>
-      <h1 class="t-h1 mb-6 max-w-3xl">Фабрика, которая делает двери ВФД</h1>
+      <h1 class="t-h1 mb-6 max-w-3xl">Владимирская фабрика дверей: кто производит двери ВФД</h1>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
         <p class="m-0 t-lead text-slate-600">
-          Владимирская фабрика дверей работает с 2002 года. Начав как небольшое столярное
-          производство, компания выросла в одного из крупнейших изготовителей межкомнатных
-          дверей в России и СНГ — с собственными цехами, автоматизированными линиями и штатом
-          в сотни специалистов деревообработки.
+          ВФД — российский производитель межкомнатных дверей с полным циклом: от обработки
+          материала до готового полотна. Производство началось в 2002 году с небольшого
+          деревообрабатывающего цеха во Владимирской области, сегодня это одно из крупнейших
+          предприятий отрасли в России и СНГ — с автоматизированными линиями, собственным
+          стекольным цехом и постоянной разработкой новых покрытий.
         </p>
         <p class="m-0 t-lead text-slate-600">
-          Сегодня продукция фабрики поставляется дилерам по всей стране и в 10 стран за
-          рубежом. В Челябинске её представляет официальный дилер — салон на Братьев
-          Кашириных, где можно увидеть модели вживую, получить консультацию, бесплатный
-          замер и монтаж без обращения напрямую на завод.
+          Эта страница — о самом производителе. Мы — официальный дилер фабрики в Челябинске:
+          салон на Братьев Кашириных с живой экспозицией, бесплатным замером и монтажом
+          собственной бригадой.
         </p>
       </div>
       <div class="mt-6 flex gap-2.5 flex-wrap">
-        <a href="/catalog/" class="btn btn-primary">Смотреть каталог дверей</a>
-        <a href="/contacts/" class="btn btn-outline">Адрес салона в Челябинске</a>
+        <a href="/catalog/" class="btn btn-primary">Смотреть каталог дверей ВФД</a>
       </div>
 
       <div class="mt-10 lg:mt-12 overflow-hidden rounded-3xl">
@@ -128,84 +135,93 @@ const structuredData = canonicalUrl ? [
         />
       </div>
 
-      <div class="mt-12 lg:mt-16 grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 lg:gap-x-12">
-        {factoryStats.map((s, i) => (
-          <div class:list={['flex flex-col', i > 0 && 'border-t sm:border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 sm:pt-6 lg:pt-0 lg:pl-8']}>
-            <span class="t-stat block">{s.val}</span>
-            <span class="block text-sm font-semibold text-ink mt-1.5 leading-snug">{s.lbl}</span>
-            <span class="block text-xs text-slate-500 leading-snug mt-1">{s.desc}</span>
-          </div>
-        ))}
+      <div class="mt-8">
+        <p class="mb-4 text-xs text-slate-400">Данные приведены по материалам производителя.</p>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 lg:gap-x-12">
+          {factoryStats.map((s, i) => (
+            <div class:list={['flex flex-col', i > 0 && 'border-t sm:border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 sm:pt-6 lg:pt-0 lg:pl-8']}>
+              <span class="t-stat block">{s.val}</span>
+              <span class="block text-sm font-semibold text-ink mt-1.5 leading-snug">{s.lbl}</span>
+              <span class="block text-xs text-slate-500 leading-snug mt-1">{s.desc}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
-       ПРОИЗВОДСТВО
-  ══════════════════════════════════════════════ -->
+  <!-- ПРОИЗВОДСТВО -->
   <section class="section bg-white">
     <div class="container">
-      <SectionHeading
-        eyebrow="Производство"
-        title="Как фабрика делает двери"
-        subtitle="Полный цикл — от обработки материала до готового полотна — на собственных производственных мощностях."
-      />
+      <SectionHeading eyebrow="Производство" title="Как фабрика производит двери" />
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 lg:gap-5">
         {productionFeatures.map(f => (
-          <article class="rounded-2xl border border-slate-200 bg-white p-[clamp(1.25rem,2.5vw,1.75rem)]">
-            <h3 class="mb-2 text-step-2 font-medium text-ink">{f.title}</h3>
-            <p class="m-0 text-sm leading-relaxed text-slate-600">{f.text}</p>
+          <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div class="aspect-video w-full overflow-hidden bg-slate-100">
+              <img
+                src={f.image}
+                alt={f.title}
+                loading="lazy"
+                decoding="async"
+                width="640"
+                height="360"
+                class="h-full w-full object-cover"
+              />
+            </div>
+            <div class="p-[clamp(1.25rem,2.5vw,1.75rem)]">
+              <h3 class="mb-2 text-step-2 font-medium text-ink">{f.title}</h3>
+              <p class="m-0 text-sm leading-relaxed text-slate-600">{f.text}</p>
+            </div>
           </article>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
-       МАСШТАБ
-  ══════════════════════════════════════════════ -->
+  <!-- ЛОГИСТИКА -->
   <section class="section bg-white">
     <div class="container">
-      <SectionHeading
-        eyebrow="Масштаб"
-        title="От небольшого цеха до федеральной сети"
-        subtitle="Фабрика поставляет двери дилерам по всей России и за её пределами."
-      />
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 lg:gap-5">
-        {scaleStats.map(s => (
-          <div class="rounded-2xl bg-graphite p-[clamp(1.5rem,3vw,2rem)] text-white">
-            <span class="block text-3xl font-medium leading-none sm:text-4xl">{s.val}</span>
-            <span class="mt-2 block text-sm font-semibold leading-snug">{s.lbl}</span>
-            <span class="mt-1 block text-xs leading-snug text-white/65">{s.desc}</span>
-          </div>
-        ))}
-      </div>
+      <SectionHeading eyebrow="Логистика" title="Почему двери ВФД доступны в Челябинске быстро" />
+      <p class="m-0 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg">
+        Фабрика работает через дилерскую сеть — около 2000 точек продаж в России и поставки
+        в 10 стран, а склады распределены по регионам: их десять, поэтому популярные модели
+        не нужно ждать с завода неделями. Наш салон в Челябинске обслуживается с ближайшего
+        склада, а редкие артикулы и нестандарт мы заказываем под конкретный проект.
+      </p>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════
-       МОСТИК К ДИЛЕРУ В ЧЕЛЯБИНСКЕ
-  ══════════════════════════════════════════════ -->
+  <!-- ДИЛЕР В ЧЕЛЯБИНСКЕ -->
   <section class="section bg-white">
     <div class="container">
       <div class="rounded-3xl border border-slate-200 bg-white p-[clamp(1.5rem,4vw,3rem)]">
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 lg:gap-10 items-center">
-          <div>
-            <p class="t-eyebrow block mb-3">В Челябинске</p>
-            <h2 class="t-h2 mb-3">Официальный дилер фабрики — салон на Братьев Кашириных</h2>
-            <p class="m-0 text-sm leading-relaxed text-slate-600 sm:text-base">
-              Смотрите модели и покрытия фабрики вживую, получите бесплатный замер и монтаж
-              собственной бригадой — без необходимости заказывать напрямую с завода.
-            </p>
-          </div>
-          <div class="flex gap-2.5 flex-wrap lg:flex-nowrap">
-            <a href="/catalog/" class="btn btn-primary shrink-0">Смотреть каталог</a>
-            <a href="/contacts/" class="btn btn-outline shrink-0">Контакты и адрес</a>
-          </div>
+        <p class="t-eyebrow block mb-3">В Челябинске</p>
+        <h2 class="t-h2 mb-3">Официальный дилер ВФД в Челябинске — салон на Братьев Кашириных</h2>
+        <p class="m-0 mb-5 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+          Мы не завод и не посредник с наценкой поверх наценки: мы фирменный салон, который
+          работает с фабрикой напрямую. Что это даёт:
+        </p>
+        <ul class="m-0 mb-6 flex flex-col gap-2.5 pl-0">
+          {dealerPoints.map(p => (
+            <li class="flex gap-2.5 text-sm leading-relaxed text-slate-600 sm:text-base">
+              <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" aria-hidden="true"></span>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="mb-6 grid grid-cols-1 gap-1.5 text-sm text-slate-600 sm:text-base">
+          <p class="m-0"><strong class="font-medium text-ink">Адрес:</strong> {companyLegalInfo.address.legal}</p>
+          <p class="m-0"><strong class="font-medium text-ink">Телефон:</strong> <a href={`tel:${phone.raw}`} class="text-teal-700 hover:text-teal-800">{phone.label}</a></p>
+          <p class="m-0"><strong class="font-medium text-ink">Часы работы:</strong> {hours.weekdays.label}, Сб–Вс: {hours.saturday.opens}–{hours.saturday.closes}</p>
+        </div>
+
+        <div class="flex gap-2.5 flex-wrap">
+          <a href="https://yandex.ru/maps/-/CPTwZPi-" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Построить маршрут</a>
+          <a href="/contacts/" class="btn btn-primary">Записаться на бесплатный замер</a>
         </div>
       </div>
     </div>
   </section>
-
 
 </BaseLayout>
