@@ -131,7 +131,12 @@ const localBusinessSchema = {
   <Promo client:idle />
   <LatestArticles />
 
-  <section class="section bg-white">
+  <!-- padding-top у смежных .section обычно зануляется (см. global.css),
+       но LatestArticles перед этой секцией — сплошной bg-graphite, а не
+       карточка на белом: без своего отступа сверху белый фон FAQ упирался
+       прямо в чёрный край без миллиметра воздуха. Тот же фикс, что и в
+       LatestArticles.astro. -->
+  <section class="section bg-white pt-[clamp(2.5rem,4vw,3.5rem)]!">
     <div class="container">
       <FaqAccordion items={faqItems} />
 

@@ -24,8 +24,9 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         class="grid grid-cols-1 items-start overflow-hidden rounded-2xl border border-slate-200 transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none lg:grid-cols-[1fr_1.1fr] lg:items-stretch"
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
       >
-        <!-- Контент -->
-        <div class="order-2 flex flex-col gap-4 p-6 sm:gap-5 sm:p-8 lg:order-1">
+        <!-- Контент — тот же приём, что в HiddenDoorsPromo/TehnoPromo:
+             список преимуществ в 2 колонки, цена одной строкой. -->
+        <div class="order-2 flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7 lg:order-1">
           <div>
             <p class="t-eyebrow mb-2">Новинка</p>
             <h2
@@ -41,7 +42,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="flex flex-col gap-2 border-y border-slate-100 py-3 sm:gap-2.5 sm:py-4" role="list">
+          <ul class="grid grid-cols-1 gap-x-4 gap-y-1.5 border-y border-slate-100 py-3 sm:grid-cols-2" role="list">
             <BenefitItem text="Зеркало во всю высоту полотна">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="6" y="2" width="12" height="20" rx="1.5"/>
@@ -71,22 +72,24 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </BenefitItem>
           </ul>
 
-          <div>
-            <div class="flex items-baseline justify-between text-base text-slate-500">
-              <span>Полотно от</span>
-              <span class="text-lg font-medium text-slate-900 sm:text-xl">{{ fmt(REFLEX_MIN_BLADE_PRICE) }}</span>
-            </div>
-            <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-base text-slate-500"><span class="sm:hidden">Комплект от</span><span class="hidden sm:inline">Комплект под ключ от</span></span>
-              <span class="text-2xl font-medium text-slate-900 sm:text-3xl">{{ fmt(REFLEX_MIN_KIT_PRICE) }}</span>
-            </div>
+          <div class="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+            <span class="flex items-baseline gap-1.5 text-sm text-slate-500">
+              Полотно
+              <span class="text-lg font-medium text-slate-900">{{ fmt(REFLEX_MIN_BLADE_PRICE) }}</span>
+            </span>
+            <span class="flex items-baseline gap-1.5 text-sm text-slate-500">
+              Комплект
+              <span class="text-lg font-medium text-slate-900">{{ fmt(REFLEX_MIN_KIT_PRICE) }}</span>
+            </span>
           </div>
 
-          <a href="/catalog/skrytye-dveri/#reflex" class="btn btn-primary w-full">
+          <a href="/catalog/skrytye-dveri/#reflex" class="group/link mt-1 inline-flex w-full items-center justify-between gap-3 rounded-full bg-fg py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent">
             Смотреть «Рефлекс»
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
           </a>
         </div>
 

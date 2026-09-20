@@ -42,8 +42,9 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           />
         </div>
 
-        <!-- Контент -->
-        <div class="flex flex-col gap-4 p-6 sm:gap-5 sm:p-8">
+        <!-- Контент — тот же приём, что в HiddenDoorsPromo/MirrorDoorPromo:
+             список преимуществ в 2 колонки, цена одной строкой. -->
+        <div class="flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7">
           <div>
             <p class="t-eyebrow mb-2">Новинка</p>
             <h2
@@ -58,7 +59,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="flex flex-col gap-2 border-y border-slate-100 py-3 sm:gap-2.5 sm:py-4" role="list">
+          <ul class="grid grid-cols-1 gap-x-4 gap-y-1.5 border-y border-slate-100 py-3 sm:grid-cols-2" role="list">
             <BenefitItem v-if="benefits[0]" :text="benefits[0].title">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 3.5 19 6.3v5.2c0 4.7-3 7.9-7 9.5-4-1.6-7-4.8-7-9.5V6.3l7-2.8Z"/>
@@ -77,26 +78,29 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </BenefitItem>
           </ul>
 
-          <div class="inline-flex w-fit items-center self-start rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
-            Техно 1, белый — в наличии на складе
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="inline-flex w-fit items-center rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
+              Техно 1, белый — в наличии на складе
+            </div>
+            <div v-if="bladePrice" class="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+              <span class="flex items-baseline gap-1.5 text-sm text-slate-500">
+                Полотно
+                <span class="text-lg font-medium text-slate-900">{{ fmt(bladePrice) }}</span>
+              </span>
+              <span v-if="kitPrice" class="flex items-baseline gap-1.5 text-sm text-slate-500">
+                Комплект
+                <span class="text-lg font-medium text-slate-900">{{ fmt(kitPrice) }}</span>
+              </span>
+            </div>
           </div>
 
-          <div v-if="bladePrice">
-            <div class="flex items-baseline justify-between text-base text-slate-500">
-              <span>Полотно от</span>
-              <span class="text-lg font-medium text-slate-900 sm:text-xl">{{ fmt(bladePrice) }}</span>
-            </div>
-            <div v-if="kitPrice" class="mt-2 flex items-baseline justify-between">
-              <span class="text-base text-slate-500"><span class="sm:hidden">Комплект от</span><span class="hidden sm:inline">Комплект под ключ от</span></span>
-              <span class="text-2xl font-medium text-slate-900 sm:text-3xl">{{ fmt(kitPrice) }}</span>
-            </div>
-          </div>
-
-          <a href="/catalog/series/tehno/" class="btn btn-primary w-full">
+          <a href="/catalog/series/tehno/" class="group/link mt-1 inline-flex w-full items-center justify-between gap-3 rounded-full bg-fg py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent">
             Смотреть серию Техно
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
           </a>
         </div>
       </div>

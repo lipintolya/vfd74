@@ -213,13 +213,20 @@ onBeforeUnmount(stopCycle)
         <li
           v-for="(feature, idx) in FEATURES"
           :key="feature.id"
-          class="group relative flex flex-col overflow-hidden rounded-3xl bg-graphite transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none"
-          :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'"
+          class="group rounded-[1.75rem] bg-white p-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_12px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-slate-900/5 transition-[opacity,transform,box-shadow] duration-700 ease-out hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_20px_44px_-10px_rgba(15,23,42,0.24)] motion-reduce:transition-none"
+          :class="visible ? 'translate-y-0 opacity-100 blur-none' : 'translate-y-6 opacity-0 blur-sm'"
           :style="{ transitionDelay: visible ? `${idx * 130}ms` : '0ms' }"
           itemprop="item"
           itemscope
           itemtype="https://schema.org/Thing"
         >
+        <!-- Double-bezel: внешняя белая рамка (p-1.5, тень, hover-подъём на
+             <li>) имитирует физическую оправу вокруг тёмного graphite-блока
+             с фото+текстом — раньше карточка была плоским graphite-прямоугольником
+             прямо на белом фоне секции, без ощущения объекта. Внутренний
+             блок скруглён на padding меньше внешнего (концентрические
+             радиусы), поэтому рамка равномерна по всему периметру. -->
+        <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(1.75rem-0.375rem)] bg-graphite">
           <!-- Фото — во всю ширину карточки, без отступов, статично, переключение
                по клику на точку/стрелку или свайпом на тач (мобайл-фёрст: фото
                задаёт форму карточки, текст под ним в своём паддинге). -->
@@ -328,6 +335,7 @@ onBeforeUnmount(stopCycle)
               </a>
             </div>
           </div>
+        </div>
         </li>
       </ul>
 

@@ -42,8 +42,13 @@ const { sectionRef, visible } = useScrollReveal(0.15)
           />
         </div>
 
-        <!-- Контент -->
-        <div class="flex flex-col gap-4 p-6 sm:gap-5 sm:p-8">
+        <!-- Контент — раньше 6 блоков (eyebrow/h2/p, ul на 4 строки,
+             бейдж, 2 отдельных ряда цены, кнопка) шли плотным вертикальным
+             стеком с полными gap/padding на каждом — карточка выходила
+             заметно выше фото рядом. Список преимуществ — в 2 колонки
+             (2 строки вместо 4), цена — одной строкой с двумя цифрами
+             рядом вместо двух отдельных "justify-between" рядов. -->
+        <div class="flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7">
           <div>
             <p class="t-eyebrow mb-2">В наличии</p>
             <h2
@@ -57,7 +62,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="flex flex-col gap-2 border-y border-slate-100 py-3 sm:gap-2.5 sm:py-4" role="list">
+          <ul class="grid grid-cols-1 gap-x-4 gap-y-1.5 border-y border-slate-100 py-3 sm:grid-cols-2" role="list">
             <BenefitItem text="Полностью алюминиевый короб">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 8l9-5 9 5-9 5-9-5Z"/>
@@ -65,7 +70,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
                 <path d="M12 13v8"/>
               </svg>
             </BenefitItem>
-            <BenefitItem text="Реверсивный монтаж — сторона открывания на выбор">
+            <BenefitItem text="Реверсивный монтаж — сторона на выбор">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 12h18"/>
                 <path d="M7 8l-4 4 4 4"/>
@@ -79,7 +84,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
                 <path d="M8 17l4 4 4-4"/>
               </svg>
             </BenefitItem>
-            <BenefitItem text="Грунт — готово под покраску или декор">
+            <BenefitItem text="Грунт — готово под покраску">
               <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="4" width="14" height="6" rx="1.5"/>
                 <path d="M8 10v4a2 2 0 0 0 2 2h1v4"/>
@@ -87,35 +92,34 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </BenefitItem>
           </ul>
 
-          <div
-            v-if="SECRET_PROMO_ACTIVE"
-            class="inline-flex w-fit items-center self-start rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700"
-          >
-            Акция −8% до 31 августа
-          </div>
-
-          <div>
-            <div class="flex items-baseline justify-between text-base text-slate-500">
-              <span>Полотно от</span>
-              <span class="flex items-baseline gap-1.5">
-                <span v-if="SECRET_PROMO_ACTIVE" class="text-sm text-slate-600 line-through">{{ fmt(SECRET_MIN_BLADE_PRICE_ORIGINAL) }}</span>
-                <span class="text-lg font-medium text-slate-900 sm:text-xl">{{ fmt(SECRET_MIN_BLADE_PRICE) }}</span>
-              </span>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div
+              v-if="SECRET_PROMO_ACTIVE"
+              class="inline-flex w-fit items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700"
+            >
+              Акция −8% до 31 августа
             </div>
-            <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-base text-slate-500"><span class="sm:hidden">Комплект от</span><span class="hidden sm:inline">Комплект под ключ от</span></span>
-              <span class="flex items-baseline gap-1.5">
-                <span v-if="SECRET_PROMO_ACTIVE" class="text-base text-slate-600 line-through">{{ fmt(SECRET_MIN_KIT_PRICE_ORIGINAL) }}</span>
-                <span class="text-2xl font-medium text-slate-900 sm:text-3xl">{{ fmt(SECRET_MIN_KIT_PRICE) }}</span>
+            <div class="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+              <span class="flex items-baseline gap-1.5 text-sm text-slate-500">
+                Полотно
+                <span v-if="SECRET_PROMO_ACTIVE" class="text-slate-400 line-through">{{ fmt(SECRET_MIN_BLADE_PRICE_ORIGINAL) }}</span>
+                <span class="text-lg font-medium text-slate-900">{{ fmt(SECRET_MIN_BLADE_PRICE) }}</span>
+              </span>
+              <span class="flex items-baseline gap-1.5 text-sm text-slate-500">
+                Комплект
+                <span v-if="SECRET_PROMO_ACTIVE" class="text-slate-400 line-through">{{ fmt(SECRET_MIN_KIT_PRICE_ORIGINAL) }}</span>
+                <span class="text-lg font-medium text-slate-900">{{ fmt(SECRET_MIN_KIT_PRICE) }}</span>
               </span>
             </div>
           </div>
 
-          <a href="/catalog/skrytye-dveri/" class="btn btn-primary w-full">
+          <a href="/catalog/skrytye-dveri/" class="group/link mt-1 inline-flex w-full items-center justify-between gap-3 rounded-full bg-fg py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent">
             Смотреть скрытые двери
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
           </a>
         </div>
       </div>

@@ -12,7 +12,13 @@ const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mon
 ---
 
 {articles.length > 0 && (
-  <section class="section bg-graphite" aria-labelledby="articles-heading">
+  /* padding-top у смежных .section обычно зануляется (см. global.css —
+     полагаемся на padding-bottom предыдущей секции), но здесь это давало
+     резкий обрыв: белая секция выше кончается вплотную к чёрному фону,
+     без миллиметра воздуха — на глаз читалось как «обрезано». Единственная
+     секция на главной со сплошным bg-graphite (не карточкой на белом
+     фоне), поэтому явно возвращаем свой отступ поверх общего правила. */
+  <section class="section bg-graphite pt-[clamp(2.5rem,4vw,3.5rem)]!" aria-labelledby="articles-heading">
     <div class="container">
 
       <!-- Мобайл-фёрст: заголовок и «Все статьи» в одну строку только от sm, на

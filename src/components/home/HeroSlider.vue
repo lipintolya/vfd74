@@ -201,12 +201,14 @@ onUnmounted(stop)
                 <a
                   v-if="currentSlide.cta && currentSlide.ctaHref"
                   :href="currentSlide.ctaHref"
-                  class="btn btn-ghost"
+                  class="group/link inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-5 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px"
                 >
                   {{ currentSlide.cta }}
-                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
                 </a>
               </div>
             </Transition>
@@ -269,11 +271,13 @@ onUnmounted(stop)
               <p class="text-sm text-white/80 mb-4">
                 Изготовление в течение 45 дней после оформления заказа
               </p>
-              <a href="/partitions/" class="btn btn-ghost">
+              <a href="/partitions/" class="group/link inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px">
                 Узнать больше
-                <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
               </a>
             </div>
           </div>
@@ -311,11 +315,13 @@ onUnmounted(stop)
                     <span class="hidden sm:inline">Живые фото с монтажей — помогут определиться с выбором</span>
                   </p>
                 </div>
-                <a href="/portfolio/" class="btn btn-ghost shrink-0 mt-4">
+                <a href="/portfolio/" class="group/link mt-4 inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px">
                   Смотреть
-                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
                 </a>
               </div>
             </div>
@@ -329,11 +335,13 @@ onUnmounted(stop)
                   <h4 class="font-medium text-sm sm:text-base mb-1 leading-snug line-clamp-2">Полный цикл: от замера до монтажа</h4>
                   <p class="text-sm text-white/75 line-clamp-2">Работаем в Челябинске с 2014 года</p>
                 </div>
-                <a href="/about/" class="btn btn-ghost shrink-0 mt-4">
+                <a href="/about/" class="group/link mt-4 inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px">
                   Подробнее
-                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
                 </a>
               </div>
             </div>

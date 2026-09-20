@@ -17,7 +17,6 @@ export const howItWorksSteps: Step[] = [
       'Работаем с дизайн-проектами и архитекторами',
       'Бесплатно, без обязательств',
     ],
-    image: '/renders/how-it-works/catalog-main-368.webp',
     cta: { label: 'Смотреть каталог', href: '/catalog/' },
   },
   {
@@ -30,7 +29,6 @@ export const howItWorksSteps: Step[] = [
       'Расчёт итоговой стоимости на месте',
       'Бесплатно, независимо от заказа',
     ],
-    image: 'https://storage.yandexcloud.net/vfd74ru/features/roulette-.webp',
     cta: { label: 'Позвонить', href: `tel:${phone.raw}` },
   },
   {
@@ -43,7 +41,6 @@ export const howItWorksSteps: Step[] = [
       'Аккуратный монтаж без грязи и мусора',
       'Проверка фурнитуры при сдаче',
     ],
-    image: 'https://storage.yandexcloud.net/vfd74ru/features/1milwaukke.webp',
     cta: { label: 'Смотреть работы', href: '/portfolio/' },
   },
   {
@@ -56,7 +53,6 @@ export const howItWorksSteps: Step[] = [
       'Постгарантийная поддержка',
       'Обращение напрямую в салон, без посредников',
     ],
-    image: '/renders/how-it-works/garantee-main-368.webp',
     cta: { label: 'О компании', href: '/about/' },
   },
 ]
