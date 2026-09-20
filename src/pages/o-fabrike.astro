@@ -20,7 +20,7 @@ const title       = 'Владимирская фабрика дверей (ВФ�
 const description = 'Кто производит двери ВФД: производство с 2002 года, собственные цеха и обработка стекла, 1200+ моделей. Официальный дилер в Челябинске — салон на Братьев Кашириных: замер, доставка, монтаж.'
 const canonicalUrl = Astro.site ? new URL('/o-fabrike/', Astro.site).href : undefined
 
-const phone = companyLegalInfo.contacts.phone[0]!
+const phones = companyLegalInfo.contacts.phone
 const hours = companyLegalInfo.workingHours
 
 const breadcrumbItems = [
@@ -61,29 +61,6 @@ const productionFeatures = [
     title: 'Собственная разработка покрытий',
     text: 'Фабрика тестирует новые материалы и текстуры и выпускает свои линейки покрытий — например, Эмалекс и Протач, помимо классических ПВХ, полипропилена и эмали.',
     image: `${FACTORY_CDN}card_4.webp`,
-  },
-]
-
-const dealerPoints = [
-  {
-    title: 'Экспозиция',
-    text: 'Покрытия и фурнитуру можно посмотреть и потрогать, а не выбирать по фото на экране',
-    icon: 'M4 21V9l8-6 8 6v12 M9 21v-6h6v6 M14 12h.01',
-  },
-  {
-    title: 'Бесплатный замер',
-    text: 'Выезд на объект с точным расчётом комплектации',
-    icon: 'M9 11l3 3L22 4 M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11',
-  },
-  {
-    title: 'Монтаж под ключ',
-    text: 'Собственная бригада, а не подрядчики со стороны',
-    icon: 'M14.5 3.5l6 6-8.5 8.5H5.5v-6.5l9-8Z M13 5l6 6',
-  },
-  {
-    title: 'Гарантия на месте',
-    text: 'И на полотно, и на установку — вопросы решаются в Челябинске, без переписки с заводом',
-    icon: 'M12 3.5 19 6.3v5.2c0 4.7-3 7.9-7 9.5-4-1.6-7-4.8-7-9.5V6.3l7-2.8Z',
   },
 ]
 
@@ -230,25 +207,17 @@ const structuredData = canonicalUrl ? [
           работает с фабрикой напрямую.
         </p>
 
-        <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {dealerPoints.map(p => (
-            <div class="flex gap-3">
-              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-4.5 w-4.5" aria-hidden="true">
-                  <path d={p.icon} />
-                </svg>
-              </span>
-              <div>
-                <p class="m-0 text-sm font-semibold text-ink">{p.title}</p>
-                <p class="m-0 mt-0.5 text-sm leading-relaxed text-slate-600">{p.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div class="mb-6 flex flex-col gap-2 border-t border-slate-100 pt-6 text-sm text-slate-600 sm:text-base">
+        <div class="mb-6 flex flex-col gap-2 text-sm text-slate-600 sm:text-base">
           <p class="m-0"><strong class="font-medium text-ink">Адрес:</strong> {companyLegalInfo.address.legal}</p>
-          <p class="m-0"><strong class="font-medium text-ink">Телефон:</strong> <a href={`tel:${phone.raw}`} class="text-teal-700 hover:text-teal-800">{phone.label}</a></p>
+          <p class="m-0">
+            <strong class="font-medium text-ink">Телефон:</strong>{' '}
+            {phones.map((p, i) => (
+              <>
+                {i > 0 && ', '}
+                <a href={`tel:${p.raw}`} class="text-teal-700 hover:text-teal-800">{p.label}</a>
+              </>
+            ))}
+          </p>
           <p class="m-0"><strong class="font-medium text-ink">Часы работы:</strong> {hours.weekdays.label}, Сб–Вс: {hours.saturday.opens}–{hours.saturday.closes}</p>
         </div>
 
