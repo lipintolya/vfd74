@@ -136,11 +136,19 @@ const structuredDataJson = structuredData
         </div>
         <!-- текст -->
         <p style="margin:0;color:#64748b;font-size:0.8125rem;line-height:1.5;flex:1;min-width:140px;">
-          Используем cookie для удобной работы сайта. <a href="/privacy/" style="color:#0d9488;text-decoration:none;font-weight:600;">Подробнее</a>
+          Используем куки для удобной работы сайта. <a href="/privacy/" style="color:#0d9488;text-decoration:none;font-weight:600;">Подробнее</a>
         </p>
         <!-- кнопка -->
         <button id="cookie-accept" style="flex-shrink:0;padding:0.5rem 1.25rem;background:#14b8a6;color:#fff;border:none;border-radius:9999px;font-size:0.8125rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;">
           Хорошо
+        </button>
+        <!-- крестик — закрыть без явного согласия. Тот же localStorage-флаг,
+             что и «Хорошо»: иначе баннер лез бы на каждой странице заново
+             у тех, кто просто закрыл его крестиком. -->
+        <button id="cookie-close" aria-label="Закрыть" style="flex-shrink:0;width:1.75rem;height:1.75rem;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:9999px;color:#94a3b8;cursor:pointer;transition:background .15s,color .15s;">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -151,20 +159,27 @@ const structuredDataJson = structuredData
         if (!localStorage.getItem('cookie-consent') && banner) {
           banner.style.display = 'block';
         }
+        function hideBanner() {
+          localStorage.setItem('cookie-consent', '1');
+          var banner = document.getElementById('cookie-banner');
+          if (banner) {
+            banner.style.transition = 'opacity .25s, transform .25s';
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(1rem)';
+            setTimeout(function() { banner.style.display = 'none'; }, 260);
+          }
+        }
         var btn = document.getElementById('cookie-accept');
         if (btn) {
-          btn.addEventListener('click', function() {
-            localStorage.setItem('cookie-consent', '1');
-            var banner = document.getElementById('cookie-banner');
-            if (banner) {
-              banner.style.transition = 'opacity .25s, transform .25s';
-              banner.style.opacity = '0';
-              banner.style.transform = 'translateY(1rem)';
-              setTimeout(function() { banner.style.display = 'none'; }, 260);
-            }
-          });
+          btn.addEventListener('click', hideBanner);
           btn.addEventListener('mouseenter', function() { btn.style.background = '#0d9488'; });
           btn.addEventListener('mouseleave', function() { btn.style.background = '#14b8a6'; });
+        }
+        var closeBtn = document.getElementById('cookie-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', hideBanner);
+          closeBtn.addEventListener('mouseenter', function() { closeBtn.style.background = '#f1f5f9'; closeBtn.style.color = '#475569'; });
+          closeBtn.addEventListener('mouseleave', function() { closeBtn.style.background = 'transparent'; closeBtn.style.color = '#94a3b8'; });
         }
       })();
     </script>
