@@ -80,7 +80,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="inline-flex w-fit items-center rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">
-              Техно 1, белый — в наличии на складе
+              Техно 1 белый — в наличии на складе
             </div>
             <div v-if="bladePrice" class="flex flex-wrap items-baseline gap-x-5 gap-y-1">
               <span class="flex items-baseline gap-1.5 text-sm text-slate-500">
