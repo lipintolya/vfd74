@@ -11,6 +11,7 @@ import InfoImageViewer from '../../../components/catalog/InfoImageViewer.vue'
 import { getCatalogCards, getSeriesList, getSeriesCards, getColorsByCoatingSlug } from '../../../lib/catalog-data'
 import { getSeriesSpec } from '../../../data/series-descriptions'
 import type { CatalogCardItem } from '../../../components/catalog/types'
+import { merchantPolicy } from '../../../lib/contacts-data'
 
 export async function getStaticPaths() {
   const { cards } = await getCatalogCards()
@@ -107,10 +108,22 @@ const structuredData = canonicalUrl ? [
       item: {
         '@type': 'Product',
         name: card.name,
+        description: `Дверь ${card.name} серии ${series.name}. Купить в салоне ВФД в Челябинске.`,
         url: new URL(`/models/${card.slug}/`, canonicalUrl).href,
         image: card.photo || undefined,
+        brand: { '@type': 'Brand', name: 'ВФД' },
         ...(card.price
-          ? { offers: { '@type': 'Offer', price: card.price, priceCurrency: 'RUB', availability: 'https://schema.org/InStoreOnly' } }
+          ? {
+              offers: {
+                '@type':                 'Offer',
+                price:                   card.price,
+                priceCurrency:           'RUB',
+                availability:            'https://schema.org/InStoreOnly',
+                seller:                  { '@type': 'Organization', name: 'Салон дверей ВФД' },
+                hasMerchantReturnPolicy: merchantPolicy.returnPolicy,
+                shippingDetails:         merchantPolicy.shipping,
+              },
+            }
           : {}),
       },
     })),

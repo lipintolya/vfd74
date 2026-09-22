@@ -15,6 +15,7 @@ import { accessoriesByCoating, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDAT
 import type { AccessoryCategory, CoatingSlug } from '../../data/accessories'
 import { formatTrim } from '../../lib/trim-labels'
 import { withInStockFirst } from '../../lib/made-to-order'
+import { merchantPolicy } from '../../lib/contacts-data'
 
 export async function getStaticPaths() {
   const { data, error } = await supabase
@@ -244,12 +245,14 @@ const structuredData = [breadcrumbSchema, {
   ...(minPrice
     ? {
         offers: {
-          '@type':          'Offer',
-          priceCurrency:    'RUB',
-          availability:     'https://schema.org/InStoreOnly',
-          seller:           { '@type': 'Organization', name: 'Салон дверей ВФД' },
-          price:            minPrice,
-          priceValidUntil:  new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          '@type':                  'Offer',
+          priceCurrency:            'RUB',
+          availability:             'https://schema.org/InStoreOnly',
+          seller:                   { '@type': 'Organization', name: 'Салон дверей ВФД' },
+          price:                    minPrice,
+          priceValidUntil:          new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          hasMerchantReturnPolicy:  merchantPolicy.returnPolicy,
+          shippingDetails:          merchantPolicy.shipping,
         },
       }
     : {}),

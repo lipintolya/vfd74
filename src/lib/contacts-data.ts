@@ -96,6 +96,37 @@ export const companyLegalInfo = {
 }
 
 /**
+ * Условия возврата и доставки для structured data (schema.org Offer) —
+ * единый источник для всех Product/Offer JSON-LD на сайте (модели, входные
+ * двери, скрытые двери). Актуально на 22.09.2026 — при изменении сроков/цен
+ * обновить здесь, а не в каждой странице по отдельности.
+ */
+export const merchantPolicy = {
+  /** Двери — товар, изготовленный по индивидуальному заказу (размер, цвет,
+      покрытие), возврат/обмен надлежащего качества не предусмотрен
+      (ст. 26.1 ЗоЗПП) — только замена при производственном браке. */
+  returnPolicy: {
+    '@type': 'MerchantReturnPolicy' as const,
+    applicableCountry: 'RU',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+  },
+  /** Доставка по Челябинску — фиксированная цена. За город — переменная
+      (1000 ₽ + 45 ₽/км), в structured data не выражается (там нужна
+      фиксированная цена/диапазон), поэтому в schema указан только
+      городской тариф; условия за город — текстом на странице/у менеджера. */
+  shipping: {
+    '@type': 'OfferShippingDetails' as const,
+    shippingRate: { '@type': 'MonetaryAmount' as const, value: 1000, currency: 'RUB' },
+    shippingDestination: { '@type': 'DefinedRegion' as const, addressCountry: 'RU', addressLocality: 'Челябинск' },
+    deliveryTime: {
+      '@type': 'ShippingDeliveryTime' as const,
+      handlingTime: { '@type': 'QuantitativeValue' as const, minValue: 0, maxValue: 1, unitCode: 'DAY' },
+      transitTime:  { '@type': 'QuantitativeValue' as const, minValue: 42, maxValue: 56, unitCode: 'DAY' },
+    },
+  },
+}
+
+/**
  * Часы работы в форматированном виде для UI
  */
 export const getFormattedHours = () => {

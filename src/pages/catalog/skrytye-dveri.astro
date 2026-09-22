@@ -9,6 +9,7 @@ import PromoBanner       from '../../components/ui/PromoBanner.vue'
 import PhotoAutoplaySlider from '../../components/ui/PhotoAutoplaySlider.vue'
 import { INVISIBLE_WORKS } from '../../data/skrytye-dveri-works'
 import { PROMOS } from '../../data/promos'
+import { merchantPolicy } from '../../lib/contacts-data'
 import {
   IMAGES,
   INFO_IMAGES,
@@ -149,6 +150,8 @@ const structuredData = canonicalUrl ? [
         { '@type': 'City', name: 'Челябинск' },
         { '@type': 'AdministrativeArea', name: 'Челябинская область' },
       ],
+      hasMerchantReturnPolicy: merchantPolicy.returnPolicy,
+      shippingDetails:         merchantPolicy.shipping,
     },
   },
   {
@@ -168,6 +171,8 @@ const structuredData = canonicalUrl ? [
         { '@type': 'City', name: 'Челябинск' },
         { '@type': 'AdministrativeArea', name: 'Челябинская область' },
       ],
+      hasMerchantReturnPolicy: merchantPolicy.returnPolicy,
+      shippingDetails:         merchantPolicy.shipping,
     },
   },
 ] : undefined

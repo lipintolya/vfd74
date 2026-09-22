@@ -5,7 +5,7 @@ import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import ProcessSteps from '../components/partitions/ProcessSteps.astro'
 import EntranceDoorShowcase from '../components/entrance-doors/EntranceDoorShowcase.vue'
 import { ENTRANCE_DOOR_MODELS, ENTRANCE_SKINS, minPriceOf } from '../data/entrance-doors'
-import { companyLegalInfo } from '../lib/contacts-data'
+import { companyLegalInfo, merchantPolicy } from '../lib/contacts-data'
 
 const PHONE = companyLegalInfo.contacts.phone[0]!.raw
 const TG    = 'https://t.me/vfddoors74'
@@ -112,6 +112,8 @@ const productSchemas = ENTRANCE_DOOR_MODELS.map(model => ({
     offerCount: model.skinOptions.length,
     availability: 'https://schema.org/InStoreOnly',
     seller: { '@type': 'Organization', name: 'Салон дверей ВФД' },
+    hasMerchantReturnPolicy: merchantPolicy.returnPolicy,
+    shippingDetails:         merchantPolicy.shipping,
   },
 }))
 
