@@ -167,11 +167,26 @@ const structuredData = canonicalUrl ? [
           </a>
         ))}
       </div>
-      <p class="mt-6 text-sm text-slate-600">
-        Также работаем в Советском, Ленинском, Тракторозаводском и Металлургическом районах —
-        условия замера, доставки и монтажа те же, что и в остальном городе.
-        <a href="/portfolio/" class="font-semibold text-teal-600 hover:text-teal-700">Смотреть все работы →</a>
-      </p>
+      <div class="mt-8 flex flex-col items-start gap-4 rounded-2xl bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <p class="m-0 text-sm leading-relaxed text-slate-600">
+          Также работаем в Советском, Ленинском, Тракторозаводском и Металлургическом районах —
+          условия замера, доставки и монтажа те же, что и в остальном городе.
+        </p>
+        <a
+          href="/portfolio/"
+          class="group/link flex shrink-0 items-center gap-2 rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-sm ring-1 ring-slate-200 transition-shadow hover:shadow-md"
+        >
+          Все работы
+          <span
+            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600 transition-colors duration-200 group-hover/link:bg-teal-600 group-hover/link:text-white"
+            aria-hidden="true"
+          >
+            <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </div>
     </div>
   </section>
 
