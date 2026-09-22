@@ -13,7 +13,12 @@ import { getFormattedHours } from '../../lib/contacts-data'
    строкой на карточке, чтобы график не расходился между страницами. */
 const workingHoursDisplay = computed(() => {
   const [weekdays, saturday, sunday] = getFormattedHours()
-  return `${weekdays.day}: ${weekdays.time}, ${saturday.day}: ${saturday.time}, ${sunday.time}`
+  // Сб и Вс сейчас работают по одному графику — не дублируем время дважды
+  // («Сб: 10:00–18:00, 10:00–18:00»), а объединяем в один диапазон дней.
+  const weekendLabel = saturday.time === sunday.time
+    ? `${saturday.day}–${sunday.day}: ${saturday.time}`
+    : `${saturday.day}: ${saturday.time}, ${sunday.day}: ${sunday.time}`
+  return `${weekdays.day}: ${weekdays.time}, ${weekendLabel}`
 })
 
 /* ============================================================
