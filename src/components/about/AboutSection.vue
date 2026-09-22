@@ -74,9 +74,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
         <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
 
           <div class="order-2 lg:order-1">
-            <p class="t-eyebrow mb-3 inline-flex items-center gap-2 rounded-full bg-teal-50 px-3.5 py-1.5 text-teal-700">
-              Двери от фабрики без посредников
-            </p>
+            <p class="t-eyebrow mb-3">Салон дверей ВФД в Челябинске</p>
 
             <h1 class="t-h1 mb-5">
               ВФД — <span class="text-teal-600">всё начинается с дверей</span>
@@ -372,7 +370,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             :key="method.id"
             class="rounded-2xl border border-slate-200 bg-white p-6"
           >
-            <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50">
+            <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-graphite">
               <img
                 :src="method.iconPath"
                 :alt="method.title"
