@@ -19,6 +19,7 @@ const NAV_LINKS = [
 
 const LEGAL_LINKS = [
   { href: '/promo-archive/', label: 'Архив акций' },
+  { href: '/dostavka-montazh-po-rayonam/', label: 'Доставка и монтаж по районам' },
 ] as const
 
 const CATEGORY_LINKS = [
