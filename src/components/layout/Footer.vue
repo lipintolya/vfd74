@@ -452,28 +452,62 @@ onUnmounted(() => {
             </svg>
           </button>
 
-          <div class="rounded-[1.375rem] bg-slate-50 p-6 sm:p-7">
+          <!-- max-h + overflow-y-auto: на низких мобильных экранах (SE/8)
+               текст образования + 3 карточки контактов не помещаются в
+               высоту вьюпорта без прокрутки — без этого низ модалки
+               обрезался бы за краем экрана. -->
+          <div class="max-h-[85vh] overflow-y-auto rounded-[1.375rem] bg-slate-50 p-6 sm:p-7">
 
-            <img
-              src="/renders/about/avatar-al-160.webp"
-              alt="Анатолий Липин"
-              width="80"
-              height="80"
-              loading="lazy"
-              decoding="async"
-              class="mb-5 h-14 w-14 rounded-2xl object-cover"
-            />
+            <div class="mb-5 flex items-center gap-4">
+              <img
+                src="/renders/about/avatar-al-160.webp"
+                alt="Анатолий Липин"
+                width="160"
+                height="160"
+                loading="lazy"
+                decoding="async"
+                class="h-20 w-20 shrink-0 rounded-2xl object-cover"
+              />
+              <div>
+                <h3 id="dev-modal-title" class="m-0 text-lg font-medium text-ink">Анатолий Липин</h3>
+                <p class="m-0 text-sm text-slate-500">Разработчик сайтов и сервисов</p>
+              </div>
+            </div>
 
-            <h3 id="dev-modal-title" class="m-0 mb-1 text-lg font-medium text-ink">Анатолий Липин</h3>
-            <p class="m-0 mb-3 text-sm leading-relaxed text-slate-600">
+            <p class="m-0 mb-5 text-sm leading-relaxed text-slate-600">
               Разрабатываю сайты и мобильные приложения, боты и системы автоматизации аналитики
               и бизнес-процессов — от простого лендинга до сложного сервиса. Быстрый современный
               стек, аккуратная вёрстка, SEO-основа, подключение CRM.
             </p>
 
-            <div class="mb-5 flex flex-col gap-1 text-xs text-slate-500">
-              <span>Опыт разработки — более 5 лет</span>
-              <span>Высшее техническое образование: прикладная математика и информатика (бакалавриат и магистратура), направление «Математическое моделирование и искусственный интеллект»</span>
+            <!-- Опыт/образование — карточки-факты вместо голого текста
+                 строками, тот же язык, что hero-stat-карточки на /about/. -->
+            <div class="mb-5 flex flex-col gap-2.5">
+              <div class="flex items-start gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite text-white">
+                  <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.8"/>
+                  </svg>
+                </span>
+                <div class="pt-0.5">
+                  <p class="m-0 text-sm font-medium text-ink">Опыт разработки</p>
+                  <p class="m-0 text-xs text-slate-500">Более 5 лет</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite text-white">
+                  <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3l9 4.5-9 4.5-9-4.5 9-4.5Z"/><path d="M6.5 9.7v4.3c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3V9.7"/>
+                  </svg>
+                </span>
+                <div class="pt-0.5">
+                  <p class="m-0 text-sm font-medium text-ink">Высшее техническое образование</p>
+                  <p class="m-0 text-xs leading-relaxed text-slate-500">
+                    Прикладная математика и информатика (бакалавриат и магистратура),
+                    направление «Математическое моделирование и искусственный интеллект»
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div class="flex flex-col gap-2">
@@ -483,9 +517,7 @@ onUnmounted(() => {
                 rel="noopener noreferrer"
                 class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
               >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite">
-                  <img src="/icons/b_tg_logo.webp" alt="" width="18" height="18" class="h-4.5 w-4.5" />
-                </span>
+                <img src="/icons/b_tg_logo.webp" alt="" width="36" height="36" class="h-9 w-9 shrink-0 rounded-full" />
                 <span class="flex-1 text-sm font-medium text-ink">Telegram</span>
                 <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
               </a>
@@ -497,8 +529,8 @@ onUnmounted(() => {
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite">
                   <img src="/icons/w_mail_logo.webp" alt="" width="18" height="18" class="h-4.5 w-4.5" />
                 </span>
-                <span class="flex-1 truncate text-sm font-medium text-ink">ttolyalipin@gmail.com</span>
-                <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                <span class="min-w-0 flex-1 truncate text-sm font-medium text-ink">ttolyalipin@gmail.com</span>
+                <span class="shrink-0 text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
               </a>
 
               <a
