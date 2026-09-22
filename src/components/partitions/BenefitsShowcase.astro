@@ -6,226 +6,79 @@ const { items } = Astro.props
 
 // Карта иконок — внутренняя разметка <svg> (stroke, currentColor)
 const icons: Record<Benefit['icon'], string> = {
-  shield:     '<path d="M12 3l7 2.6v5.1c0 4.3-2.9 7.5-7 8.9-4.1-1.4-7-4.6-7-8.9V5.6L12 3z"/><path d="M12 8.6c1.2 1.6 2 2.8 2 3.9a2 2 0 1 1-4 0c0-1.1.8-2.3 2-3.9z"/>',
-  design:     '<path d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4L12 3z"/><path d="M18 14l.6 1.7 1.9.3-1.9.6-.6 1.4-.6-1.4-1.9-.6 1.9-.3.6-1.7z"/>',
-  uv:         '<circle cx="12" cy="12" r="3.6"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>',
-  durability: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.8"/>',
-  wear:       '<path d="M12 3l7 2.6v5.1c0 4.3-2.9 7.5-7 8.9-4.1-1.4-7-4.6-7-8.9V5.6L12 3z"/><path d="M8.8 12l2.1 2.1L15.4 9.5"/>',
-  light:      '<path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>',
-  eco:        '<path d="M5 20c0-8 6-14.5 15-15 0 9-5 16.5-15 15z"/><path d="M5.5 19.5c4-4.5 7.2-6.8 11.5-8"/>',
+  shield: '<path d="M12 3l7 2.6v5.1c0 4.3-2.9 7.5-7 8.9-4.1-1.4-7-4.6-7-8.9V5.6L12 3z"/><path d="M12 8.6c1.2 1.6 2 2.8 2 3.9a2 2 0 1 1-4 0c0-1.1.8-2.3 2-3.9z"/>',
+  design: '<path d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4L12 3z"/><path d="M18 14l.6 1.7 1.9.3-1.9.6-.6 1.4-.6-1.4-1.9-.6 1.9-.3.6-1.7z"/>',
+  uv:     '<circle cx="12" cy="12" r="3.6"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>',
+  wear:   '<path d="M12 3l7 2.6v5.1c0 4.3-2.9 7.5-7 8.9-4.1-1.4-7-4.6-7-8.9V5.6L12 3z"/><path d="M8.8 12l2.1 2.1L15.4 9.5"/>',
+  light:  '<path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>',
+  eco:    '<path d="M5 20c0-8 6-14.5 15-15 0 9-5 16.5-15 15z"/><path d="M5.5 19.5c4-4.5 7.2-6.8 11.5-8"/>',
 }
 ---
 
-<div class="bf">
+<!-- Карточная сетка вместо фото-зигзага: без изображений премиум ощущение
+     держит крупная иконка + большой ghost-номер, тот же язык, что в
+     ProcessSteps «Как мы работаем». Мобайл-фёрст: 1 колонка на узком
+     экране, 2 от sm, 3 от lg (6 карточек делятся ровно, без нечётного
+     остатка). Убраны 7 remote-изображений — прямой выигрыш по переданным
+     байтам и числу запросов на этой секции. -->
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
   {items.map((b, i) => (
-    <article class="bf-row" data-reveal>
-      <!-- Медиа: реальное изображение или место под фото -->
-      <div class="bf-media">
-        {b.image ? (
-          <img src={b.image} alt={b.alt ?? b.title} loading="lazy" decoding="async" width="720" height="540" />
-        ) : (
-          <div class="bf-ph" role="img" aria-label={`Изображение к преимуществу: ${b.title}`}>
-            <span class="bf-ph__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <span class="bf-ph__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={icons[b.icon]} />
-            </span>
-            <span class="bf-ph__label">Фото · {b.title.split(' ').slice(0, 2).join(' ')}</span>
-          </div>
-        )}
-      </div>
+    <article
+      class="group relative overflow-hidden rounded-[1.75rem] bg-white p-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.06),0_12px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-slate-900/5 transition-shadow duration-300 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_20px_44px_-10px_rgba(15,23,42,0.24)]"
+      data-reveal
+    >
+      <div class="relative h-full overflow-hidden rounded-[1.375rem] bg-slate-50 p-6 sm:p-7">
 
-      <!-- Контент -->
-      <div class="bf-body">
-        <div class="bf-head">
-          <span class="bf-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={icons[b.icon]} />
-          </span>
-          <span class="bf-num">{String(i + 1).padStart(2, '0')}<i>/ {String(items.length).padStart(2, '0')}</i></span>
+        <span class="pointer-events-none absolute -right-2 -top-4 text-7xl font-medium leading-none tracking-tight text-teal-600/8 select-none" aria-hidden="true">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+
+        <div class="relative mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-graphite text-white transition-transform duration-300 group-hover:scale-105">
+          <svg class="h-6.5 w-6.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={icons[b.icon]} />
         </div>
-        <h3 class="bf-title">{b.title}</h3>
-        <p class="bf-text">{b.text}</p>
+
+        <div class="relative">
+          <h3 class="m-0 mb-2 text-lg font-medium leading-snug text-ink">{b.title}</h3>
+          <p class="m-0 text-sm leading-relaxed text-slate-600">{b.text}</p>
+        </div>
+
       </div>
     </article>
   ))}
 </div>
 
 <style>
-  .bf {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(2.5rem, 6vw, 5rem);
-  }
-
-  .bf-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-    align-items: center;
-  }
-  /* Зигзаг: чётные ряды — медиа справа */
-  .bf-row:nth-child(even) .bf-media { grid-column: 2; grid-row: 1; }
-  .bf-row:nth-child(even) .bf-body  { grid-column: 1; grid-row: 1; }
-
-  /* ── Медиа ── */
-  .bf-media {
-    position: relative;
-    border-radius: 1.75rem;
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
-  }
-  .bf-media > img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
-    border: 1px solid #e2e8f0;
-  }
-
-  /* Плейсхолдер под фото */
-  .bf-ph {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    border-radius: inherit;
-    border: 1px solid #d8f0ec;
-    overflow: hidden;
-    display: grid;
-    place-items: center;
-    background:
-      radial-gradient(120% 80% at 80% 0%, rgba(20, 184, 166, 0.14), transparent 60%),
-      linear-gradient(135deg, #ffffff 0%, #f0fdfa 55%, #e6f7f5 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 30px rgba(15, 23, 42, 0.05);
-    transition: transform 400ms var(--ease-out, cubic-bezier(0.4, 0, 0.2, 1)), box-shadow 400ms ease;
-  }
-  .bf-row:hover .bf-ph {
-    transform: translateY(-4px);
-    box-shadow: 0 18px 40px rgba(13, 148, 136, 0.12);
-  }
-  .bf-ph__num {
-    position: absolute;
-    top: clamp(0.5rem, 2vw, 1.25rem);
-    right: clamp(0.75rem, 2.5vw, 1.75rem);
-    font-size: clamp(4rem, 12vw, 8rem);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.05em;
-    color: color-mix(in srgb, #14b8a6 14%, transparent);
-    user-select: none;
-  }
-  .bf-ph__icon {
-    width: clamp(3.25rem, 7vw, 4.5rem);
-    height: clamp(3.25rem, 7vw, 4.5rem);
-    display: grid;
-    place-items: center;
-    border-radius: 1.25rem;
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid #cdeee8;
-    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.14);
-    color: #0d9488;
-    z-index: 1;
-  }
-  .bf-ph__icon > svg { width: 55%; height: 55%; }
-  .bf-ph__label {
-    position: absolute;
-    bottom: clamp(0.75rem, 2.5vw, 1.25rem);
-    left: clamp(0.75rem, 2.5vw, 1.25rem);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #5b8a83;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    padding: 0.3rem 0.6rem;
-    border-radius: 9999px;
-  }
-
-  /* ── Контент ── */
-  .bf-head {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    margin-bottom: 1.1rem;
-  }
-  .bf-icon {
-    flex-shrink: 0;
-    width: 3rem;
-    height: 3rem;
-    display: grid;
-    place-items: center;
-    border-radius: 0.9rem;
-    background: #f0fdfa;
-    border: 1px solid #ccfbf1;
-    color: #0d9488;
-    transition: background 250ms ease, transform 250ms ease;
-  }
-  .bf-row:hover .bf-icon { background: #14b8a6; color: #fff; transform: rotate(-4deg); }
-  .bf-icon > svg { width: 1.5rem; height: 1.5rem; }
-  .bf-num {
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: #0f766e;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.02em;
-  }
-  .bf-num > i { font-style: normal; color: #94a3b8; font-weight: 600; margin-left: 0.15rem; }
-
-  .bf-title {
-    margin: 0 0 0.75rem;
-    color: #0f172a;
-    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-  }
-  .bf-text {
-    margin: 0;
-    color: #475569;
-    font-size: clamp(0.9375rem, 1.4vw, 1.0625rem);
-    line-height: 1.7;
-    max-width: 38rem;
-  }
-
-  /* ── Адаптив ── */
-  @media (max-width: 768px) {
-    .bf-row { grid-template-columns: 1fr; gap: 1.5rem; }
-    .bf-row .bf-media,
-    .bf-row:nth-child(even) .bf-media { grid-column: 1; grid-row: 1; }
-    .bf-row .bf-body,
-    .bf-row:nth-child(even) .bf-body { grid-column: 1; grid-row: 2; }
-  }
-
   /* ── Scroll-reveal (включается только при JS; иначе всё видно) ── */
-  .bf.js-reveal .bf-media,
-  .bf.js-reveal .bf-body {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  .js-reveal [data-reveal] {
     opacity: 0;
-    transition: opacity 700ms ease, transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(20px);
+    transition: opacity 600ms ease, transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
     will-change: opacity, transform;
   }
-  .bf.js-reveal .bf-media { transform: translateX(var(--dir, -34px)) translateY(14px); }
-  .bf.js-reveal .bf-body  { transform: translateY(26px); transition-delay: 90ms; }
-  .bf.js-reveal .bf-row:nth-child(odd)  .bf-media { --dir: -34px; }
-  .bf.js-reveal .bf-row:nth-child(even) .bf-media { --dir:  34px; }
-  .bf.js-reveal .bf-row.is-visible .bf-media,
-  .bf.js-reveal .bf-row.is-visible .bf-body {
+  .js-reveal [data-reveal].is-visible {
     opacity: 1;
     transform: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bf.js-reveal .bf-media,
-    .bf.js-reveal .bf-body { opacity: 1; transform: none; transition: none; }
-    .bf-ph, .bf-icon { transition: none; }
+    .js-reveal [data-reveal] { opacity: 1; transform: none; transition: none; }
   }
 </style>
 
 <script>
   // Лёгкий scroll-reveal: один IntersectionObserver, unobserve после показа.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  document.querySelectorAll('.bf').forEach((wrap) => {
+  document.querySelectorAll('[data-reveal]').forEach((el) => {
+    const wrap = el.parentElement
+    if (!wrap) return
     if (reduce || !('IntersectionObserver' in window)) return
     wrap.classList.add('js-reveal')
+  })
+  if (!reduce && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -237,6 +90,6 @@ const icons: Record<Benefit['icon'], string> = {
       },
       { threshold: 0.18, rootMargin: '0px 0px -8% 0px' },
     )
-    wrap.querySelectorAll('.bf-row').forEach((r) => io.observe(r))
-  })
+    document.querySelectorAll('[data-reveal]').forEach((r) => io.observe(r))
+  }
 </script>
