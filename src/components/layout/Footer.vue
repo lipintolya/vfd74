@@ -68,14 +68,53 @@ const closeModal = () => {
   legalTrigger.value?.focus()   // возвращаем фокус на триггер
 }
 
-const onKeydown = (e: KeyboardEvent) => {
-  if (!isModalOpen.value) return
-  if (e.key === 'Escape') { e.preventDefault(); closeModal() }
+/* ============================================================
+   Developer modal — контакты разработчика сайта
+   ============================================================ */
+const isDevModalOpen = ref(false)
+const devTrigger = useTemplateRef<HTMLButtonElement>('devTriggerEl')
+const devPanel    = useTemplateRef<HTMLDivElement>('devPanelEl')
 
-  // Фокус-ловушка внутри модала
-  if (e.key === 'Tab' && legalPanel.value) {
+const DEV_CONTACTS = {
+  telegram: 'https://t.me/tolyalipin',
+  email:    'ttolyalipin@gmail.com',
+  github:   'https://github.com/lipintolya',
+}
+
+const openDevModal = () => {
+  isDevModalOpen.value = true
+  document.body.style.overflow = 'hidden'
+  requestAnimationFrame(() => {
+    devPanel.value
+      ?.querySelector<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])')
+      ?.focus()
+  })
+}
+
+const closeDevModal = () => {
+  isDevModalOpen.value = false
+  document.body.style.overflow = ''
+  devTrigger.value?.focus()
+}
+
+/* Общий keydown/фокус-ловушка на оба модала — открыт максимум один
+   за раз (оба триггера — обычные кнопки в одном футере), поэтому
+   достаточно проверить, какой сейчас активен, и применить ловушку
+   к его панели. */
+const onKeydown = (e: KeyboardEvent) => {
+  const activePanel = isModalOpen.value ? legalPanel.value : isDevModalOpen.value ? devPanel.value : null
+  if (!activePanel) return
+
+  if (e.key === 'Escape') {
+    e.preventDefault()
+    if (isModalOpen.value) closeModal()
+    else closeDevModal()
+    return
+  }
+
+  if (e.key === 'Tab') {
     const focusable = Array.from(
-      legalPanel.value.querySelectorAll<HTMLElement>(
+      activePanel.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
       )
     )
@@ -288,15 +327,16 @@ onUnmounted(() => {
           </span>
           <span>
             Разработка и дизайн —
-            <a
-              href="https://t.me/tolyalipin"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Анатолий Липин (открывается в новой вкладке)"
-              class="text-white/60 hover:text-white transition-colors duration-200"
+            <button
+              ref="devTriggerEl"
+              type="button"
+              aria-haspopup="dialog"
+              :aria-expanded="isDevModalOpen"
+              class="text-white/60 underline underline-offset-2 decoration-white/20 transition-colors duration-200 hover:text-white hover:decoration-white/40"
+              @click="openDevModal"
             >
               Анатолий Липин
-            </a>
+            </button>
           </span>
         </div>
 
@@ -378,6 +418,97 @@ onUnmounted(() => {
                 Email: <a href="mailto:vfddoors74@mail.ru" class="text-teal-600 hover:underline">vfddoors74@mail.ru</a><br />
                 Сайт: <a href="https://vfd74.ru" class="text-teal-600 hover:underline">vfd74.ru</a>
               </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── Developer modal ── -->
+    <Transition name="modal">
+      <div
+        v-if="isDevModalOpen"
+        class="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        role="presentation"
+        @click="closeDevModal"
+      >
+        <div
+          ref="devPanelEl"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="dev-modal-title"
+          class="relative w-full max-w-sm rounded-3xl bg-white p-1.5 shadow-[0_24px_60px_-16px_rgba(15,23,42,0.35)]"
+          @click.stop
+        >
+          <button
+            type="button"
+            class="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-slate-600 transition-colors duration-200 hover:bg-black/10"
+            aria-label="Закрыть окно контактов разработчика"
+            @click="closeDevModal"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+
+          <div class="rounded-[1.375rem] bg-slate-50 p-6 sm:p-7">
+
+            <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-graphite text-lg font-semibold text-white">
+              АЛ
+            </div>
+
+            <h3 id="dev-modal-title" class="m-0 mb-1 text-lg font-medium text-ink">Анатолий Липин</h3>
+            <p class="m-0 mb-5 text-sm leading-relaxed text-slate-600">
+              Разрабатываю сайты и мобильные приложения, боты и системы автоматизации аналитики
+              и бизнес-процессов — от простого лендинга до сложного сервиса. Быстрый современный
+              стек, аккуратная вёрстка, SEO-основа, подключение CRM.
+            </p>
+
+            <div class="flex flex-col gap-2">
+              <a
+                href="https://t.me/tolyalipin"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-teal-300"
+              >
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+                  <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M21.05 3.76L2.98 10.9c-1.24.5-1.23 1.19-.22 1.5l4.63 1.45 1.79 5.5c.22.6.11.84.75.84.49 0 .7-.22.97-.48l2.32-2.25 4.68 3.46c.86.48 1.48.23 1.7-.8L22.86 4.9c.32-1.26-.48-1.83-1.81-1.14Zm-11.32 10.5l-1.9-6.02 9.03-5.68c.44-.27.84-.12.51.18l-7.64 11.52Z"/>
+                  </svg>
+                </span>
+                <span class="flex-1 text-sm font-medium text-ink">Telegram</span>
+                <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              </a>
+
+              <a
+                href="mailto:ttolyalipin@gmail.com"
+                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-teal-300"
+              >
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+                  <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 6.75A2.25 2.25 0 0 1 5.25 4.5h13.5A2.25 2.25 0 0 1 21 6.75v10.5A2.25 2.25 0 0 1 18.75 19.5H5.25A2.25 2.25 0 0 1 3 17.25V6.75Z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4 6.5 8 6 8-6"/>
+                  </svg>
+                </span>
+                <span class="flex-1 truncate text-sm font-medium text-ink">ttolyalipin@gmail.com</span>
+                <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              </a>
+
+              <a
+                href="https://github.com/lipintolya"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-teal-300"
+              >
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+                  <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.03-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.337 4.695-4.566 4.943.359.309.679.919.679 1.852 0 1.336-.012 2.415-.012 2.743 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"/>
+                  </svg>
+                </span>
+                <span class="flex-1 text-sm font-medium text-ink">GitHub</span>
+                <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              </a>
             </div>
 
           </div>
