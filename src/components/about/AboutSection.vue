@@ -63,313 +63,282 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 
 <template>
-  <div class="about-page">
+  <div class="bg-white overflow-x-hidden">
 
     <!-- ======================================================
-         HERO
+         HERO — фото рядом с текстом, тот же паттерн, что на
+         /o-fabrike/: мобайл-фёрст, фото первым на узких экранах.
     ======================================================= -->
-    <section class="about-hero section section--lg">
+    <section class="section">
       <div class="container">
+        <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
 
-        <div class="hero-grid">
-
-          <!-- LEFT -->
-          <div class="hero-content">
-
-            <div class="hero-badge">
-              ДВЕРИ ОТ ФАБРИКИ БЕЗ ПОСРЕДНИКОВ
-            </div>
-
-            <h1 class="hero-title">
-              ВФД
-              <span>все начинается с дверей</span>
-            </h1>
-
-            <p class="hero-description">
-            Мы работаем напрямую с Владимирской фабрикой дверей и предлагаем 
-            всё для интерьера в одном месте: двери, перегородки и фурнитуру.
-
-            Здесь не выбирают «по картинке» — вы сравниваете материалы вживую, 
-            видите реальные оттенки при разном освещении и сразу понимаете, 
-            как это будет смотреться в вашем интерьере.
-
-            Более 10 лет мы помогаем частным клиентам, дизайнерам и студиям, 
-            а также реализуем проекты для коммерческих объектов — от квартир до офисов.
+          <div class="order-2 lg:order-1">
+            <p class="t-eyebrow mb-3 inline-flex items-center gap-2 rounded-full bg-teal-50 px-3.5 py-1.5 text-teal-700">
+              Двери от фабрики без посредников
             </p>
 
-            <div class="hero-actions">
-              <a href="https://t.me/vfddoors74" target="_blank" rel="noopener" class="hero-btn hero-btn--primary">
+            <h1 class="t-h1 mb-5">
+              ВФД — <span class="text-teal-600">всё начинается с дверей</span>
+            </h1>
+
+            <p class="m-0 mb-4 t-lead text-slate-600">
+              Мы работаем напрямую с Владимирской фабрикой дверей и предлагаем всё для интерьера
+              в одном месте: двери, перегородки и фурнитуру.
+            </p>
+            <p class="m-0 mb-6 t-lead text-slate-600">
+              Здесь не выбирают «по картинке» — вы сравниваете материалы вживую, видите реальные
+              оттенки при разном освещении и сразу понимаете, как это будет смотреться в вашем
+              интерьере. Более 10 лет мы помогаем частным клиентам, дизайнерам и студиям, а также
+              реализуем проекты для коммерческих объектов — от квартир до офисов.
+            </p>
+
+            <div class="mb-8 flex flex-wrap items-center gap-2.5">
+              <a
+                href="https://t.me/vfddoors74"
+                target="_blank"
+                rel="noopener"
+                class="group/link inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full bg-fg py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white transition-colors duration-200 ease-out hover:bg-accent"
+              >
                 Написать в Telegram
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 ease-out group-hover/link:translate-x-0.5">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
               </a>
 
-              <a href="https://vk.com/vfddoors74" target="_blank" rel="noopener" class="hero-btn hero-btn--secondary hero-btn--icon" aria-label="Написать в VK">
-                <img src="/icons/b_vk_logo.webp" alt="" width="20" height="20" />
+              <a
+                href="https://vk.com/vfddoors74"
+                target="_blank"
+                rel="noopener"
+                aria-label="Написать в VK"
+                class="btn btn-outline btn-icon"
+              >
+                <img src="/icons/b_vk_logo.webp" alt="" width="18" height="18" />
               </a>
 
-              <a href="https://max.ru/id452402308842_biz" target="_blank" rel="noopener" class="hero-btn hero-btn--secondary hero-btn--icon" aria-label="Написать в MAX">
-                <img src="/icons/b_max_logo.webp" alt="" width="20" height="20" />
+              <a
+                href="https://max.ru/id452402308842_biz"
+                target="_blank"
+                rel="noopener"
+                aria-label="Написать в MAX"
+                class="btn btn-outline btn-icon"
+              >
+                <img src="/icons/b_max_logo.webp" alt="" width="18" height="18" />
               </a>
 
               <a
                 href="https://yandex.ru/maps/-/CPTwZPi-"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="hero-btn hero-btn--secondary"
+                class="btn btn-outline"
               >
                 Построить маршрут
               </a>
             </div>
 
             <!-- Stats -->
-            <div class="hero-stats">
-
-              <article class="hero-stat-card">
-                <strong>{{ companyInfo.founded }}</strong>
-                <span>год основания</span>
-              </article>
-
-              <article class="hero-stat-card">
-                <strong>60+</strong>
-                <span>выставка дверей</span>
-              </article>
-
-              <article class="hero-stat-card">
-                <strong>10+</strong>
-                <span>лет опыта работы</span>
-              </article>
-
+            <div class="grid grid-cols-3 gap-3.5">
+              <div class="rounded-2xl border border-slate-200 p-4">
+                <span class="block text-2xl font-medium leading-none text-ink sm:text-3xl">{{ companyInfo.founded }}</span>
+                <span class="mt-1.5 block text-xs leading-snug text-slate-500">год основания</span>
+              </div>
+              <div class="rounded-2xl border border-slate-200 p-4">
+                <span class="block text-2xl font-medium leading-none text-ink sm:text-3xl">60+</span>
+                <span class="mt-1.5 block text-xs leading-snug text-slate-500">выставка дверей</span>
+              </div>
+              <div class="rounded-2xl border border-slate-200 p-4">
+                <span class="block text-2xl font-medium leading-none text-ink sm:text-3xl">10+</span>
+                <span class="mt-1.5 block text-xs leading-snug text-slate-500">лет опыта работы</span>
+              </div>
             </div>
-
           </div>
 
-          <!-- RIGHT -->
-          <div class="hero-visual">
-
+          <!-- Photo + address/hours как подписи под фото (не абсолютным
+               floating card с вылетом за контейнер — на мобильном это
+               раньше просто пряталось, теперь адрес/часы всегда видны). -->
+          <div class="order-1 lg:order-2">
             <button
-              class="hero-main-photo"
+              type="button"
+              class="group block w-full overflow-hidden rounded-3xl"
               @click="openLightbox(0)"
+              aria-label="Открыть галерею салона"
             >
               <img
                 :src="galleryImages[0]?.src"
                 :alt="galleryImages[0]?.alt"
                 width="900"
-                height="600"
+                height="675"
                 loading="eager"
                 fetchpriority="high"
                 decoding="async"
+                class="aspect-4/3 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 lg:aspect-auto lg:h-full"
               />
-
-              <div class="hero-main-photo__overlay">
-                <span>Смотреть галерею</span>
-              </div>
             </button>
 
-            <!-- Floating cards -->
-            <div class="floating-card floating-card--top">
-              <span class="floating-card__label">
-                Адрес
-              </span>
-
-              <strong>
-                Челябинск, ул. Братьев Кашириных, 131Б (вход с ул. Чичерина)
-              </strong>
+            <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div class="rounded-xl bg-slate-50 p-3.5">
+                <p class="m-0 mb-1 text-[0.6875rem] font-semibold uppercase tracking-widest text-slate-400">Адрес</p>
+                <p class="m-0 text-sm font-medium leading-snug text-ink">Челябинск, ул. Братьев Кашириных, 131Б</p>
+              </div>
+              <div class="rounded-xl bg-slate-50 p-3.5">
+                <p class="m-0 mb-1 text-[0.6875rem] font-semibold uppercase tracking-widest text-slate-400">Режим работы</p>
+                <p class="m-0 text-sm font-medium leading-snug text-ink">{{ workingHoursDisplay }}</p>
+              </div>
             </div>
-
-            <div class="floating-card floating-card--bottom">
-              <span class="floating-card__label">
-                Режим работы
-              </span>
-
-              <strong>
-                {{ workingHoursDisplay }}
-              </strong>
-            </div>
-
           </div>
 
         </div>
-
       </div>
     </section>
 
     <!-- ======================================================
-         IMAGE LINKS GRID
+         ЭКСПОЗИЦИЯ — те же double-bezel карточки, что в Features/
+         CatalogCategories на главной, вместо текста-поверх-фото.
     ======================================================= -->
-    <section class="section section--lg bg-slate-50">
+    <section class="section bg-white">
       <div class="container">
+        <p class="t-eyebrow mb-3 text-center">Пространство салона</p>
+        <h2 class="t-h2 mb-3 text-center">Большой выбор</h2>
+        <p class="mx-auto mb-10 max-w-2xl text-center t-lead text-slate-600 md:mb-14">
+          Обширная экспозиция дверей и перегородок в одном из самых крупных салонов Владимирской
+          фабрики дверей в Челябинске.
+        </p>
 
-        <header
-          class="section-header"
-          
-        >
-          <p class="section-eyebrow">
-            Пространство салона
-          </p>
-
-          <h2 class="section-title">
-            Большой выбор 
-          </h2>
-
-          <p class="section-lead">
-            Обширная экспозиция дверей и перегородок в одном из самых крупных салонов Владимирской фабрики дверей в Челябинске
-          </p>
-        </header>
-
-        <div class="feature-links">
-
-          <button type="button" class="feature-link feature-link--large" @click="openLightbox(1)">
-            <img
-              :src="galleryImages[1]?.src"
-              :alt="galleryImages[1]?.alt"
-              width="700"
-              height="933"
-              loading="lazy"
-              decoding="async"
-            />
-
-            <div class="feature-link__content">
-              <span class="feature-link__eyebrow">
-                Экспозиция
-              </span>
-
-              <h3>
-                Большой выставочный зал
-              </h3>
-
-              <p>
-                Реальные образцы дверей из наличия и под заказ
-              </p>
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
+          <button
+            type="button"
+            class="group relative overflow-hidden rounded-[1.75rem] bg-white p-1.5 text-left shadow-[0_1px_2px_rgba(15,23,42,0.06),0_12px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-slate-900/5 transition-shadow duration-300 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_20px_44px_-10px_rgba(15,23,42,0.24)] lg:col-span-1 lg:row-span-2"
+            @click="openLightbox(1)"
+          >
+            <div class="relative aspect-4/5 w-full overflow-hidden rounded-[1.375rem] bg-slate-100 lg:h-full lg:aspect-auto">
+              <img
+                :src="galleryImages[1]?.src"
+                :alt="galleryImages[1]?.alt"
+                width="700"
+                height="933"
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-linear-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-6 text-white">
+                <span class="mb-2 inline-block text-xs font-semibold uppercase tracking-widest opacity-80">Экспозиция</span>
+                <h3 class="m-0 mb-1 text-xl font-medium leading-tight sm:text-2xl">Большой выставочный зал</h3>
+                <p class="m-0 text-sm opacity-85">Реальные образцы дверей из наличия и под заказ</p>
+              </div>
             </div>
           </button>
 
-          <button type="button" class="feature-link" @click="openLightbox(2)">
-            <img
-              :src="galleryImages[2]?.src"
-              :alt="galleryImages[2]?.alt"
-              width="700"
-              height="933"
-              loading="lazy"
-              decoding="async"
-            />
-
-            <div class="feature-link__content">
-              <span class="feature-link__eyebrow">
-                Консультация
-              </span>
-
-              <h3>
-                Подбор под интерьер
-              </h3>
+          <button
+            type="button"
+            class="group relative overflow-hidden rounded-[1.75rem] bg-white p-1.5 text-left shadow-[0_1px_2px_rgba(15,23,42,0.06),0_12px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-slate-900/5 transition-shadow duration-300 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_20px_44px_-10px_rgba(15,23,42,0.24)]"
+            @click="openLightbox(2)"
+          >
+            <div class="relative aspect-4/3 w-full overflow-hidden rounded-[1.375rem] bg-slate-100">
+              <img
+                :src="galleryImages[2]?.src"
+                :alt="galleryImages[2]?.alt"
+                width="700"
+                height="933"
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-linear-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+                <span class="mb-1.5 inline-block text-xs font-semibold uppercase tracking-widest opacity-80">Консультация</span>
+                <h3 class="m-0 text-lg font-medium leading-tight">Подбор под интерьер</h3>
+              </div>
             </div>
           </button>
 
-          <button type="button" class="feature-link" @click="openLightbox(3)">
-            <img
-              :src="galleryImages[3]?.src"
-              :alt="galleryImages[3]?.alt"
-              width="700"
-              height="933"
-              loading="lazy"
-              decoding="async"
-            />
-
-            <div class="feature-link__content">
-              <span class="feature-link__eyebrow">
-                Материалы
-              </span>
-
-              <h3>
-                Цвета и покрытия
-              </h3>
+          <button
+            type="button"
+            class="group relative overflow-hidden rounded-[1.75rem] bg-white p-1.5 text-left shadow-[0_1px_2px_rgba(15,23,42,0.06),0_12px_32px_-8px_rgba(15,23,42,0.16)] ring-1 ring-slate-900/5 transition-shadow duration-300 hover:shadow-[0_1px_2px_rgba(15,23,42,0.08),0_20px_44px_-10px_rgba(15,23,42,0.24)]"
+            @click="openLightbox(3)"
+          >
+            <div class="relative aspect-4/3 w-full overflow-hidden rounded-[1.375rem] bg-slate-100">
+              <img
+                :src="galleryImages[3]?.src"
+                :alt="galleryImages[3]?.alt"
+                width="700"
+                height="933"
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-linear-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
+              <div class="absolute inset-x-0 bottom-0 p-5 text-white">
+                <span class="mb-1.5 inline-block text-xs font-semibold uppercase tracking-widest opacity-80">Материалы</span>
+                <h3 class="m-0 text-lg font-medium leading-tight">Цвета и покрытия</h3>
+              </div>
             </div>
           </button>
-
         </div>
-
       </div>
     </section>
 
     <!-- ======================================================
          DIRECTOR
     ======================================================= -->
-    <section class="section section--lg">
+    <section class="section bg-slate-50">
       <div class="container">
+        <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-[380px_1fr] lg:gap-12">
 
-        <div class="director-layout">
-
-          <div class="director-photo-wrap">
+          <div class="mx-auto w-full max-w-xs overflow-hidden rounded-3xl lg:mx-0 lg:max-w-none">
             <img
               :src="director.photo"
               :alt="director.name"
-              class="director-photo"
               width="500"
               height="667"
               loading="lazy"
               decoding="async"
+              class="aspect-3/4 w-full object-cover"
+              style="object-position: 50% 22%"
             />
           </div>
 
-          <div class="director-content">
+          <div>
+            <p class="t-eyebrow mb-3">Руководитель салона</p>
+            <h2 class="t-h2 mb-1.5">{{ director.name }}</h2>
+            <p class="m-0 mb-6 text-slate-500">{{ director.position }}</p>
 
-            <p class="section-eyebrow">
-              Руководитель салона
-            </p>
-
-            <h2 class="director-name">
-              {{ director.name }}
-            </h2>
-
-            <p class="director-position">
-              {{ director.position }}
-            </p>
-
-            <blockquote class="director-quote">
+            <blockquote class="m-0 mb-6 rounded-2xl border border-slate-200 bg-white p-6 leading-relaxed text-slate-700">
               {{ director.quote }}
             </blockquote>
 
-            <div class="director-info-grid">
-
-              <div class="director-info-card">
-                <strong>{{ director.experience }}</strong>
-                <span>опыт в индустрии</span>
+            <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+              <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                <strong class="mb-1 block text-ink">{{ director.experience }}</strong>
+                <span class="text-sm text-slate-500">опыт в индустрии</span>
               </div>
-
-              <div class="director-info-card">
-                <strong>Индивидуальный подход</strong>
-                <span>к каждому проекту</span>
+              <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                <strong class="mb-1 block text-ink">Индивидуальный подход</strong>
+                <span class="text-sm text-slate-500">к каждому проекту</span>
               </div>
-
             </div>
-
           </div>
 
         </div>
-
       </div>
     </section>
 
     <!-- ======================================================
          GALLERY
     ======================================================= -->
-    <section class="section section--lg bg-slate-50">
+    <section class="section bg-white">
       <div class="container">
+        <p class="t-eyebrow mb-3 text-center">Галерея</p>
+        <h2 class="t-h2 mb-10 text-center md:mb-14">Интерьер салона</h2>
 
-        <header class="section-header">
-          <p class="section-eyebrow">
-            Галерея
-          </p>
-
-          <h2 class="section-title">
-            Интерьер салона
-          </h2>
-        </header>
-
-        <div class="gallery-grid">
-
+        <div class="grid grid-cols-2 gap-3.5 lg:grid-cols-3 lg:gap-4">
           <button
             v-for="(img, index) in galleryImages"
             :key="img.id"
-            class="gallery-card"
+            type="button"
+            class="group relative aspect-4/5 overflow-hidden rounded-2xl bg-slate-100"
             @click="openLightbox(index)"
           >
             <img
@@ -379,102 +348,68 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               decoding="async"
               width="480"
               height="600"
+              class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
-
-            <span class="gallery-card__overlay">
-              Открыть фото
-            </span>
+            <div class="absolute inset-0 flex items-end bg-linear-to-t from-slate-900/70 via-transparent to-transparent p-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <span class="text-sm font-semibold text-white">Открыть фото</span>
+            </div>
           </button>
-
         </div>
-
       </div>
     </section>
 
     <!-- ======================================================
          PAYMENT
     ======================================================= -->
-    <section class="section section--lg">
+    <section class="section bg-slate-50">
       <div class="container">
+        <p class="t-eyebrow mb-3 text-center">Оплата</p>
+        <h2 class="t-h2 mb-10 text-center md:mb-14">Удобные способы оплаты</h2>
 
-        <header class="section-header">
-          <p class="section-eyebrow">
-            Оплата
-          </p>
-
-          <h2 class="section-title">
-            Удобные способы оплаты
-          </h2>
-        </header>
-
-        <div class="payment-grid">
-
+        <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           <article
             v-for="method in paymentMethods"
             :key="method.id"
-            class="payment-card"
+            class="rounded-2xl border border-slate-200 bg-white p-6"
           >
-            <div class="payment-card__top">
-              <div class="payment-card__icon">
-                <img
-                  :src="method.iconPath"
-                  :alt="method.title"
-                  class="payment-card__icon-img"
-                  width="28"
-                  height="28"
-                />
-              </div>
+            <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50">
+              <img
+                :src="method.iconPath"
+                :alt="method.title"
+                width="26"
+                height="26"
+                class="h-6.5 w-6.5 object-contain"
+              />
             </div>
-
-            <h3 class="payment-card__title">
-              {{ method.title }}
-            </h3>
-
-            <p class="payment-card__text">
-              {{ method.description }}
-            </p>
+            <h3 class="m-0 mb-2 text-base font-medium text-ink">{{ method.title }}</h3>
+            <p class="m-0 text-sm leading-relaxed text-slate-500">{{ method.description }}</p>
           </article>
-
         </div>
-
       </div>
     </section>
 
     <!-- ======================================================
          REQUISITES
     ======================================================= -->
-    <section class="section section--lg bg-slate-50">
+    <section class="section bg-white">
       <div class="container">
+        <p class="t-eyebrow mb-3 text-center">Реквизиты</p>
+        <h2 class="t-h2 mb-10 text-center md:mb-14">Официальная информация</h2>
 
-        <header class="section-header">
-          <p class="section-eyebrow">
-            Реквизиты
-          </p>
-
-          <h2 class="section-title">
-            Официальная информация
-          </h2>
-        </header>
-
-        <div class="requisites-card">
-
-          <div class="requisites-row">
-            <span>Наименование</span>
-            <strong>{{ requisites.legalName }}</strong>
+        <div class="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-slate-200">
+          <div class="flex flex-col gap-1 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+            <span class="text-sm text-slate-500">Наименование</span>
+            <strong class="text-sm font-medium text-ink sm:text-base">{{ requisites.legalName }}</strong>
           </div>
-
-          <div class="requisites-row">
-            <span>ИНН</span>
-            <strong>{{ requisites.inn }}</strong>
+          <div class="flex flex-col gap-1 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+            <span class="text-sm text-slate-500">ИНН</span>
+            <strong class="text-sm font-medium text-ink sm:text-base">{{ requisites.inn }}</strong>
           </div>
-
-          <div class="requisites-row">
-            <span>ОГРНИП</span>
-            <strong>{{ requisites.ogrnip }}</strong>
+          <div class="flex flex-col gap-1 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+            <span class="text-sm text-slate-500">ОГРНИП</span>
+            <strong class="text-sm font-medium text-ink sm:text-base">{{ requisites.ogrnip }}</strong>
           </div>
-
         </div>
-
       </div>
     </section>
 
@@ -482,22 +417,24 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
          LIGHTBOX
     ======================================================= -->
     <Teleport v-if="mounted" to="body">
-
       <div
         v-if="lightboxIndex !== null"
-        class="lightbox"
+        class="fixed inset-0 z-9999 flex items-center justify-center bg-black/92"
         @click.self="closeLightbox"
       >
-
         <button
-          class="lightbox-close"
+          type="button"
+          class="absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-xl text-white transition-colors hover:bg-white/25 sm:right-8 sm:top-8"
+          aria-label="Закрыть галерею"
           @click="closeLightbox"
         >
           ✕
         </button>
 
         <button
-          class="lightbox-nav lightbox-nav--prev"
+          type="button"
+          class="absolute left-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-2xl text-white transition-colors hover:bg-white/25 sm:left-8"
+          aria-label="Предыдущее фото"
           @click="prevImage"
         >
           ‹
@@ -506,728 +443,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
         <img
           :src="galleryImages[lightboxIndex]?.srcFull"
           :alt="galleryImages[lightboxIndex]?.alt"
-          class="lightbox-image"
           decoding="async"
+          class="max-h-[88vh] max-w-[92vw] rounded-2xl"
         />
 
         <button
-          class="lightbox-nav lightbox-nav--next"
+          type="button"
+          class="absolute right-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-2xl text-white transition-colors hover:bg-white/25 sm:right-8"
+          aria-label="Следующее фото"
           @click="nextImage"
         >
           ›
         </button>
-
       </div>
-
     </Teleport>
 
   </div>
 </template>
-
-<style scoped>
-.about-page {
-  background: #ffffff;
-  overflow-x: hidden;
-}
-
-/* ============================================================
-   Shared
-============================================================ */
-.section-header {
-  max-width: 780px;
-  margin: 0 auto 4rem;
-  text-align: center;
-}
-
-.section-eyebrow {
-  margin: 0 0 1rem;
-  color: #14b8a6;
-  font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.section-title {
-  margin: 0 0 1rem;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  line-height: 1.05;
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  color: #0f172a;
-}
-
-.section-lead {
-  margin: 0 auto;
-  max-width: 620px;
-  color: #64748b;
-  font-size: 1.05rem;
-  line-height: 1.7;
-}
-
-/* ============================================================
-   HERO
-============================================================ */
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.6rem 1rem;
-  border-radius: 999px;
-  background: #f0fdfa;
-  border: 1px solid #ccfbf1;
-  color: #0f766e;
-  font-size: 0.82rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-}
-
-.hero-title {
-  margin: 0;
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  line-height: 0.95;
-  letter-spacing: -0.06em;
-  color: #0f172a;
-  font-weight: 500;
-}
-
-.hero-title span {
-  color: #14b8a6;
-}
-
-.hero-description {
-  margin: 2rem 0;
-  max-width: 620px;
-  color: #475569;
-  font-size: 1.08rem;
-  line-height: 1.8;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
-
-.hero-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 54px;
-  padding: 0 1.5rem;
-
-  border-radius: 16px;
-
-  font-weight: 600;
-  text-decoration: none;
-
-  transition:
-    transform 200ms ease,
-    background 200ms ease,
-    border-color 200ms ease;
-}
-
-.hero-btn:hover {
-  transform: translateY(-2px);
-}
-
-.hero-btn--primary {
-  background: #14b8a6;
-  color: white;
-}
-
-.hero-btn--primary:hover {
-  background: #0d9488;
-}
-
-.hero-btn--secondary {
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  background: white;
-}
-
-.hero-btn--icon {
-  min-width: 54px;
-  padding: 0;
-}
-.hero-btn--icon img { width: 20px; height: 20px; }
-
-.hero-btn--secondary:hover {
-  border-color: #14b8a6;
-}
-
-/* Stats */
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.hero-stat-card {
-  padding: 1.25rem;
-  border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.hero-stat-card strong {
-  display: block;
-  font-size: 1.75rem;
-  color: #0f172a;
-  font-weight: 500;
-}
-
-.hero-stat-card span {
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-/* Hero image */
-.hero-visual {
-  position: relative;
-}
-
-.hero-main-photo {
-  width: 100%;
-  aspect-ratio: 4/5;
-  border: none;
-  overflow: hidden;
-  border-radius: 32px;
-  cursor: pointer;
-  background: #e2e8f0;
-  position: relative;
-}
-
-.hero-main-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-
-  transition: transform 700ms ease;
-}
-
-.hero-main-photo:hover img {
-  transform: scale(1.05);
-}
-
-.hero-main-photo__overlay {
-  position: absolute;
-  inset: 0;
-
-  display: flex;
-  align-items: flex-end;
-
-  padding: 2rem;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(15,23,42,0.7),
-      rgba(15,23,42,0)
-    );
-
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-/* Floating cards */
-.floating-card {
-  position: absolute;
-
-  background: rgba(255,255,255,0.96);
-
-  border: 1px solid rgba(255,255,255,0.5);
-
-  border-radius: 20px;
-
-  padding: 1rem 1.25rem;
-
-  box-shadow:
-    0 20px 40px rgba(15,23,42,0.12);
-}
-
-.floating-card strong {
-  display: block;
-  color: #0f172a;
-}
-
-.floating-card__label {
-  display: block;
-  margin-bottom: 0.35rem;
-  color: #64748b;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.floating-card--top {
-  top: 2rem;
-  left: -2rem;
-}
-
-.floating-card--bottom {
-  right: -2rem;
-  bottom: 2rem;
-}
-
-/* ============================================================
-   IMAGE LINKS
-============================================================ */
-.feature-links {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 1.25rem;
-}
-
-.feature-link {
-  position: relative;
-  overflow: hidden;
-  border-radius: 28px;
-  min-height: 520px;
-  background: #0f172a;
-  border: none;
-  padding: 0;
-  text-align: left;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-}
-
-.feature-link img {
-  position: absolute;
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-
-  transition: transform 700ms ease;
-}
-
-.feature-link:hover img {
-  transform: scale(1.06);
-}
-
-.feature-link::after {
-  content: '';
-
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(15,23,42,0.85),
-      rgba(15,23,42,0.15)
-    );
-}
-
-.feature-link__content {
-  position: absolute;
-  inset: auto 0 0;
-  z-index: 2;
-
-  padding: 2rem;
-
-  color: white;
-}
-
-.feature-link__eyebrow {
-  display: inline-block;
-  margin-bottom: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.8;
-}
-
-.feature-link h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.8rem;
-  line-height: 1.1;
-}
-
-.feature-link p {
-  margin: 0;
-  opacity: 0.85;
-}
-
-.feature-link--large {
-  min-height: 520px;
-}
-
-/* ============================================================
-   DIRECTOR (ОБНОВЛЕНО)
-============================================================ */
-.director-layout {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-.director-photo-wrap {
-  border-radius: 32px;
-  overflow: hidden;
-  aspect-ratio: 3/4;
-  max-width: 100%;
-}
-
-.director-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 22%;
-}
-
-.director-name {
-  margin: 0 0 0.5rem;
-  font-size: 2.6rem;
-  line-height: 1.05;
-  font-weight: 500;
-  color: #0f172a;
-}
-
-.director-position {
-  margin: 0 0 2rem;
-  color: #64748b;
-}
-
-.director-quote {
-  margin: 0 0 2rem;
-  padding: 2rem;
-
-  border-radius: 24px;
-
-  background: #f8fafc;
-
-  border: 1px solid #e2e8f0;
-
-  color: #334155;
-
-  line-height: 1.9;
-}
-
-.director-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.director-info-card {
-  padding: 1.25rem;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-}
-
-.director-info-card strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #0f172a;
-}
-
-/* ============================================================
-   GALLERY
-============================================================ */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.gallery-card {
-  position: relative;
-
-  border: none;
-  border-radius: 24px;
-
-  overflow: hidden;
-  cursor: pointer;
-
-  aspect-ratio: 4/5;
-
-  background: #e2e8f0;
-}
-
-.gallery-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-
-  transition: transform 600ms ease;
-}
-
-.gallery-card:hover img {
-  transform: scale(1.05);
-}
-
-.gallery-card__overlay {
-  position: absolute;
-  inset: auto 0 0;
-
-  padding: 1.25rem;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(15,23,42,0.85),
-      rgba(15,23,42,0)
-    );
-
-  color: white;
-  font-weight: 600;
-}
-
-/* ============================================================
-   PAYMENT
-============================================================ */
-.payment-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-.payment-card {
-  padding: 2rem;
-  border-radius: 24px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-
-  transition:
-    transform 250ms ease,
-    border-color 250ms ease;
-}
-
-.payment-card:hover {
-  transform: translateY(-4px);
-  border-color: #14b8a6;
-}
-
-.payment-card__top {
-  margin-bottom: 1.5rem;
-}
-
-.payment-card__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.875rem;
-  background: linear-gradient(135deg, #0d9488, #14b8a6);
-  flex-shrink: 0;
-}
-
-.payment-card__icon-img {
-  width: 1.625rem;
-  height: 1.625rem;
-  object-fit: contain;
-}
-
-.payment-card__title {
-  margin: 0 0 0.75rem;
-  color: #0f172a;
-  font-size: 1.1rem;
-}
-
-.payment-card__text {
-  margin: 0;
-  color: #64748b;
-  line-height: 1.7;
-}
-
-/* ============================================================
-   REQUISITES
-============================================================ */
-.requisites-card {
-  overflow: hidden;
-  border-radius: 28px;
-  border: 1px solid #e2e8f0;
-}
-
-.requisites-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-
-  padding: 1.5rem 2rem;
-
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.requisites-row:last-child {
-  border-bottom: none;
-}
-
-.requisites-row span {
-  color: #64748b;
-}
-
-.requisites-row strong {
-  color: #0f172a;
-}
-
-/* ============================================================
-   LIGHTBOX
-============================================================ */
-.lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(0,0,0,0.92);
-}
-
-.lightbox-image {
-  max-width: 92vw;
-  max-height: 88vh;
-  border-radius: 20px;
-}
-
-.lightbox-close,
-.lightbox-nav {
-  position: absolute;
-
-  width: 54px;
-  height: 54px;
-
-  border: none;
-  border-radius: 999px;
-
-  background: rgba(255,255,255,0.14);
-
-  color: white;
-
-  cursor: pointer;
-
-  font-size: 1.5rem;
-}
-
-.lightbox-close {
-  top: 2rem;
-  right: 2rem;
-}
-
-.lightbox-nav--prev {
-  left: 2rem;
-}
-
-.lightbox-nav--next {
-  right: 2rem;
-}
-
-/* ============================================================
-   Responsive
-============================================================ */
-@media (max-width: 1200px) {
-  .feature-links {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-link,
-  .feature-link--large {
-    min-height: 420px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .hero-grid,
-  .director-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .payment-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .floating-card {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: clamp(2.7rem, 12vw, 4rem);
-  }
-
-  .hero-description {
-    margin: 1.5rem 0;
-    line-height: 1.7;
-  }
-
-  .hero-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-link,
-  .feature-link--large {
-    min-height: 320px;
-  }
-
-  .feature-link__content {
-    padding: 1.25rem;
-  }
-
-  .feature-link h3 {
-    font-size: 1.5rem;
-  }
-
-  .gallery-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .director-name {
-    font-size: 2rem;
-  }
-
-  .director-quote {
-    padding: 1.5rem;
-  }
-
-  .payment-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .payment-card {
-    padding: 1.5rem;
-  }
-
-  .director-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .requisites-row {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem 1.25rem;
-  }
-}
-
-/* ============================================================
-   Reduced motion
-============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
-  }
-}
-</style>
