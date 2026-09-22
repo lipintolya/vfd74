@@ -45,3 +45,17 @@ for (const { src, out, width, quality } of jobs) {
   await writeFile(new URL(out, OUT_DIR), resized)
   console.log(`${out}: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)
 }
+
+/* Аватарка разработчика в модалке футера — оригинал 321×426 (портрет 3:4),
+   в UI показывается квадратом 56×56 (объект object-cover), поэтому кроп
+   в квадрат делаем здесь заранее (width+height+fit:cover), а не полагаемся
+   на object-cover CSS поверх прямоугольника — избыточные байты не грузим. */
+{
+  const src = 'https://storage.yandexcloud.net/vfd74ru/aboutme/avatar_al.webp'
+  const res = await fetch(src)
+  if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
+  const buf = Buffer.from(await res.arrayBuffer())
+  const resized = await sharp(buf).resize({ width: 160, height: 160, fit: 'cover' }).webp({ quality: 82 }).toBuffer()
+  await writeFile(new URL('avatar-al-160.webp', OUT_DIR), resized)
+  console.log(`avatar-al-160.webp: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)
+}

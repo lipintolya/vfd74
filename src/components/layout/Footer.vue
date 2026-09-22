@@ -454,28 +454,37 @@ onUnmounted(() => {
 
           <div class="rounded-[1.375rem] bg-slate-50 p-6 sm:p-7">
 
-            <div class="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-graphite text-lg font-semibold text-white">
-              АЛ
-            </div>
+            <img
+              src="/renders/about/avatar-al-160.webp"
+              alt="Анатолий Липин"
+              width="80"
+              height="80"
+              loading="lazy"
+              decoding="async"
+              class="mb-5 h-14 w-14 rounded-2xl object-cover"
+            />
 
             <h3 id="dev-modal-title" class="m-0 mb-1 text-lg font-medium text-ink">Анатолий Липин</h3>
-            <p class="m-0 mb-5 text-sm leading-relaxed text-slate-600">
+            <p class="m-0 mb-3 text-sm leading-relaxed text-slate-600">
               Разрабатываю сайты и мобильные приложения, боты и системы автоматизации аналитики
               и бизнес-процессов — от простого лендинга до сложного сервиса. Быстрый современный
               стек, аккуратная вёрстка, SEO-основа, подключение CRM.
             </p>
+
+            <div class="mb-5 flex flex-col gap-1 text-xs text-slate-500">
+              <span>Опыт разработки — более 5 лет</span>
+              <span>Высшее техническое образование: прикладная математика и информатика (бакалавриат и магистратура), направление «Математическое моделирование и искусственный интеллект»</span>
+            </div>
 
             <div class="flex flex-col gap-2">
               <a
                 href="https://t.me/tolyalipin"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-teal-300"
+                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
               >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
-                  <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M21.05 3.76L2.98 10.9c-1.24.5-1.23 1.19-.22 1.5l4.63 1.45 1.79 5.5c.22.6.11.84.75.84.49 0 .7-.22.97-.48l2.32-2.25 4.68 3.46c.86.48 1.48.23 1.7-.8L22.86 4.9c.32-1.26-.48-1.83-1.81-1.14Zm-11.32 10.5l-1.9-6.02 9.03-5.68c.44-.27.84-.12.51.18l-7.64 11.52Z"/>
-                  </svg>
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite">
+                  <img src="/icons/b_tg_logo.webp" alt="" width="18" height="18" class="h-4.5 w-4.5" />
                 </span>
                 <span class="flex-1 text-sm font-medium text-ink">Telegram</span>
                 <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
@@ -483,13 +492,10 @@ onUnmounted(() => {
 
               <a
                 href="mailto:ttolyalipin@gmail.com"
-                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-teal-300"
+                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
               >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
-                  <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 6.75A2.25 2.25 0 0 1 5.25 4.5h13.5A2.25 2.25 0 0 1 21 6.75v10.5A2.25 2.25 0 0 1 18.75 19.5H5.25A2.25 2.25 0 0 1 3 17.25V6.75Z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4 6.5 8 6 8-6"/>
-                  </svg>
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite">
+                  <img src="/icons/w_mail_logo.webp" alt="" width="18" height="18" class="h-4.5 w-4.5" />
                 </span>
                 <span class="flex-1 truncate text-sm font-medium text-ink">ttolyalipin@gmail.com</span>
                 <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
@@ -499,11 +505,11 @@ onUnmounted(() => {
                 href="https://github.com/lipintolya"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-teal-300"
+                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
               >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-600">
-                  <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.03-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.337 4.695-4.566 4.943.359.309.679.919.679 1.852 0 1.336-.012 2.415-.012 2.743 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"/>
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite text-white">
+                  <svg class="h-4.5 w-4.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
                   </svg>
                 </span>
                 <span class="flex-1 text-sm font-medium text-ink">GitHub</span>
