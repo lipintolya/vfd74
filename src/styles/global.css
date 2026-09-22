@@ -513,14 +513,21 @@ astro-island:has(> .section) + .section,
   transform: translateY(-8px);
 }
 
-/* ── Полноэкранное мобильное меню ── */
-.menu-fade-enter-active,
+/* ── Полноэкранное мобильное меню ──
+   Лёгкий scale добавляет ощущение «выезда» карточки к пользователю
+   вместо плоского появления одним fade — на закрытии чуть быстрее
+   (leave короче enter — типичный паттерн для модалок: открытие
+   заметное, закрытие не должно ощущаться медленным). */
+.menu-fade-enter-active {
+  transition: opacity .26s ease, transform .26s cubic-bezier(.16,1,.3,1);
+}
 .menu-fade-leave-active {
-  transition: opacity .22s ease;
+  transition: opacity .18s ease, transform .18s ease;
 }
 .menu-fade-enter-from,
 .menu-fade-leave-to {
   opacity: 0;
+  transform: scale(0.98);
 }
 
 /* ============================================================

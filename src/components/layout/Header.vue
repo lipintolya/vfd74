@@ -596,20 +596,23 @@ onUnmounted(() => {
             <button
               ref="burgerBtnRef"
               type="button"
-              class="w-10 h-10 flex items-center justify-center rounded-xl
+              class="burger-btn w-10 h-10 flex items-center justify-center rounded-xl
                      hover:bg-gray-100 transition-colors shrink-0"
+              :class="{ 'is-open': mobileOpen }"
               :aria-expanded="mobileOpen"
               :aria-label="mobileOpen ? 'Закрыть меню' : 'Открыть меню'"
               aria-controls="mobile-menu"
               @click="toggleMobileMenu"
             >
-              <!-- Иконки в aria-hidden — смысл несёт aria-label кнопки -->
-              <svg v-if="!mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
-              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
+              <!-- Три линии, трансформируются в крестик через CSS вместо
+                   переключения двух разных svg — плавная анимация вместо
+                   резкой замены иконки. aria-hidden — смысл несёт
+                   aria-label кнопки. -->
+              <span class="burger-icon" aria-hidden="true">
+                <span class="burger-icon__line" />
+                <span class="burger-icon__line" />
+                <span class="burger-icon__line" />
+              </span>
             </button>
           </div>
 
@@ -698,19 +701,28 @@ onUnmounted(() => {
           </a>
         </div>
 
-        <!-- Навигация — прокручиваемая середина -->
+        <!-- Навигация — прокручиваемая середина. Активный пункт получает
+             акцентную полоску слева (не только смену цвета текста — на
+             белом-по-серому разница слишком тонкая для беглого взгляда).
+             Стрелка вправо — только у пунктов с реальным переходом (без
+             подменю); у «Каталог»/«О нас» её нет — там ниже сразу видны
+             дочерние ссылки, стрелка-«обещание перехода» была бы обманчива. -->
         <nav class="flex-1 overflow-y-auto px-5" aria-label="Мобильная навигация">
           <ul class="border-t border-white/10" role="list">
-            <li v-for="link in NAV_LINKS" :key="link.href" class="border-b border-white/10">
+            <li v-for="link in NAV_LINKS" :key="link.href" class="nav-item border-b border-white/10" :class="{ 'nav-item--active': isActive(link.href) }">
               <a
                 :href="link.href"
-                class="flex items-center justify-between py-4 text-base font-semibold transition-colors"
+                class="flex items-center justify-between py-4 pl-3 -ml-3 text-base font-semibold transition-colors"
                 :class="isActive(link.href) ? 'text-white' : 'text-white/85 hover:text-white'"
                 :aria-current="isActive(link.href) ? 'page' : undefined"
                 @click="closeMobileMenu"
               >
                 {{ link.label }}
-                <svg class="w-4 h-4 shrink-0 text-white/30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <svg
+                  v-if="link.href !== '/catalog/' && link.href !== '/about/'"
+                  class="w-4 h-4 shrink-0 text-white/30"
+                  fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/>
                 </svg>
               </a>
@@ -781,3 +793,59 @@ onUnmounted(() => {
 
   </header>
 </template>
+
+<style scoped>
+/* ── Burger → крестик: 3 линии transform'ятся вместо переключения svg ── */
+.burger-icon {
+  position: relative;
+  display: block;
+  width: 1.125rem;
+  height: 0.8125rem;
+}
+.burger-icon__line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform .28s cubic-bezier(.4,0,.2,1), opacity .2s ease, top .28s cubic-bezier(.4,0,.2,1);
+}
+.burger-icon__line:nth-child(1) { top: 0; }
+.burger-icon__line:nth-child(2) { top: 50%; transform: translateY(-50%); }
+.burger-icon__line:nth-child(3) { top: 100%; transform: translateY(-100%); }
+
+.burger-btn.is-open .burger-icon__line:nth-child(1) {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+.burger-btn.is-open .burger-icon__line:nth-child(2) {
+  opacity: 0;
+}
+.burger-btn.is-open .burger-icon__line:nth-child(3) {
+  top: 50%;
+  transform: translateY(-50%) rotate(-45deg);
+}
+
+/* Уважение к prefers-reduced-motion — линии просто переключаются без анимации */
+@media (prefers-reduced-motion: reduce) {
+  .burger-icon__line { transition: none; }
+}
+
+/* ── Активный пункт мобильной навигации — акцентная полоска слева.
+   Смены цвета текста (white/85 → white) недостаточно для быстрого
+   сканирования списка — полоска даёт однозначный визуальный якорь. */
+.nav-item {
+  position: relative;
+}
+.nav-item--active::before {
+  content: '';
+  position: absolute;
+  left: -1.25rem;
+  top: 0.875rem;
+  bottom: 0.875rem;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--color-accent, #14b8a6);
+}
+</style>
