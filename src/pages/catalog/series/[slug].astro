@@ -265,25 +265,47 @@ const structuredData = canonicalUrl ? [
              значение — обычным текстом ниже, разделители только между
              пунктами (divide-y), не рамка на каждый ряд. Номер — та же идея,
              что и ghost-цифры в «Как мы работаем» (ProcessSteps), только
-             тише — перекличка с сайтом, а не карточка в третий раз. -->
-        <div class="sr-collapsible" data-collapsible>
-          <dl class="sr-specs sr-collapsible__content divide-y divide-slate-200" data-collapsible-content>
-            {characteristics.map((row, i) => (
-              <div class="group -mx-5 rounded-xl px-5 py-7 transition-colors duration-200 first:pt-0 last:pb-0 lg:hover:bg-slate-50">
-                <dt class="mb-2 flex items-baseline gap-3">
-                  <span class="text-sm font-semibold tabular-nums text-teal-600/60 transition-colors duration-200 group-hover:text-teal-600">{String(i + 1).padStart(2, '0')}</span>
-                  <span class="text-lg font-semibold text-slate-900 transition-colors duration-200 group-hover:text-teal-700">{row.label}</span>
-                </dt>
-                <dd class="m-0 text-base leading-relaxed text-slate-600">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <button type="button" class="sr-collapsible__toggle md:hidden" data-collapsible-toggle aria-expanded="false">
-            <span data-collapsible-label>Показать полностью</span>
-            <svg class="sr-collapsible__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+             тише — перекличка с сайтом, а не карточка в третий раз.
+
+             specsImage (техническая инфографика конструкции полотна) —
+             опциональна: если задана, список идёт в 2 колонки с картинкой
+             (sticky на десктопе, картинка сверху на мобильном), иначе
+             список остаётся на всю ширину, как было. -->
+        <div class:list={['gap-x-12 gap-y-8', spec.specsImage && 'grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] lg:items-start']}>
+          {spec.specsImage && (
+            <div class="order-1 overflow-hidden rounded-2xl bg-slate-50 lg:order-2 lg:sticky lg:top-24">
+              <img
+                src={spec.specsImage}
+                alt={`Конструкция полотна серии ${series.name}`}
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="800"
+                class="h-full w-full object-contain"
+              />
+            </div>
+          )}
+          <div class:list={['order-2', spec.specsImage && 'lg:order-1']}>
+            <div class="sr-collapsible" data-collapsible>
+              <dl class="sr-specs sr-collapsible__content divide-y divide-slate-200" data-collapsible-content>
+                {characteristics.map((row, i) => (
+                  <div class="group -mx-5 rounded-xl px-5 py-7 transition-colors duration-200 first:pt-0 last:pb-0 lg:hover:bg-slate-50">
+                    <dt class="mb-2 flex items-baseline gap-3">
+                      <span class="text-sm font-semibold tabular-nums text-teal-600/60 transition-colors duration-200 group-hover:text-teal-600">{String(i + 1).padStart(2, '0')}</span>
+                      <span class="text-lg font-semibold text-slate-900 transition-colors duration-200 group-hover:text-teal-700">{row.label}</span>
+                    </dt>
+                    <dd class="m-0 text-base leading-relaxed text-slate-600">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <button type="button" class="sr-collapsible__toggle md:hidden" data-collapsible-toggle aria-expanded="false">
+                <span data-collapsible-label>Показать полностью</span>
+                <svg class="sr-collapsible__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>

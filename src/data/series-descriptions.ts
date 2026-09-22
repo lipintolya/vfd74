@@ -60,6 +60,11 @@ export interface SeriesSpec {
       для персональной презентации серии, но не для общей картинки (напр.
       единая палитра цветов эмали emal_covers.webp на несколько серий сразу). */
   infoImageCaption?: string
+  /** Техническая инфографика конструкции полотна (разрез/материалы) —
+      показывается рядом со списком в блоке «Характеристики», а не в
+      «О коллекции» (там infoImage). Не указано → блок «Характеристики»
+      остаётся текстовым списком на всю ширину, как раньше. */
+  specsImage?: string
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -364,6 +369,7 @@ skinel: {
     thickness:   '39',
     heroImage:   'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/emalex_tehno_cover.webp',
     previewImage:'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/emalex_tehno.webp',
+    specsImage:  'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/tehno_banner.webp',
   },
 
   // ── ПЭТ ──────────────────────────────────────────────────────────────────
