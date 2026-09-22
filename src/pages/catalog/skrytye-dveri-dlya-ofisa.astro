@@ -144,17 +144,30 @@ const structuredData = canonicalUrl ? [
             <a href={`tel:${PHONE}`} class="btn btn-outline">Позвонить</a>
           </div>
         </div>
-        <div class="order-1 overflow-hidden rounded-3xl lg:order-2">
-          <img
-            src={IMAGES.invisible}
-            alt="Скрытая дверь в коммерческом помещении — монтаж заподлицо со стеной"
-            width="900"
-            height="675"
-            loading="eager"
-            fetchpriority="high"
-            decoding="async"
-            class="aspect-4/3 w-full object-cover lg:aspect-auto lg:h-full"
-          />
+        <div class="order-1 grid grid-cols-2 gap-3 lg:order-2">
+          <div class="overflow-hidden rounded-3xl">
+            <img
+              src={IMAGES.invisible}
+              alt="Скрытая дверь «Секрет» — монтаж заподлицо со стеной"
+              width="450"
+              height="562"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              class="aspect-4/5 w-full object-cover"
+            />
+          </div>
+          <div class="overflow-hidden rounded-3xl">
+            <img
+              src={IMAGES.invisibleRev}
+              alt="Скрытая дверь «Секрет Реверс» — реверсивный монтаж"
+              width="450"
+              height="562"
+              loading="lazy"
+              decoding="async"
+              class="aspect-4/5 w-full object-cover"
+            />
+          </div>
         </div>
       </div>
     </div>
