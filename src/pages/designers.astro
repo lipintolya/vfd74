@@ -12,34 +12,38 @@ const TG    = 'https://t.me/vfddoors74'
    ИЗОБРАЖЕНИЯ
    ════════════════════════════════════════════════════════════ */
 const HERO_SLIDER_IMAGES = [
-  // Локальная копия — оригинал на CDN весил 1.3МБ (см. gen-render-gallery.mjs
-  // для похожего прецедента с проблемными remote-картинками): пересжат
-  // sharp'ом до webp q80, 1672×941 без изменений, итог ~70КБ.
+  // Локальные копии — оба оригинала на CDN весили больше 1МБ (image2.webp
+  // был 1.26МБ), пересжаты sharp'ом (см. gen-designers-images.mjs), итог
+  // ~65-70КБ каждый.
   '/renders/hero/designers-hero.webp',
-  'https://storage.yandexcloud.net/catalog-vfd/designers/image2.webp',
+  '/renders/designers/hero-slide-2.webp',
 ]
 const CATALOG_HREF = 'https://crm.vfd.ru/~W8Bcr'
 
-/* Перелинковка на товарные разделы — что ещё есть у ВФД для проектов */
+/* Перелинковка на товарные разделы — что ещё есть у ВФД для проектов.
+   Локальные ресайзы (см. gen-designers-images.mjs) — те же оригиналы,
+   что переиспользуются на других страницах (contacts.astro,
+   CatalogCategories.vue, decor-products.ts) в другом размере, здесь
+   карточка ~400px CSS-ширины (grid-cols-3). */
 const crossLinks = [
   {
     title: 'Межкомнатные и входные двери',
     desc: '80+ моделей в наличии, эмаль/ПЭТ/полипропилен, бесплатный замер',
-    image: 'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/cover_doors.webp',
+    image: '/renders/designers/cross-doors.webp',
     href: '/catalog/',
     cta: 'Смотреть каталог',
   },
   {
     title: 'Алюминиевые перегородки',
     desc: 'Раздвижные и стационарные системы GRAFIA, 13+ цветов профиля',
-    image: 'https://storage.yandexcloud.net/catalog-vfd/catalog_preview/catalog-preview3.webp',
+    image: '/renders/designers/cross-partitions.webp',
     href: '/partitions/',
     cta: 'Смотреть перегородки',
   },
   {
     title: 'Декор: плинтус, фрамуги, рейки',
     desc: 'Декоративные элементы в цвет дверей и интерьера',
-    image: 'https://storage.yandexcloud.net/vfd74ru/decor/render_framuga.webp',
+    image: '/renders/designers/cross-decor.webp',
     href: '/catalog/decor/',
     cta: 'Смотреть декор',
   },
@@ -75,26 +79,28 @@ const partnerEligibility = [
   },
 ]
 
+// Локальные ресайзы (см. gen-designers-images.mjs) — оригиналы 1448-1536px
+// (142-285КБ) отображаются на ~300px CSS-ширины в grid-cols-4 на десктопе.
 const cooperationFormat = [
   {
     title: 'Выбор моделей и консультация',
     text: 'Дизайнер формирует концепцию, а менеджер салона предлагает актуальный ассортимент и технические решения, подходящие под стиль проекта.',
-    image: 'https://storage.yandexcloud.net/catalog-vfd/designers/covers_second_block/designer_render.webp',
+    image: '/renders/designers/step-consultation.webp',
   },
   {
     title: 'Предоставление ТЗ и замер',
     text: 'Дизайнер передаёт размеры проёмов и толщину стен, салон организует профессиональный замер для точной спецификации.',
-    image: 'https://storage.yandexcloud.net/catalog-vfd/designers/covers_second_block/tz_render.webp',
+    image: '/renders/designers/step-tz.webp',
   },
   {
     title: 'Заключение договора',
     text: 'Оформление заказа, выбор покрытия, систем открывания и фурнитуры. На этом этапе составляется финальная смета.',
-    image: 'https://storage.yandexcloud.net/catalog-vfd/designers/covers_second_block/dogovor_render.webp',
+    image: '/renders/designers/step-dogovor.webp',
   },
   {
     title: 'Логистика и монтаж',
     text: 'Салон осуществляет доставку и профессиональный монтаж.',
-    image: 'https://storage.yandexcloud.net/catalog-vfd/designers/covers_second_block/dostavka_render.webp',
+    image: '/renders/designers/step-dostavka.webp',
   },
 ]
 

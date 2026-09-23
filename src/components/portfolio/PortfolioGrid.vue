@@ -38,7 +38,7 @@ const CATEGORY_COVERS: Record<WorkCategory, string> = {
   interior:   '/renders/portfolio/2026-03-12-urban-1-beton-antik-loft.webp',
   hidden:     '/renders/portfolio/2026-01-05-sekret-chernaya-kromka.webp',
   partitions: '/renders/alum-covers/3.webp',
-  entrance:   'https://storage.yandexcloud.net/vfd74ru/metal_doors/Termo/ComfortTermo/render_confort_termo.webp',
+  entrance:   '/renders/portfolio/category-entrance.webp',
 }
 const CATEGORY_HREF: Partial<Record<WorkCategory, string>> = {
   partitions: '/partitions/',
