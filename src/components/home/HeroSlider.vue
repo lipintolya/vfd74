@@ -94,16 +94,19 @@ const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0])
    лежали в DOM одновременно как position:absolute inset-0 (друг на друге)
    для кросс-фейда через opacity, но из-за этого браузер считал их всеми
    "в вьюпорте" и loading="lazy" не срабатывал: все 5 картинок (~350КБ)
-   грузились сразу при заходе на страницу вместо только первой. reactive
-   Set вместо ref(Set) — мутация add() на месте не триггерит реактивность
-   ref(Set), тот же паттерн, что и expandedIds в Promo.vue. */
-const visitedIndexes = reactive(new Set<number>([0]))
+   грузились сразу при заходе на страницу вместо только первой.
+   ref(number[]) вместо reactive(Set): на проде после первого варианта
+   с reactive(Set) hero вообще переставал рендериться — конкретная причина
+   не подтверждена трассировкой (билд/dev локально ошибок не показывали),
+   но plain-массив — самый предсказуемый примитив без вопросов к тому,
+   как Vue/Astro-рантайм обходится с Set в этом месте. */
+const visitedIndexes = ref<number[]>([0])
 
 let timer: ReturnType<typeof setInterval> | null = null
 
 const goToIndex = (i: number) => {
   activeIndex.value = i
-  visitedIndexes.add(i)
+  if (!visitedIndexes.value.includes(i)) visitedIndexes.value.push(i)
 }
 
 const next  = () => goToIndex((activeIndex.value + 1) % slides.length)
@@ -174,7 +177,7 @@ onUnmounted(stop)
           <div class="absolute inset-0">
             <img
               v-for="(slide, i) in slides"
-              v-if="visitedIndexes.has(i)"
+              v-if="visitedIndexes.includes(i)"
               :key="slide.id"
               :src="slide.image"
               :srcset="i === 0 ? HERO_COVER_IMAGE_SRCSET : undefined"
