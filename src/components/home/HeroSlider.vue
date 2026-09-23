@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
 
 const SLIDER_INTERVAL_MS = 9000
@@ -90,31 +90,14 @@ const autoplayEnabled = ref(true)
 
 const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0])
 
-/* Слайды монтируются в DOM только после первого показа — все 5 раньше
-   лежали в DOM одновременно как position:absolute inset-0 (друг на друге)
-   для кросс-фейда через opacity, но из-за этого браузер считал их всеми
-   "в вьюпорте" и loading="lazy" не срабатывал: все 5 картинок (~350КБ)
-   грузились сразу при заходе на страницу вместо только первой.
-   ref(number[]) вместо reactive(Set): на проде после первого варианта
-   с reactive(Set) hero вообще переставал рендериться — конкретная причина
-   не подтверждена трассировкой (билд/dev локально ошибок не показывали),
-   но plain-массив — самый предсказуемый примитив без вопросов к тому,
-   как Vue/Astro-рантайм обходится с Set в этом месте. */
-const visitedIndexes = ref<number[]>([0])
-
 let timer: ReturnType<typeof setInterval> | null = null
 
-const goToIndex = (i: number) => {
-  activeIndex.value = i
-  if (!visitedIndexes.value.includes(i)) visitedIndexes.value.push(i)
-}
-
-const next  = () => goToIndex((activeIndex.value + 1) % slides.length)
-const prev  = () => goToIndex((activeIndex.value - 1 + slides.length) % slides.length)
+const next  = () => { activeIndex.value = (activeIndex.value + 1) % slides.length }
+const prev  = () => { activeIndex.value = (activeIndex.value - 1 + slides.length) % slides.length }
 const stop  = () => { if (timer !== null) { clearInterval(timer); timer = null } }
 const start = () => { stop(); timer = setInterval(next, SLIDER_INTERVAL_MS) }
 
-const goTo = (i: number) => { goToIndex(i); start() }
+const goTo = (i: number) => { activeIndex.value = i; start() }
 
 const onMouseEnter = () => { isPaused.value = true;  stop() }
 const onMouseLeave = () => { isPaused.value = false; start() }
@@ -168,16 +151,14 @@ onUnmounted(stop)
           @mouseleave="onMouseLeave"
           @keydown="onKeyDown"
         >
-          <!-- Backgrounds — слайд монтируется в DOM только после первого показа
-               (visitedIndexes), активный переключается прозрачностью. Раньше все
-               5 лежали в DOM сразу как position:absolute inset-0 друг на друге —
-               из-за этого браузер считал их всех "в вьюпорте" и loading="lazy" не
-               срабатывал: все 5 картинок грузились сразу вместо только первой.
-               Внутри уже показанных слайдов — тот же кросс-фейд, что и раньше. -->
+          <!-- Backgrounds — все слайды смонтированы всегда, активный переключается
+               прозрачностью. Раньше 1-й слайд жил на v-if (жёсткое размонтирование
+               без анимации), остальные — на v-show (display toggle, transition на
+               opacity не срабатывал, т.к. opacity не менялся). Из-за этого переход
+               был рваным. Теперь у всех один и тот же кросс-фейд. -->
           <div class="absolute inset-0">
             <img
               v-for="(slide, i) in slides"
-              v-if="visitedIndexes.includes(i)"
               :key="slide.id"
               :src="slide.image"
               :srcset="i === 0 ? HERO_COVER_IMAGE_SRCSET : undefined"
