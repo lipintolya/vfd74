@@ -36,11 +36,14 @@ export const BOX_PRO_IMAGE  = 'https://storage.yandexcloud.net/vfd74ru/invisible
 export const BOX_LITE_IMAGE = 'https://storage.yandexcloud.net/vfd74ru/invisible/render_alum_lite.webp'
 
 // ── Изображения ───────────────────────────────────────────────
+// invisible/invisibleRev — локальные ресайзы (см. scripts/gen-hidden-doors-hero.mjs):
+// оригиналы 1122×1402 (~155КБ) используются на 6 страницах максимум в ~900px
+// по широкой стороне, локальная копия экономит ~75% веса на каждой из них.
 export const IMAGES = {
   // Серия «Секрет» (прямой монтаж)
-  invisible:    `${CDN}invisible.webp`,
+  invisible:    '/renders/hidden-doors/sekret-900.webp',
   // Серия «Секрет Реверс» (реверсивный монтаж)
-  invisibleRev: `${CDN}invisible_reverse.webp`,
+  invisibleRev: '/renders/hidden-doors/sekret-revers-900.webp',
   // Обложка hero на /catalog/skrytye-dveri/
   heroCover: 'https://storage.yandexcloud.net/vfd74ru/invisible/invisible_cover.webp',
   // Портфолио — заменить src когда будут готовы
@@ -171,7 +174,10 @@ export const OPTIONAL_HARDWARE = [
 ] as const
 
 // ── Секрет «Рефлекс» — скрытая дверь с зеркалом ──────────────
-export const REFLEX_IMAGE           = 'https://storage.yandexcloud.net/vfd74ru/invisible/invisible_door.webp'
+// Локальный ресайз (см. scripts/gen-hidden-doors-hero.mjs) — оригинал
+// 1672×941 используется как og:image/hero на 3 сегментных лендингах и
+// в structured data, где полное разрешение не нужно.
+export const REFLEX_IMAGE           = '/renders/hidden-doors/reflex-900.webp'
 export const REFLEX_OPENING_DIAGRAM = 'https://storage.yandexcloud.net/vfd74ru/invisible/opredelenie_storoni_otkrivaniya_dlya_zerkal.webp'
 
 export type ReflexEdgeColor = 'black' | 'silver' | 'gold'

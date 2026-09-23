@@ -117,7 +117,7 @@ export const colors = [
 ]
 
 export const colorSwatches = colors.map((c, i) => ({
-  src: `${INFO}/colors-profile/${i + 1}.jpg`,
+  src: `/renders/partitions/color-swatch-${i + 1}.webp`,
   alt: `Алюминиевый профиль GRAFIA в цвете ${c.name}`,
   name: c.name,
   hex: c.hex,
