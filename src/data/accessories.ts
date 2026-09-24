@@ -62,6 +62,10 @@ export interface Accessory {
   category: AccessoryCategory
   unit:     'шт' | 'комплект'
   price:    number | null
+  /** Фото изделия — опционально, заполняется по мере поступления от производителя. */
+  image?:   string
+  /** Схема с размерами — опционально, тот же принцип, что и image. */
+  scheme?:  string
 }
 
 export type CoatingSlug = 'pet' | 'emal' | 'emalex' | 'protach' | 'ekoshpon'
@@ -186,7 +190,11 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
   emalex: [
     { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`,               category: 'kit',        unit: 'комплект', price: BASE_KIT_PRICE.emalex },
 
-    { name: 'Коробка КБТ№43П 80х32х2100',                                category: 'box',        unit: 'шт',       price: 924 },
+    {
+      name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 924,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+    },
     { name: 'Коробка КБТ№43П 80х32х2100 с запилом под скрытые петли (2 шт, HH24 Morelli)', category: 'box', unit: 'шт', price: 1_082 },
     { name: 'Комплект коробки КБТ№43П 80×32×2100 под скрытые петли (2 шт, HH24 Morelli, 2,5 шт)', category: 'box', unit: 'комплект', price: 2_468 },
     { name: 'Комплект коробки КБТ№46П 80×38×2100 под скрытые петли (2 шт, HH24 Morelli, 2,5 шт)', category: 'box', unit: 'комплект', price: 3_465 },

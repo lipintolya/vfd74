@@ -13,6 +13,7 @@ import { adjustPrice } from '../../lib/price-adjustments'
 import { isNewModel } from '../../lib/new-models'
 import { accessoriesByCoating, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
 import type { AccessoryCategory, CoatingSlug } from '../../data/accessories'
+import InfoImageViewer from '../../components/catalog/InfoImageViewer.vue'
 import { formatTrim } from '../../lib/trim-labels'
 import { withInStockFirst } from '../../lib/made-to-order'
 import { merchantPolicy } from '../../lib/contacts-data'
@@ -387,6 +388,19 @@ const structuredData = [breadcrumbSchema, {
                     <span class="accessories-item__price">
                       {item.price ? `${item.price.toLocaleString('ru-RU')} ₽ / ${item.unit}` : 'Цена уточняется'}
                     </span>
+                    {(item.image || item.scheme) && (
+                      <div class="accessories-item__media">
+                        <InfoImageViewer
+                          client:visible
+                          variant="photo"
+                          aspectRatio="4 / 3"
+                          images={[
+                            ...(item.image  ? [{ src: item.image,  caption: 'Фото',  alt: `Фото: ${item.name}` }]  : []),
+                            ...(item.scheme ? [{ src: item.scheme, caption: 'Схема', alt: `Схема с размерами: ${item.name}` }] : []),
+                          ]}
+                        />
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -697,6 +711,11 @@ const structuredData = [breadcrumbSchema, {
 .accessories-item__price {
   font-weight: 600;
   color: #0f172a;
+}
+
+.accessories-item__media {
+  margin-top: 0.5rem;
+  max-width: 22rem;
 }
 
 .accessories-group--kit {
