@@ -392,8 +392,8 @@ const structuredData = [breadcrumbSchema, {
                       <div class="accessories-item__media">
                         <InfoImageViewer
                           client:visible
-                          variant="photo"
-                          aspectRatio="4 / 3"
+                          variant="wide"
+                          aspectRatio="2 / 1"
                           images={[
                             ...(item.image  ? [{ src: item.image,  caption: 'Фото',  alt: `Фото: ${item.name}` }]  : []),
                             ...(item.scheme ? [{ src: item.scheme, caption: 'Схема', alt: `Схема с размерами: ${item.name}` }] : []),
@@ -715,7 +715,7 @@ const structuredData = [breadcrumbSchema, {
 
 .accessories-item__media {
   margin-top: 0.5rem;
-  max-width: 22rem;
+  max-width: 26rem;
 }
 
 .accessories-group--kit {
