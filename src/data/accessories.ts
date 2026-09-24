@@ -200,7 +200,11 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
     { name: 'Комплект коробки КБТ№46П 80×38×2100 под скрытые петли (2 шт, HH24 Morelli, 2,5 шт)', category: 'box', unit: 'комплект', price: 3_465 },
     { name: 'Комплект коробки КБКМ№02/41 75×38×2100 компланарный (2,5 шт)', category: 'box',      unit: 'комплект', price: 2_898 },
 
-    { name: 'Наличник НТ№22 70х8х2140',                                  category: 'nalichnik',  unit: 'шт',       price: 567 },
+    {
+      name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 567,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+    },
     { name: 'Наличник НТ№25 100х8х2200',                                 category: 'nalichnik',  unit: 'шт',       price: 788 },
     { name: 'Наличник НТ№24 80х16х2140 «Фигурный»',                     category: 'nalichnik',  unit: 'шт',       price: 835 },
     { name: 'Наличник НТ№34 80х12х2140 «Антик»',                        category: 'nalichnik',  unit: 'шт',       price: 767 },
