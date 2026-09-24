@@ -78,6 +78,11 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     tags:        ['Квартира', 'Эмалекс', 'Монохром'],
     images: [
       'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/emalex_er1_24.09.26.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/0tJY-Tlp9_TDlHknquKSrufR-p0YpJX6xt5ERtHcJ1vSeLgyDcQr_PeFzaZXrkDX-LAdmEs1B6AU_E3bX6r3qn45.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/RV_a81hz_oKtx6EbdDhsAMxjr4mZ_QH224hD_v-JbGCUfAe_bK5R0auTYpD3bW4F-ZoOvtHcOOrFV-mGTzRmWfGQ.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/Vu07qfJiSU1xvg-j9ExbpEuGoO-pNUWo04LQ0ayi1fFLnNi1xwfa8_9yssbVqnGA-7dUCSLSHERQ4cy8-ACed5i7.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/nOWNQa49uCj8wwYAO85as3EnhMsiAyZNTSZCarb4Rc8EGjwPx8_SHWud3jj9Y0xw9sacHIQulYqHBhUtjXq4AIBr.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/uUn2kzcnh7r8fq_y6Mzn-TBbX7Qm-2a1wvdoHP1eMWjNCMDakNOPljh06sf-O3gW1dCGQmj_EbSML-QjNEIDVTx9.webp',
     ],
   },
   {
