@@ -1,287 +1,212 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { companyLegalInfo, getFormattedHours } from '../../lib/contacts-data'
+import { paymentMethods } from '../about/about-data'
 
-/* Yandex-карта — тяжёлый сторонний iframe (свой JS + тайлы), грузим только
-   по клику вместо автозагрузки при монтировании острова. */
+/* Все контакты — из contacts-data.ts (единый источник для футера, шапки,
+   /about/ и структурированных данных), а не хардкодом: раньше номера, часы
+   и реквизиты здесь были вписаны руками и успели разойтись с остальным сайтом. */
+const phones   = companyLegalInfo.contacts.phone
+const email    = companyLegalInfo.contacts.email
+const address  = companyLegalInfo.address
+const director = companyLegalInfo.director
+const req      = companyLegalInfo.requisites
+
+const TG  = 'https://t.me/vfddoors74'
+const VK  = 'https://vk.com/vfddoors74'
+const MAX = 'https://max.ru/id452402308842_biz'
+const ROUTE = 'https://yandex.ru/maps/-/CPTwZPi-'
+
+/* Сб и Вс сейчас по одному графику — одна строка «Сб–Вс», без дубля времени. */
+const [weekdays, saturday, sunday] = getFormattedHours()
+const hours = saturday!.time === sunday!.time
+  ? [weekdays!, { day: 'Сб–Вс', time: saturday!.time }]
+  : [weekdays!, saturday!, sunday!]
+
+/* Yandex-карта — тяжёлый сторонний iframe (свой JS + тайлы): до клика
+   показываем статичный снимок карты с меткой салона (тот же, что в футере). */
 const mapLoaded = ref(false)
+const { lat, lng } = address.coordinates
+const MAP_SRC = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=17&pt=${lng}%2C${lat}&l=map`
 </script>
 
 <template>
   <section class="section">
     <div class="container">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        <!-- Левая колонка: Информация -->
-        <div>
-          <div class="mb-12">
-            <h1 class="text-4xl lg:text-5xl font-medium mb-4 text-gray-900">Контакты</h1>
-            <p class="text-lg text-gray-600 mb-1">Свяжитесь с нами удобным способом</p>
-            <p class="text-sm text-gray-500 mb-6">Консультации и бесплатный выезд замерщика — по Челябинску и области</p>
-            <div class="flex flex-wrap gap-3">
-              <a
-                href="https://t.me/vfddoors74"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
-              >
-                Написать в Telegram
-                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-              <a
-                href="https://vk.com/vfddoors74"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
-              >
-                Написать в VK
-                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-              <a
-                href="https://max.ru/id452402308842_biz"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
-              >
-                Написать в MAX
-                <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-            </div>
-          </div>
 
-          <!-- Телефоны -->
-          <div class="mb-8">
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Телефоны</h3>
-            <div class="space-y-3">
-              <a
-                href="tel:+79000297888"
-                class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-              >
-                <img src="/icons/phone-call.webp" alt="" class="w-9 h-9 shrink-0" />
-                <div>
-                  <p class="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors">+7 (900) 029-78-88</p>
-                  <p class="text-sm text-gray-500">Основной номер</p>
-                </div>
-              </a>
-              <a
-                href="tel:+79630807888"
-                class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-              >
-                <img src="/icons/phone-call.webp" alt="" class="w-9 h-9 shrink-0" />
-                <div>
-                  <p class="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors">+7 (963) 080-78-88</p>
-                  <p class="text-sm text-gray-500">Дополнительный номер</p>
-                </div>
-              </a>
-            </div>
-          </div>
+      <!-- ── Шапка + быстрые действия ── -->
+      <header class="mb-10 max-w-3xl lg:mb-14">
+        <p class="t-eyebrow mb-3">Салон на Братьев Кашириных</p>
+        <h1 class="t-h1 mb-4">Контакты салона дверей ВФД в Челябинске</h1>
+        <p class="m-0 mb-6 t-lead text-slate-600">
+          Позвоните, напишите в мессенджер или приезжайте в салон — покажем двери и перегородки
+          вживую и бесплатно выедем на замер по Челябинску и области.
+        </p>
 
-          <!-- Email -->
-          <div class="mb-8">
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Электронная почта</h3>
-            <a
-              href="mailto:vfddoors74@mail.ru"
-              class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
-            >
-              <img src="/icons/email_cover.webp" alt="" class="w-9 h-9 shrink-0" loading="eager" />
-              <div>
-                <p class="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors">vfddoors74@mail.ru</p>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <a
+            :href="`tel:${phones[0]!.raw}`"
+            class="group/link inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full bg-fg py-1.5 pl-5 pr-1.5 text-sm font-semibold text-white transition-colors duration-200 ease-out hover:bg-accent"
+          >
+            Позвонить
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-transform duration-200 ease-out group-hover/link:translate-x-0.5">
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+          <a :href="TG" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Написать в Telegram</a>
+          <a :href="VK" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-icon" aria-label="Написать во ВКонтакте">
+            <img src="/icons/b_vk_logo.webp" alt="" width="18" height="18" />
+          </a>
+          <a :href="MAX" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-icon" aria-label="Написать в MAX">
+            <img src="/icons/b_max_logo.webp" alt="" width="18" height="18" />
+          </a>
+        </div>
+      </header>
+
+      <!-- ── Контакты + карта ── -->
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
+
+        <!-- Левая колонка: как связаться -->
+        <div class="flex flex-col gap-3.5">
+          <a
+            v-for="p in phones"
+            :key="p.raw"
+            :href="`tel:${p.raw}`"
+            class="group flex items-center gap-4 rounded-2xl border border-slate-200 p-5 transition-colors hover:border-slate-300 hover:bg-slate-50"
+          >
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-graphite text-white">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>
+              </svg>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-lg font-medium text-ink tabular-nums">{{ p.label }}</span>
+              <span class="block text-sm text-slate-500">{{ p.title }}</span>
+            </span>
+            <span class="shrink-0 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">→</span>
+          </a>
+
+          <a
+            :href="`mailto:${email}`"
+            class="group flex items-center gap-4 rounded-2xl border border-slate-200 p-5 transition-colors hover:border-slate-300 hover:bg-slate-50"
+          >
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-graphite text-white">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>
+              </svg>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-lg font-medium text-ink">{{ email }}</span>
+              <span class="block text-sm text-slate-500">Для документов, смет и проектов</span>
+            </span>
+            <span class="shrink-0 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">→</span>
+          </a>
+
+          <!-- Часы работы -->
+          <div class="rounded-2xl bg-graphite p-6 text-white">
+            <p class="m-0 mb-4 text-sm text-white/60">Часы работы — без выходных</p>
+            <div class="flex flex-col gap-2.5">
+              <div v-for="h in hours" :key="h.day" class="flex items-baseline justify-between gap-3">
+                <span class="text-sm text-white/60">{{ h.day }}</span>
+                <span class="text-2xl font-medium tracking-tight tabular-nums">{{ h.time }}</span>
               </div>
-            </a>
-          </div>
-
-          <!-- Время работы -->
-          <div class="mb-8">
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Часы работы</h3>
-            <div class="rounded-3xl bg-fg p-6 lg:p-8">
-              <div class="space-y-3">
-                <div class="flex items-baseline justify-between gap-3">
-                  <span class="text-sm text-white/55">Пн–Пт</span>
-                  <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–20:00</span>
-                </div>
-                <div class="flex items-baseline justify-between gap-3">
-                  <span class="text-sm text-white/55">Сб</span>
-                  <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–18:00</span>
-                </div>
-                <div class="flex items-baseline justify-between gap-3">
-                  <span class="text-sm text-white/55">Вс</span>
-                  <span class="text-2xl font-medium text-white tracking-tight tabular-nums">10:00–18:00</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Социальные сети -->
-          <div class="mb-8">
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Мы в соцсетях</h3>
-            <div class="flex gap-4">
-              <a
-                href="https://vk.com/vfddoors74"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                aria-label="ВКонтакте"
-              >
-                <img src="https://storage.yandexcloud.net/catalog-vfd/icons/vk_logo.svg" alt="ВКонтакте" class="w-6 h-6" />
-              </a>
-              <a
-                href="https://t.me/vfddoors74"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                aria-label="Telegram"
-              >
-                <img src="https://storage.yandexcloud.net/catalog-vfd/icons/tg_logo.svg" alt="Telegram" class="w-6 h-6" />
-              </a>
-              <a
-                href="https://max.ru/id452402308842_biz"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-                aria-label="Max"
-              >
-                <img src="/icons/max-logo-v2.webp" alt="Max" class="w-6 h-6" loading="lazy" />
-              </a>
             </div>
           </div>
         </div>
 
-        <!-- Правая колонка: Адрес и реквизиты -->
-        <div>
-          <!-- Адрес -->
-          <div class="mb-8">
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Адрес</h3>
-            <div class="bg-gray-50 rounded-lg p-6 mb-6">
-              <p class="text-lg font-semibold text-gray-900 mb-2">
-                г. Челябинск, ул. Братьев Кашириных, 131Б
-              </p>
-              <p class="text-gray-600 text-sm mb-4">Вход со стороны ул. Чичерина</p>
-              <a
-                href="https://yandex.ru/maps/-/CPTwZPi-"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 text-teal-600 hover:text-teal-700 font-semibold transition-colors"
-              >
-                Смотреть на карте
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-              </a>
-            </div>
+        <!-- Правая колонка: адрес + карта -->
+        <div class="flex flex-col overflow-hidden rounded-2xl border border-slate-200">
+          <div class="p-6">
+            <p class="m-0 mb-1 text-sm text-slate-500">Адрес салона</p>
+            <p class="m-0 mb-1 text-lg font-medium text-ink">{{ address.legal }}</p>
+            <p class="m-0 mb-5 text-sm text-slate-600">{{ address.entrance }} · парковка у здания</p>
+            <a :href="ROUTE" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Построить маршрут</a>
+          </div>
 
-            <!-- Карта (встроенная) — тяжёлый сторонний iframe, грузим только
-                 по клику вместо автозагрузки при монтировании острова. -->
-            <div class="relative rounded-lg overflow-hidden h-64 bg-gray-100 mb-6">
-              <iframe
-                v-if="mapLoaded"
-                src="https://yandex.ru/map-widget/v1/?ll=61.306572%2C55.172868&amp;z=17&amp;pt=61.306572%2C55.172868&amp;l=map&amp;source=constructor"
-                width="100%"
-                height="100%"
-                frameborder="0"
-                style="border: none;"
+          <div class="relative min-h-72 flex-1 bg-slate-100">
+            <iframe
+              v-if="mapLoaded"
+              :src="MAP_SRC"
+              title="Салон ВФД на Яндекс Картах"
+              class="absolute inset-0 h-full w-full border-0"
+            />
+            <button
+              v-else
+              type="button"
+              class="group absolute inset-0 h-full w-full"
+              aria-label="Открыть интерактивную карту"
+              @click="mapLoaded = true"
+            >
+              <img
+                src="/renders/footer-map.webp"
+                alt=""
+                width="650"
+                height="450"
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
               />
-              <button
-                v-else
-                type="button"
-                class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                @click="mapLoaded = true"
-              >
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 21s7-6.5 7-11.5a7 7 0 10-14 0C5 14.5 12 21 12 21z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-                  <circle cx="12" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.6"/>
-                </svg>
-                <span class="text-sm font-semibold">Открыть карту</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Реквизиты -->
-          <div class="mb-8">
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Реквизиты компании</h3>
-            <div class="bg-gray-50 rounded-lg p-6 space-y-3 text-sm">
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Собственник</p>
-                <p class="font-semibold text-gray-900">Липина Надежда Анатольевна</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Форма деятельности</p>
-                <p class="font-semibold text-gray-900">Индивидуальный предприниматель</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">ОГРНИП</p>
-                <p class="font-semibold text-gray-900 font-mono">323745600047178</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">ИНН</p>
-                <p class="font-semibold text-gray-900 font-mono">452402308842</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Система налогообложения</p>
-                <p class="font-semibold text-gray-900">УСН (упрощённая система)</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Дата регистрации</p>
-                <p class="font-semibold text-gray-900">27 марта 2023 г.</p>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 mb-1">Регистратор</p>
-                <p class="font-semibold text-gray-900">Межрайонная инспекция ФНС России № 17 по Челябинской области</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Способы оплаты -->
-          <div>
-            <h3 class="text-sm uppercase tracking-widest text-gray-500 font-semibold mb-4">Способы оплаты</h3>
-            <div class="bg-gray-50 rounded-lg p-6">
-              <ul class="space-y-3">
-                <li class="flex items-center gap-3">
-                  <svg class="w-5 h-5 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700">Наличные деньги</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <svg class="w-5 h-5 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700">Банковские карты (Visa, MasterCard)</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <svg class="w-5 h-5 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700">Платёжная система МИР</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <svg class="w-5 h-5 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700">Переводы через Сбербанк</span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <svg class="w-5 h-5 text-teal-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-gray-700">Система быстрых платежей (СБП)</span>
-                </li>
-              </ul>
-            </div>
+              <span class="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/95 px-4 py-2 text-sm font-semibold text-ink shadow-md ring-1 ring-slate-900/5 transition-colors group-hover:bg-white">
+                Открыть интерактивную карту
+              </span>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Дополнительная информация — стек карточек, "переворот" на скролле (мобайл) -->
-      <div class="mt-16 pt-12 border-t border-gray-200">
-        <h3 class="text-2xl font-medium text-gray-900 mb-6">Что вы получаете</h3>
+      <!-- ── Оплата + реквизиты ── -->
+      <div class="mt-5 grid grid-cols-1 gap-5 lg:mt-6 lg:grid-cols-2 lg:gap-6">
+        <div class="rounded-2xl border border-slate-200 p-6">
+          <h2 class="m-0 mb-4 text-lg font-medium text-ink">Способы оплаты</h2>
+          <ul class="m-0 flex list-none flex-col gap-3 p-0">
+            <li v-for="m in paymentMethods" :key="m.id" class="flex gap-3">
+              <svg class="mt-0.5 h-5 w-5 shrink-0 text-teal-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 12 5 5 9-10"/>
+              </svg>
+              <span>
+                <span class="block text-sm font-medium text-ink">{{ m.title }}</span>
+                <span class="block text-sm text-slate-500">{{ m.description }}</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 p-6">
+          <h2 class="m-0 mb-4 text-lg font-medium text-ink">Реквизиты</h2>
+          <dl class="m-0 grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+            <div class="sm:col-span-2">
+              <dt class="text-slate-500">Индивидуальный предприниматель</dt>
+              <dd class="m-0 font-medium text-ink">{{ director.fullName }}</dd>
+            </div>
+            <div>
+              <dt class="text-slate-500">ИНН</dt>
+              <dd class="m-0 font-medium text-ink tabular-nums">{{ req.inn }}</dd>
+            </div>
+            <div>
+              <dt class="text-slate-500">ОГРНИП</dt>
+              <dd class="m-0 font-medium text-ink tabular-nums">{{ req.ogrnip }}</dd>
+            </div>
+            <div>
+              <dt class="text-slate-500">Дата регистрации</dt>
+              <dd class="m-0 font-medium text-ink">{{ companyLegalInfo.activity.registered }}</dd>
+            </div>
+            <div>
+              <dt class="text-slate-500">Регистрирующий орган</dt>
+              <dd class="m-0 font-medium text-ink">{{ companyLegalInfo.taxation.tax_office }}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- ── Что вы получаете — стек карточек, "переворот" на скролле (мобайл) ── -->
+      <div class="mt-14 border-t border-slate-200 pt-12">
+        <h2 class="t-h2 mb-6">Что вы получаете</h2>
         <div class="wtg-stack">
           <article class="wtg-card wtg-card--1" style="--wtg-i: 0">
             <div class="wtg-card__body">
-              <h4 class="wtg-card__title">Бесплатные консультации</h4>
+              <h3 class="wtg-card__title">Бесплатные консультации</h3>
               <div class="wtg-card__tags">
                 <span>Подбор моделей</span>
                 <span>Образцы покрытий</span>
@@ -295,7 +220,7 @@ const mapLoaded = ref(false)
 
           <article class="wtg-card wtg-card--2" style="--wtg-i: 1">
             <div class="wtg-card__body">
-              <h4 class="wtg-card__title">Бесплатный выезд на замер</h4>
+              <h3 class="wtg-card__title">Бесплатный выезд на замер</h3>
               <div class="wtg-card__tags">
                 <span>Челябинск и область</span>
                 <span>Точные размеры</span>
@@ -309,7 +234,7 @@ const mapLoaded = ref(false)
 
           <article class="wtg-card wtg-card--3" style="--wtg-i: 2">
             <div class="wtg-card__body">
-              <h4 class="wtg-card__title">Гарантия на монтаж и материалы</h4>
+              <h3 class="wtg-card__title">Гарантия на монтаж и материалы</h3>
               <div class="wtg-card__tags">
                 <span>12 месяцев на работы</span>
                 <span>Гарантия производителя</span>
@@ -328,17 +253,11 @@ const mapLoaded = ref(false)
 </template>
 
 <style scoped>
-/* .section/.container намеренно не переопределяются — используются
-   глобальные классы (см. global.css), чтобы контент совпадал по ширине
-   с остальной страницей (хлебные крошки, FAQ — тоже на глобальном
-   .container). Раньше здесь был локальный .container:1200px при
-   глобальном 1280px — блок FAQ ниже был на 80px шире контента. */
-
 /* ── «Что вы получаете» — стек карточек ──
    Мобайл: карточки залипают (position: sticky) на разных отступах сверху
    и с ростом z-index — при скролле каждая следующая карточка наезжает на
-   предыдущую, оставляя виден верхний край с бейджем (эффект "переворота
-   колоды"). Десктоп: обычная сетка в 3 колонки, без sticky. */
+   предыдущую, оставляя виден верхний край (эффект "переворота колоды").
+   Десктоп: обычная сетка в 3 колонки, без sticky. */
 .wtg-card {
   position: relative;
   display: flex;
@@ -349,7 +268,6 @@ const mapLoaded = ref(false)
   min-height: 20rem;
   box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.35);
 }
-/* Оттенки серого вместо фото — каждая карточка своим тоном */
 .wtg-card--1 { background: #3a3a3d; }
 .wtg-card--2 { background: #29292b; }
 .wtg-card--3 { background: var(--color-graphite); }
@@ -365,7 +283,7 @@ const mapLoaded = ref(false)
   line-height: 1.2;
   letter-spacing: -0.01em;
   color: #fff;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
 }
 .wtg-card__tags {
   display: flex;
@@ -389,6 +307,7 @@ const mapLoaded = ref(false)
   line-height: 1.65;
   color: rgba(255, 255, 255, 0.65);
   max-width: 34rem;
+  margin: 0;
 }
 
 @media (max-width: 767px) {
@@ -412,9 +331,5 @@ const mapLoaded = ref(false)
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.25rem;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wtg-card { transition: none; }
 }
 </style>

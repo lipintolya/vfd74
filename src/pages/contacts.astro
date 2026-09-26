@@ -6,7 +6,7 @@ import QuoteCta from '../components/ui/QuoteCta.astro'
 import ContactsSection from '../components/contacts/ContactsSection.vue'
 import { companyLegalInfo } from '../lib/contacts-data'
 
-const title = 'Контакты салона ВФД в Челябинске'
+const title = 'Контакты салона дверей ВФД в Челябинске — адрес, телефон, часы работы'
 const description =
   'Контакты фирменного салона дверей ВФД на Братьев Кашириных, 131Б. Телефон, email, часы работы, реквизиты согласно РФ. Консультации по дверям и перегородкам.'
 
@@ -23,13 +23,13 @@ const localBusinessSchema = {
     streetAddress: 'ул. Братьев Кашириных, 131Б',
     addressLocality: 'Челябинск',
     addressRegion: 'Челябинская область',
-    postalCode: '454000',
+    postalCode: '454128',
     addressCountry: 'RU',
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: 55.152157,
-    longitude: 61.306669,
+    latitude: companyLegalInfo.address.coordinates.lat,
+    longitude: companyLegalInfo.address.coordinates.lng,
   },
   openingHoursSpecification: companyLegalInfo.schemaOrgHours.map((h) => ({
     '@type': 'OpeningHoursSpecification',
@@ -40,7 +40,6 @@ const localBusinessSchema = {
   priceRange: '₽₽',
   acceptsPaymentMethod: ['Cash', 'CreditCard', 'DebitCard'],
   sameAs: [
-    'https://wa.me/79000297888',
     'https://t.me/vfddoors74',
     'https://vk.com/vfddoors74',
     'https://max.ru/id452402308842_biz',
