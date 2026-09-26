@@ -29,7 +29,10 @@ const WORDS: string[] = [
   'установку дверей «под ключ»',
 ]
 
-const CARDS_CDN = 'https://storage.yandexcloud.net/vfd74ru/Main_page/cards/'
+/* Локальные копии (scripts/gen-home-images.mjs): оригиналы на CDN — портреты
+   до 1440×2560 и 1 МБ, а контейнер фото — aspect-[16/12.65] ~400px шириной.
+   Файлы заранее кадрированы тем же центральным кропом, что даёт object-cover. */
+const IMG = '/renders/home/features-'
 
 const FEATURES: (Feature & { eyebrow: string })[] = [
   {
@@ -38,11 +41,11 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
     title: 'Двери напрямую с фабрики',
     text: 'Официальный дилер Владимирской фабрики дверей — без посредников и переплат.',
     images: [
-      'https://storage.yandexcloud.net/catalog-vfd/features_block/card-1.webp',
-      `${CARDS_CDN}f1.webp`,
-      `${CARDS_CDN}f2.webp`,
-      `${CARDS_CDN}f3.webp`,
-      `${CARDS_CDN}f4.webp`,
+      `${IMG}card-1.webp`,
+      `${IMG}f1.webp`,
+      `${IMG}f2.webp`,
+      `${IMG}f3.webp`,
+      `${IMG}f4.webp`,
     ],
     cta: { label: 'Выбрать двери', href: '/catalog/' },
     stat: '15 лет',
@@ -54,10 +57,10 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
     title: 'Всё — от выбора до монтажа',
     text: 'Консультация, замер, доставка и установка под ключ. Одна команда — 15 лет.',
     images: [
-      'https://storage.yandexcloud.net/catalog-vfd/features_block/card-2.webp',
-      `${CARDS_CDN}t1.webp`,
-      `${CARDS_CDN}t2.webp`,
-      `${CARDS_CDN}t3.webp`,
+      `${IMG}card-2.webp`,
+      `${IMG}t1.webp`,
+      `${IMG}t2.webp`,
+      `${IMG}t3.webp`,
     ],
     cta: { label: 'Посмотреть монтажи', href: '/portfolio/' },
     stat: 'Под ключ',
@@ -69,12 +72,12 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
     title: 'Большая выставка ВФД',
     text: '80+ моделей вживую на Кашириных, 131Б — сравните, не по фото.',
     images: [
-      'https://storage.yandexcloud.net/catalog-vfd/features_block/card-3.webp',
-      `${CARDS_CDN}foto1.webp`,
-      `${CARDS_CDN}foto2.webp`,
-      `${CARDS_CDN}foto3.webp`,
-      `${CARDS_CDN}foto4.webp`,
-      `${CARDS_CDN}foto6.webp`,
+      `${IMG}card-3.webp`,
+      `${IMG}foto1.webp`,
+      `${IMG}foto2.webp`,
+      `${IMG}foto3.webp`,
+      `${IMG}foto4.webp`,
+      `${IMG}foto6.webp`,
     ],
     cta: { label: 'Построить маршрут', href: 'https://yandex.ru/maps/-/CPTwZPi-', external: true },
     stat: '80+ моделей',

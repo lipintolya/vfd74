@@ -45,12 +45,14 @@ onUnmounted(stop)
     @touchstart.passive="onPauseStart"
     @touchend.passive="onPauseEnd"
   >
+    <!-- loading="lazy" у всех, включая первый: слайдер везде стоит ниже
+         первого экрана, eager первого кадра отбирал канал у LCP-картинки hero. -->
     <img
       v-for="(src, i) in images"
       :key="src"
       :src="src"
       :alt="alt"
-      :loading="i === 0 ? 'eager' : 'lazy'"
+      loading="lazy"
       decoding="async"
       width="1672"
       height="941"

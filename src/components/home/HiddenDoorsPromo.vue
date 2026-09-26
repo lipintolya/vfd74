@@ -10,10 +10,12 @@ import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 const INVISIBLE_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
 
+// Локальные копии 1300w (scripts/gen-home-images.mjs); последний слайд —
+// оригинал, он и так лёгкий (15КБ).
 const SLIDES = [
-  'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/secret_render_cover.webp',
-  `${INVISIBLE_CDN}B2AB966B-4BC6-43E2-AEAA-7DA6B3CEDCC5.webp`,
-  `${INVISIBLE_CDN}937DECDF-6886-48EB-80B6-3495AA998F94.webp`,
+  '/renders/home/secret-cover.webp',
+  '/renders/home/secret-2.webp',
+  '/renders/home/secret-3.webp',
   `${INVISIBLE_CDN}reverse_render_11zon.webp`,
 ]
 

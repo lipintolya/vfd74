@@ -46,7 +46,7 @@ const totalWord = total === 1 ? 'фотоотчёт' : total < 5 ? 'фотоот
                   <img
                     src={`/renders/portfolio/${work.id}.webp`}
                     alt={work.title}
-                    loading={i === 0 ? 'eager' : 'lazy'}
+                    loading="lazy"
                     decoding="async"
                     class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   />

@@ -16,8 +16,8 @@ const props = withDefaults(defineProps<{ headingTag?: 'h1' | 'h2'; eagerFirst?: 
 })
 
 const PLATFORM_META: Record<ReviewPlatform, { label: string; logo: string }> = {
-  yandex: { label: 'Яндекс Карты', logo: 'https://storage.yandexcloud.net/vfd74ru/info/reviews/yandex_logo.webp' },
-  '2gis':  { label: '2ГИС',        logo: 'https://storage.yandexcloud.net/vfd74ru/info/reviews/2gis_logo.webp' },
+  yandex: { label: 'Яндекс Карты', logo: '/renders/home/logo-yandex.webp' },
+  '2gis':  { label: '2ГИС',        logo: '/renders/home/logo-2gis.webp' },
 }
 
 const formatDate = (dateStr?: string): string =>

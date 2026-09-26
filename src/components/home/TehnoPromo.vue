@@ -12,11 +12,11 @@ const props = defineProps<{
   kitPrice:   number | null
 }>()
 
-const RENDER_CDN = 'https://storage.yandexcloud.net/vfd74ru/doors-main_renders/tehno/'
+// Локальные копии 1300w (scripts/gen-home-images.mjs) вместо CDN-оригиналов.
 const SLIDES = [
-  `${RENDER_CDN}tehno_render_1.webp`,
-  `${RENDER_CDN}tehno_render.webp`,
-  `${RENDER_CDN}render_3.webp`,
+  '/renders/home/tehno-1.webp',
+  '/renders/home/tehno-2.webp',
+  '/renders/home/tehno-3.webp',
 ]
 
 /* Эмалекс — те же 3 официальных преимущества покрытия, что и на /catalog/

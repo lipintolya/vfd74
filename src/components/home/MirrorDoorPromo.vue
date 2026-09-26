@@ -4,11 +4,11 @@ import { REFLEX_IMAGE, REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE } from '../.
 import BenefitItem from './BenefitItem.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
-const REFLEX_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
+// Локальные копии 1300w (scripts/gen-home-images.mjs) вместо CDN-оригиналов.
 const SLIDES = [
-  `${REFLEX_CDN}2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp`,
-  `${REFLEX_CDN}A158F8FC-901B-4262-BDF6-D68E573300C8.webp`,
-  `${REFLEX_CDN}41CFB5EC-5142-462A-A702-E9AECDE149AD.webp`,
+  '/renders/home/reflex-1.webp',
+  '/renders/home/reflex-2.webp',
+  '/renders/home/reflex-3.webp',
   REFLEX_IMAGE,
 ]
 

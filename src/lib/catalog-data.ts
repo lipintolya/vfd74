@@ -7,6 +7,7 @@
 import { supabase } from './supabase'
 import { buildModelSlugMap } from './slugify'
 import { getSeriesSpec } from '../data/series-descriptions'
+import { SERIES_COVER_PREVIEWS } from '../data/series-cover-previews'
 import { adjustPrice } from './price-adjustments'
 import { isNewModel } from './new-models'
 import { isPopularSeries } from './popular-series'
@@ -195,6 +196,13 @@ export interface SeriesCardData extends SeriesListItem {
 
 /** Данные для карточки серии (хаб /catalog/series, полоса серий на /catalog) —
     та же форма в обоих местах, чтобы не расходились при правках. */
+/** Лёгкое локальное превью обложки (scripts/gen-series-covers.mjs), если есть;
+    иначе оригинальный URL. Большой hero на странице серии берёт heroImage
+    напрямую и сюда не ходит. */
+function previewCover(url: string | undefined): string | undefined {
+  return url ? (SERIES_COVER_PREVIEWS[url] ?? url) : undefined
+}
+
 export function getSeriesCardsData(cards: CatalogCardItem[]): SeriesCardData[] {
   return getSeriesList(cards).map(series => {
     const spec = getSeriesSpec(series.slug, series.coatingSlug)
@@ -202,7 +210,7 @@ export function getSeriesCardsData(cards: CatalogCardItem[]): SeriesCardData[] {
     return {
       ...series,
       tagline: spec.tagline,
-      cover:   spec.previewImage || spec.heroImage || seriesCards[0]?.photo || '',
+      cover:   previewCover(spec.previewImage || spec.heroImage) || seriesCards[0]?.photo || '',
     }
   })
 }
