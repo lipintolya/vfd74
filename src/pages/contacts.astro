@@ -51,16 +51,6 @@ const breadcrumbItems = [
   { label: 'Контакты' },
 ]
 
-const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: breadcrumbItems.map((item, i) => ({
-    '@type': 'ListItem',
-    position: i + 1,
-    name: item.label,
-    ...(item.href ? { item: new URL(item.href, 'https://vfd74.ru').href } : {}),
-  })),
-}
 
 const faq = [
   {
@@ -95,7 +85,7 @@ const faqSchema = {
   })),
 }
 
-const structuredData = [localBusinessSchema, breadcrumbSchema, faqSchema]
+const structuredData = [localBusinessSchema, faqSchema]
 ---
 
 <BaseLayout title={title} description={description} structuredData={structuredData}>

@@ -7,7 +7,7 @@ import {
   requisites,
   paymentMethods,
 } from './about-data'
-import { getFormattedHours } from '../../lib/contacts-data'
+import { companyLegalInfo, getFormattedHours } from '../../lib/contacts-data'
 
 /* Часы работы — из единого источника (contacts-data.ts), не статичной
    строкой на карточке, чтобы график не расходился между страницами. */
@@ -20,6 +20,16 @@ const workingHoursDisplay = computed(() => {
     : `${saturday.day}: ${saturday.time}, ${sunday.day}: ${sunday.time}`
   return `${weekdays.day}: ${weekdays.time}, ${weekendLabel}`
 })
+
+/* Разделы каталога для блока «Что можно выбрать в салоне». */
+const CATEGORIES = [
+  { href: '/catalog/',               title: 'Межкомнатные двери',      text: 'Эмалекс, эмаль, ПЭТ, Протач и экошпон — десятки серий и цветов' },
+  { href: '/catalog/skrytye-dveri/', title: 'Скрытые двери',           text: 'Полотно вровень со стеной, под покраску, штукатурку или с зеркалом' },
+  { href: '/vhodnye-dveri/',         title: 'Входные двери',           text: 'Для квартиры и частного дома, в том числе с терморазрывом' },
+  { href: '/partitions/',            title: 'Алюминиевые перегородки', text: 'Раздвижные и распашные системы в профиле GRAFIA, 13 цветов' },
+  { href: '/catalog/decor/',         title: 'Погонаж и декор',         text: 'Коробки, наличники, доборы, плинтус, фальшфрамуги, рейки' },
+  { href: '/portfolio/',             title: 'Наши работы',             text: 'Фотоотчёты монтажей в квартирах, домах и офисах Челябинска' },
+]
 
 /* ============================================================
    Lightbox
@@ -79,21 +89,23 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
         <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
 
           <div class="order-2 lg:order-1">
-            <p class="t-eyebrow mb-3">Салон дверей ВФД в Челябинске</p>
+            <p class="t-eyebrow mb-3">Официальный дилер Владимирской фабрики дверей</p>
 
             <h1 class="t-h1 mb-5">
-              ВФД — <span class="text-teal-600">всё начинается с дверей</span>
+              Салон дверей ВФД в Челябинске — <span class="text-teal-600">всё начинается с дверей</span>
             </h1>
 
             <p class="m-0 mb-4 t-lead text-slate-600">
-              Мы работаем напрямую с Владимирской фабрикой дверей и предлагаем всё для интерьера
-              в одном месте: двери, перегородки и фурнитуру.
+              С {{ companyInfo.founded }} года мы работаем напрямую с
+              <a href="/o-fabrike/" class="text-teal-700 underline decoration-teal-700/30 underline-offset-4 hover:decoration-teal-700">Владимирской фабрикой дверей</a>
+              и собираем в одном салоне всё для интерьера: межкомнатные, скрытые и входные двери,
+              алюминиевые перегородки, погонаж и фурнитуру.
             </p>
             <p class="m-0 mb-6 t-lead text-slate-600">
               Здесь не выбирают «по картинке» — вы сравниваете материалы вживую, видите реальные
               оттенки при разном освещении и сразу понимаете, как это будет смотреться в вашем
-              интерьере. Более 10 лет мы помогаем частным клиентам, дизайнерам и студиям, а также
-              реализуем проекты для коммерческих объектов — от квартир до офисов.
+              интерьере. Помогаем частным клиентам, дизайнерам и студиям, реализуем проекты
+              для коммерческих объектов — от квартир до офисов.
             </p>
 
             <div class="mb-8 flex flex-wrap items-center gap-2.5">
@@ -149,11 +161,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               </div>
               <div class="rounded-2xl border border-slate-200 p-4">
                 <span class="block text-2xl font-medium leading-none text-ink sm:text-3xl">60+</span>
-                <span class="mt-1.5 block text-xs leading-snug text-slate-500">выставка дверей</span>
+                <span class="mt-1.5 block text-xs leading-snug text-slate-500">моделей в выставочном зале</span>
               </div>
               <div class="rounded-2xl border border-slate-200 p-4">
-                <span class="block text-2xl font-medium leading-none text-ink sm:text-3xl">10+</span>
-                <span class="mt-1.5 block text-xs leading-snug text-slate-500">лет опыта работы</span>
+                <span class="block text-2xl font-medium leading-none text-ink sm:text-3xl">12 мес.</span>
+                <span class="mt-1.5 block text-xs leading-snug text-slate-500">гарантия на монтаж</span>
               </div>
             </div>
           </div>
@@ -183,7 +195,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div class="rounded-xl bg-slate-50 p-3.5">
                 <p class="m-0 mb-1 text-[0.6875rem] font-semibold uppercase tracking-widest text-slate-400">Адрес</p>
-                <p class="m-0 text-sm font-medium leading-snug text-ink">Челябинск, ул. Братьев Кашириных, 131Б</p>
+                <p class="m-0 text-sm font-medium leading-snug text-ink">{{ companyLegalInfo.address.legal }}</p>
               </div>
               <div class="rounded-xl bg-slate-50 p-3.5">
                 <p class="m-0 mb-1 text-[0.6875rem] font-semibold uppercase tracking-widest text-slate-400">Режим работы</p>
@@ -192,6 +204,32 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
             </div>
           </div>
 
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         ЧТО ЕСТЬ В САЛОНЕ — ассортимент со ссылками на разделы
+         каталога: для посетителя это быстрый переход, для поиска —
+         перелинковка «О нас» → товарные разделы.
+    ======================================================= -->
+    <section class="section bg-white">
+      <div class="container">
+        <p class="t-eyebrow mb-3">Ассортимент</p>
+        <h2 class="t-h2 mb-8 md:mb-10">Что можно выбрать в салоне</h2>
+        <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          <a
+            v-for="c in CATEGORIES"
+            :key="c.href"
+            :href="c.href"
+            class="group flex items-start justify-between gap-4 rounded-2xl border border-slate-200 p-5 transition-colors hover:border-slate-300 hover:bg-slate-50"
+          >
+            <span>
+              <span class="mb-1 block text-base font-medium text-ink">{{ c.title }}</span>
+              <span class="block text-sm leading-relaxed text-slate-500">{{ c.text }}</span>
+            </span>
+            <span class="mt-0.5 shrink-0 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
     </section>

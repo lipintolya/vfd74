@@ -48,14 +48,14 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
       `${IMG}f4.webp`,
     ],
     cta: { label: 'Выбрать двери', href: '/catalog/' },
-    stat: '15 лет',
+    stat: 'С 2014 года',
     caption: 'напрямую с фабрики',
   },
   {
     id: 2,
     eyebrow: 'Сервис',
     title: 'Всё — от выбора до монтажа',
-    text: 'Консультация, замер, доставка и установка под ключ. Одна команда — 15 лет.',
+    text: 'Консультация, замер, доставка и установка под ключ. Одна команда с 2014 года.',
     images: [
       `${IMG}card-2.webp`,
       `${IMG}t1.webp`,
@@ -70,7 +70,7 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
     id: 3,
     eyebrow: 'Шоурум',
     title: 'Большая выставка ВФД',
-    text: '80+ моделей вживую на Кашириных, 131Б — сравните, не по фото.',
+    text: '60+ моделей вживую на Кашириных, 131Б — сравните, не по фото.',
     images: [
       `${IMG}card-3.webp`,
       `${IMG}foto1.webp`,
@@ -80,7 +80,7 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
       `${IMG}foto6.webp`,
     ],
     cta: { label: 'Построить маршрут', href: 'https://yandex.ru/maps/-/CPTwZPi-', external: true },
-    stat: '80+ моделей',
+    stat: '60+ моделей',
     caption: 'Кашириных, 131Б',
   },
 ]
@@ -202,7 +202,7 @@ onBeforeUnmount(stopCycle)
         </header>
 
         <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">
-          Более 80 моделей дверей в выставочном зале — выбирайте не по картинке, а вживую.
+          Более 60 моделей дверей в выставочном зале — выбирайте не по картинке, а вживую.
           Поможем подобрать идеальный вариант под ваш интерьер, сделаем замер и выполним качественную установку.
         </p>
       </div>
