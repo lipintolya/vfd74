@@ -116,6 +116,18 @@ const breadcrumbSchema = {
               ))}
             </ul>
           )}
+
+          {work.relatedLink && (
+            <a
+              href={work.relatedLink.href}
+              class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-700 hover:text-teal-800"
+            >
+              {work.relatedLink.label}
+              <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          )}
         </div>
       </div>
 

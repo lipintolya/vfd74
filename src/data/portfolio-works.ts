@@ -59,9 +59,32 @@ export interface PortfolioWork {
       для поиска/фильтрации. Фильтр по ним пока не реализован, только данные. */
   tags?:       string[]     // ['Загородный дом', 'ПЭТ', 'Внешние петли']
   images:      string[]     // images[0] — обложка
+  /** Ссылка на раздел каталога, к которому относится работа (под
+      спецификацией на странице работы) — перелинковка портфолио → каталог. */
+  relatedLink?: { href: string; label: string }
 }
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
+  {
+    id:          '2026-09-27-belyy-plintus-universitetskaya-naberezhnaya',
+    date:        '2026-09-27',
+    label:       '27.09.2026',
+    title:       'Монтаж белого напольного плинтуса на Университетской набережной',
+    description: 'Белый напольный плинтус в тон стенам и дверям: аккуратные примыкания к наличникам и стыки на паркете «ёлочкой». Монтаж в квартире на Университетской набережной, Челябинск.',
+    category:    'interior',
+    objectType:  'apartment',
+    location:    'Челябинск, Университетская набережная',
+    story:       'Белый напольный плинтус гармонично сочетается со стенами и дверями, подчёркивает геометрию помещения и красиво обрамляет паркет, уложенный «ёлочкой». Особое внимание — примыканиям к наличникам и стыкам: именно такие детали создают ощущение цельного и качественно выполненного ремонта. Белый плинтус — универсальное решение, которое визуально делает интерьер чище, легче и аккуратнее.',
+    features:    ['Белый напольный плинтус', 'Примыкание к дверным наличникам', 'Паркет «ёлочкой»'],
+    tags:        ['Квартира', 'Плинтус', 'Белый'],
+    relatedLink: { href: '/catalog/decor/', label: 'Плинтус и декор в каталоге' },
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/-jJW_itwjF3ySbjJAx8Ny9nrvXPMz1dVdEXfYsmSkVquhM33SSopk3wSEJe-eWnraz-_gEh1P0_V4Nf_G6R8N8Tc.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/1doKbi2wIyUFrOk65MMluUPUE_TOvP20U_Wo5lJ0hHg65iKgWUcRFlDMR9-UtnRT_18tYnI-Qdr3NxC4sJ2HAMmX.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/ZcxVFLRDZ_jl7_aeF0JlebukeMuOMhxZMkcIM3pwoTWCN-7l61kFma3OnCasWZDQQ8CRtmhtoJHPPO4LYy0qN5nL.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/7Sipv_IdlSNuvTZMwi3bDSgpInDWNJZc4I50X278hCdOBorHpG0i3Wd56_N8Uwqg3KQ60A5zL-r5KGtrpVtZ6EUz.webp',
+    ],
+  },
   {
     id:          '2026-09-24-emalex-er1-belyy-maracana',
     date:        '2026-09-24',
