@@ -226,9 +226,22 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
       scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_antik_shema.webp',
       mediaAspect: '2.3 / 1',
     },
-    { name: 'Наличник НТ№35 85х16х2140 «Каскад»',                       category: 'nalichnik',  unit: 'шт',       price: 788 },
-    { name: 'Наличник НТ№36 80х22х2140 «Нео 1»',                        category: 'nalichnik',  unit: 'шт',       price: 882 },
-    { name: 'Наличник НТ№37 80х22х2140 «Нео 2»',                        category: 'nalichnik',  unit: 'шт',       price: 882 },
+    {
+      name: 'Наличник НТ№35 85х16х2140 «Каскад»', category: 'nalichnik', unit: 'шт', price: 788,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_kaskad.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_kaskad_shema.webp',
+      mediaAspect: '2.35 / 1',
+    },
+    {
+      name: 'Наличник НТ№36 80х22х2140 «Нео 1»', category: 'nalichnik', unit: 'шт', price: 882,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_1.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_1_shema.webp',
+    },
+    {
+      name: 'Наличник НТ№37 80х22х2140 «Нео 2»', category: 'nalichnik', unit: 'шт', price: 882,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2_shema.webp',
+    },
     {
       name: 'Комплект наличника КН№01 90×10×2140 компланарный (2,5 шт)', category: 'nalichnik', unit: 'комплект', price: 1_838,
       image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl.webp',
