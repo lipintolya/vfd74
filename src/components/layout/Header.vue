@@ -722,15 +722,30 @@ onUnmounted(() => {
             </li>
           </ul>
 
-          <!-- Статус салона + график -->
+          <!-- Статус салона + график. Та же поверхность и круглая иконка,
+               что у кнопок телефонов внизу — единый язык карточек меню. -->
           <div
-            class="mt-4 mb-5 rounded-xl border border-white/10 px-4 py-3.5 text-sm leading-snug"
+            class="mt-4 mb-5 rounded-xl bg-white/[0.06] px-4 py-3.5 text-sm leading-snug"
             aria-live="polite"
             aria-atomic="true"
           >
-            <p class="font-semibold" :class="isOpen ? 'text-teal-300' : 'text-white'">{{ statusTitle }}</p>
-            <p class="text-white/55">{{ statusDetail }}</p>
-            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-0.5 border-t border-white/10 pt-2.5 text-xs text-white/40 tabular-nums">
+            <div class="flex items-center gap-3">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                :class="isOpen ? 'bg-teal-400/15 text-teal-300' : 'bg-white/10 text-white'"
+                aria-hidden="true"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+              </span>
+              <div class="min-w-0">
+                <p class="font-semibold" :class="isOpen ? 'text-teal-300' : 'text-white'">{{ statusTitle }}</p>
+                <p class="text-white/55">{{ statusDetail }}</p>
+              </div>
+            </div>
+            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-0.5 border-t border-white/10 pt-2.5 text-xs text-white/45 tabular-nums">
               <span>{{ CONTACTS.worktimeWeekdays }}</span>
               <span>{{ CONTACTS.worktimeWeekend }}</span>
             </p>
