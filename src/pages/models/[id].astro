@@ -1,162 +1,37 @@
 ---
 import { getCollection } from 'astro:content'
-import { supabase } from '../../lib/supabase'
-import { buildModelSlugMap } from '../../lib/slugify'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import ProductColorPicker from '../../components/catalog/ProductColorPicker.vue'
-import type { ColorVariant } from '../../components/catalog/ProductColorPicker.vue'
 import PlinthSection from '../../components/catalog/PlinthSection.astro'
 import { getSeriesSpec } from '../../data/series-descriptions'
-import { getColorsByCoatingSlug } from '../../lib/catalog-data'
-import { adjustPrice } from '../../lib/price-adjustments'
-import { isNewModel } from '../../lib/new-models'
 import { accessoriesByCoating, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
 import type { AccessoryCategory, CoatingSlug } from '../../data/accessories'
 import InfoImageViewer from '../../components/catalog/InfoImageViewer.vue'
-import { formatTrim } from '../../lib/trim-labels'
-import { withInStockFirst } from '../../lib/made-to-order'
+import { describeTrim } from '../../lib/trim-labels'
 import { merchantPolicy } from '../../lib/contacts-data'
+import { getModelEntries } from '../../lib/model-entries'
+import type { ModelEntry } from '../../lib/model-entries'
+import {
+  DOOR_TYPE, BRAND, cleanModelName, priceLabel,
+  productName, productTitle, productMetaDescription, productDescription,
+} from '../../lib/product-text'
 
 export async function getStaticPaths() {
-  const { data, error } = await supabase
-    .from('model_colors')
-    .select(`
-      price_rrp,
-      photo_url,
-      model_id,
-      color_id,
-      colors ( id, name, hex_preview, coatings ( id, name, slug ) ),
-      models ( id, name, has_glass, trim, series ( id, name, slug, coatings ( id, name, slug ) ) )
-    `)
-    .order('price_rrp', { ascending: true })
-
-  if (error || !data) {
-    console.error('getStaticPaths error:', error?.message)
-    return []
-  }
-
-  const normalizeHex = (v: string | null | undefined) => {
-    const s = (v ?? '').trim().replaceAll('С', 'C').replaceAll('с', 'c')
-    return /^#[0-9a-fA-F]{3,6}$/.test(s) ? s : '#cccccc'
-  }
-
-  type ModelEntry = {
-    model:       { id: string; name: string; hasGlass: boolean; trim: string | null; isNew: boolean }
-    slug:        string
-    seriesName:  string
-    seriesSlug:  string
-    coatingName: string
-    coatingSlug: string
-    colors:      ColorVariant[]
-    minPrice:    number | null
-    extraColors: { name: string; hex: string }[]
-  }
-
-  const modelMap = new Map<string, ModelEntry>()
-
-  for (const row of data) {
-    const model  = row.models  as any
-    const color  = row.colors  as any
-    if (!model || !color) continue
-
-    const series        = model.series   as any
-    const seriesCoating = series?.coatings as any
-    const colorCoating  = color.coatings  as any
-    const coating       = seriesCoating ?? colorCoating
-
-    if (!modelMap.has(model.id)) {
-      modelMap.set(model.id, {
-        model: {
-          id:       model.id,
-          name:     model.name,
-          hasGlass: model.has_glass ?? false,
-          trim:     model.trim ?? null,
-          isNew:    isNewModel(model.id),
-        },
-        slug:        '',
-        seriesName:  series?.name     ?? '',
-        seriesSlug:  series?.slug     ?? '',
-        coatingName: coating?.name    ?? '',
-        coatingSlug: coating?.slug    ?? '',
-        colors:      [],
-        minPrice:    null,
-        extraColors: [],
-      })
-    }
-
-    const entry = modelMap.get(model.id)!
-
-    const adjustedPrice = adjustPrice(series?.slug ?? '', row.price_rrp ?? null)
-
-    if (!entry.colors.some(c => c.id === color.id)) {
-      entry.colors.push({
-        id:          color.id,
-        name:        color.name,
-        hex:         normalizeHex(color.hex_preview),
-        photo:       row.photo_url  ?? '',
-        price:       adjustedPrice,
-        coatingSlug: coating?.slug  ?? '',
-      })
-    }
-
-    if (adjustedPrice && (!entry.minPrice || adjustedPrice < entry.minPrice)) {
-      entry.minPrice = adjustedPrice
-    }
-  }
-
-  /* Показываем только реально сфотканные цвета — свотч без фото сбивает
-     покупателя с толку (выглядит как рабочий вариант, а на деле «по запросу»). */
-  for (const entry of modelMap.values()) {
-    entry.colors = entry.colors.filter(c => Boolean(c.photo))
-  }
-
-  /* Цвет из IN_STOCK_OVERRIDE — первым в пикере (по умолчанию выбран при
-     открытии страницы): логично открывать сразу тем, что есть на складе. */
-  for (const entry of modelMap.values()) {
-    entry.colors = withInStockFirst(entry.model.id, entry.colors)
-  }
-
-  /* «Также доступны цвета» — полная палитра покрытия за вычетом уже
-     сфотканных у этой модели, справочным текстом (не свотчем/кнопкой —
-     см. ProductColorPicker.vue), чтобы не выглядело кликабельным вариантом. */
-  const paletteByCoating = new Map<string, { name: string; hex: string }[]>()
-  for (const entry of modelMap.values()) {
-    if (!entry.coatingSlug) continue
-    // Ключ кэша включает серию — цвет, эксклюзивный для одной серии
-    // покрытия, не должен утекать в «также доступны» у других серий
-    // (см. фильтр по seriesSlugs.size===1 в getColorsByCoatingSlug).
-    const cacheKey = `${entry.coatingSlug}::${entry.seriesSlug}`
-    if (!paletteByCoating.has(cacheKey)) {
-      paletteByCoating.set(cacheKey, await getColorsByCoatingSlug(entry.coatingSlug, entry.seriesSlug))
-    }
-    const palette = paletteByCoating.get(cacheKey)!
-    const ownNames = new Set(entry.colors.map(c => c.name))
-    entry.extraColors = palette.filter(c => !ownNames.has(c.name))
-  }
-
-  /* ── Читаемые слаги вместо UUID: имя модели + серия, с защитой от коллизий ── */
-  const slugMap = buildModelSlugMap(
-    [...modelMap.values()].map(entry => ({
-      id:         entry.model.id,
-      name:       entry.model.name,
-      seriesSlug: entry.seriesSlug,
-    })),
-  )
-  for (const entry of modelMap.values()) {
-    entry.slug = slugMap.get(entry.model.id)!
-  }
+  /* Данные моделей — в lib/model-entries.ts: их же берёт товарный фид
+     /feed/yandex.xml, цена и фото в фиде обязаны совпадать со страницей. */
+  const entries = await getModelEntries()
 
   /* ── Каждая модель доступна по двум путям: новому слагу (канонический)
      и старому UUID (чтобы не 404'ить уже проиндексированные Яндексом ссылки) ── */
-  const entries = [...modelMap.values()]
   return [
     ...entries.map(entry => ({ params: { id: entry.slug },     props: entry })),
     ...entries.map(entry => ({ params: { id: entry.model.id }, props: entry })),
   ]
 }
 
-const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug, extraColors } = Astro.props
+const entry = Astro.props as ModelEntry
+const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug, extraColors } = entry
 
 const spec        = getSeriesSpec(seriesSlug, coatingSlug)
 const accessories = accessoriesByCoating[coatingSlug as CoatingSlug] ?? []
@@ -188,57 +63,42 @@ const canonicalUrl  = Astro.site ? new URL(`/models/${slug}/`, Astro.site).href 
    явно говорит роботу не индексировать и не учитывать эту версию отдельной
    страницей, ссылка при этом продолжает открываться. */
 const isUuidRoute   = Astro.params.id !== slug
-const priceStr      = minPrice ? `${minPrice.toLocaleString('ru-RU')} ₽` : ''
-const seriesPart    = seriesName ? `серия ${seriesName}` : ''
-const coatingPart   = coatingName
-/* Некоторые модели делят имя+серию+покрытие+цену с другой записью в
-   Supabase — различаются только кромкой (напр. 4 SKU «Урбан 1» — золото/
-   серебро/чёрная). Без кромки в title/description это дубли по факту —
-   formatTrim() убирает мусорные коды поставщика (GM/GE и т.п. — одно и
-   то же значение, разное написание) и битые записи ("true"). */
-const trimLabel     = formatTrim(model.trim)
-const trimPart      = trimLabel ? `кромка ${trimLabel}` : ''
+/* Имя модели для показа: без лишних пробелов и латинских букв-двойников
+   внутри кириллических слов (см. cleanModelName). */
+const displayName = cleanModelName(model.name)
 
-const pageTitle     = [model.name, seriesPart, coatingPart, trimPart].filter(Boolean).join(' — ') + ' | ВФД Челябинск'
+/* Кромка/остекление — у некоторых моделей это единственное отличие между
+   SKU (4 «Урбан 1» — золото/серебро/чёрная). describeTrim() убирает мусорные
+   коды поставщика и битые записи ("true") и отличает остекление серии Некст,
+   которое в базе лежит в том же поле, от кромки. */
+const trim = describeTrim(model.trim)
 
-/* Meta description — ВСЕГДА уникальная генерация по конкретной модели, а не
-   spec.description: тот текст — маркетинговое описание СЕРИИ (series-descriptions.ts),
-   общее на десятки моделей одной серии+покрытия. Раньше он приоритетно шёл в
-   <meta description> — дубль сниппета у всех этих моделей разом, без города/
-   "купить" (не для того написан) и обрезался Google на середине фразы (300-600
-   символов против ~155 нормы). spec.description остаётся только как текст на
-   странице (блок "Смотреть описание" ниже) — там его длина и стиль к месту. */
-const pageDesc      =
-  `Дверь ${model.name}${seriesName ? ` серии ${seriesName}` : ''}${coatingName ? `, ${coatingName}` : ''}${trimLabel ? `, кромка ${trimLabel}` : ''}${priceStr ? `. Цена ${priceStr}` : ''}. Купить в салоне ВФД в Челябинске.`
+/* Title/description/название в schema — из lib/product-text.ts, те же
+   формулировки, что в товарном фиде. Тип товара («Межкомнатная дверь»)
+   первым словом: по нему ищут, а в имени модели («Иннова 02СТ», «ЕР1»)
+   его нет. Meta description — уникальная по модели (не spec.description:
+   это текст серии, общий на десятки моделей). */
+const pageTitle = productTitle(entry)
+const pageDesc  = productMetaDescription(entry)
 
+/* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
 const breadcrumbs = [
   { label: 'Главная',  href: '/' },
   { label: 'Каталог',  href: '/catalog/' },
   ...(seriesName ? [{ label: seriesName, href: `/catalog/series/${seriesSlug}/` }] : []),
-  { label: model.name },
+  { label: displayName },
 ]
-
-const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: breadcrumbs.map((item, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    name: item.label,
-    ...(item.href ? { item: new URL(item.href, Astro.site!).href } : {}),
-  })),
-}
 
 const productImages = [...new Set(colors.map(c => c.photo).filter(Boolean))]
 
-const structuredData = [breadcrumbSchema, {
+const structuredData = [{
   '@context': 'https://schema.org',
   '@type':    'Product',
-  name:        model.name,
-  description: pageDesc,
+  name:        productName(entry),
+  description: productDescription(entry),
   url:         canonicalUrl,
   image:       productImages,
-  brand:       { '@type': 'Brand', name: 'ВФД' },
+  brand:       { '@type': 'Brand', name: BRAND },
   /* Offer требует price+priceCurrency вместе — без цены (price_rrp пуст
      в Supabase) Google считает Offer невалидным и не даёт rich snippet
      вообще. Без цены честнее не публиковать offers, чем отдавать
@@ -283,7 +143,7 @@ const structuredData = [breadcrumbSchema, {
           client:load
           colors={colors}
           extraColors={extraColors}
-          modelName={model.name}
+          modelName={displayName}
           modelId={model.id}
           seriesSlug={seriesSlug}
         />
@@ -297,7 +157,7 @@ const structuredData = [breadcrumbSchema, {
           </div>
 
           <h1 class="product-title">
-            {model.name}{coatingName && <span class="product-title__coating"> — {coatingName}</span>}
+            <span class="product-title__type">{`${DOOR_TYPE} `}</span>{displayName}{coatingName && <span class="product-title__coating"> — {coatingName}</span>}
           </h1>
 
           {spec.description && (
@@ -307,12 +167,12 @@ const structuredData = [breadcrumbSchema, {
             </details>
           )}
 
-          {(trimLabel || spec.features.length > 0 || spec.coating || spec.material || spec.edge || spec.thickness) && (
+          {(trim || spec.features.length > 0 || spec.coating || spec.material || spec.edge || spec.thickness) && (
             <dl class="product-specs">
-              {trimLabel && (
+              {trim && (
                 <div class="product-specs__row">
-                  <dt>Кромка</dt>
-                  <dd>{trimLabel}</dd>
+                  <dt>{trim.kind === 'glass' ? 'Остекление' : 'Кромка'}</dt>
+                  <dd>{trim.label}</dd>
                 </div>
               )}
               {spec.features.length > 0 && (
@@ -351,7 +211,7 @@ const structuredData = [breadcrumbSchema, {
           <!-- Быстрый ориентир по цене (статика, всегда виден до гидратации) -->
           {minPrice && (
             <p class="product-price-hint">
-              Цена: <strong>{minPrice.toLocaleString('ru-RU')} ₽</strong> за полотно
+              Цена: <strong>{priceLabel(entry)}</strong> за полотно
             </p>
           )}
 
@@ -492,6 +352,17 @@ const structuredData = [breadcrumbSchema, {
   letter-spacing: -0.03em;
   color: #0f172a;
   margin: 0 0 1rem;
+}
+/* Тип товара — часть H1 (по нему ищут: «межкомнатная дверь иннова 02»),
+   но визуально — тихая строка над названием, вес остаётся на модели. */
+.product-title__type {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: #64748b;
 }
 /* Покрытие в самом H1, не только в бейдже сверху — модели с коротким кодом
    (Р1, Е1, НР2) сами по себе не различимы в поиске без бренда покрытия,

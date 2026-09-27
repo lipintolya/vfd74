@@ -56,3 +56,35 @@ export function formatTrim(trim: string | null | undefined): string {
   if (!t || t.toLowerCase() === 'true') return ''
   return TRIM_LABELS[t] ?? t
 }
+
+/* Серия Некст хранит в models.trim не кромку, а остекление — подпись
+   «Кромка: Сатин белый» на странице и в title была бы фактической ошибкой.
+   Точный список значений, как и TRIM_LABELS выше. Значение — фраза для
+   названия товара («…, Протач, стекло сатин белый»). */
+const GLASS_TRIM_PHRASES: Record<string, string> = {
+  'Сатин Белый':                    'стекло сатин белый',
+  'Лакобель Чёрный':                'стекло лакобель чёрный',
+  'Английская решётка Сатин белый': 'английская решётка, стекло сатин белый',
+}
+
+export interface TrimInfo {
+  kind:   'edge' | 'glass'
+  /** Подпись для таблицы характеристик: «Серебро», «Сатин белый». */
+  label:  string
+  /** Фраза для названия товара: «кромка серебро», «стекло сатин белый». */
+  phrase: string
+}
+
+/** Первая буква строчной — только у обычного слова («Серебро» → «серебро»),
+    аббревиатуры и коды («АБС», «SE 4x4») не трогаем. */
+export const lowerFirst = (s: string) =>
+  /^[A-ZА-ЯЁ][a-zа-яё]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s
+
+export function describeTrim(trim: string | null | undefined): TrimInfo | null {
+  const label = formatTrim(trim)
+  if (!label) return null
+  const glassPhrase = GLASS_TRIM_PHRASES[trim!.trim()]
+  return glassPhrase
+    ? { kind: 'glass', label, phrase: glassPhrase }
+    : { kind: 'edge',  label, phrase: `кромка ${lowerFirst(label)}` }
+}
