@@ -112,32 +112,24 @@ const isOpen = computed(() => {
   return h >= s.open && h < s.close
 })
 
-const timeUntilCloseText = computed(() => {
-  if (!isOpen.value) return null
-  const close = new Date(now.value)
-  close.setHours(schedule.value.close, 0, 0, 0)
-  const diff = close.getTime() - now.value.getTime()
-  const h = Math.floor(diff / 3_600_000)
-  const m = Math.floor((diff % 3_600_000) / 60_000)
-  const s = Math.floor((diff % 60_000) / 1_000)
-  return [h > 0 && `${h} ч`, (m > 0 || h > 0) && `${m} мин`, `${s} сек`]
-    .filter(Boolean).join(' ')
-})
+const pad2 = (h: number) => `${String(h).padStart(2, '0')}:00`
 
-const closedMessage = computed(() => {
-  const h = now.value.getHours()
+/* Статус — обычным текстом, без индикатора-точки и тревожной красной
+   заливки: закрытый вечером салон — штатная ситуация, а не ошибка.
+   Посекундный обратный отсчёт убран — полезнее время закрытия. */
+const statusTitle = computed(() => (isOpen.value ? 'Сейчас открыто' : 'Сейчас закрыто'))
+
+const statusDetail = computed(() => {
   const s = schedule.value
+  if (isOpen.value) return `Работаем до ${pad2(s.close)}`
 
   // Ещё не наступило время открытия сегодня
-  if (h < s.open) {
-    return `Закрыто · Откроемся сегодня в ${String(s.open).padStart(2, '0')}:00`
-  }
+  if (now.value.getHours() < s.open) return `Откроемся сегодня в ${pad2(s.open)}`
 
-  // Уже закрылись — смотрим на завтра (открытие в 10:00 каждый день недели)
+  // Уже закрылись — смотрим на завтра
   const tomorrow = new Date(now.value)
   tomorrow.setDate(tomorrow.getDate() + 1)
-  const nextOpen = getScheduleForDay(tomorrow).open
-  return `Закрыто · Откроемся завтра в ${String(nextOpen).padStart(2, '0')}:00`
+  return `Откроемся завтра в ${pad2(getScheduleForDay(tomorrow).open)}`
 })
 
 /* ============================================================
@@ -236,7 +228,7 @@ onMounted(() => {
   window.addEventListener('keydown', onKeydown)
   window.addEventListener('resize',  onResize,       { passive: true })
   document.addEventListener('click', onClickOutside, { capture: true })
-  timerId = setInterval(() => { now.value = new Date() }, 1_000)
+  timerId = setInterval(() => { now.value = new Date() }, 30_000)
 })
 
 onUnmounted(() => {
@@ -516,33 +508,14 @@ onUnmounted(() => {
                         <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Часы работы</p>
                         <p class="text-gray-800 leading-snug text-step-0">{{ CONTACTS.worktimeWeekdays }}</p>
                         <p class="text-gray-500 leading-snug text-xs mt-0.5">{{ CONTACTS.worktimeWeekend }}</p>
-                      </div>
-                    </div>
-
-                    <!-- Open / closed badge -->
-                    <div
-                      class="relative overflow-hidden rounded-xl px-3.5 py-3 font-medium"
-                      :class="isOpen ? 'bg-teal-50 text-teal-700' : 'bg-red-50 text-red-700'"
-                      aria-live="polite"
-                      aria-atomic="true"
-                    >
-                      <div class="flex items-center gap-2.5">
-                        <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-                          <span
-                            v-if="isOpen"
-                            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75"
-                          />
-                          <span
-                            class="relative inline-flex h-2 w-2 rounded-full"
-                            :class="isOpen ? 'bg-teal-500' : 'bg-red-500'"
-                          />
-                        </span>
-                        <span class="flex-1">
-                          {{ isOpen ? 'Салон открыт' : closedMessage }}
-                        </span>
-                        <span v-if="isOpen && timeUntilCloseText" class="text-xs opacity-60 shrink-0">
-                          ({{ timeUntilCloseText }})
-                        </span>
+                        <p
+                          class="mt-3 border-t border-gray-200/80 pt-2.5 text-sm leading-snug"
+                          aria-live="polite"
+                          aria-atomic="true"
+                        >
+                          <span class="font-semibold" :class="isOpen ? 'text-teal-700' : 'text-gray-900'">{{ statusTitle }}</span>
+                          <span class="block text-gray-500">{{ statusDetail }}</span>
+                        </p>
                       </div>
                     </div>
 
@@ -749,26 +722,18 @@ onUnmounted(() => {
             </li>
           </ul>
 
-          <!-- Open/closed badge mobile -->
+          <!-- Статус салона + график -->
           <div
-            class="mt-4 mb-5 rounded-xl px-4 py-3 text-sm font-medium"
-            :class="isOpen ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'"
+            class="mt-4 mb-5 rounded-xl border border-white/10 px-4 py-3.5 text-sm leading-snug"
             aria-live="polite"
             aria-atomic="true"
           >
-            <div class="flex items-center gap-2">
-              <span
-                class="w-2 h-2 rounded-full shrink-0"
-                :class="isOpen ? 'bg-green-400 animate-pulse' : 'bg-red-400'"
-                aria-hidden="true"
-              />
-              <span class="flex-1">
-                {{ isOpen ? 'Салон открыт' : closedMessage }}
-              </span>
-              <span v-if="isOpen && timeUntilCloseText" class="text-xs text-white/40 shrink-0">
-                ({{ timeUntilCloseText }})
-              </span>
-            </div>
+            <p class="font-semibold" :class="isOpen ? 'text-teal-300' : 'text-white'">{{ statusTitle }}</p>
+            <p class="text-white/55">{{ statusDetail }}</p>
+            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-0.5 border-t border-white/10 pt-2.5 text-xs text-white/40 tabular-nums">
+              <span>{{ CONTACTS.worktimeWeekdays }}</span>
+              <span>{{ CONTACTS.worktimeWeekend }}</span>
+            </p>
           </div>
         </nav>
 
