@@ -393,7 +393,7 @@ const structuredData = [breadcrumbSchema, {
                         <InfoImageViewer
                           client:visible
                           variant="wide"
-                          aspectRatio="2 / 1"
+                          aspectRatio={item.mediaAspect ?? '2 / 1'}
                           images={[
                             ...(item.image  ? [{ src: item.image,  caption: 'Фото',  alt: `Фото: ${item.name}` }]  : []),
                             ...(item.scheme ? [{ src: item.scheme, caption: 'Схема', alt: `Схема с размерами: ${item.name}` }] : []),
