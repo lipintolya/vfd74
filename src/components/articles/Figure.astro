@@ -1,5 +1,6 @@
 ---
 import FigureLightbox from './FigureLightbox.vue'
+import { articleImg } from '../../lib/article-images'
 
 interface Props {
   /** Не обязателен — без src рендерится плейсхолдер «Фото скоро» (тот же
@@ -17,11 +18,16 @@ interface Props {
 }
 
 const { src, alt = '', caption, narrow = false } = Astro.props
+
+/* В тексте — облегчённый вариант по ширине экрана (колонка статьи до 80rem,
+   narrow — до 26rem); по клику FigureLightbox открывает оригинал. */
+const inline = src ? articleImg(src) : undefined
+const sizes  = narrow ? '(min-width: 448px) 416px, calc(100vw - 32px)' : '(min-width: 1312px) 1280px, calc(100vw - 32px)'
 ---
 
 <figure class:list={['article-figure', narrow && 'article-figure--narrow']}>
   {src ? (
-    <FigureLightbox src={src} alt={alt} natural={narrow} client:visible />
+    <FigureLightbox src={src} inlineSrc={inline?.src} inlineSrcset={inline?.srcset} sizes={sizes} alt={alt} natural={narrow} client:visible />
   ) : (
     <div class="article-figure__placeholder" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none">

@@ -2,7 +2,16 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 /* natural — без кропа 21:9: картинка в своих пропорциях (схемы, чертежи). */
-const props = defineProps<{ src: string; alt?: string; natural?: boolean }>()
+const props = defineProps<{
+  /** Оригинал — открывается в полноэкранном просмотре. */
+  src: string
+  /** Облегчённая версия для показа в тексте (см. lib/article-images.ts). */
+  inlineSrc?: string
+  inlineSrcset?: string
+  sizes?: string
+  alt?: string
+  natural?: boolean
+}>()
 
 /* Teleport гейтится через mounted, чтобы SSR и первый клиентский рендер
    совпадали (иначе Vue ловит "Hydration node mismatch") — тот же паттерн,
@@ -38,7 +47,9 @@ onBeforeUnmount(() => {
     @click="show"
   >
     <img
-      :src="src"
+      :src="inlineSrc ?? src"
+      :srcset="inlineSrcset"
+      :sizes="inlineSrcset ? sizes : undefined"
       :alt="alt ?? ''"
       loading="lazy"
       decoding="async"

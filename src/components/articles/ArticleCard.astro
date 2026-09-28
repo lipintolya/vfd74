@@ -1,4 +1,6 @@
 ---
+import { articleCoverImg } from '../../lib/article-images'
+
 interface Props {
   href: string
   title: string
@@ -34,7 +36,10 @@ const dateStr = publishDate.toLocaleDateString('ru-RU', {
   <div class="relative aspect-video overflow-hidden bg-slate-100 shrink-0">
     {coverImage ? (
       <img
-        src={coverImage}
+        {...articleCoverImg(coverImage, 'card')}
+        sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+        width="800"
+        height="450"
         alt={coverImageAlt ?? ''}
         {loading}
         decoding="async"

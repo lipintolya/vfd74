@@ -5,6 +5,8 @@
  * (без искажений, только обрезка при несовпадении пропорций с квадратом).
  * href — вся плитка становится ссылкой (напр. на страницу модели).
  */
+import { articleImg } from '../../lib/article-images'
+
 interface Props {
   src:     string
   alt?:    string
@@ -17,7 +19,7 @@ const Tag = href ? 'a' : 'div'
 
 <figure class="dphoto">
   <Tag class="dphoto__frame" {...(href ? { href } : {})}>
-    <img {src} alt={alt} loading="lazy" decoding="async" />
+    <img {...articleImg(src)} sizes="(min-width: 640px) 50vw, 100vw" alt={alt} loading="lazy" decoding="async" />
   </Tag>
   {caption && <figcaption class="dphoto__caption">{caption}</figcaption>}
 </figure>

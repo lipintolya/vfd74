@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
+import { articleCoverImg } from '../../lib/article-images'
 
 const all = await getCollection('articles')
 const articles = all
@@ -86,7 +87,10 @@ const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mon
                 <div class="relative aspect-video w-full shrink-0 overflow-hidden bg-slate-800 sm:w-2/5 sm:rounded-2xl lg:w-1/3">
                   {article.data.coverImage ? (
                     <img
-                      src={article.data.coverImage}
+                      {...articleCoverImg(article.data.coverImage, 'card')}
+                      sizes="(min-width: 1024px) 400px, (min-width: 640px) 40vw, 100vw"
+                      width="800"
+                      height="450"
                       alt={article.data.coverImageAlt ?? ''}
                       loading="lazy"
                       decoding="async"
