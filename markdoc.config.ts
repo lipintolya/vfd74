@@ -76,5 +76,12 @@ export default defineMarkdocConfig({
       render: component('./src/components/articles/ProjectsSlider.astro'),
       selfClosing: true,
     },
+
+    // Цены «от» и серии по покрытиям прямо из каталога (не устаревают
+    // при изменении цен) — {% coatingPrices /%}
+    coatingPrices: {
+      render: component('./src/components/articles/CoatingPrices.astro'),
+      selfClosing: true,
+    },
   },
 })
