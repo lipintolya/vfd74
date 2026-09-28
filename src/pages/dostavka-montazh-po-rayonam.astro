@@ -18,7 +18,7 @@ import { PORTFOLIO_WORKS } from '../data/portfolio-works'
 const HERO_IMAGE = '/renders/about/vfd-out-900.webp'
 
 const title       = 'Двери с замером и монтажом по районам Челябинска | ВФД'
-const description = 'Продажа, доставка и монтаж межкомнатных дверей ВФД во всех районах Челябинска — Калининский, Курчатовский, Центральный, Советский, Ленинский, Тракторозаводский, Металлургический. Бесплатный замер, монтаж своей бригадой.'
+const description = 'Продажа, доставка и монтаж межкомнатных дверей ВФД во всех районах Челябинска — Калининский, Курчатовский, Центральный, Советский, Ленинский, Тракторозаводский, Металлургический. Бесплатный замер межкомнатных дверей при заказе, монтаж своей бригадой.'
 const canonicalUrl = Astro.site ? new URL('/dostavka-montazh-po-rayonam/', Astro.site).href : undefined
 
 const phones = companyLegalInfo.contacts.phone
@@ -44,16 +44,7 @@ for (const name of DISTRICTS_WITH_CASES) {
 }
 
 const structuredData = canonicalUrl ? [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.label,
-      item: item.href ? new URL(item.href, canonicalUrl).href : canonicalUrl,
-    })),
-  },
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
   {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -86,7 +77,7 @@ const structuredData = canonicalUrl ? [
           <p class="t-eyebrow block mb-3">Замер · Доставка · Монтаж</p>
           <h1 class="t-h1 mb-5">Двери с монтажом во всех районах Челябинска</h1>
           <p class="m-0 mb-6 t-lead text-slate-600">
-            Выезжаем на бесплатный замер и монтируем двери собственной бригадой в любом районе
+            Выезжаем на замер (межкомнатные двери — бесплатно при оформлении заказа) и монтируем двери собственной бригадой в любом районе
             Челябинска — от Калининского, где расположен наш салон, до Тракторозаводского и
             Металлургического на другом конце города.
           </p>

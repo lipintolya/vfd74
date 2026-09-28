@@ -149,16 +149,7 @@ const catalogFaq = [
 ]
 
 const structuredData = canonicalUrl ? [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.label,
-      item: item.href ? new URL(item.href, canonicalUrl).href : canonicalUrl,
-    })),
-  },
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
   {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -181,7 +172,7 @@ const structuredData = canonicalUrl ? [
 
 <BaseLayout
   title="Купить межкомнатные двери в Челябинске — каталог и цены | ВФД"
-  description="Межкомнатные двери в Челябинске от официального дилера ВФД: каталог с ценами, покрытия эмаль, ПЭТ, Эмалекс, Протач. Бесплатный замер, монтаж, салон на Братьев Кашириных."
+  description="Межкомнатные двери в Челябинске от официального дилера ВФД: каталог с ценами, покрытия эмаль, ПЭТ, Эмалекс, Протач. Бесплатный замер по Челябинску при заказе, монтаж, салон на Братьев Кашириных."
   canonical={canonicalUrl}
   structuredData={structuredData}
 >

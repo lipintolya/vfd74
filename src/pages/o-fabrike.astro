@@ -65,16 +65,7 @@ const productionFeatures = [
 ]
 
 const structuredData = canonicalUrl ? [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.label,
-      item: item.href ? new URL(item.href, canonicalUrl).href : canonicalUrl,
-    })),
-  },
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
   {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -114,7 +105,7 @@ const structuredData = canonicalUrl ? [
           </p>
           <p class="m-0 mb-6 t-lead text-slate-600">
             Эта страница — о самом производителе. Мы — официальный дилер фабрики в Челябинске:
-            салон на Братьев Кашириных с живой экспозицией, бесплатным замером и монтажом
+            салон на Братьев Кашириных с живой экспозицией, замером и монтажом
             собственной бригадой.
           </p>
           <a href="/catalog/" class="btn btn-primary">Смотреть каталог дверей ВФД</a>

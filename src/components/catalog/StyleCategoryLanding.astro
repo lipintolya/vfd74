@@ -78,16 +78,7 @@ const breadcrumbItems = [
 ]
 
 const structuredData = canonicalUrl ? [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.label,
-      item: item.href ? new URL(item.href, canonicalUrl).href : canonicalUrl,
-    })),
-  },
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
   {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',

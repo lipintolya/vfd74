@@ -188,7 +188,7 @@ const breadcrumbSchema = {
           <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-5 text-xs font-semibold text-white/70">
             <span class="inline-flex items-center gap-1.5">
               <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 text-teal-400" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Бесплатный выезд замерщика
+              {work.category === 'entrance' ? 'Замер входной двери — 500 ₽' : 'Бесплатный замер при заказе'}
             </span>
             <span class="inline-flex items-center gap-1.5">
               <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 text-teal-400" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>

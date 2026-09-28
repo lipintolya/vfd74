@@ -28,16 +28,7 @@ const breadcrumbItems = [
 ]
 
 const structuredData = canonicalUrl ? [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.label,
-      ...(item.href ? { item: new URL(item.href, canonicalUrl).href } : {}),
-    })),
-  },
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
   {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -60,7 +51,7 @@ const structuredData = canonicalUrl ? [
 
 <BaseLayout
   title="Наши работы — скрытые двери в Челябинске, фото объектов | ВФД"
-  description={`Реальные объекты монтажа скрытых дверей «Секрет» и «Секрет Реверс» в Челябинске и Челябинской области — ${INVISIBLE_WORKS.length} ${pluralWorks(INVISIBLE_WORKS.length)} с фото и спецификацией. Замер бесплатно.`}
+  description={`Реальные объекты монтажа скрытых дверей «Секрет» и «Секрет Реверс» в Челябинске и Челябинской области — ${INVISIBLE_WORKS.length} ${pluralWorks(INVISIBLE_WORKS.length)} с фото и спецификацией. Бесплатный замер по Челябинску при заказе.`}
   ogImage={IMAGES.invisible}
   canonical={canonicalUrl}
   structuredData={structuredData}

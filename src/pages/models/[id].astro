@@ -11,6 +11,7 @@ import InfoImageViewer from '../../components/catalog/InfoImageViewer.vue'
 import { describeTrim } from '../../lib/trim-labels'
 import { merchantPolicy } from '../../lib/contacts-data'
 import { getModelEntries } from '../../lib/model-entries'
+import { DOOR_CATEGORIES } from '../../data/door-categories'
 import type { ModelEntry } from '../../lib/model-entries'
 import {
   DOOR_TYPE, BRAND, cleanModelName, priceLabel,
@@ -72,6 +73,12 @@ const displayName = cleanModelName(model.name)
    коды поставщика и битые записи ("true") и отличает остекление серии Некст,
    которое в базе лежит в том же поле, от кромки. */
 const trim = describeTrim(model.trim)
+
+/* Перелинковка карточка → SEO-лендинг покрытия (/catalog/dveri-emal/ и т.п.).
+   Раньше с карточки вела только ссылка на серию, а лендинги под главные
+   запросы («двери эмаль челябинск») не получали ни одной ссылки из сотен
+   карточек. Анкор — H1 лендинга, т.е. сам целевой запрос. */
+const coatingLanding = DOOR_CATEGORIES.find(c => c.coatingSlug === coatingSlug)
 
 /* Title/description/название в schema — из lib/product-text.ts, те же
    формулировки, что в товарном фиде. Тип товара («Межкомнатная дверь»)
@@ -213,6 +220,15 @@ const structuredData = [{
             <p class="product-price-hint">
               Цена: <strong>{priceLabel(entry)}</strong> за полотно
             </p>
+          )}
+
+          {coatingLanding && (
+            <a href={`/catalog/${coatingLanding.slug}/`} class="product-coating-link">
+              Все {coatingLanding.h1.charAt(0).toLowerCase() + coatingLanding.h1.slice(1)}
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
           )}
 
         </div>
@@ -468,6 +484,23 @@ const structuredData = [{
 .product-price-hint strong {
   color: #0f172a;
   font-weight: 600;
+}
+
+.product-coating-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0d9488;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+.product-coating-link:hover { color: #0f766e; }
+.product-coating-link svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
 }
 
 /* ── Accessories ── */

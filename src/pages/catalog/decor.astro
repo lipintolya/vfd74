@@ -51,16 +51,7 @@ const faq = [
 ] as const
 
 const structuredData = canonicalUrl ? [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.label,
-      ...(item.href ? { item: new URL(item.href, canonicalUrl).href } : {}),
-    })),
-  },
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -109,7 +100,7 @@ const plinthWork = PORTFOLIO_WORKS.find(w => w.id === '2026-09-27-belyy-plintus-
       <div class="dc-hero__overlay" aria-hidden="true"></div>
       <div class="dc-hero__body">
         <p class="dc-eyebrow">Декор · Челябинск</p>
-        <h1 class="dc-hero__h1">Плинтус, фрамуги<br/>и декоративные рейки</h1>
+        <h1 class="dc-hero__h1">Плинтус, фрамуги <br/>и декоративные рейки</h1>
         <p class="dc-hero__lead">
           Комплектующие для завершённого вида дверного проёма и стен:
           фальшфрамуга и компланарный короб над дверью, плинтус в цвет
