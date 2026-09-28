@@ -51,7 +51,8 @@ export function cleanModelName(name: string): string {
 const normWords = (s: string) =>
   s.toLowerCase().replaceAll('ё', 'е').replaceAll('э', 'е').split(/\s+/).filter(Boolean)
 
-const hasWords = (haystack: string, needle: string) => {
+/** Все слова needle есть в haystack (без учёта регистра, ё/е, э/е). */
+export const hasWords = (haystack: string, needle: string) => {
   const words = new Set(normWords(haystack))
   const wanted = normWords(needle)
   return wanted.length > 0 && wanted.every(w => words.has(w))
@@ -88,6 +89,14 @@ export function productName(m: NamingInput, opts: { withBrand?: boolean } = {}):
   const trim     = describeTrim(m.model.trim)?.phrase ?? ''
   const head     = [DOOR_TYPE, opts.withBrand ? BRAND : '', headline].filter(Boolean).join(' ')
   return [head, coating, trim].filter(Boolean).join(', ')
+}
+
+/** Склонение по числу: pluralRu(3, ['модель', 'модели', 'моделей']) → «модели». */
+export function pluralRu(n: number, [one, few, many]: [string, string, string]): string {
+  const mod10 = n % 10, mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return one
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few
+  return many
 }
 
 const formatRub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`

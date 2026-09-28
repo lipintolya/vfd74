@@ -174,7 +174,7 @@ const madeToOrder = computed(() => isMadeToOrder(props.card.seriesSlug, props.ca
       <div>
         <h2 class="m-0 min-h-12 text-step-2 font-medium leading-snug text-ink line-clamp-2">{{ card.name }}</h2>
         <p class="m-0 mt-1 text-sm font-semibold text-slate-500">
-          {{ card.coating }}<span v-if="card.trim"> · Кромка {{ card.trim }}</span>
+          {{ card.coating }}<span v-if="card.trim"> · {{ card.trim }}</span>
         </p>
       </div>
 

@@ -11,7 +11,14 @@ import { SERIES_COVER_PREVIEWS } from '../data/series-cover-previews'
 import { adjustPrice } from './price-adjustments'
 import { isNewModel } from './new-models'
 import { isPopularSeries } from './popular-series'
-import { formatTrim } from './trim-labels'
+import { describeTrim } from './trim-labels'
+
+/* Подпись под названием в карточке: «Кромка серебро» / «Стекло сатин белый»
+   (серия Некст хранит в models.trim остекление, не кромку — см. describeTrim). */
+const trimCaption = (trim: string | null | undefined): string => {
+  const phrase = describeTrim(trim)?.phrase ?? ''
+  return phrase.charAt(0).toUpperCase() + phrase.slice(1)
+}
 import { withInStockFirst } from './made-to-order'
 import type { CatalogCardItem } from '../components/catalog/types'
 
@@ -124,7 +131,7 @@ export async function getCatalogCards(): Promise<{
       coatingSlug: coating?.slug  ?? '',
       colorName:   cover?.name ?? color.name,
       colorHex:    cover?.hex  ?? normalizeHexColor(color.hex_preview),
-      trim:        formatTrim(model.trim),
+      trim:        trimCaption(model.trim),
       colorNames:  colorsByModel.get(model.id) ?? [color.name],
       colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url) }],
       photo:       cover?.photo ?? row.photo_url ?? '',

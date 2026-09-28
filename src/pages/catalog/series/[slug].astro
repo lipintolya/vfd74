@@ -12,6 +12,7 @@ import { getCatalogCards, getSeriesList, getSeriesCards, getColorsByCoatingSlug 
 import { getSeriesSpec } from '../../../data/series-descriptions'
 import type { CatalogCardItem } from '../../../components/catalog/types'
 import { merchantPolicy } from '../../../lib/contacts-data'
+import { coatingInline, hasWords, pluralRu } from '../../../lib/product-text'
 
 export async function getStaticPaths() {
   const { cards } = await getCatalogCards()
@@ -68,29 +69,30 @@ const jumpLinks = [
   { href: '#models', label: 'Модели' },
 ].filter(Boolean) as { href: string; label: string }[]
 
-const pageTitle = `Двери серии ${series.name} — цены, характеристики | ВФД Челябинск`
+/* Покрытие — из карточек серии (у серии одно покрытие). Пропускаем, если
+   оно уже звучит в названии серии («Урбан ПЭТ», «Эмалекс Модерн»). */
+const coatingName    = seriesCards[0]?.coating ?? ''
+const coatingPhrase  = coatingName && !hasWords(series.name, coatingName)
+  ? coatingInline({ coatingName, coatingSlug: series.coatingSlug })
+  : ''
+const modelsPhrase   = `${series.modelCount} ${pluralRu(series.modelCount, ['модель', 'модели', 'моделей'])}`
+
+/* Тип товара первым — по нему ищут («межкомнатные двери скинель»),
+   а само название серии тип не называет. */
+const pageTitle = `Межкомнатные двери ${series.name}${coatingPhrase ? ` (${coatingPhrase})` : ''} — купить в Челябинске, цены | ВФД`
 /* Короткая генерация всегда в meta — та же причина, что на models/[id].astro:
    spec.description (маркетинговый текст серии) длиннее ~155 символов нормы
    SERP-сниппета и не упоминает город/цену — Google обрежет её на середине
    фразы. spec.description остаётся на странице как есть (блок "О коллекции"). */
 const pageDesc  =
-  `Двери серии ${series.name} в салоне ВФД на Кашириных. ${series.modelCount} ${series.modelCount === 1 ? 'модель' : 'моделей'}${series.minPrice ? `, цены от ${fmt(series.minPrice)}` : ''}.`
+  `Межкомнатные двери серии ${series.name}${coatingPhrase ? ` (${coatingPhrase})` : ''} — ${modelsPhrase}${series.minPrice ? `, цены от ${fmt(series.minPrice)} за полотно` : ''}. Купить в Челябинске в салоне ВФД на Братьев Кашириных: замер, доставка и установка.`
 
+/* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
 const structuredData = canonicalUrl ? [
   {
     '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: breadcrumbItems.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.label,
-      ...(item.href ? { item: new URL(item.href, canonicalUrl).href } : {}),
-    })),
-  },
-  {
-    '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `Серия ${series.name}`,
+    name: `Межкомнатные двери серии ${series.name}`,
     description: pageDesc,
     url: canonicalUrl,
     numberOfItems: seriesCards.length,
@@ -164,8 +166,9 @@ const structuredData = canonicalUrl ? [
         <Breadcrumbs items={breadcrumbItems} />
       </div>
       <div class="sr-hero__body">
-        <p class="sr-eyebrow">Серия дверей</p>
-        <h1 class="sr-hero__h1">{series.name}</h1>
+        <h1 class="sr-hero__h1">
+          <span class="sr-eyebrow">{'Межкомнатные двери серии '}</span>{series.name}
+        </h1>
         {spec.tagline && <p class="sr-hero__tagline">{spec.tagline}</p>}
         <div class="sr-hero__actions">
           <a href={TG} target="_blank" rel="noopener" class="btn btn-ghost">Получить расчёт</a>
@@ -521,6 +524,11 @@ const structuredData = canonicalUrl ? [
 .sr-hero__crumbs :global(.breadcrumbs__link:hover) { color: #fff; background: rgba(255,255,255,0.14); }
 .sr-hero__crumbs :global(.breadcrumbs__icon) { color: rgba(255,255,255,0.35); }
 .sr-hero__body { margin-top: auto; color: #fff; }
+/* Надзаголовок — часть H1 («Межкомнатные двери серии Скинель»), выглядит
+   как прежний eyebrow над названием. */
+.sr-hero__h1 .sr-eyebrow {
+  line-height: 1.4;
+}
 .sr-hero__h1 {
   margin: 0 0 0.75rem;
   font-size: clamp(2.25rem, 5vw, 3.5rem);

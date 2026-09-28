@@ -15,6 +15,31 @@ const { work } = Astro.props
 const canonicalUrl = `https://vfd74.ru/portfolio/${work.id}/`
 const phone = companyLegalInfo.contacts.phone[0]!
 
+/* ── <title> с местом объекта ─────────────────────────────────────────
+   Название ЖК/посёлка/района — отдельный локальный запрос с низкой
+   конкуренцией («двери ЖК НИКС Сити»), а в заголовке работы его часто нет.
+   Место и город берутся из location и дописываются, только если в
+   заголовке их ещё нет. Сравнение по основам слов (первые 5 букв):
+   «в Калининском районе» уже покрывает «Калининский район». */
+const stems = (s: string) =>
+  s.toLowerCase().replaceAll('ё', 'е').replace(/[«»"().,]/g, ' ')
+    .split(/\s+/).filter(w => w.length > 2).map(w => w.slice(0, 5))
+const GENERIC_PLACE_WORDS = new Set(['жк', 'котте', 'посел', 'мкр', 'район', 'набер', 'центр'])
+const isInTitle = (place: string) => {
+  const titleStems = new Set(stems(work.title))
+  const key = stems(place).filter(w => !GENERIC_PLACE_WORDS.has(w))
+  return (key.length ? key : stems(place)).every(w => titleStems.has(w))
+}
+const [city = '', ...placeParts] = work.location.split(',').map(p => p.trim())
+/* «частный объект», «салон ВФД…» — не топоним, в title не несём. */
+const place = placeParts.find(p => p && !/частный объект|салон вфд/i.test(p)) ?? ''
+const titleSuffix = [
+  place && !isInTitle(place) ? place : '',
+  city && !isInTitle(city) ? city : '',
+].filter(Boolean).join(', ')
+// Второе тире подряд читается плохо: если в заголовке уже есть « — », место — через запятую.
+const pageTitle = `${work.title}${titleSuffix ? `${work.title.includes(' — ') ? ', ' : ' — '}${titleSuffix}` : ''} | ВФД`
+
 const doorWord = (n: number) =>
   n === 1 ? 'дверь' : n < 5 ? 'двери' : 'дверей'
 
@@ -45,7 +70,7 @@ const breadcrumbSchema = {
 ---
 
 <BaseLayout
-  title={`${work.title} — ВФД Челябинск`}
+  title={pageTitle}
   description={work.description}
   ogImage={work.images[0]}
   structuredData={[imageGallerySchema, breadcrumbSchema]}
