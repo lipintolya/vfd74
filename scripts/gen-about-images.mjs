@@ -46,16 +46,21 @@ for (const { src, out, width, quality } of jobs) {
   console.log(`${out}: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)
 }
 
-/* Аватарка разработчика в модалке футера — оригинал 321×426 (портрет 3:4),
-   в UI показывается квадратом 56×56 (объект object-cover), поэтому кроп
-   в квадрат делаем здесь заранее (width+height+fit:cover), а не полагаемся
-   на object-cover CSS поверх прямоугольника — избыточные байты не грузим. */
+/* Аватарка разработчика в модалке футера — показывается квадратом 64×64.
+   Оригинал — квадрат 460×460, где лицо занимает небольшую часть кадра
+   (фото на фоне гор/неба): без кропа на 64px лицо было бы крошечным.
+   Вырезаем квадрат по голове и плечам (подобран по кадру), затем 160×160
+   под retina — избыточные байты не грузим. */
 {
-  const src = 'https://storage.yandexcloud.net/vfd74ru/aboutme/avatar_al.webp'
+  const src = 'https://storage.yandexcloud.net/vfd74ru/Main_page_perfomance-covers/161125105.webp'
   const res = await fetch(src)
   if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
   const buf = Buffer.from(await res.arrayBuffer())
-  const resized = await sharp(buf).resize({ width: 160, height: 160, fit: 'cover' }).webp({ quality: 82 }).toBuffer()
+  const resized = await sharp(buf)
+    .extract({ left: 118, top: 70, width: 280, height: 280 })
+    .resize({ width: 160, height: 160, fit: 'cover' })
+    .webp({ quality: 82 })
+    .toBuffer()
   await writeFile(new URL('avatar-al-160.webp', OUT_DIR), resized)
   console.log(`avatar-al-160.webp: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)
 }

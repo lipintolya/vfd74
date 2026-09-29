@@ -81,9 +81,84 @@ const DEV_CONTACTS = {
   github:   'https://github.com/lipintolya',
 }
 
+/* ── Живой замер Core Web Vitals текущей страницы (в модалке разработчика) ──
+   Не маркетинговые цифры, а реальные значения из Performance API браузера
+   посетителя: сайт сам себе портфолио. Метрика, которую браузер не
+   поддерживает (Safari/Firefox — без layout-shift и т.п.), просто не
+   показывается — никаких заглушек и выдуманных значений.
+   Пороги «хорошо» — официальные Core Web Vitals (web.dev). */
+interface Vital { key: string; label: string; abbr: string; value: string; good: boolean }
+const vitals = ref<Vital[]>([])
+const VITAL_ORDER = ['ttfb', 'fcp', 'lcp', 'cls']
+let vitalObservers: PerformanceObserver[] = []
+
+const fmtMs = (ms: number) =>
+  ms < 1000 ? `${Math.round(ms)} мс` : `${(ms / 1000).toFixed(1).replace('.', ',')} с`
+
+const measureVitals = () => {
+  const found: Record<string, Vital> = {}
+  const publish = () => {
+    vitals.value = VITAL_ORDER.map(k => found[k]).filter((v): v is Vital => Boolean(v))
+  }
+
+  const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  if (nav && nav.responseStart > 0) {
+    found.ttfb = { key: 'ttfb', label: 'Ответ сервера', abbr: 'TTFB', value: fmtMs(nav.responseStart), good: nav.responseStart <= 800 }
+  }
+  const fcp = performance.getEntriesByName('first-contentful-paint')[0]
+  if (fcp) {
+    found.fcp = { key: 'fcp', label: 'Первая отрисовка', abbr: 'FCP', value: fmtMs(fcp.startTime), good: fcp.startTime <= 1800 }
+  }
+  publish()
+
+  const supported = PerformanceObserver.supportedEntryTypes ?? []
+  if (supported.includes('largest-contentful-paint')) {
+    const obs = new PerformanceObserver((list) => {
+      const last = list.getEntries().at(-1)
+      if (!last) return
+      found.lcp = { key: 'lcp', label: 'Основной контент', abbr: 'LCP', value: fmtMs(last.startTime), good: last.startTime <= 2500 }
+      publish()
+    })
+    obs.observe({ type: 'largest-contentful-paint', buffered: true })
+    vitalObservers.push(obs)
+  }
+  if (supported.includes('layout-shift')) {
+    let cls = 0
+    const setCls = () => {
+      found.cls = { key: 'cls', label: 'Стабильность макета', abbr: 'CLS', value: cls.toFixed(2).replace('.', ','), good: cls <= 0.1 }
+      publish()
+    }
+    setCls() // сдвигов могло не быть вовсе — тогда честный 0
+    const obs = new PerformanceObserver((list) => {
+      for (const e of list.getEntries() as (PerformanceEntry & { value: number; hadRecentInput: boolean })[]) {
+        if (!e.hadRecentInput) cls += e.value
+      }
+      setCls()
+    })
+    obs.observe({ type: 'layout-shift', buffered: true })
+    vitalObservers.push(obs)
+  }
+}
+
+const stopVitals = () => {
+  vitalObservers.forEach(o => o.disconnect())
+  vitalObservers = []
+}
+
+/* Реальный стек этого сайта (package.json) — не список «умею всё». */
+const DEV_STACK = ['Astro', 'Vue 3', 'TypeScript', 'Tailwind CSS', 'Supabase']
+const DEV_SERVICES = [
+  'Сайты и веб-сервисы',
+  'Мобильные приложения',
+  'Боты',
+  'Автоматизация аналитики и бизнес-процессов',
+  'SEO-основа и подключение CRM',
+]
+
 const openDevModal = () => {
   isDevModalOpen.value = true
   document.body.style.overflow = 'hidden'
+  measureVitals()
   requestAnimationFrame(() => {
     devPanel.value
       ?.querySelector<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])')
@@ -93,6 +168,7 @@ const openDevModal = () => {
 
 const closeDevModal = () => {
   isDevModalOpen.value = false
+  stopVitals()
   document.body.style.overflow = ''
   devTrigger.value?.focus()
 }
@@ -133,6 +209,7 @@ onMounted(()  => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
   document.body.style.overflow = ''
+  stopVitals()
 })
 </script>
 
@@ -425,11 +502,16 @@ onUnmounted(() => {
       </div>
     </Transition>
 
-    <!-- ── Developer modal ── -->
-    <Transition name="modal">
+    <!-- ── Developer modal ──
+         Тёмная карточка в тон футеру, из которого открывается. Главный
+         аргумент — не слова, а сам сайт: живой замер Core Web Vitals
+         этой страницы в браузере посетителя. Дальше — факты (опыт,
+         образование, стек, направления) и контакты. На мобильном —
+         bottom sheet (удобно большим пальцем), на ПК — по центру. -->
+    <Transition name="dev-modal">
       <div
         v-if="isDevModalOpen"
-        class="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+        class="fixed inset-0 z-100 flex items-end justify-center bg-black/75 backdrop-blur-sm sm:items-center sm:p-4"
         role="presentation"
         @click="closeDevModal"
       >
@@ -438,13 +520,13 @@ onUnmounted(() => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="dev-modal-title"
-          class="relative w-full max-w-sm rounded-3xl bg-white p-1.5 shadow-[0_24px_60px_-16px_rgba(15,23,42,0.35)]"
+          class="dev-panel relative w-full max-w-md overflow-hidden rounded-t-3xl bg-graphite text-white ring-1 ring-white/10 shadow-[0_32px_80px_-20px_rgba(0,0,0,0.8)] sm:rounded-3xl"
           @click.stop
         >
           <button
             type="button"
-            class="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-slate-600 transition-colors duration-200 hover:bg-black/10"
-            aria-label="Закрыть окно контактов разработчика"
+            class="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-white/70 transition-colors duration-200 hover:bg-white/15 hover:text-white"
+            aria-label="Закрыть окно разработчика"
             @click="closeDevModal"
           >
             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -452,13 +534,13 @@ onUnmounted(() => {
             </svg>
           </button>
 
-          <!-- max-h + overflow-y-auto: на низких мобильных экранах (SE/8)
-               текст образования + 3 карточки контактов не помещаются в
-               высоту вьюпорта без прокрутки — без этого низ модалки
-               обрезался бы за краем экрана. -->
-          <div class="max-h-[85vh] overflow-y-auto rounded-[1.375rem] bg-slate-50 p-6 sm:p-7">
+          <div class="max-h-[88dvh] overflow-y-auto overscroll-contain px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] pt-6 sm:max-h-[85vh] sm:px-7 sm:pb-7 sm:pt-7">
 
-            <div class="mb-5 flex items-center gap-4">
+            <!-- Хват-полоска bottom sheet (только мобильный) -->
+            <div class="mx-auto -mt-2 mb-4 h-1 w-10 rounded-full bg-white/15 sm:hidden" aria-hidden="true" />
+
+            <!-- Шапка -->
+            <div class="flex items-center gap-4 pr-10">
               <img
                 src="/renders/about/avatar-al-160.webp"
                 alt="Анатолий Липин"
@@ -466,87 +548,107 @@ onUnmounted(() => {
                 height="160"
                 loading="lazy"
                 decoding="async"
-                class="h-20 w-20 shrink-0 rounded-2xl object-cover"
+                class="h-16 w-16 shrink-0 rounded-2xl object-cover ring-1 ring-white/10"
               />
-              <div>
-                <h3 id="dev-modal-title" class="m-0 text-lg font-medium text-ink">Анатолий Липин</h3>
-                <p class="m-0 text-sm text-slate-500">Разработчик сайтов и сервисов</p>
+              <div class="min-w-0">
+                <h3 id="dev-modal-title" class="m-0 text-xl font-medium tracking-tight text-white">Анатолий Липин</h3>
+                <p class="m-0 mt-0.5 text-sm text-white/55">Разработчик сайтов и сервисов</p>
               </div>
             </div>
 
-            <p class="m-0 mb-5 text-sm leading-relaxed text-slate-600">
-              Разрабатываю сайты и мобильные приложения, боты и системы автоматизации аналитики
-              и бизнес-процессов — от простого лендинга до сложного сервиса. Быстрый современный
-              стек, аккуратная вёрстка, SEO-основа, подключение CRM.
+            <!-- Главный аргумент: этот сайт -->
+            <p class="m-0 mt-6 text-[0.9375rem] leading-relaxed text-white/80">
+              Этот сайт — моя работа. Вот как он загрузился у вас:
             </p>
 
-            <!-- Опыт/образование — карточки-факты вместо голого текста
-                 строками, тот же язык, что hero-stat-карточки на /about/. -->
-            <div class="mb-5 flex flex-col gap-2.5">
-              <div class="flex items-start gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite text-white">
-                  <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.8"/>
-                  </svg>
-                </span>
-                <div class="pt-0.5">
-                  <p class="m-0 text-sm font-medium text-ink">Опыт разработки</p>
-                  <p class="m-0 text-xs text-slate-500">Более 5 лет</p>
+            <div v-if="vitals.length" class="mt-3 overflow-hidden rounded-2xl bg-graphite-card ring-1 ring-white/8">
+              <dl class="m-0 grid grid-cols-2">
+                <div
+                  v-for="(v, i) in vitals"
+                  :key="v.key"
+                  class="px-4 py-3.5"
+                  :class="[
+                    i % 2 === 1 ? 'border-l border-white/8' : '',
+                    i > 1 ? 'border-t border-white/8' : '',
+                  ]"
+                >
+                  <dt class="m-0 text-xs text-white/50">
+                    {{ v.label }} <span class="font-mono text-white/30">{{ v.abbr }}</span>
+                  </dt>
+                  <dd class="m-0 mt-1 flex items-baseline gap-2">
+                    <span class="font-mono text-xl font-medium tabular-nums text-white">{{ v.value }}</span>
+                    <span v-if="v.good" class="text-xs font-medium text-teal-400">хорошо</span>
+                  </dd>
                 </div>
-              </div>
-              <div class="flex items-start gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite text-white">
-                  <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 3l9 4.5-9 4.5-9-4.5 9-4.5Z"/><path d="M6.5 9.7v4.3c0 1.5 2.5 3 5.5 3s5.5-1.5 5.5-3V9.7"/>
-                  </svg>
-                </span>
-                <div class="pt-0.5">
-                  <p class="m-0 text-sm font-medium text-ink">Высшее техническое образование</p>
-                  <p class="m-0 text-xs leading-relaxed text-slate-500">
-                    Прикладная математика и информатика (бакалавриат и магистратура),
-                    направление «Математическое моделирование и искусственный интеллект»
-                  </p>
-                </div>
-              </div>
+              </dl>
+              <p class="m-0 border-t border-white/8 px-4 py-2.5 text-[0.6875rem] leading-snug text-white/40">
+                Core Web Vitals этой страницы, измерены в вашем браузере прямо сейчас.
+              </p>
             </div>
 
-            <div class="flex flex-col gap-2">
+            <!-- Стек этого сайта -->
+            <p class="m-0 mt-6 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/40">Стек этого сайта</p>
+            <ul class="m-0 mt-2.5 flex list-none flex-wrap gap-1.5 p-0" role="list">
+              <li
+                v-for="tech in DEV_STACK"
+                :key="tech"
+                class="rounded-lg px-2.5 py-1 font-mono text-xs text-white/75 ring-1 ring-white/12"
+              >{{ tech }}</li>
+            </ul>
+
+            <!-- Опыт и образование -->
+            <div class="mt-6 grid grid-cols-[auto_1fr] gap-x-5 gap-y-4 border-t border-white/8 pt-5">
+              <p class="m-0 font-mono text-2xl font-medium leading-none tabular-nums text-white">5+</p>
+              <p class="m-0 self-center text-sm text-white/70">лет опыта в разработке</p>
+              <p class="m-0 font-mono text-2xl font-medium leading-none text-white">ПМИ</p>
+              <p class="m-0 text-sm leading-relaxed text-white/70">
+                Прикладная математика и информатика — бакалавриат и магистратура,
+                направление «Математическое моделирование и искусственный интеллект»
+              </p>
+            </div>
+
+            <!-- Направления -->
+            <p class="m-0 mt-6 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white/40">Что разрабатываю</p>
+            <ul class="m-0 mt-2 list-none p-0" role="list">
+              <li
+                v-for="item in DEV_SERVICES"
+                :key="item"
+                class="flex items-start gap-3 border-b border-white/8 py-2 text-sm text-white/80 last:border-b-0"
+              >
+                <span class="mt-[0.6em] h-px w-3 shrink-0 bg-teal-400" aria-hidden="true" />
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+
+            <!-- Контакты -->
+            <div class="mt-6 flex flex-col gap-2">
               <a
-                href="https://t.me/tolyalipin"
+                :href="DEV_CONTACTS.telegram"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
+                class="group flex items-center justify-between gap-3 rounded-full bg-white py-1.5 pl-5 pr-1.5 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-teal-400"
               >
-                <img src="/icons/b_tg_logo.webp" alt="" width="36" height="36" class="h-9 w-9 shrink-0 rounded-full" />
-                <span class="flex-1 text-sm font-medium text-ink">Telegram</span>
-                <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-              </a>
-
-              <a
-                href="mailto:ttolyalipin@gmail.com"
-                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
-              >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite">
-                  <img src="/icons/w_mail_logo.webp" alt="" width="18" height="18" class="h-4.5 w-4.5" />
-                </span>
-                <span class="min-w-0 flex-1 truncate text-sm font-medium text-ink">ttolyalipin@gmail.com</span>
-                <span class="shrink-0 text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-              </a>
-
-              <a
-                href="https://github.com/lipintolya"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="group flex items-center gap-3 rounded-xl bg-white p-3 ring-1 ring-slate-200 transition-colors duration-200 hover:ring-slate-300"
-              >
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-graphite text-white">
-                  <svg class="h-4.5 w-4.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+                Написать в Telegram
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 group-hover:translate-x-0.5">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </span>
-                <span class="flex-1 text-sm font-medium text-ink">GitHub</span>
-                <span class="text-xs text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5">→</span>
               </a>
+              <div class="grid grid-cols-2 gap-2">
+                <a
+                  :href="`mailto:${DEV_CONTACTS.email}`"
+                  :title="DEV_CONTACTS.email"
+                  :aria-label="`Написать на почту ${DEV_CONTACTS.email}`"
+                  class="flex h-11 items-center justify-center rounded-full text-sm font-medium text-white/80 ring-1 ring-white/15 transition-colors duration-200 hover:bg-white/8 hover:text-white"
+                >Почта</a>
+                <a
+                  :href="DEV_CONTACTS.github"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex h-11 items-center justify-center rounded-full text-sm font-medium text-white/80 ring-1 ring-white/15 transition-colors duration-200 hover:bg-white/8 hover:text-white"
+                >GitHub</a>
+              </div>
             </div>
 
           </div>
@@ -558,6 +660,37 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Модалка разработчика: на мобильном выезжает снизу (bottom sheet),
+   на ПК — лёгкий подъём с прозрачностью. */
+.dev-modal-enter-active,
+.dev-modal-leave-active {
+  transition: opacity 220ms ease;
+}
+.dev-modal-enter-active .dev-panel,
+.dev-modal-leave-active .dev-panel {
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dev-modal-enter-from,
+.dev-modal-leave-to {
+  opacity: 0;
+}
+.dev-modal-enter-from .dev-panel,
+.dev-modal-leave-to .dev-panel {
+  transform: translateY(100%);
+}
+@media (min-width: 640px) {
+  .dev-modal-enter-from .dev-panel,
+  .dev-modal-leave-to .dev-panel {
+    transform: translateY(12px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dev-modal-enter-active .dev-panel,
+  .dev-modal-leave-active .dev-panel {
+    transition: none;
+  }
+}
+
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 200ms ease, transform 200ms ease;
