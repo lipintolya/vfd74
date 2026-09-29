@@ -1,7 +1,7 @@
 /**
  * Генерирует public/renders/home/*.webp — уменьшенные локальные копии
  * картинок главной страницы (Features.vue и промо-слайдеры
- * TehnoPromo/MirrorDoorPromo/HiddenDoorsPromo).
+ * TehnoPromo/ShtrihPromo/MirrorDoorPromo/HiddenDoorsPromo).
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
  * ~5 МБ на главной), а на экране:
@@ -28,6 +28,7 @@ const FEAT     = 'https://storage.yandexcloud.net/catalog-vfd/features_block/'
 const TEHNO    = 'https://storage.yandexcloud.net/vfd74ru/doors-main_renders/tehno/'
 const INVIS    = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
 const BENTO    = 'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/'
+const STRIX    = 'https://storage.yandexcloud.net/vfd74ru/promo_main/strix/'
 
 // Features: контейнер фото — aspect-[16/12.65] на всех брейкпоинтах, img с
 // object-cover (центр). Кадрируем заранее тем же центральным кропом: на экране
@@ -47,6 +48,9 @@ const jobs = [
   [TEHNO + 'tehno_render_1.webp', 'tehno-1.webp', P],
   [TEHNO + 'tehno_render.webp',   'tehno-2.webp', P],
   [TEHNO + 'render_3.webp',       'tehno-3.webp', P],
+  // ShtrihPromo.vue — рендер-обложка и фото Урбан Штрих 2А
+  [STRIX + 'strix_2a_2.webp', 'shtrih-2a-1.webp', P],
+  [STRIX + 'strix_2a_1.webp', 'shtrih-2a-2.webp', P],
   // MirrorDoorPromo.vue
   [INVIS + '2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp', 'reflex-1.webp', P],
   [INVIS + 'A158F8FC-901B-4262-BDF6-D68E573300C8.webp', 'reflex-2.webp', P],

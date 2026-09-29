@@ -17,7 +17,7 @@ export interface ColorVariant {
 
 import { calcKitPrice, BASE_KIT_DESCRIPTION } from '../../data/accessories'
 import { companyLegalInfo } from '../../lib/contacts-data'
-import { isMadeToOrder } from '../../lib/made-to-order'
+import { isMadeToOrder, isInStock } from '../../lib/made-to-order'
 import PriceCalculatorModal from './PriceCalculatorModal.vue'
 
 const props = defineProps<{
@@ -39,6 +39,7 @@ const selected = computed(() => props.colors[selectedIdx.value] ?? props.colors[
 /* Реактивно на выбранный цвет — точечное исключение "в наличии" (см.
    IN_STOCK_OVERRIDE) относится к конкретной модели+цвету, не ко всей серии. */
 const madeToOrder = computed(() => isMadeToOrder(props.seriesSlug, props.modelId, selected.value.name))
+const inStock     = computed(() => isInStock(props.modelId, selected.value.name))
 
 /* Фото не пропадает при выборе цвета без снимка — остаётся фото первого
    сфотканного цвета вместо пустого плейсхолдера. */
@@ -154,7 +155,8 @@ const shareModel = async () => {
         </svg>
       </div>
 
-      <span v-if="madeToOrder" class="color-picker__order-badge bg-fg text-white">Под заказ</span>
+      <span v-if="inStock" class="color-picker__order-badge bg-teal-600 text-white">В наличии</span>
+      <span v-else-if="madeToOrder" class="color-picker__order-badge bg-fg text-white">Под заказ</span>
     </div>
 
     <!-- Зум-модалка -->

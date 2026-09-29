@@ -17,8 +17,14 @@ export const MADE_TO_ORDER_SERIES: ReadonlySet<string> = new Set([
     хотя остальные модели/цвета серии — под заказ (MADE_TO_ORDER_SERIES бьёт
     только по серии целиком). Ключ — `${models.id}:${colors.name}`. */
 export const IN_STOCK_OVERRIDE: ReadonlySet<string> = new Set([
-  '4fc7a08a-9216-4b29-a6d4-3473517e897c:Эмалекс белый', // Техно 1, белый — в наличии
+  '4fc7a08a-9216-4b29-a6d4-3473517e897c:Эмалекс белый',   // Техно 1, белый — в наличии
+  '7434f55c-b2a8-4f12-b0c6-56c7c57888eb:Эмалекс бежевый', // Урбан Штрих 2А, бежевый, чёрный молдинг — в наличии
 ])
+
+/** Конкретная модель+цвет из IN_STOCK_OVERRIDE — есть на складе: плашка
+    «В наличии» на карточке каталога и в пикере цвета на странице модели. */
+export const isInStock = (modelId: string, colorName: string): boolean =>
+  IN_STOCK_OVERRIDE.has(`${modelId}:${colorName}`)
 
 export const isMadeToOrder = (seriesSlug: string, modelId?: string, colorName?: string): boolean => {
   if (modelId && colorName && IN_STOCK_OVERRIDE.has(`${modelId}:${colorName}`)) return false

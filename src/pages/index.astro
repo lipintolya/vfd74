@@ -11,6 +11,7 @@ import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import HiddenDoorsPromo from '../components/home/HiddenDoorsPromo.vue'
 import MirrorDoorPromo from '../components/home/MirrorDoorPromo.vue'
 import TehnoPromo from '../components/home/TehnoPromo.vue'
+import ShtrihPromo from '../components/home/ShtrihPromo.vue'
 import Features from '../components/home/Features.vue'
 import CatalogCategories from '../components/home/CatalogCategories.vue'
 import Promo from '../components/home/Promo.vue'
@@ -38,6 +39,18 @@ const tehnoBladePrice = tehnoCard?.price ?? null
 const tehnoKitPrice = tehnoCard?.price
   ? tehnoCard.price + calcKitPrice(tehnoCard.coatingSlug, tehnoCard.colorName)
   : null
+
+/* Промо «Урбан Штрих 2А» (бежевый, чёрный молдинг — в наличии) — та же схема.
+   Ищем по id модели: записей «Штрих 2А» две (чёрный и золотой молдинг).
+   Обложка карточки уже переставлена на бежевый из наличия (IN_STOCK_OVERRIDE
+   в made-to-order.ts), поэтому card.price/colorName — именно он. */
+const SHTRIH_2A_ID = '7434f55c-b2a8-4f12-b0c6-56c7c57888eb'
+const shtrihCard = catalogCards.find(c => c.id === SHTRIH_2A_ID)
+const shtrihBladePrice = shtrihCard?.price ?? null
+const shtrihKitPrice = shtrihCard?.price
+  ? shtrihCard.price + calcKitPrice(shtrihCard.coatingSlug, shtrihCard.colorName)
+  : null
+const shtrihHref = shtrihCard ? `/models/${shtrihCard.slug}/` : null
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -122,6 +135,9 @@ const localBusinessSchema = {
   <HowWeWork />
   <TehnoPromo bladePrice={tehnoBladePrice} kitPrice={tehnoKitPrice} client:visible />
   <PromoStripBanner />
+  {shtrihHref && (
+    <ShtrihPromo modelHref={shtrihHref} bladePrice={shtrihBladePrice} kitPrice={shtrihKitPrice} client:visible />
+  )}
   <HiddenDoorsPromo client:visible />
   <MirrorDoorPromo client:visible />
   <Features client:visible />
