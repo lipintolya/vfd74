@@ -542,7 +542,7 @@ onUnmounted(() => {
             <!-- Шапка -->
             <div class="flex items-center gap-4 pr-10">
               <img
-                src="/renders/about/avatar-al-160.webp"
+                src="/renders/about/avatar-al-2-160.webp"
                 alt="Анатолий Липин"
                 width="160"
                 height="160"

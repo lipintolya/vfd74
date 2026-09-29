@@ -61,6 +61,6 @@ for (const { src, out, width, quality } of jobs) {
     .resize({ width: 160, height: 160, fit: 'cover' })
     .webp({ quality: 82 })
     .toBuffer()
-  await writeFile(new URL('avatar-al-160.webp', OUT_DIR), resized)
-  console.log(`avatar-al-160.webp: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)
+  await writeFile(new URL('avatar-al-2-160.webp', OUT_DIR), resized)
+  console.log(`avatar-al-2-160.webp: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)
 }
