@@ -368,7 +368,7 @@ skinel: {
     edge:        'Износостойкая кромка в цвет полотна, обеспечивающая полную герметичность торцов, надёжную защиту от влаги и механических повреждений.',
     thickness:   '39',
     heroImage:   'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/emalex_tehno_cover.webp',
-    previewImage:'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/emalex_tehno.webp',
+    previewImage:'https://storage.yandexcloud.net/vfd74ru/doors-main_renders/tehno/tehno_render_1.webp',
     specsImage:  'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/tehno_banner.webp',
   },
 

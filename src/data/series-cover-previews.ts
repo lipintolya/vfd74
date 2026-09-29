@@ -25,8 +25,8 @@ export const SERIES_COVER_PREVIEWS: Record<string, string> = {
     '/renders/series/cover_first_section-emalex-900.webp',
   'https://storage.yandexcloud.net/vfd74ru/cover_first_section/emalex_modern.webp':
     '/renders/series/cover_first_section-emalex_modern-900.webp',
-  'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/emalex_tehno.webp':
-    '/renders/series/tehno-emalex_tehno-900.webp',
+  'https://storage.yandexcloud.net/vfd74ru/doors-main_renders/tehno/tehno_render_1.webp':
+    '/renders/series/tehno-tehno_render_1-900.webp',
   'https://storage.yandexcloud.net/vfd74ru/cover_first_section/pet/innova.webp':
     '/renders/series/pet-innova-900.webp',
   'https://storage.yandexcloud.net/vfd74ru/cover_first_section/pet/urban_pet.webp':
@@ -66,8 +66,8 @@ export const SERIES_COVER_THUMBS: Record<string, string> = {
     '/renders/series/cover_first_section-emalex-thumb.webp',
   'https://storage.yandexcloud.net/vfd74ru/cover_first_section/emalex_modern.webp':
     '/renders/series/cover_first_section-emalex_modern-thumb.webp',
-  'https://storage.yandexcloud.net/vfd74ru/catalog/tehno/emalex_tehno.webp':
-    '/renders/series/tehno-emalex_tehno-thumb.webp',
+  'https://storage.yandexcloud.net/vfd74ru/doors-main_renders/tehno/tehno_render_1.webp':
+    '/renders/series/tehno-tehno_render_1-thumb.webp',
   'https://storage.yandexcloud.net/vfd74ru/cover_first_section/pet/innova.webp':
     '/renders/series/pet-innova-thumb.webp',
   'https://storage.yandexcloud.net/vfd74ru/cover_first_section/pet/urban_pet.webp':
