@@ -5,7 +5,7 @@ import {
   SECRET_MIN_BLADE_PRICE_ORIGINAL, SECRET_MIN_KIT_PRICE_ORIGINAL,
   SECRET_PROMO_ACTIVE,
 } from '../../data/skrytye-dveri-products'
-import BenefitItem from './BenefitItem.vue'
+import BenefitList from './BenefitList.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 const INVISIBLE_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
@@ -64,35 +64,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="grid grid-cols-1 gap-x-4 gap-y-1.5 border-y border-slate-100 py-3 sm:grid-cols-2" role="list">
-            <BenefitItem text="Полностью алюминиевый короб">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 8l9-5 9 5-9 5-9-5Z"/>
-                <path d="M3 8v8l9 5 9-5V8"/>
-                <path d="M12 13v8"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem text="Реверсивный монтаж — сторона на выбор">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 12h18"/>
-                <path d="M7 8l-4 4 4 4"/>
-                <path d="M17 8l4 4-4 4"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem text="Полотна нестандартной высоты">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3v18"/>
-                <path d="M8 7l4-4 4 4"/>
-                <path d="M8 17l4 4 4-4"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem text="Грунт — готово под покраску">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="3" y="4" width="14" height="6" rx="1.5"/>
-                <path d="M8 10v4a2 2 0 0 0 2 2h1v4"/>
-              </svg>
-            </BenefitItem>
-          </ul>
+          <BenefitList :items="['Полностью алюминиевый короб', 'Реверсивный монтаж — сторона на выбор', 'Полотна нестандартной высоты', 'Грунт — готово под покраску']" />
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div

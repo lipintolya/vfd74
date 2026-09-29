@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useScrollReveal } from '../../composables/useScrollReveal'
-import BenefitItem from './BenefitItem.vue'
+import BenefitList from './BenefitList.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 /* Цена и ссылка — пропы из index.astro (живой каталог через getCatalogCards,
@@ -17,6 +17,7 @@ defineProps<{
 const SLIDES = [
   '/renders/home/shtrih-2a-1.webp',
   '/renders/home/shtrih-2a-2.webp',
+  '/renders/home/shtrih-2a-3.webp',
 ]
 
 const fmt = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
@@ -44,7 +45,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
 
         <div class="flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7">
           <div>
-            <p class="t-eyebrow mb-2">В наличии</p>
+            <p class="t-eyebrow mb-2">Новинка на складе</p>
             <h2
               id="shtrih-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"
@@ -57,24 +58,11 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="grid grid-cols-1 gap-y-1.5 border-y border-slate-100 py-3" role="list">
-            <BenefitItem text="Прочное покрытие Эмалекс защищает полотно от царапин и сколов">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3.5 19 6.3v5.2c0 4.7-3 7.9-7 9.5-4-1.6-7-4.8-7-9.5V6.3l7-2.8Z"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem text="Алюминиевая кромка усиливает торцы и сохраняет аккуратный вид">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="6" y="3" width="12" height="18" rx="1.5"/>
-                <path d="M9 3v18"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem text="Надёжная конструкция для долгой ежедневной эксплуатации">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6"/>
-              </svg>
-            </BenefitItem>
-          </ul>
+          <BenefitList :cols="1" :items="[
+            'Прочное покрытие Эмалекс защищает полотно от царапин и сколов',
+            'Алюминиевая кромка усиливает торцы и сохраняет аккуратный вид',
+            'Надёжная конструкция для долгой ежедневной эксплуатации',
+          ]" />
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="inline-flex w-fit items-center rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">

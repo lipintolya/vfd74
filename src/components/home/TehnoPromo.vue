@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import { coatingGroupCopy } from '../../data/series-descriptions'
-import BenefitItem from './BenefitItem.vue'
+import BenefitList from './BenefitList.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 /* Цена — пропы из index.astro (живой запрос к Supabase через getCatalogCards,
@@ -22,6 +22,11 @@ const SLIDES = [
 /* Эмалекс — те же 3 официальных преимущества покрытия, что и на /catalog/
    (coatingGroupCopy), не отдельный маркетинговый текст под эту плитку. */
 const benefits = coatingGroupCopy.emalex?.benefits ?? []
+const benefitItems = [
+  benefits[0]?.title,
+  benefits[1]?.title,
+  benefits[2] ? 'Защита от УФ-лучей' : undefined,
+].filter((t): t is string => Boolean(t))
 
 const fmt = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
 
@@ -59,24 +64,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             </p>
           </div>
 
-          <ul class="grid grid-cols-1 gap-x-4 gap-y-1.5 border-y border-slate-100 py-3 sm:grid-cols-2" role="list">
-            <BenefitItem v-if="benefits[0]" :text="benefits[0].title">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3.5 19 6.3v5.2c0 4.7-3 7.9-7 9.5-4-1.6-7-4.8-7-9.5V6.3l7-2.8Z"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem v-if="benefits[1]" :text="benefits[1].title">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3.5c3.2 4.2 5.5 7.1 5.5 10.2a5.5 5.5 0 1 1-11 0c0-3.1 2.3-6 5.5-10.2Z"/>
-              </svg>
-            </BenefitItem>
-            <BenefitItem v-if="benefits[2]" text="Защита от УФ-лучей">
-              <svg class="h-5.5 w-5.5 shrink-0 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="4"/>
-                <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.1 5.1l2.1 2.1M16.8 16.8l2.1 2.1M5.1 18.9l2.1-2.1M16.8 7.2l2.1-2.1"/>
-              </svg>
-            </BenefitItem>
-          </ul>
+          <BenefitList :items="benefitItems" />
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="inline-flex w-fit items-center rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700">

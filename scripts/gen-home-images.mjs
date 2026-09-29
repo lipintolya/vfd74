@@ -51,6 +51,7 @@ const jobs = [
   // ShtrihPromo.vue — рендер-обложка и фото Урбан Штрих 2А
   [STRIX + 'strix_2a_2.webp', 'shtrih-2a-1.webp', P],
   [STRIX + 'strix_2a_1.webp', 'shtrih-2a-2.webp', P],
+  [STRIX + 'strix_2a_3.webp', 'shtrih-2a-3.webp', P],
   // MirrorDoorPromo.vue
   [INVIS + '2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp', 'reflex-1.webp', P],
   [INVIS + 'A158F8FC-901B-4262-BDF6-D68E573300C8.webp', 'reflex-2.webp', P],
