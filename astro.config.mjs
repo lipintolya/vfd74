@@ -104,6 +104,16 @@ const modelImages = await fetchModelImages()
 export default defineConfig({
   site: 'https://vfd74.ru',
 
+  /* Постоянные переадресации удалённых страниц (статическая сборка —
+     HTML с мгновенным meta refresh + canonical на новый адрес). */
+  redirects: {
+    /* «Урбан 1» с чёрной кромкой был разбит в Supabase на две записи по
+       цветам; бежевый перенесён в основную (98075687), лишняя запись
+       9afc9b75 удалена — её адреса ведут на основную страницу модели. */
+    '/models/urban-1-urban-9afc9b/':                 '/models/urban-1-urban-980756/',
+    '/models/9afc9b75-148e-4c78-8bdd-5beb62d54308/':  '/models/urban-1-urban-980756/',
+  },
+
   vite: {
     plugins: [tailwindcss()]
   },
