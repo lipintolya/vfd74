@@ -307,14 +307,17 @@ onUnmounted(() => {
         <nav class="hidden xl:flex gap-7 text-sm" aria-label="Основная навигация">
           <template v-for="link in NAV_LINKS" :key="link.href">
 
-            <!-- Обычная ссылка -->
+            <!-- Обычная ссылка — та же приподнятая подложка на hover, что
+                 у пунктов дропдаунов ниже: голый color-transition терялся
+                 на фоне остального сайта, где hover почти everywhere несёт
+                 фон, а не только смену цвета текста. -->
             <a
               v-if="link.href !== '/catalog/' && link.href !== '/about/'"
               :href="link.href"
-              class="transition-colors duration-200"
+              class="-mx-2.5 -my-1.5 rounded-lg px-2.5 py-1.5 transition-colors duration-200"
               :class="isActive(link.href)
                 ? 'text-gray-900 font-semibold'
-                : 'text-gray-500 hover:text-gray-900'"
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
               :aria-current="isActive(link.href) ? 'page' : undefined"
             >{{ link.label }}</a>
 
@@ -329,17 +332,17 @@ onUnmounted(() => {
             >
               <a
                 :href="link.href"
-                class="flex items-center gap-0.5 transition-colors duration-200"
+                class="group/nav flex items-center gap-0.5 -mx-2.5 -my-1.5 rounded-lg px-2.5 py-1.5 transition-colors duration-200"
                 :class="currentPath.startsWith('/catalog')
                   ? 'text-gray-900 font-semibold'
-                  : 'text-gray-500 hover:text-gray-900'"
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 :aria-current="isActive(link.href) ? 'page' : undefined"
                 :aria-haspopup="true"
                 :aria-expanded="catalogOpen"
               >
                 {{ link.label }}
                 <svg
-                  class="w-3.5 h-3.5 transition-transform duration-200"
+                  class="w-3.5 h-3.5 transition-transform duration-200 group-hover/nav:translate-y-px"
                   :class="{ 'rotate-180': catalogOpen }"
                   viewBox="0 0 24 24" fill="none"
                   aria-hidden="true"
@@ -383,17 +386,17 @@ onUnmounted(() => {
             >
               <a
                 :href="link.href"
-                class="flex items-center gap-0.5 transition-colors duration-200"
+                class="group/nav flex items-center gap-0.5 -mx-2.5 -my-1.5 rounded-lg px-2.5 py-1.5 transition-colors duration-200"
                 :class="currentPath.startsWith('/about') || currentPath.startsWith('/o-fabrike')
                   ? 'text-gray-900 font-semibold'
-                  : 'text-gray-500 hover:text-gray-900'"
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
                 :aria-current="isActive(link.href) ? 'page' : undefined"
                 :aria-haspopup="true"
                 :aria-expanded="aboutOpen"
               >
                 {{ link.label }}
                 <svg
-                  class="w-3.5 h-3.5 transition-transform duration-200"
+                  class="w-3.5 h-3.5 transition-transform duration-200 group-hover/nav:translate-y-px"
                   :class="{ 'rotate-180': aboutOpen }"
                   viewBox="0 0 24 24" fill="none"
                   aria-hidden="true"
@@ -441,7 +444,7 @@ onUnmounted(() => {
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`${s.label} (открывается в новой вкладке)`"
-              class="hover:scale-105 transition-transform duration-200"
+              class="flex h-9 w-9 items-center justify-center rounded-full transition-[background-color,transform] duration-200 hover:scale-105 hover:bg-gray-50"
             >
               <img :src="s.icon" :alt="s.label" class="w-7 h-7" width="28" height="28" loading="eager" fetchpriority="high" />
             </a>
