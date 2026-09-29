@@ -13,6 +13,9 @@ interface Slide {
   description: string
   cta?:        string
   ctaHref?:    string
+  /** object-position картинки, если главный объект не в центре кадра
+      (по умолчанию — center). */
+  imagePosition?: string
 }
 
 const slides: Slide[] = [
@@ -26,6 +29,10 @@ const slides: Slide[] = [
        сам по себе он никуда не делся. */
     id: 1,
     image: HERO_COVER_IMAGE,
+    /* Дверь на рендере у левого края: при центральном кропе на узком
+       экране (телефон, DPR 3 берёт полный оригинал из srcset) она
+       уходила из кадра — прижимаем кадр влево. */
+    imagePosition: 'left center',
     title: 'ВФД Челябинск — двери на Братьев Кашириных',
     subtitle: 'Официальный дилер',
     description: 'Подберём дверь для дома или квартиры: каталог моделей, цены и установка',
@@ -168,6 +175,7 @@ onUnmounted(stop)
               :loading="i === 0 ? 'eager' : 'lazy'"
               :decoding="i === 0 ? 'sync' : 'async'"
               class="hero-slide absolute inset-0 w-full h-full object-cover object-center"
+              :style="slide.imagePosition ? { objectPosition: slide.imagePosition } : undefined"
               :class="{ 'hero-slide-active': i === activeIndex }"
               aria-hidden="true"
             />
