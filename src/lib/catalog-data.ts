@@ -7,7 +7,7 @@
 import { supabase } from './supabase'
 import { buildModelSlugMap } from './slugify'
 import { getSeriesSpec } from '../data/series-descriptions'
-import { SERIES_COVER_PREVIEWS } from '../data/series-cover-previews'
+import { SERIES_COVER_PREVIEWS, SERIES_COVER_THUMBS } from '../data/series-cover-previews'
 import { adjustPrice } from './price-adjustments'
 import { isNewModel } from './new-models'
 import { isPopularSeries } from './popular-series'
@@ -199,6 +199,9 @@ export interface SeriesCardData extends SeriesListItem {
   tagline: string
   /** Обложка — heroImage из SeriesSpec, либо фото первой (по цене) модели серии. */
   cover: string
+  /** Миниатюра 160×200 той же обложки (строки списка серий на мобильном,
+      аватарки панелей) — или сама обложка, если миниатюры нет. */
+  thumb: string
 }
 
 /** Данные для карточки серии (хаб /catalog/series, полоса серий на /catalog) —
@@ -214,10 +217,13 @@ export function getSeriesCardsData(cards: CatalogCardItem[]): SeriesCardData[] {
   return getSeriesList(cards).map(series => {
     const spec = getSeriesSpec(series.slug, series.coatingSlug)
     const seriesCards = getSeriesCards(cards, series.slug)
+    const original = spec.previewImage || spec.heroImage
+    const cover = previewCover(original) || seriesCards[0]?.photo || ''
     return {
       ...series,
       tagline: spec.tagline,
-      cover:   previewCover(spec.previewImage || spec.heroImage) || seriesCards[0]?.photo || '',
+      cover,
+      thumb:   (original && SERIES_COVER_THUMBS[original]) || cover,
     }
   })
 }

@@ -268,9 +268,9 @@ const structuredData = canonicalUrl ? [
                    панели — превью нужно свёрнутому состоянию, раскрытая
                    и так показывает полные SeriesCard ниже. */}
                 <span class="hidden -space-x-3 sm:flex">
-                  {group.series.slice(0, 3).map(s => s.cover && (
+                  {group.series.slice(0, 3).map(s => s.thumb && (
                     <span class="h-10 w-10 overflow-hidden rounded-full border-2 border-white bg-slate-100 shadow-sm">
-                      <img src={s.cover} alt="" aria-hidden="true" loading="lazy" decoding="async" width="40" height="40" class="h-full w-full object-cover" />
+                      <img src={s.thumb} alt="" aria-hidden="true" loading="lazy" decoding="async" width="40" height="40" class="h-full w-full object-cover" />
                     </span>
                   ))}
                 </span>
@@ -288,7 +288,7 @@ const structuredData = canonicalUrl ? [
                представительное фото группы справа — компактнее, при этом
                видно, что за двери внутри. Полные карточки серий с фото
                остаются на /catalog/series/. */}
-            <div class={`grid gap-0 overflow-hidden rounded-2xl border border-l-4 sm:grid-cols-2 ${PANEL} ${accent.stripe}`}>
+            <div data-series-card class={`grid gap-0 overflow-hidden rounded-2xl border border-l-4 sm:grid-cols-2 ${PANEL} ${accent.stripe}`}>
               <div class="flex flex-col justify-between gap-6 p-5 sm:p-7">
                 <div>
                   <p class={`m-0 mb-2 text-xs font-semibold uppercase tracking-wide ${accent.label}`}>
@@ -314,16 +314,39 @@ const structuredData = canonicalUrl ? [
                      пальцем), стрелка перехода справа, отклик на нажатие. Раньше
                      строки были ~36px без разделителей и со стрелкой слева —
                      читалось как маркированный текст, а не как ссылки. */}
-                  <ul class="m-0 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white p-0" role="list">
+                  <ul data-series-list class="m-0 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white p-0" role="list">
                     {group.series.map(s => (
                       <li>
                         <a
                           href={`/catalog/series/${s.slug}/`}
+                          data-cover={s.cover || undefined}
+                          data-cover-alt={`Серия ${s.name} — покрытие ${group.name}`}
                           class="group/series-link flex min-h-12 items-center justify-between gap-3 px-4 py-2.5 text-ink transition-colors hover:bg-slate-50 active:bg-slate-100"
                         >
-                          <span class="min-w-0 text-[0.9375rem] font-medium">Серия {s.name}</span>
+                          <span class="flex min-w-0 items-center gap-3">
+                            {/* Мобильный: наведения нет, большая картинка скрыта —
+                                миниатюра обложки прямо в строке, цена под названием
+                                (иначе название не помещается и переносится). На sm+
+                                роль превью играет большая картинка справа. */}
+                            {s.thumb && (
+                              <img
+                                src={s.thumb}
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                                width="36"
+                                height="44"
+                                class="h-11 w-9 shrink-0 rounded-md bg-slate-100 object-cover sm:hidden"
+                              />
+                            )}
+                            <span class="min-w-0">
+                              <span class="block text-[0.9375rem] font-medium">Серия {s.name}</span>
+                              {s.minPrice && <span class="mt-0.5 block text-sm tabular-nums text-slate-500 sm:hidden">от {fmt(s.minPrice)}</span>}
+                            </span>
+                          </span>
                           <span class="flex shrink-0 items-center gap-2">
-                            {s.minPrice && <span class="text-sm tabular-nums text-slate-500">от {fmt(s.minPrice)}</span>}
+                            {s.minPrice && <span class="hidden text-sm tabular-nums text-slate-500 sm:inline">от {fmt(s.minPrice)}</span>}
                             <svg class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-150 group-hover/series-link:translate-x-0.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                               <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
@@ -347,7 +370,11 @@ const structuredData = canonicalUrl ? [
                 </div>
               </div>
               {group.series[0]?.cover && (
-                <div class="hidden sm:block">
+                /* Превью серии: на ПК при наведении на строку списка здесь
+                   плавно показывается обложка этой серии (скрипт внизу
+                   страницы). Два слоя — кросс-фейд без мигания: новая картинка
+                   сначала декодируется во втором слое, потом слои меняются. */
+                <div data-series-preview class="relative hidden min-h-80 overflow-hidden sm:block">
                   <img
                     src={group.series[0].cover}
                     alt={`Серия ${group.series[0].name} — покрытие ${group.name}`}
@@ -356,7 +383,17 @@ const structuredData = canonicalUrl ? [
                     fetchpriority={groupIndex === 0 ? 'high' : undefined}
                     width="600"
                     height="500"
-                    class="h-full w-full object-cover"
+                    class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out motion-reduce:transition-none"
+                  />
+                  <img
+                    src={group.series[0].cover}
+                    alt=""
+                    aria-hidden="true"
+                    loading="lazy"
+                    decoding="async"
+                    width="600"
+                    height="500"
+                    class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none"
                   />
                 </div>
               )}
@@ -478,3 +515,69 @@ const structuredData = canonicalUrl ? [
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  /* Превью серии в карточке покрытия (ПК): наведение мышью или фокус
+     с клавиатуры на строку серии → в правой колонке плавно показывается
+     обложка этой серии; курсор ушёл со списка → исходная обложка.
+     Обложки группы подгружаются заранее при входе курсора в список, чтобы
+     смена была без задержки. На тач-устройствах не срабатывает — там
+     миниатюры прямо в строках. */
+  document.querySelectorAll<HTMLElement>('[data-series-card]').forEach(card => {
+    const frame = card.querySelector<HTMLElement>('[data-series-preview]')
+    const list  = card.querySelector<HTMLElement>('[data-series-list]')
+    if (!frame || !list) return
+    const layers = frame.querySelectorAll<HTMLImageElement>('img')
+    if (layers.length < 2) return
+    let front = layers[0]!
+    let back  = layers[1]!
+    const defaultSrc = front.getAttribute('src') ?? ''
+    const defaultAlt = front.alt
+    let current = defaultSrc
+    let token = 0
+
+    const show = (src: string, alt: string) => {
+      if (!src || src === current) return
+      current = src
+      const my = ++token
+      const pre = new Image()
+      pre.src = src
+      const swap = () => {
+        if (my !== token) return // пока грузилась — навели на другую строку
+        back.src = src
+        back.alt = alt
+        back.removeAttribute('aria-hidden')
+        back.classList.remove('opacity-0')
+        front.classList.add('opacity-0')
+        front.alt = ''
+        front.setAttribute('aria-hidden', 'true')
+        ;[front, back] = [back, front]
+      }
+      pre.decode().then(swap, swap)
+    }
+
+    const rowFrom = (t: EventTarget | null) =>
+      (t as HTMLElement | null)?.closest<HTMLElement>('[data-cover]') ?? null
+
+    list.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return
+      list.querySelectorAll<HTMLElement>('[data-cover]').forEach(r => { new Image().src = r.dataset.cover! })
+    }, { once: true })
+    list.addEventListener('pointerover', (e) => {
+      if (e.pointerType !== 'mouse') return
+      const row = rowFrom(e.target)
+      if (row) show(row.dataset.cover!, row.dataset.coverAlt ?? '')
+    })
+    list.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse') show(defaultSrc, defaultAlt)
+    })
+    list.addEventListener('focusin', (e) => {
+      const row = rowFrom(e.target)
+      if (row) show(row.dataset.cover!, row.dataset.coverAlt ?? '')
+    })
+    list.addEventListener('focusout', (e) => {
+      if (!list.contains(e.relatedTarget as Node | null)) show(defaultSrc, defaultAlt)
+    })
+  })
+</script>
+
