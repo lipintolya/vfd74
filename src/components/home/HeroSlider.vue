@@ -54,7 +54,7 @@ const slides: Slide[] = [
   },
   {
     id: 2,
-    image: 'https://storage.yandexcloud.net/catalog-vfd/covers/innova-1.webp',
+    image: 'https://storage.yandexcloud.net/vfd74ru/Main_page_perfomance-covers/innova_render.webp',
     title: 'Серия «Иннова» уже в салоне',
     subtitle: 'Не оставляет отпечатков пальцев',
     description: 'Новинка в инновационном покрытии ПЭТ',
