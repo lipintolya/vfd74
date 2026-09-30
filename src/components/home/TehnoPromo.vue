@@ -2,6 +2,7 @@
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import { coatingGroupCopy } from '../../data/series-descriptions'
 import BenefitList from './BenefitList.vue'
+import PromoBadge from './PromoBadge.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 /* Цена — пропы из index.astro (живой запрос к Supabase через getCatalogCards,
@@ -51,7 +52,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
              список преимуществ в 2 колонки, цена одной строкой. -->
         <div class="flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7">
           <div>
-            <p class="t-eyebrow mb-2">Новинка</p>
+            <PromoBadge tone="new">Новинка</PromoBadge>
             <h2
               id="tehno-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"

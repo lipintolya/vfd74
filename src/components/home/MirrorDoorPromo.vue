@@ -2,6 +2,7 @@
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import { REFLEX_IMAGE, REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE } from '../../data/skrytye-dveri-products'
 import BenefitList from './BenefitList.vue'
+import PromoBadge from './PromoBadge.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 // Локальные копии 1300w (scripts/gen-home-images.mjs) вместо CDN-оригиналов.
@@ -28,7 +29,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
              список преимуществ в 2 колонки, цена одной строкой. -->
         <div class="order-2 flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7 lg:order-1">
           <div>
-            <p class="t-eyebrow mb-2">Новинка</p>
+            <PromoBadge tone="new">Новинка</PromoBadge>
             <h2
               id="reflex-promo-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"

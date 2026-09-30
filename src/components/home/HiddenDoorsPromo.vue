@@ -6,6 +6,7 @@ import {
   SECRET_PROMO_ACTIVE,
 } from '../../data/skrytye-dveri-products'
 import BenefitList from './BenefitList.vue'
+import PromoBadge from './PromoBadge.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 const INVISIBLE_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
@@ -52,7 +53,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
              рядом вместо двух отдельных "justify-between" рядов. -->
         <div class="flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7">
           <div>
-            <p class="t-eyebrow mb-2">В наличии</p>
+            <PromoBadge tone="stock">В наличии</PromoBadge>
             <h2
               id="hidden-doors-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"

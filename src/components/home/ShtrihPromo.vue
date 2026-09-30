@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useScrollReveal } from '../../composables/useScrollReveal'
 import BenefitList from './BenefitList.vue'
+import PromoBadge from './PromoBadge.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
 /* Цена и ссылка — пропы из index.astro (живой каталог через getCatalogCards,
@@ -45,7 +46,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
 
         <div class="flex flex-col gap-3.5 p-6 sm:gap-4 sm:p-7">
           <div>
-            <p class="t-eyebrow mb-2">Новинка на складе</p>
+            <PromoBadge tone="stock">Новинка на складе</PromoBadge>
             <h2
               id="shtrih-heading"
               class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-4xl"
