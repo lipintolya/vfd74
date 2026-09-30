@@ -345,16 +345,26 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
   protach: [
     { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`,               category: 'kit',        unit: 'комплект', price: BASE_KIT_PRICE.protach },
 
-    { name: 'Коробка КБТ№43П 80х32х2100',                                category: 'box',        unit: 'шт',       price: 700 },
+    {
+      name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 700,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+    },
 
-    { name: 'Наличник НТ№22 70х8х2140',                                  category: 'nalichnik',  unit: 'шт',       price: 420 },
+    {
+      name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 420,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+    },
 
-    { name: 'Добор ДПТ100№2 100х10х2070',                                category: 'dobor',      unit: 'шт',       price: 510 },
+    {
+      name: 'Добор ДПТ100№2 100х10х2070', category: 'dobor', unit: 'шт', price: 510,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/dobor_t_2130h100h10.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+      mediaAspect: '3.4 / 1',
+    },
     { name: 'Добор ДПТ150№2 150х10х2070',                                category: 'dobor',      unit: 'шт',       price: 650 },
     { name: 'Добор ДПТ200№2 200х10х2070',                                category: 'dobor',      unit: 'шт',       price: 780 },
-    { name: 'Соединитель для доборов 35х4х2100',                        category: 'dobor',      unit: 'шт',       price: 45 },
-
-    { name: 'Притворная планка 30х10х2100',                              category: 'decorative', unit: 'шт',       price: 300 },
   ],
 
   // ── Экошпон (Урбан Древесный) — исходные цены даны за компл. 2,5 шт,
