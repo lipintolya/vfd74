@@ -160,21 +160,62 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
   emal: [
     { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`,               category: 'kit',        unit: 'комплект', price: BASE_KIT_PRICE.emal },
 
-    { name: 'Коробка КБТ№43П 80х32х2100',                                category: 'box',        unit: 'шт',       price: 1_208 },
+    {
+      name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 1_208,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+    },
     { name: 'Коробка КБТ№43П 80х32х2100 + запил под скрытые петли HH24 Morelli', category: 'box', unit: 'шт',      price: 1_365 },
     { name: 'Комплект коробки КБТ№46П 80×38×2100 (с запилом под скрытые петли HH24 Morelli, 2,5 шт)', category: 'box', unit: 'комплект', price: 3_176 },
-    { name: 'Комплект коробки КБКМ№02/39 75×38×2100 компланарный (2,5 шт)', category: 'box',      unit: 'комплект', price: 3_623 },
+    {
+      name: 'Комплект коробки КБКМ№02/39 75×38×2100 компланарный (2,5 шт)', category: 'box', unit: 'комплект', price: 3_623,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/kkompl.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/kkompl_shema.webp',
+      mediaAspect: '2 / 1',
+    },
 
-    { name: 'Наличник НТ№22 70х8х2140',                                  category: 'nalichnik',  unit: 'шт',       price: 672 },
+    {
+      name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 672,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+    },
     { name: 'Наличник НТ№25 100х8х2200',                                 category: 'nalichnik',  unit: 'шт',       price: 935 },
     { name: 'Наличник НТ№13 80х8х2140, 3 ручья',                        category: 'nalichnik',  unit: 'шт',       price: 977 },
-    { name: 'Наличник НТ№34 80х12х2140 «Антик»',                        category: 'nalichnik',  unit: 'шт',       price: 935 },
-    { name: 'Наличник НТ№35 85х16х2140 «Каскад»',                       category: 'nalichnik',  unit: 'шт',       price: 935 },
-    { name: 'Наличник НТ№36 80х22х2140 «Нео 1»',                        category: 'nalichnik',  unit: 'шт',       price: 1_082 },
-    { name: 'Наличник НТ№37 80х22х2140 «Нео 2»',                        category: 'nalichnik',  unit: 'шт',       price: 1_082 },
-    { name: 'Комплект наличника КН№01 90×10×2140 компланарный (5 шт)',  category: 'nalichnik',  unit: 'комплект', price: 3_938 },
+    {
+      name: 'Наличник НТ№34 80х12х2140 «Антик»', category: 'nalichnik', unit: 'шт', price: 935,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_antik.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_antik_shema.webp',
+      mediaAspect: '2.3 / 1',
+    },
+    {
+      name: 'Наличник НТ№35 85х16х2140 «Каскад»', category: 'nalichnik', unit: 'шт', price: 935,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_kaskad.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_kaskad_shema.webp',
+      mediaAspect: '2.35 / 1',
+    },
+    {
+      name: 'Наличник НТ№36 80х22х2140 «Нео 1»', category: 'nalichnik', unit: 'шт', price: 1_082,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_1.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_1_shema.webp',
+    },
+    {
+      name: 'Наличник НТ№37 80х22х2140 «Нео 2»', category: 'nalichnik', unit: 'шт', price: 1_082,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2_shema.webp',
+    },
+    {
+      name: 'Комплект наличника КН№01 90×10×2140 компланарный (5 шт)', category: 'nalichnik', unit: 'комплект', price: 3_938,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl_shema.webp',
+      mediaAspect: '3.2 / 1',
+    },
 
-    { name: 'Добор ДПТ100№2 100х10х2070',                                category: 'dobor',      unit: 'шт',       price: 1_082 },
+    {
+      name: 'Добор ДПТ100№2 100х10х2070', category: 'dobor', unit: 'шт', price: 1_082,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/dobor_t_2130h100h10.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+      mediaAspect: '3.4 / 1',
+    },
     { name: 'Добор ДПТ150№2 150х10х2070',                                category: 'dobor',      unit: 'шт',       price: 1_355 },
     { name: 'Добор ДПТ200№2 200х10х2070',                                category: 'dobor',      unit: 'шт',       price: 1_617 },
     { name: 'Соединитель для доборов 35х4х2100',                        category: 'dobor',      unit: 'шт',       price: 53 },
@@ -243,7 +284,7 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
       scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2_shema.webp',
     },
     {
-      name: 'Комплект наличника КН№01 90×10×2140 компланарный (2,5 шт)', category: 'nalichnik', unit: 'комплект', price: 1_838,
+      name: 'Комплект наличника КН№01 90×10×2140 компланарный (5 шт)', category: 'nalichnik', unit: 'комплект', price: 1_838,
       image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl.webp',
       scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl_shema.webp',
       mediaAspect: '3.2 / 1',
