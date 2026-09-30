@@ -138,17 +138,53 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
   pet: [
     { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`,       category: 'kit',        unit: 'комплект', price: BASE_KIT_PRICE.pet },
 
-    { name: 'Коробка КБТ№43П 80х32х2100',                        category: 'box',        unit: 'шт',       price: 956 },
+    {
+      name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 956,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+    },
     { name: 'Коробка КБТ№46П 80х38х2100',                        category: 'box',        unit: 'шт',       price: 1_134 },
-    { name: 'К-т коробки КБКМ№43П 80х32х2100 компланар',         category: 'box',        unit: 'комплект', price: 2_384 },
+    {
+      name: 'К-т коробки КБКМ№43П 80х32х2100 компланар', category: 'box', unit: 'комплект', price: 2_384,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/kkompl.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/kkompl_shema.webp',
+      mediaAspect: '2 / 1',
+    },
 
-    { name: 'Наличник НТ№22 70х8х2140',                          category: 'nalichnik',  unit: 'шт',       price: 599 },
-    { name: 'Наличник НТ№35 85х16х2140 «Каскад»',                category: 'nalichnik',  unit: 'шт',       price: 830 },
-    { name: 'Наличник НТ№36 80х22х2140 «Нео1»',                  category: 'nalichnik',  unit: 'шт',       price: 956 },
-    { name: 'Наличник НТ№37 80х22х2140 «Нео2»',                  category: 'nalichnik',  unit: 'шт',       price: 956 },
-    { name: 'К-т наличника КН№01 90х10х2140 компланарный',       category: 'nalichnik',  unit: 'комплект', price: 1_743 },
+    {
+      name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 599,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+    },
+    {
+      name: 'Наличник НТ№35 85х16х2140 «Каскад»', category: 'nalichnik', unit: 'шт', price: 830,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_kaskad.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_kaskad_shema.webp',
+      mediaAspect: '2.35 / 1',
+    },
+    {
+      name: 'Наличник НТ№36 80х22х2140 «Нео1»', category: 'nalichnik', unit: 'шт', price: 956,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_1.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_1_shema.webp',
+    },
+    {
+      name: 'Наличник НТ№37 80х22х2140 «Нео2»', category: 'nalichnik', unit: 'шт', price: 956,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nalichnik_figurniy_neo_2_shema.webp',
+    },
+    {
+      name: 'К-т наличника КН№01 90х10х2140 компланарный', category: 'nalichnik', unit: 'комплект', price: 1_743,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/nkompl_shema.webp',
+      mediaAspect: '3.2 / 1',
+    },
 
-    { name: 'Добор ДПТ№2 100х10х2070',                           category: 'dobor',      unit: 'шт',       price: 746 },
+    {
+      name: 'Добор ДПТ№2 100х10х2070', category: 'dobor', unit: 'шт', price: 746,
+      image:  'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/dobor_t_2130h100h10.webp',
+      scheme: 'https://storage.yandexcloud.net/vfd74ru/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+      mediaAspect: '3.4 / 1',
+    },
     { name: 'Добор ДПТ№2 150х10х2070',                           category: 'dobor',      unit: 'шт',       price: 987 },
     { name: 'Добор ДПТ№2 200х10х2070',                           category: 'dobor',      unit: 'шт',       price: 1_176 },
     { name: 'Соединитель для доборов 35х4х2100',                 category: 'dobor',      unit: 'шт',       price: 53 },
