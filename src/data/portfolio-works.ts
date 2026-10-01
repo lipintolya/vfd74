@@ -66,6 +66,31 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-10-01-emalex-ec2-belyy-zoloto',
+    date:        '2026-10-01',
+    label:       '01.10.2026',
+    title:       'Монтаж 4 дверей ЕС2 Эмалекс белый и облагораживание входной группы',
+    description: 'Установка 4 межкомнатных дверей ЕС2 Эмалекс в белом цвете с фурнитурой в цвете матовое сатинированное золото и облагораживание входной группы. Квартира, Челябинск.',
+    category:    'interior',
+    objectType:  'apartment',
+    location:    'Челябинск',
+    story:       'Завершили очередной проект: установили 4 межкомнатные двери и выполнили облагораживание входной группы. Для проекта выбрали модель ЕС2 «Эмалекс» в белом цвете — лаконичная классика, которая визуально делает пространство светлее и аккуратнее. Особое внимание уделили деталям: в качестве фурнитуры выбрали матовое сатинированное золото — благородный оттенок, который добавляет интерьеру тепла и элегантности, не перегружая его. Получилось современно, сдержанно и гармонично — именно тот случай, когда впечатление создают детали.',
+    model:       'ЕС2',
+    doorCount:   4,
+    coating:     'Эмалекс белый',
+    features:    ['Покрытие Эмалекс «Белый»', 'Фурнитура — матовое сатинированное золото', '4 дверных блока', 'Облагораживание входной группы'],
+    tags:        ['Квартира', 'Эмалекс', 'Классика', 'Входная группа'],
+    images: [
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/Ig41nGyWEDlDdZ6UgngZHqLu1CKLUUTh5Av6n6923oH61szRcPGQ0pPHxQOqCaQeGf1v8FJelHmuvXpnxq937EyE.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/Km5H-TPCfky45H5HdipgKkM3IDMPbm1xN8y474ebBNeTSQw96H8c5snDiEa7JaOtKUD2yj1Wh0YYZwKblJNAOS_L.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/eN634JpwTTScGfimKP1XDkcolL6u96ba8TX18Nu2dMfzsnPrb0blsInv4u6YbQWuxWR6mHc2X2AKSHxlxwPDN4kqFhuXfg.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/ozTL8IX9vCRzfBC45ukrwLHng2BVE3N6kDWUgh1X0sZ6f-EjrkTVaLplBvDSEzebo4wqBPMUnN58pcoYvBMBQ_VkxyhgKw.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/ttLVsyBnGhO3F_4Gix5XwoBpGIYrjkQnjo9LQjkvUsehiFawtDI8iSJB7XBQEGKkJ__UZwqWKeU9qhW_ilowAhMb.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/zKpmShMMUS2KJOveNTO4nhHBqBqIqaCie0wiEGYsM5GadUaHPTxolZgTTBYK-CmZOAMpc36ITvvSHZ-tjFOcUdn651x-7Q.webp',
+      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/zOV7Q0Hxri5TOWA85Cczl9eDhHvJ2zFf3etHWah89aKNaVEcDkXHjKSIjtXjaSWh2huqv7Lg6xvK7BKj8R6Z0gN1.webp',
+    ],
+  },
+  {
     id:          '2026-09-27-belyy-plintus-universitetskaya-naberezhnaya',
     date:        '2026-09-27',
     label:       '27.09.2026',
