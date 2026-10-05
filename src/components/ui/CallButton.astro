@@ -1,31 +1,109 @@
 ---
 /**
- * Плавающая кнопка звонка — во всех разрешениях, в паре с «Наверх» (BackToTop).
- * Телефон/планшет: ссылка tel: на основной номер из contacts-data.
- * Десктоп (xl+ и мышь): tel: там не работает, поэтому клик открывает панель
- * «Связаться» в шапке (событие vfd:open-contacts, слушает Header.vue).
+ * Плавающая кнопка звонка (в паре с «Наверх», BackToTop) + окно с карточкой
+ * салона: фото фасада, телефоны, адрес, часы работы.
+ * Мобильный — нижняя шторка, десктоп — карточка по центру.
+ *
+ * Зачем окно, а не прямой tel:: случайный тап по плавающей кнопке сразу
+ * запускал бы звонок. Окно — шаг подтверждения и доверие (реальный салон,
+ * адрес). Без JS / без <dialog> кнопка остаётся обычной ссылкой tel:.
+ * Всё содержимое — из contacts-data (единый источник).
+ *
+ * Оформление — язык остального сайта: ink-кнопки, тонкие разделители,
+ * обычная типографика без капслока, свечений и иконок-кружков.
  */
 import { companyLegalInfo } from '../../lib/contacts-data'
 
-const phone = companyLegalInfo.contacts.phone[0]!
+const { phone: phones } = companyLegalInfo.contacts
+const [main, extra] = phones
+const { address, workingHours } = companyLegalInfo
+
+const ROUTE_URL = 'https://yandex.ru/maps/-/CPTwZPi-'
+// «Основной номер» → «Основной»: подпись в кнопке короче, чтобы влезала в строку
+const shortTitle = (t: string) => t.replace(/ номер$/, '')
 ---
 <a
   id="call-btn"
-  href={`tel:${phone.raw}`}
-  aria-label={`Позвонить в ВФД: ${phone.label}`}
-  title={`Позвонить: ${phone.label}`}
+  href={`tel:${main!.raw}`}
+  aria-label={`Позвонить в ВФД: ${main!.label}`}
+  aria-haspopup="dialog"
+  title="Позвонить"
 >
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.6 21 3 13.4 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/>
   </svg>
 </a>
 
-<style>
-  @keyframes call-pulse {
-    0%, 100% { box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35), 0 0 0 0 rgba(20, 184, 166, 0.45); }
-    50%      { box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35), 0 0 0 10px rgba(20, 184, 166, 0); }
-  }
+<dialog
+  id="call-dialog"
+  aria-labelledby="call-dialog-title"
+  data-open-hour={workingHours.weekdays.opens.slice(0, 2)}
+  data-close-weekday={workingHours.weekdays.closes.slice(0, 2)}
+  data-close-weekend={workingHours.saturday.closes.slice(0, 2)}
+>
+  <div class="cd-bar">
+    <span class="cd-bar__name">Фирменный салон ВФД</span>
+    <button type="button" class="cd-close" data-cd-close>Закрыть</button>
+  </div>
 
+  <div class="cd-scroll">
+    <img
+      class="cd-photo"
+      src="/renders/about/vfd-out-900.webp"
+      alt="Фасад салона ВФД на Кашириных — вывеска «Двери прямо с фабрики»"
+      width="900"
+      height="600"
+      loading="lazy"
+      decoding="async"
+    />
+
+    <div class="cd-body">
+      <h2 id="call-dialog-title" class="cd-title" tabindex="-1" autofocus>Позвоните — менеджеры ответят на все вопросы</h2>
+      <p class="cd-lead">Подбор дверей и перегородок, цены и сроки, запись на бесплатный замер.</p>
+
+      <div class="cd-actions">
+        <a class="cd-call cd-call--main" href={`tel:${main!.raw}`} data-cd-call>
+          <span class="cd-call__label">{shortTitle(main!.title)}</span>
+          <span class="cd-call__num">{main!.label}</span>
+        </a>
+        {extra && (
+          <a class="cd-call cd-call--extra" href={`tel:${extra.raw}`} data-cd-call>
+            <span class="cd-call__label">{shortTitle(extra.title)}</span>
+            <span class="cd-call__num">{extra.label}</span>
+          </a>
+        )}
+      </div>
+
+      <dl class="cd-info">
+        <div class="cd-row">
+          <dt>Адрес</dt>
+          <dd>
+            {address.legal}
+            <span class="cd-sub">{address.entrance}</span>
+          </dd>
+        </div>
+        <div class="cd-row">
+          <dt>Часы работы</dt>
+          <dd>
+            {workingHours.weekdays.label}
+            <span class="cd-sub">Сб–Вс: {workingHours.saturday.opens}–{workingHours.saturday.closes}</span>
+            <span class="cd-sub cd-status" id="cd-status" aria-live="polite"></span>
+          </dd>
+        </div>
+      </dl>
+
+      <a class="cd-route" href={ROUTE_URL} target="_blank" rel="noopener noreferrer" aria-label="Построить маршрут (открывается в новой вкладке)">
+        Построить маршрут
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* ── Плавающая кнопка: ink, как .btn-primary и «Связаться» в шапке ── */
   #call-btn {
     position: fixed;
     right: 1.5rem;
@@ -36,47 +114,246 @@ const phone = companyLegalInfo.contacts.phone[0]!
     border-radius: 9999px;
     display: grid;
     place-items: center;
-    background: #0d9488;
+    background: var(--color-fg);
     color: #fff;
     text-decoration: none;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.22);
     -webkit-tap-highlight-color: transparent;
-    animation: call-pulse 2.4s ease-in-out infinite;
-    transition: transform 150ms ease, background 150ms ease, bottom 220ms ease;
+    transition: transform 150ms ease, background-color 200ms ease, bottom 220ms ease;
   }
-  #call-btn svg { width: 1.375rem; height: 1.375rem; }
-  #call-btn:hover { background: #0f766e; animation: none; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.45); }
-  #call-btn:active { transform: scale(0.94); animation: none; }
-  #call-btn:focus-visible { outline: 2px solid #14b8a6; outline-offset: 3px; }
+  #call-btn svg { width: 1.25rem; height: 1.25rem; }
+  #call-btn:hover { background: var(--color-accent-hover); }
+  #call-btn:active { transform: scale(0.94); }
+  #call-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 
   @media (max-width: 640px) {
     #call-btn { right: 1rem; bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
-  }
-
-  /* Куки-баннер (внизу по центру, z 9999) иначе перекрыл бы кнопку */
-  @media (max-width: 640px) {
+    /* Куки-баннер (внизу по центру, z 9999) иначе перекрыл бы кнопку */
     :global(html.has-cookie-banner) #call-btn {
       bottom: calc(7rem + env(safe-area-inset-bottom));
     }
   }
 
+  /* ── Окно ── */
+  @keyframes cd-sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes cd-card-in  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes cd-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+
+  #call-dialog {
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: var(--color-ink);
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto 0 0;
+    border-radius: 1rem 1rem 0 0;
+    overscroll-behavior: contain;
+  }
+  #call-dialog[open] {
+    display: flex;
+    flex-direction: column;
+    animation: cd-sheet-in 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #call-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.5);
+    animation: cd-fade-in 180ms ease;
+  }
+
+  @media (min-width: 640px) {
+    #call-dialog {
+      width: 26rem;
+      margin: auto;
+      border-radius: 1rem;
+      box-shadow: 0 24px 60px -16px rgba(15, 23, 42, 0.3);
+    }
+    #call-dialog[open] { animation: cd-card-in 180ms ease; }
+  }
+
+  /* Верхняя строка: название слева, «Закрыть» текстом справа */
+  .cd-bar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 0.5rem 0 1.25rem;
+    height: 3.25rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .cd-bar__name { font-size: var(--text-step-0); font-weight: 600; color: #475569; }
+  .cd-close {
+    min-height: 2.75rem;
+    padding: 0 0.75rem;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: var(--text-step-1);
+    font-weight: 500;
+    color: var(--color-ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 0.5rem;
+  }
+  .cd-close:hover { color: var(--color-accent-hover); }
+  .cd-close:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+
+  .cd-scroll { overflow-y: auto; overscroll-behavior: contain; }
+  .cd-photo {
+    display: block;
+    width: 100%;
+    height: 9.5rem;
+    object-fit: cover;
+    background: #e2e8f0;
+  }
+
+  .cd-body { padding: 1.25rem 1.25rem calc(0.5rem + env(safe-area-inset-bottom)); }
+  .cd-title {
+    margin: 0 0 0.5rem;
+    font-size: var(--text-step-3);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+  /* Фокус при открытии — на заголовке (его читает скринридер), без обводки */
+  .cd-title:focus { outline: none; }
+  .cd-lead {
+    margin: 0 0 1.25rem;
+    font-size: var(--text-step-1);
+    line-height: 1.5;
+    color: #64748b;
+  }
+
+  /* Кнопки звонка: подпись слева, номер справа — читается как спецификация */
+  .cd-actions { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .cd-call {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    column-gap: 0.75rem;
+    min-height: 3.25rem;
+    padding: 0.8rem 1.25rem;
+    border-radius: var(--radius-btn);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out), color 200ms var(--ease-out);
+  }
+  .cd-call:active { transform: scale(0.99); }
+  .cd-call:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  .cd-call__label { font-size: var(--text-step-0); font-weight: 500; opacity: 0.7; }
+  .cd-call__num { font-size: var(--text-step-2); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+  .cd-call--main  { background: var(--color-fg); color: #fff; }
+  .cd-call--main:hover { background: var(--color-accent-hover); }
+  .cd-call--extra { background: transparent; color: var(--color-fg); box-shadow: inset 0 0 0 1.5px var(--color-border); }
+  .cd-call--extra:hover { box-shadow: inset 0 0 0 1.5px var(--color-accent); color: var(--color-accent-hover); }
+
+  /* Спек-строки: тонкие разделители, подпись слева */
+  .cd-info { margin: 0; border-top: 1px solid #e2e8f0; }
+  .cd-row {
+    display: grid;
+    grid-template-columns: 6.25rem 1fr;
+    gap: 0.75rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .cd-row dt { margin: 0; font-size: var(--text-step-0); line-height: 1.5; color: #64748b; }
+  .cd-row dd { margin: 0; font-size: var(--text-step-1); line-height: 1.45; color: var(--color-ink); }
+  .cd-sub { display: block; margin-top: 0.15rem; font-size: var(--text-step-0); color: #64748b; }
+  .cd-status:empty { display: none; }
+  .cd-status[data-open="true"] { color: #0f766e; }
+
+  .cd-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 3.25rem;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color 200ms var(--ease-out);
+  }
+  .cd-route:hover { color: var(--color-accent-hover); }
+  .cd-route:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -2px; border-radius: 0.5rem; }
+
   @media (prefers-reduced-motion: reduce) {
-    #call-btn { animation: none; }
+    #call-dialog[open], #call-dialog::backdrop { animation: none; }
   }
   @media print {
-    #call-btn { display: none; }
+    #call-btn, #call-dialog { display: none; }
   }
 </style>
 
 <script>
   const btn = document.getElementById('call-btn')
-  btn?.addEventListener('click', (e) => {
-    const ym = (window as unknown as { ym?: (...a: unknown[]) => void }).ym
-    if (typeof ym === 'function') ym(106993554, 'reachGoal', 'call_click')
+  const dialog = document.getElementById('call-dialog') as HTMLDialogElement | null
+  const statusEl = document.getElementById('cd-status')
 
-    // Десктоп с мышью: вместо tel: показываем номера в шапке
-    if (window.matchMedia('(min-width: 1280px) and (hover: hover)').matches) {
-      e.preventDefault()
-      window.dispatchEvent(new CustomEvent('vfd:open-contacts'))
-    }
-  })
+  type Ym = (...a: unknown[]) => void
+  const goal = (name: string) => {
+    const ym = (window as unknown as { ym?: Ym }).ym
+    if (typeof ym === 'function') ym(106993554, 'reachGoal', name)
+  }
+
+  /* Статус «открыто/закрыто» по времени Челябинска (UTC+5), а не по часам
+     посетителя — иначе из другого часового пояса он был бы неверным. */
+  function renderStatus() {
+    if (!dialog || !statusEl) return
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Yekaterinburg',
+      weekday: 'short',
+      hour: 'numeric',
+      hourCycle: 'h23',
+    }).formatToParts(new Date())
+    const wd = parts.find((p) => p.type === 'weekday')?.value ?? 'Mon'
+    const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0)
+    const open = Number(dialog.dataset.openHour)
+    const closeWd = Number(dialog.dataset.closeWeekday)
+    const closeWe = Number(dialog.dataset.closeWeekend)
+    const close = wd === 'Sat' || wd === 'Sun' ? closeWe : closeWd
+    const hh = (h: number) => `${String(h).padStart(2, '0')}:00`
+
+    const isOpen = hour >= open && hour < close
+    statusEl.dataset.open = String(isOpen)
+    statusEl.textContent = isOpen
+      ? `Сейчас открыто, работаем до ${hh(close)}`
+      : hour < open
+        ? `Сейчас закрыто, откроемся сегодня в ${hh(open)}`
+        : `Сейчас закрыто, откроемся завтра в ${hh(open)}`
+  }
+
+  if (btn && dialog && typeof dialog.showModal === 'function') {
+    let prevOverflow = ''
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault() // вместо мгновенного звонка — окно подтверждения
+      renderStatus()
+      prevOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      dialog.showModal()
+      goal('call_open')
+    })
+
+    dialog.addEventListener('close', () => {
+      document.body.style.overflow = prevOverflow
+    })
+
+    dialog.querySelector('[data-cd-close]')?.addEventListener('click', () => dialog.close())
+
+    // Клик по подложке: цель — сам <dialog> (у него нет padding, контент заполняет всё)
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close()
+    })
+
+    dialog.querySelectorAll('[data-cd-call]').forEach((a) =>
+      a.addEventListener('click', () => goal('call_click')),
+    )
+  } else if (btn) {
+    // Без <dialog> — обычный звонок по ссылке tel:
+    btn.addEventListener('click', () => goal('call_click'))
+  }
 </script>

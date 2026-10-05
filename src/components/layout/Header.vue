@@ -227,7 +227,6 @@ onMounted(() => {
   window.addEventListener('scroll',  onScroll,       { passive: true })
   window.addEventListener('keydown', onKeydown)
   window.addEventListener('resize',  onResize,       { passive: true })
-  window.addEventListener('vfd:open-contacts', openContacts)
   document.addEventListener('click', onClickOutside, { capture: true })
   timerId = setInterval(() => { now.value = new Date() }, 30_000)
 })
@@ -236,7 +235,6 @@ onUnmounted(() => {
   window.removeEventListener('scroll',  onScroll)
   window.removeEventListener('keydown', onKeydown)
   window.removeEventListener('resize',  onResize)
-  window.removeEventListener('vfd:open-contacts', openContacts)
   document.removeEventListener('click', onClickOutside, { capture: true })
   document.body.style.overflow = ''
   if (timerId !== null) clearInterval(timerId)
