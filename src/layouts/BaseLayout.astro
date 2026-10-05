@@ -2,6 +2,7 @@
 import '../styles/global.css'
 import Header from '../components/layout/Header.vue'
 import Footer from '../components/layout/Footer.vue'
+import CallButton from '../components/ui/CallButton.astro'
 import YandexMetrika from '../components/analytics/YandexMetrika.astro'
 import BackToTop from '../components/ui/BackToTop.astro'
 import { HERO_COVER_IMAGE } from '../data/hero-image'
@@ -144,6 +145,7 @@ const structuredDataJson = structuredData
     <Footer client:only="vue" />
 
     <BackToTop />
+    <CallButton />
 
     <!-- Баннер согласия с обработкой данных (ФЗ-152) -->
     <div
@@ -263,10 +265,12 @@ const structuredDataJson = structuredData
 
         if (!localStorage.getItem('cookie-consent') && banner) {
           banner.style.display = 'block';
+          document.documentElement.classList.add('has-cookie-banner');
         }
 
         function hideBanner() {
           localStorage.setItem('cookie-consent', '1');
+          document.documentElement.classList.remove('has-cookie-banner');
 
           var banner = document.getElementById('cookie-banner');
 

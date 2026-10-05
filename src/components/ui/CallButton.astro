@@ -1,0 +1,82 @@
+---
+/**
+ * Плавающая кнопка звонка — во всех разрешениях, в паре с «Наверх» (BackToTop).
+ * Телефон/планшет: ссылка tel: на основной номер из contacts-data.
+ * Десктоп (xl+ и мышь): tel: там не работает, поэтому клик открывает панель
+ * «Связаться» в шапке (событие vfd:open-contacts, слушает Header.vue).
+ */
+import { companyLegalInfo } from '../../lib/contacts-data'
+
+const phone = companyLegalInfo.contacts.phone[0]!
+---
+<a
+  id="call-btn"
+  href={`tel:${phone.raw}`}
+  aria-label={`Позвонить в ВФД: ${phone.label}`}
+  title={`Позвонить: ${phone.label}`}
+>
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.6 21 3 13.4 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/>
+  </svg>
+</a>
+
+<style>
+  @keyframes call-pulse {
+    0%, 100% { box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35), 0 0 0 0 rgba(20, 184, 166, 0.45); }
+    50%      { box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35), 0 0 0 10px rgba(20, 184, 166, 0); }
+  }
+
+  #call-btn {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 48;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 9999px;
+    display: grid;
+    place-items: center;
+    background: #0d9488;
+    color: #fff;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    animation: call-pulse 2.4s ease-in-out infinite;
+    transition: transform 150ms ease, background 150ms ease, bottom 220ms ease;
+  }
+  #call-btn svg { width: 1.375rem; height: 1.375rem; }
+  #call-btn:hover { background: #0f766e; animation: none; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.45); }
+  #call-btn:active { transform: scale(0.94); animation: none; }
+  #call-btn:focus-visible { outline: 2px solid #14b8a6; outline-offset: 3px; }
+
+  @media (max-width: 640px) {
+    #call-btn { right: 1rem; bottom: calc(1.25rem + env(safe-area-inset-bottom)); }
+  }
+
+  /* Куки-баннер (внизу по центру, z 9999) иначе перекрыл бы кнопку */
+  @media (max-width: 640px) {
+    :global(html.has-cookie-banner) #call-btn {
+      bottom: calc(7rem + env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #call-btn { animation: none; }
+  }
+  @media print {
+    #call-btn { display: none; }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('call-btn')
+  btn?.addEventListener('click', (e) => {
+    const ym = (window as unknown as { ym?: (...a: unknown[]) => void }).ym
+    if (typeof ym === 'function') ym(106993554, 'reachGoal', 'call_click')
+
+    // Десктоп с мышью: вместо tel: показываем номера в шапке
+    if (window.matchMedia('(min-width: 1280px) and (hover: hover)').matches) {
+      e.preventDefault()
+      window.dispatchEvent(new CustomEvent('vfd:open-contacts'))
+    }
+  })
+</script>
