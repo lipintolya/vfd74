@@ -4,7 +4,7 @@
    Последний объект — сверху (push в начало массива).
    ============================================================ */
 
-const CDN_WORKS = 'https://storage.yandexcloud.net/catalog-vfd/invisible/ourworks/'
+const CDN_WORKS = '/media/invisible/ourworks/'
 
 export interface InvisibleWork {
   id:        string    // slug: '2026-06-17-01'
@@ -31,7 +31,7 @@ export const INVISIBLE_WORKS: InvisibleWork[] = [
     series:   'Секрет',
     features: ['Без наличников', 'Высокие полотна', 'Дизайн: Екатерина Квашнина'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/8.09.26/invisible_art.webp',
+      '/media/works_prod/8.09.26/invisible_art.webp',
     ],
   },
   {

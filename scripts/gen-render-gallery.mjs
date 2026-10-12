@@ -1,6 +1,6 @@
 /**
  * Перегенерирует public/renders/alum-covers/*.webp из оригиналов
- * на storage.yandexcloud.net/catalog-vfd/covers/alum_covers/{N}.webp.
+ * из public/media/covers/alum_covers/{N}.webp.
  *
  * Зачем локальные копии, а не прямая ссылка на облако:
  * оригиналы — полноразмерные .webp до 7000px / ~2 МБ. Astro в dev-режиме
@@ -12,12 +12,13 @@
  *
  * Запуск:  node scripts/gen-render-gallery.mjs
  * Когда запускать снова: если в src/data/partitions.ts изменилось число
- * рендеров (renderGallery) или сами оригиналы в облаке заменили.
+ * рендеров (renderGallery) или сами оригиналы в public/media заменили.
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
-const BASE = 'https://storage.yandexcloud.net/catalog-vfd/covers/alum_covers'
+const BASE = '/media/covers/alum_covers'
 const OUT = new URL('../public/renders/alum-covers/', import.meta.url)
 const N = 38
 const CONCURRENCY = 6
@@ -25,9 +26,7 @@ const CONCURRENCY = 6
 await mkdir(OUT, { recursive: true })
 
 async function processOne(i) {
-  const res = await fetch(`${BASE}/${i}.webp`)
-  if (!res.ok) throw new Error(`${i}.webp: HTTP ${res.status}`)
-  const buf = Buffer.from(await res.arrayBuffer())
+  const buf = await readMedia(`${BASE}/${i}.webp`)
 
   const lightbox = await sharp(buf).resize({ width: 1920, withoutEnlargement: true }).webp({ quality: 78 }).toBuffer()
   await writeFile(new URL(`${i}.webp`, OUT), lightbox)

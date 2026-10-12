@@ -9,7 +9,7 @@ import BenefitList from './BenefitList.vue'
 import PromoBadge from './PromoBadge.vue'
 import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
 
-const INVISIBLE_CDN = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
+const INVISIBLE_CDN = '/media/invisible/'
 
 // Локальные копии 1300w (scripts/gen-home-images.mjs); последний слайд —
 // оригинал, он и так лёгкий (15КБ).

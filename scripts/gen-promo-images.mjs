@@ -12,17 +12,18 @@
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
 const OUT_DIR = new URL('../public/renders/promo/', import.meta.url)
 await mkdir(OUT_DIR, { recursive: true })
 
 const sources = [
-  { src: 'https://storage.yandexcloud.net/vfd74ru/sale/zamer_render.webp', base: 'zamer-render' },
-  { src: 'https://storage.yandexcloud.net/vfd74ru/outdoors/basic_render.webp', base: 'basic-render' },
-  { src: 'https://storage.yandexcloud.net/catalog-vfd/invisible/invisible.webp', base: 'invisible' },
-  { src: 'https://storage.yandexcloud.net/vfd74ru/sale/basic_z.webp', base: 'basic-z' },
-  { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/emalex_ec2_promo.webp', base: 'emalex-ec2-promo' },
-  { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/64443281-F5F2-4877-9AEA-304CD417BF8D.webp', base: 'urban-graphite' },
+  { src: '/media/sale/zamer_render.webp', base: 'zamer-render' },
+  { src: '/media/outdoors/basic_render.webp', base: 'basic-render' },
+  { src: '/media/invisible/invisible.webp', base: 'invisible' },
+  { src: '/media/sale/basic_z.webp', base: 'basic-z' },
+  { src: '/media/promo_main/emalex_ec2_promo.webp', base: 'emalex-ec2-promo' },
+  { src: '/media/promo_main/64443281-F5F2-4877-9AEA-304CD417BF8D.webp', base: 'urban-graphite' },
 ]
 
 const widths = [
@@ -31,9 +32,7 @@ const widths = [
 ]
 
 for (const { src, base } of sources) {
-  const res = await fetch(src)
-  if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
-  const buf = Buffer.from(await res.arrayBuffer())
+  const buf = await readMedia(src)
   for (const { width, quality } of widths) {
     const resized = await sharp(buf).resize({ width, withoutEnlargement: true }).webp({ quality }).toBuffer()
     const out = `${base}-${width}.webp`

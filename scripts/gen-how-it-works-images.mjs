@@ -15,19 +15,20 @@
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
 const OUT_DIR = new URL('../public/renders/how-it-works/', import.meta.url)
 await mkdir(OUT_DIR, { recursive: true })
 
 const jobs = [
   {
-    src: 'https://storage.yandexcloud.net/vfd74ru/Main_page/catalog_main.png',
+    src: '/media/Main_page/catalog_main.png',
     out: 'catalog-main-368.webp',
     width: 368,
     quality: 88,
   },
   {
-    src: 'https://storage.yandexcloud.net/vfd74ru/Main_page/garantee_main.webp',
+    src: '/media/Main_page/garantee_main.webp',
     out: 'garantee-main-368.webp',
     width: 368,
     quality: 82,
@@ -35,9 +36,7 @@ const jobs = [
 ]
 
 for (const { src, out, width, quality } of jobs) {
-  const res = await fetch(src)
-  if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
-  const buf = Buffer.from(await res.arrayBuffer())
+  const buf = await readMedia(src)
   const resized = await sharp(buf).resize({ width, withoutEnlargement: true }).webp({ quality }).toBuffer()
   await writeFile(new URL(out, OUT_DIR), resized)
   console.log(`${out}: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)

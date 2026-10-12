@@ -14,21 +14,22 @@
  * тут умножается на число слайдов.
  *
  * Запуск: node scripts/gen-home-images.mjs
- * Когда запускать снова: если заменили фото в облаке или добавили новое
+ * Когда запускать снова: если заменили фото в public/media или добавили новое
  * в эти компоненты (тогда добавь строку в jobs и поменяй URL в компоненте).
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
 const OUT = new URL('../public/renders/home/', import.meta.url)
 await mkdir(OUT, { recursive: true })
 
-const CARDS    = 'https://storage.yandexcloud.net/vfd74ru/Main_page/cards/'
-const FEAT     = 'https://storage.yandexcloud.net/catalog-vfd/features_block/'
-const TEHNO    = 'https://storage.yandexcloud.net/vfd74ru/doors-main_renders/tehno/'
-const INVIS    = 'https://storage.yandexcloud.net/vfd74ru/invisible/'
-const BENTO    = 'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/'
-const STRIX    = 'https://storage.yandexcloud.net/vfd74ru/promo_main/strix/'
+const CARDS    = '/media/Main_page/cards/'
+const FEAT     = '/media/features_block/'
+const TEHNO    = '/media/doors-main_renders/tehno/'
+const INVIS    = '/media/invisible/'
+const BENTO    = '/media/Main_page/left_bento/'
+const STRIX    = '/media/promo_main/strix/'
 
 // Features: контейнер фото — aspect-[16/12.65] на всех брейкпоинтах, img с
 // object-cover (центр). Кадрируем заранее тем же центральным кропом: на экране
@@ -63,15 +64,13 @@ const jobs = [
   [INVIS + '937DECDF-6886-48EB-80B6-3495AA998F94.webp', 'secret-3.webp', P],
   // Reviews.vue — логотипы площадок показываются 20×20 (64px — с запасом под retina),
   // исходники 600×600
-  ['https://storage.yandexcloud.net/vfd74ru/info/reviews/yandex_logo.webp', 'logo-yandex.webp', { width: 64, quality: 85 }],
-  ['https://storage.yandexcloud.net/vfd74ru/info/reviews/2gis_logo.webp',   'logo-2gis.webp',   { width: 64, quality: 85 }],
+  ['/media/info/reviews/yandex_logo.webp', 'logo-yandex.webp', { width: 64, quality: 85 }],
+  ['/media/info/reviews/2gis_logo.webp',   'logo-2gis.webp',   { width: 64, quality: 85 }],
 ]
 
 let before = 0, after = 0
 for (const [src, out, { width, height, fit, quality }] of jobs) {
-  const res = await fetch(src)
-  if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
-  const buf = Buffer.from(await res.arrayBuffer())
+  const buf = await readMedia(src)
   const img = await sharp(buf).resize({ width, height, fit: fit ?? 'inside', withoutEnlargement: true }).webp({ quality }).toBuffer()
   await writeFile(new URL(out, OUT), img)
   before += buf.length; after += img.length

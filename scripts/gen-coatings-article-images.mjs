@@ -16,23 +16,22 @@
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
 const OUT_DIR = new URL('../public/renders/articles/coatings/', import.meta.url)
 await mkdir(OUT_DIR, { recursive: true })
 
 const sources = [
-  { base: 'emal',     src: 'https://storage.yandexcloud.net/vfd74ru/cover_first_section/emal/stockholm.webp' },
-  { base: 'emalex',   src: 'https://storage.yandexcloud.net/vfd74ru/Main_page/articles/article_1/emalex_render.webp' },
-  { base: 'pet',      src: 'https://storage.yandexcloud.net/vfd74ru/Main_page/articles/article_1/cover_pet.png' },
-  { base: 'protach',  src: 'https://storage.yandexcloud.net/catalog-vfd/Smart/next/render/next_render.webp' },
-  { base: 'ekoshpon', src: 'https://storage.yandexcloud.net/vfd74ru/catalog/urban_wood/urban_z/urban_cover_wood.webp' },
+  { base: 'emal',     src: '/media/cover_first_section/emal/stockholm.webp' },
+  { base: 'emalex',   src: '/media/Main_page/articles/article_1/emalex_render.webp' },
+  { base: 'pet',      src: '/media/Main_page/articles/article_1/cover_pet.png' },
+  { base: 'protach',  src: '/media/Smart/next/render/next_render.webp' },
+  { base: 'ekoshpon', src: '/media/catalog/urban_wood/urban_z/urban_cover_wood.webp' },
 ]
 
 const buffers = []
 for (const { base, src } of sources) {
-  const res = await fetch(src)
-  if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
-  const buf = Buffer.from(await res.arrayBuffer())
+  const buf = await readMedia(src)
   buffers.push(buf)
 
   // Карточка: кроп 3:4 (как .dcard__media), 600×800 под retina.

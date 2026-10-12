@@ -21,7 +21,7 @@
      со стеклом) — добавь новую запись в ENTRANCE_SKINS.
    ============================================================ */
 
-const CDN = 'https://storage.yandexcloud.net/vfd74ru/metal_doors/'
+const CDN = '/media/metal_doors/'
 
 export interface EntranceSkin {
   id:          string   // 'niuta-ice'
@@ -33,63 +33,63 @@ export interface EntranceSkin {
 }
 
 export const ENTRANCE_SKINS: EntranceSkin[] = [
-  { id: 'niuta-ice',                    name: 'Niuta',        color: 'Ice',                photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/niuta_ice.webp' },
-  { id: 'niuta-steel',                  name: 'Niuta',        color: 'Steel',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/niuta_steel.webp' },
-  { id: 'niuta-onyx',                   name: 'Niuta',        color: 'Onyx',               photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/niuta_onyx.webp' },
-  { id: 'niuta-taupe',                  name: 'Niuta',        color: 'Taupe',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/niuta_taupe.webp' },
-  { id: 'niuta-midwhite',               name: 'Niuta',        color: 'Midwhite',           photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/niuta_midwhite.webp' },
-  { id: 'niuta-dub-tehas',              name: 'Niuta',        color: 'Дуб Техас',          photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/niuta_texas.webp' },
+  { id: 'niuta-ice',                    name: 'Niuta',        color: 'Ice',                photo: '/media/metal_doors/Optima/niuta/niuta_ice.webp' },
+  { id: 'niuta-steel',                  name: 'Niuta',        color: 'Steel',              photo: '/media/metal_doors/Optima/niuta/niuta_steel.webp' },
+  { id: 'niuta-onyx',                   name: 'Niuta',        color: 'Onyx',               photo: '/media/metal_doors/Optima/niuta/niuta_onyx.webp' },
+  { id: 'niuta-taupe',                  name: 'Niuta',        color: 'Taupe',              photo: '/media/metal_doors/Optima/niuta/niuta_taupe.webp' },
+  { id: 'niuta-midwhite',               name: 'Niuta',        color: 'Midwhite',           photo: '/media/metal_doors/Optima/niuta/niuta_midwhite.webp' },
+  { id: 'niuta-dub-tehas',              name: 'Niuta',        color: 'Дуб Техас',          photo: '/media/metal_doors/Optima/niuta/niuta_texas.webp' },
 
-  { id: 'stockholm-ice',                name: 'Stockholm',    color: 'White',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/stockholm.webp' },
+  { id: 'stockholm-ice',                name: 'Stockholm',    color: 'White',              photo: '/media/metal_doors/Optima/niuta/stockholm.webp' },
 
-  { id: 'er1-ice',                      name: 'ER 1',         color: 'Ice',                photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/er1_ice.webp' },
-  { id: 'er1-onyx',                     name: 'ER 1',         color: 'Onyx',               photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/er1_onyx.webp' },
+  { id: 'er1-ice',                      name: 'ER 1',         color: 'Ice',                photo: '/media/metal_doors/Optima/niuta/er1_ice.webp' },
+  { id: 'er1-onyx',                     name: 'ER 1',         color: 'Onyx',               photo: '/media/metal_doors/Optima/niuta/er1_onyx.webp' },
 
-  { id: 'er2-steel',                    name: 'ER 2',         color: 'Steel',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/er2_steel.webp' },
-  { id: 'er2-taupe',                    name: 'ER 2',         color: 'Taupe',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/er2_taupe.webp' },
+  { id: 'er2-steel',                    name: 'ER 2',         color: 'Steel',              photo: '/media/metal_doors/Optima/niuta/er2_steel.webp' },
+  { id: 'er2-taupe',                    name: 'ER 2',         color: 'Taupe',              photo: '/media/metal_doors/Optima/niuta/er2_taupe.webp' },
 
-  { id: 'glanta-ice',                   name: 'Glanta',       color: 'Ice',                photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/glanta_ice.webp' },
-  { id: 'glanta-onyx',                  name: 'Glanta',       color: 'Onyx',               photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/glanta_onyx.webp' },
+  { id: 'glanta-ice',                   name: 'Glanta',       color: 'Ice',                photo: '/media/metal_doors/Optima/niuta/glanta_ice.webp' },
+  { id: 'glanta-onyx',                  name: 'Glanta',       color: 'Onyx',               photo: '/media/metal_doors/Optima/niuta/glanta_onyx.webp' },
 
-  { id: 'dorren-ice',                   name: 'Dorren',       color: 'Ice',                photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/dorren_ice.webp' },
-  { id: 'dorren-midwhite',              name: 'Dorren',       color: 'Midwhite',           photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/dorren_midwhite.webp' },
+  { id: 'dorren-ice',                   name: 'Dorren',       color: 'Ice',                photo: '/media/metal_doors/Optima/niuta/dorren_ice.webp' },
+  { id: 'dorren-midwhite',              name: 'Dorren',       color: 'Midwhite',           photo: '/media/metal_doors/Optima/niuta/dorren_midwhite.webp' },
 
-  { id: 'atumpro33-dub-arktik',         name: 'Atum Pro 33',  color: 'Дуб Арктический',    glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/atum_pro_dubark.webp' },
-  { id: 'atumpro33-dub-kamenny',        name: 'Atum Pro 33',  color: 'Дуб Каменный',       glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/atum_pro_dubkam.webp' },
+  { id: 'atumpro33-dub-arktik',         name: 'Atum Pro 33',  color: 'Дуб Арктический',    glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/atum_pro_dubark.webp' },
+  { id: 'atumpro33-dub-kamenny',        name: 'Atum Pro 33',  color: 'Дуб Каменный',       glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/atum_pro_dubkam.webp' },
 
-  { id: 'e33-ice',                      name: 'E33',          color: 'Ice',                glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/e33_ice.webp' },
-  { id: 'e33-taupe',                    name: 'E33',          color: 'Taupe',              glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/e33_taupe.webp' },
-  { id: 'e33-onyx',                     name: 'E33',          color: 'Onyx',               glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/e33_onyx.webp' },
+  { id: 'e33-ice',                      name: 'E33',          color: 'Ice',                glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/e33_ice.webp' },
+  { id: 'e33-taupe',                    name: 'E33',          color: 'Taupe',              glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/e33_taupe.webp' },
+  { id: 'e33-onyx',                     name: 'E33',          color: 'Onyx',               glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/e33_onyx.webp' },
 
-  { id: 'graphica-vr-ice',              name: 'Graphica VR',  color: 'Ice',                photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/graphica_ice.webp' },
-  { id: 'graphica-vr-beton-svetly',     name: 'Graphica VR',  color: 'Бетон Светлый',      photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/graphica_beton.webp' },
-  { id: 'graphica-vr-beton-temny',      name: 'Graphica VR',  color: 'Бетон Темный',       photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/graphica_beton_black.webp' },
+  { id: 'graphica-vr-ice',              name: 'Graphica VR',  color: 'Ice',                photo: '/media/metal_doors/Optima/niuta/graphica_ice.webp' },
+  { id: 'graphica-vr-beton-svetly',     name: 'Graphica VR',  color: 'Бетон Светлый',      photo: '/media/metal_doors/Optima/niuta/graphica_beton.webp' },
+  { id: 'graphica-vr-beton-temny',      name: 'Graphica VR',  color: 'Бетон Темный',       photo: '/media/metal_doors/Optima/niuta/graphica_beton_black.webp' },
   { id: 'graphica-vr-freska-titan',     name: 'Graphica VR',  color: 'Фреска Титан',       photo: '' },
 
-  { id: 'atum5-snezhny',                name: 'Atum 5',       color: 'Снежный',            glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum5_ice.webp' },
-  { id: 'atum5-belenyi-dub',            name: 'Atum 5',       color: 'Беленый Дуб',        glassColor: 'Лакобель Белый',  photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum5_whitedub.webp' },
-  { id: 'atum5-kapuchino',              name: 'Atum 5',       color: 'Капучино',           glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum5_kapuch.webp' },
-  { id: 'atum5-dub-sery',               name: 'Atum 5',       color: 'Дуб Серый',          glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum5_graydub.webp' },
+  { id: 'atum5-snezhny',                name: 'Atum 5',       color: 'Снежный',            glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atum5_ice.webp' },
+  { id: 'atum5-belenyi-dub',            name: 'Atum 5',       color: 'Беленый Дуб',        glassColor: 'Лакобель Белый',  photo: '/media/metal_doors/Optima/niuta/drop2/atum5_whitedub.webp' },
+  { id: 'atum5-kapuchino',              name: 'Atum 5',       color: 'Капучино',           glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atum5_kapuch.webp' },
+  { id: 'atum5-dub-sery',               name: 'Atum 5',       color: 'Дуб Серый',          glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atum5_graydub.webp' },
 
-  { id: 'atumpro32-dub-kamenny',        name: 'Atum Pro 32',  color: 'Дуб Каменный',       photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro32_stone.webp' },
+  { id: 'atumpro32-dub-kamenny',        name: 'Atum Pro 32',  color: 'Дуб Каменный',       photo: '/media/metal_doors/Optima/niuta/drop2/atumpro32_stone.webp' },
 
-  { id: 'atumpro28-dub-arktik',         name: 'Atum Pro 28',  color: 'Дуб Арктический',    glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro28_dubark.webp' },
-  { id: 'atumpro28-dub-kamenny',        name: 'Atum Pro 28',  color: 'Дуб Каменный',       glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro28_stonedub.webp' },
-  { id: 'atumpro28-dub-krasny',         name: 'Atum Pro 28',  color: 'Дуб Красный',        glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro28_reddub.webp' },
-  { id: 'atumpro28-dub-skandinavsky',   name: 'Atum Pro 28',  color: 'Дуб Скандинавский',  glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro28_scandi.webp' },
-  { id: 'atumpro28-beton-svetly',       name: 'Atum Pro 28',  color: 'Бетон Светлый',      glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro28_beton.webp' },
+  { id: 'atumpro28-dub-arktik',         name: 'Atum Pro 28',  color: 'Дуб Арктический',    glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atumpro28_dubark.webp' },
+  { id: 'atumpro28-dub-kamenny',        name: 'Atum Pro 28',  color: 'Дуб Каменный',       glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atumpro28_stonedub.webp' },
+  { id: 'atumpro28-dub-krasny',         name: 'Atum Pro 28',  color: 'Дуб Красный',        glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atumpro28_reddub.webp' },
+  { id: 'atumpro28-dub-skandinavsky',   name: 'Atum Pro 28',  color: 'Дуб Скандинавский',  glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atumpro28_scandi.webp' },
+  { id: 'atumpro28-beton-svetly',       name: 'Atum Pro 28',  color: 'Бетон Светлый',      glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atumpro28_beton.webp' },
 
-  { id: 'atumpro26-dub-arktik',         name: 'Atum Pro 26',  color: 'Дуб Арктический',    glassColor: 'Лакобель Черный', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atumpro26_dubark.webp' },
+  { id: 'atumpro26-dub-arktik',         name: 'Atum Pro 26',  color: 'Дуб Арктический',    glassColor: 'Лакобель Черный', photo: '/media/metal_doors/Optima/niuta/drop2/atumpro26_dubark.webp' },
 
-  { id: 'atum6-belenyi-dub',            name: 'Atum 6',       color: 'Беленый Дуб',        photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum6_whitedub.webp' },
-  { id: 'atum6-kapuchino',              name: 'Atum 6',       color: 'Капучино',           photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum6_capuccino.webp' },
-  { id: 'atum6-venge',                  name: 'Atum 6',       color: 'Венге',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Optima/niuta/drop2/atum6_wenge.webp' },
+  { id: 'atum6-belenyi-dub',            name: 'Atum 6',       color: 'Беленый Дуб',        photo: '/media/metal_doors/Optima/niuta/drop2/atum6_whitedub.webp' },
+  { id: 'atum6-kapuchino',              name: 'Atum 6',       color: 'Капучино',           photo: '/media/metal_doors/Optima/niuta/drop2/atum6_capuccino.webp' },
+  { id: 'atum6-venge',                  name: 'Atum 6',       color: 'Венге',              photo: '/media/metal_doors/Optima/niuta/drop2/atum6_wenge.webp' },
 
-  { id: 'maxi-mirror-ice',              name: 'MAXI Mirror',  color: 'Ice',                glassColor: 'Зеркало', photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/BalanceTwin/maxi_mirror.webp' },
+  { id: 'maxi-mirror-ice',              name: 'MAXI Mirror',  color: 'Ice',                glassColor: 'Зеркало', photo: '/media/metal_doors/BalanceTwin/maxi_mirror.webp' },
 
-  { id: 'sektor',                       name: 'Сектор',       color: '',                   photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/BalanceDuo/nakladka_sektor.webp' },
+  { id: 'sektor',                       name: 'Сектор',       color: '',                   photo: '/media/metal_doors/BalanceDuo/nakladka_sektor.webp' },
 
-  { id: 'richmond-white',               name: 'Richmond',     color: 'Белый',              photo: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Termo/Richmond/tl_richmond_vn.webp' },
+  { id: 'richmond-white',               name: 'Richmond',     color: 'Белый',              photo: '/media/metal_doors/Termo/Richmond/tl_richmond_vn.webp' },
 ]
 
 export interface EntranceDoorSpec {

@@ -52,7 +52,7 @@ const slides: Slide[] = [
   },
   {
     id: 5,
-    image: 'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/strix_render.webp',
+    image: '/media/Main_page/left_bento/strix_render.webp',
     title: 'Премиум дизайн по доступной цене',
     subtitle: 'Новинка — «Штрих» уже в каталоге',
     description: 'Серия Урбан: алюминиевая кромка с графичным акцентом, покрытие Эмалекс — от 14 300 ₽ за полотно',
@@ -61,7 +61,7 @@ const slides: Slide[] = [
   },
   {
     id: 2,
-    image: 'https://storage.yandexcloud.net/vfd74ru/Main_page_perfomance-covers/innova_render.webp',
+    image: '/media/Main_page_perfomance-covers/innova_render.webp',
     title: 'Серия «Иннова» уже в салоне',
     subtitle: 'Не оставляет отпечатков пальцев',
     description: 'Новинка в инновационном покрытии ПЭТ',
@@ -70,7 +70,7 @@ const slides: Slide[] = [
   },
   {
     id: 3,
-    image: 'https://storage.yandexcloud.net/catalog-vfd/covers/linea-1.webp',
+    image: '/media/covers/linea-1.webp',
     title: 'Серия «Линеа» уже в салоне',
     subtitle: 'Современный дизайн по доступной цене',
     description: 'Светостойкая эмаль с фрезерованными элементами и алюминиевым декором',
@@ -79,7 +79,7 @@ const slides: Slide[] = [
   },
   {
     id: 4,
-    image: 'https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/render_urban2.webp',
+    image: '/media/Main_page/left_bento/render_urban2.webp',
     title: 'Урбан — городской стиль для вашего интерьера',
     subtitle: 'Двери от 18 000 ₽ за комплект',
     description: 'Лаконичные формы, полипропиленовое покрытие Ренолит (Германия) с эффектом эмали',

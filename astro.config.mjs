@@ -1,11 +1,13 @@
 // @ts-check
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
+import path from 'node:path'
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@astrojs/vue';
 import markdoc from '@astrojs/markdoc';
 import { createClient } from '@supabase/supabase-js';
+import { cloudToLocal, localToPublicPath } from './src/lib/media-path.mjs';
 
 /* ── Картинки для sitemap (xmlns:image) ────────────────────────────────
    serialize() ниже — чистый Node, import.meta.env тут недоступен (это
@@ -62,6 +64,16 @@ function buildModelSlugMap(models) {
   return slugMap
 }
 
+/** Фото из БД — облачные ссылки. В sitemap кладём тот адрес, под которым
+    фото реально отдаёт сайт: локальный /media/… (абсолютный), если файл есть
+    в public/media, иначе исходную облачную ссылку (как и на самой странице,
+    см. src/lib/media-resolve.ts). */
+function sitemapPhotoUrl(url) {
+  const local = cloudToLocal(url)
+  const rel = local === url ? null : localToPublicPath(local)
+  return rel && existsSync(path.join(process.cwd(), 'public', rel)) ? `https://vfd74.ru${local}` : url
+}
+
 /** slug модели → массив URL её фото (все цвета). Пусто при любой ошибке. */
 async function fetchModelImages() {
   const map = new Map()
@@ -83,7 +95,8 @@ async function fetchModelImages() {
       if (!model || !row.photo_url) continue
       modelMeta.set(model.id, { id: model.id, name: model.name, seriesSlug: model.series?.slug ?? '' })
       const list = byModelId.get(model.id) ?? []
-      if (!list.includes(row.photo_url)) list.push(row.photo_url)
+      const photo = sitemapPhotoUrl(row.photo_url)
+      if (!list.includes(photo)) list.push(photo)
       byModelId.set(model.id, list)
     }
 

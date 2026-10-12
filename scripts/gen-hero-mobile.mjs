@@ -14,17 +14,16 @@
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
-const SRC = 'https://storage.yandexcloud.net/vfd74ru/Main_page_perfomance-covers/emalex_render.webp'
+const SRC = '/media/Main_page_perfomance-covers/emalex_render.webp'
 const OUT = new URL('../public/renders/hero/emalex-render-mobile.webp', import.meta.url)
 const WIDTH = 800
 const QUALITY = 72
 
 await mkdir(new URL('../public/renders/hero/', import.meta.url), { recursive: true })
 
-const res = await fetch(SRC)
-if (!res.ok) throw new Error(`HTTP ${res.status} на ${SRC}`)
-const buf = Buffer.from(await res.arrayBuffer())
+const buf = await readMedia(SRC)
 
 /* Кадр мобильной версии. Шапка на телефоне вертикальная (~0.85) и режет
    картинку по центру (object-center в HeroSlider), а дверь в этом рендере

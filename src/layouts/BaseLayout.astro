@@ -3,6 +3,7 @@ import '../styles/global.css'
 import Header from '../components/layout/Header.vue'
 import Footer from '../components/layout/Footer.vue'
 import CallButton from '../components/ui/CallButton.astro'
+import { absolutizeAssets } from '../lib/media-path.mjs'
 import YandexMetrika from '../components/analytics/YandexMetrika.astro'
 import BackToTop from '../components/ui/BackToTop.astro'
 import { HERO_COVER_IMAGE } from '../data/hero-image'
@@ -39,8 +40,12 @@ const {
 } = Astro.props
 
 const effectiveCanonical = canonical ?? (Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined)
+/* Картинки теперь локальные (/media/…) — для og:image и JSON-LD нужны
+   абсолютные URL: их читают внешние сервисы, а не браузер на нашем сайте. */
+const siteOrigin = Astro.site ?? new URL('https://vfd74.ru')
+const ogImageAbs = absolutizeAssets(ogImage, siteOrigin)
 const structuredDataJson = structuredData
-  ? JSON.stringify(structuredData).replace(/</g, '\\u003c')
+  ? JSON.stringify(absolutizeAssets(structuredData, siteOrigin)).replace(/</g, '\\u003c')
   : null
 ---
 
@@ -54,7 +59,7 @@ const structuredDataJson = structuredData
 
     <meta property="og:title"        content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image"       content={ogImage} />
+    <meta property="og:image"       content={ogImageAbs} />
     <meta property="og:type"        content={ogType} />
 
     {ogType === 'article' && publishedTime && (
@@ -68,7 +73,7 @@ const structuredDataJson = structuredData
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image"       content={ogImage} />
+    <meta name="twitter:image"       content={ogImageAbs} />
 
     {effectiveCanonical && <meta property="og:url" content={effectiveCanonical} />}
     {effectiveCanonical && <link rel="canonical" href={effectiveCanonical} />}
@@ -89,8 +94,6 @@ const structuredDataJson = structuredData
 
     <YandexMetrika />
 
-    <link rel="preconnect" href="https://storage.yandexcloud.net" />
-    <link rel="dns-prefetch" href="https://storage.yandexcloud.net" />
 
     <link
       rel="preload"

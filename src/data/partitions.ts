@@ -4,7 +4,7 @@
    не требует правки разметки.
    ============================================================ */
 
-const STORAGE = 'https://storage.yandexcloud.net/catalog-vfd'
+const STORAGE = '/media'
 const BASE    = `${STORAGE}/alum`
 const INFO    = `${STORAGE}/alum_info`
 const SEC     = `${STORAGE}/alum_section`
@@ -355,8 +355,8 @@ export const cases: ProjectCase[] = [
     noteHtml: 'Изготавливаем перегородки по универсальным чертежам — оперативный расчёт стоимости в течение дня.<br/><br/><strong class="text-ink">Не отдельные элементы. Одна архитектура.</strong>',
     social: true,
     images: [
-      { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/19.08.26(1).webp', alt: 'Дверь и гардеробная Grafia в чёрном матовом профиле — фото 1' },
-      { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/19.08.26(2).webp', alt: 'Дверь и гардеробная Grafia в чёрном матовом профиле — фото 2' },
+      { src: '/media/promo_main/19.08.26(1).webp', alt: 'Дверь и гардеробная Grafia в чёрном матовом профиле — фото 1' },
+      { src: '/media/promo_main/19.08.26(2).webp', alt: 'Дверь и гардеробная Grafia в чёрном матовом профиле — фото 2' },
     ],
   },
   {
@@ -372,10 +372,10 @@ export const cases: ProjectCase[] = [
     ],
     social: true,
     images: [
-      { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/cafedral_steklo(1).webp', alt: 'Распашная дверь с фрамугой и стеклом «Кафедрал» — общий вид' },
-      { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/cafedral_steklo(2).webp', alt: 'Фактура стекла «Кафедрал» крупным планом' },
-      { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/cafedral_steklo(3).webp', alt: 'Ручка-скоба на двери со стеклом «Кафедрал»' },
-      { src: 'https://storage.yandexcloud.net/vfd74ru/promo_main/cafedral_steklo(4).webp', alt: 'Дверь с фрамугой и стеклом «Кафедрал» в интерьере' },
+      { src: '/media/promo_main/cafedral_steklo(1).webp', alt: 'Распашная дверь с фрамугой и стеклом «Кафедрал» — общий вид' },
+      { src: '/media/promo_main/cafedral_steklo(2).webp', alt: 'Фактура стекла «Кафедрал» крупным планом' },
+      { src: '/media/promo_main/cafedral_steklo(3).webp', alt: 'Ручка-скоба на двери со стеклом «Кафедрал»' },
+      { src: '/media/promo_main/cafedral_steklo(4).webp', alt: 'Дверь с фрамугой и стеклом «Кафедрал» в интерьере' },
     ],
   },
   {
@@ -392,15 +392,15 @@ export const cases: ProjectCase[] = [
     social: true,
     images: [
       {
-        src: 'https://storage.yandexcloud.net/vfd74ru/alum_cover/alum/2026-09-11%2010.34.50.webp',
+        src: '/media/alum_cover/alum/2026-09-11%2010.34.50.webp',
         alt: 'Алюминиевая перегородка Gold Matt — три синхронные створки, фото 1',
       },
       {
-        src: 'https://storage.yandexcloud.net/vfd74ru/alum_cover/alum/2026-09-11%2010.34.55.webp',
+        src: '/media/alum_cover/alum/2026-09-11%2010.34.55.webp',
         alt: 'Алюминиевая перегородка Gold Matt со стеклом триплекс с сеткой — фото 2',
       },
       {
-        src: 'https://storage.yandexcloud.net/vfd74ru/alum_cover/alum/2026-09-11%2010.35.01.webp',
+        src: '/media/alum_cover/alum/2026-09-11%2010.35.01.webp',
         alt: 'Три створки алюминиевой перегородки со стеклом триплекс — фото 3',
       },
     ],

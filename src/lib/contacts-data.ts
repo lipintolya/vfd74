@@ -81,9 +81,9 @@ export const companyLegalInfo = {
 
   // Социальные сети
   socialMedia: [
-    { name: 'VK', label: 'ВКонтакте', url: 'https://vk.com/vfddoors74', icon: 'https://storage.yandexcloud.net/catalog-vfd/icons/vk_logo.svg' },
-    { name: 'Telegram', label: 'Telegram', url: 'https://t.me/vfddoors74', icon: 'https://storage.yandexcloud.net/catalog-vfd/icons/tg_logo.svg' },
-    { name: 'MAX', label: 'Max', url: 'https://max.ru/id452402308842_biz', icon: 'https://storage.yandexcloud.net/catalog-vfd/svg/max-logo.svg' },
+    { name: 'VK', label: 'ВКонтакте', url: 'https://vk.com/vfddoors74', icon: '/media/icons/vk_logo.svg' },
+    { name: 'Telegram', label: 'Telegram', url: 'https://t.me/vfddoors74', icon: '/media/icons/tg_logo.svg' },
+    { name: 'MAX', label: 'Max', url: 'https://max.ru/id452402308842_biz', icon: '/media/svg/max-logo.svg' },
   ],
 
   // Дополнительная информация

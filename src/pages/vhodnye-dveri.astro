@@ -254,8 +254,8 @@ const structuredData = [faqSchema, serviceSchema, ...productSchemas]
            скроллит к первой модели этой группы в списке ниже. -->
       <div class="mb-12 grid grid-cols-2 gap-4 lg:mb-16 lg:gap-6">
         {[
-          { label: 'Для квартиры', hint: 'подъездные', models: apartmentModels, cover: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/covers/render_hall.webp' },
-          { label: 'Для дома',     hint: 'уличные, с терморазрывом', models: houseModels, cover: 'https://storage.yandexcloud.net/vfd74ru/metal_doors/covers/homecover_render.webp' },
+          { label: 'Для квартиры', hint: 'подъездные', models: apartmentModels, cover: '/media/metal_doors/covers/render_hall.webp' },
+          { label: 'Для дома',     hint: 'уличные, с терморазрывом', models: houseModels, cover: '/media/metal_doors/covers/homecover_render.webp' },
         ].map(group => group.models.length > 0 && (
           <a
             href={`#${group.models[0]!.id}`}

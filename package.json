@@ -15,6 +15,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/sync-media.mjs --dist",
+    "media:sync": "node scripts/sync-media.mjs",
+    "media:check": "node scripts/sync-media.mjs --check",
     "preview": "astro preview",
     "astro": "astro",
     "prerender": "astro build --experimental-rebalance-chunks",

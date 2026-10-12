@@ -4,7 +4,7 @@
    в НАЧАЛО массива PORTFOLIO_WORKS.
    ============================================================ */
 
-const CDN_OW = 'https://storage.yandexcloud.net/catalog-vfd/invisible/ourworks/'
+const CDN_OW = '/media/invisible/ourworks/'
 
 export type WorkCategory = 'interior' | 'hidden' | 'partitions' | 'entrance'
 export type ObjectType   = 'apartment' | 'house' | 'office' | 'commercial'
@@ -81,13 +81,13 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Покрытие Эмалекс «Белый»', 'Фурнитура — матовое сатинированное золото', '4 дверных блока', 'Облагораживание входной группы'],
     tags:        ['Квартира', 'Эмалекс', 'Классика', 'Входная группа'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/Ig41nGyWEDlDdZ6UgngZHqLu1CKLUUTh5Av6n6923oH61szRcPGQ0pPHxQOqCaQeGf1v8FJelHmuvXpnxq937EyE.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/Km5H-TPCfky45H5HdipgKkM3IDMPbm1xN8y474ebBNeTSQw96H8c5snDiEa7JaOtKUD2yj1Wh0YYZwKblJNAOS_L.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/eN634JpwTTScGfimKP1XDkcolL6u96ba8TX18Nu2dMfzsnPrb0blsInv4u6YbQWuxWR6mHc2X2AKSHxlxwPDN4kqFhuXfg.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/ozTL8IX9vCRzfBC45ukrwLHng2BVE3N6kDWUgh1X0sZ6f-EjrkTVaLplBvDSEzebo4wqBPMUnN58pcoYvBMBQ_VkxyhgKw.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/ttLVsyBnGhO3F_4Gix5XwoBpGIYrjkQnjo9LQjkvUsehiFawtDI8iSJB7XBQEGKkJ__UZwqWKeU9qhW_ilowAhMb.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/zKpmShMMUS2KJOveNTO4nhHBqBqIqaCie0wiEGYsM5GadUaHPTxolZgTTBYK-CmZOAMpc36ITvvSHZ-tjFOcUdn651x-7Q.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/1.10.26_emalex_ec2/zOV7Q0Hxri5TOWA85Cczl9eDhHvJ2zFf3etHWah89aKNaVEcDkXHjKSIjtXjaSWh2huqv7Lg6xvK7BKj8R6Z0gN1.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/Ig41nGyWEDlDdZ6UgngZHqLu1CKLUUTh5Av6n6923oH61szRcPGQ0pPHxQOqCaQeGf1v8FJelHmuvXpnxq937EyE.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/Km5H-TPCfky45H5HdipgKkM3IDMPbm1xN8y474ebBNeTSQw96H8c5snDiEa7JaOtKUD2yj1Wh0YYZwKblJNAOS_L.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/eN634JpwTTScGfimKP1XDkcolL6u96ba8TX18Nu2dMfzsnPrb0blsInv4u6YbQWuxWR6mHc2X2AKSHxlxwPDN4kqFhuXfg.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/ozTL8IX9vCRzfBC45ukrwLHng2BVE3N6kDWUgh1X0sZ6f-EjrkTVaLplBvDSEzebo4wqBPMUnN58pcoYvBMBQ_VkxyhgKw.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/ttLVsyBnGhO3F_4Gix5XwoBpGIYrjkQnjo9LQjkvUsehiFawtDI8iSJB7XBQEGKkJ__UZwqWKeU9qhW_ilowAhMb.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/zKpmShMMUS2KJOveNTO4nhHBqBqIqaCie0wiEGYsM5GadUaHPTxolZgTTBYK-CmZOAMpc36ITvvSHZ-tjFOcUdn651x-7Q.webp',
+      '/media/works_prod/1.10.26_emalex_ec2/zOV7Q0Hxri5TOWA85Cczl9eDhHvJ2zFf3etHWah89aKNaVEcDkXHjKSIjtXjaSWh2huqv7Lg6xvK7BKj8R6Z0gN1.webp',
     ],
   },
   {
@@ -104,10 +104,10 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     tags:        ['Квартира', 'Плинтус', 'Белый'],
     relatedLink: { href: '/catalog/decor/', label: 'Плинтус и декор в каталоге' },
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/-jJW_itwjF3ySbjJAx8Ny9nrvXPMz1dVdEXfYsmSkVquhM33SSopk3wSEJe-eWnraz-_gEh1P0_V4Nf_G6R8N8Tc.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/1doKbi2wIyUFrOk65MMluUPUE_TOvP20U_Wo5lJ0hHg65iKgWUcRFlDMR9-UtnRT_18tYnI-Qdr3NxC4sJ2HAMmX.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/ZcxVFLRDZ_jl7_aeF0JlebukeMuOMhxZMkcIM3pwoTWCN-7l61kFma3OnCasWZDQQ8CRtmhtoJHPPO4LYy0qN5nL.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/27.09.26_plintus/7Sipv_IdlSNuvTZMwi3bDSgpInDWNJZc4I50X278hCdOBorHpG0i3Wd56_N8Uwqg3KQ60A5zL-r5KGtrpVtZ6EUz.webp',
+      '/media/works_prod/27.09.26_plintus/-jJW_itwjF3ySbjJAx8Ny9nrvXPMz1dVdEXfYsmSkVquhM33SSopk3wSEJe-eWnraz-_gEh1P0_V4Nf_G6R8N8Tc.webp',
+      '/media/works_prod/27.09.26_plintus/1doKbi2wIyUFrOk65MMluUPUE_TOvP20U_Wo5lJ0hHg65iKgWUcRFlDMR9-UtnRT_18tYnI-Qdr3NxC4sJ2HAMmX.webp',
+      '/media/works_prod/27.09.26_plintus/ZcxVFLRDZ_jl7_aeF0JlebukeMuOMhxZMkcIM3pwoTWCN-7l61kFma3OnCasWZDQQ8CRtmhtoJHPPO4LYy0qN5nL.webp',
+      '/media/works_prod/27.09.26_plintus/7Sipv_IdlSNuvTZMwi3bDSgpInDWNJZc4I50X278hCdOBorHpG0i3Wd56_N8Uwqg3KQ60A5zL-r5KGtrpVtZ6EUz.webp',
     ],
   },
   {
@@ -125,12 +125,12 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Покрытие Эмалекс «Белый»', 'Ручка MARACANA (LUXURY NEW ERA)', 'Механизм ручки совмещён с сантехнической завёрткой-блокиратором'],
     tags:        ['Квартира', 'Эмалекс', 'Монохром'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/emalex_er1_24.09.26.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/0tJY-Tlp9_TDlHknquKSrufR-p0YpJX6xt5ERtHcJ1vSeLgyDcQr_PeFzaZXrkDX-LAdmEs1B6AU_E3bX6r3qn45.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/RV_a81hz_oKtx6EbdDhsAMxjr4mZ_QH224hD_v-JbGCUfAe_bK5R0auTYpD3bW4F-ZoOvtHcOOrFV-mGTzRmWfGQ.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/Vu07qfJiSU1xvg-j9ExbpEuGoO-pNUWo04LQ0ayi1fFLnNi1xwfa8_9yssbVqnGA-7dUCSLSHERQ4cy8-ACed5i7.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/nOWNQa49uCj8wwYAO85as3EnhMsiAyZNTSZCarb4Rc8EGjwPx8_SHWud3jj9Y0xw9sacHIQulYqHBhUtjXq4AIBr.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/24.09.26_emalex_er1/uUn2kzcnh7r8fq_y6Mzn-TBbX7Qm-2a1wvdoHP1eMWjNCMDakNOPljh06sf-O3gW1dCGQmj_EbSML-QjNEIDVTx9.webp',
+      '/media/works_prod/24.09.26_emalex_er1/emalex_er1_24.09.26.webp',
+      '/media/works_prod/24.09.26_emalex_er1/0tJY-Tlp9_TDlHknquKSrufR-p0YpJX6xt5ERtHcJ1vSeLgyDcQr_PeFzaZXrkDX-LAdmEs1B6AU_E3bX6r3qn45.webp',
+      '/media/works_prod/24.09.26_emalex_er1/RV_a81hz_oKtx6EbdDhsAMxjr4mZ_QH224hD_v-JbGCUfAe_bK5R0auTYpD3bW4F-ZoOvtHcOOrFV-mGTzRmWfGQ.webp',
+      '/media/works_prod/24.09.26_emalex_er1/Vu07qfJiSU1xvg-j9ExbpEuGoO-pNUWo04LQ0ayi1fFLnNi1xwfa8_9yssbVqnGA-7dUCSLSHERQ4cy8-ACed5i7.webp',
+      '/media/works_prod/24.09.26_emalex_er1/nOWNQa49uCj8wwYAO85as3EnhMsiAyZNTSZCarb4Rc8EGjwPx8_SHWud3jj9Y0xw9sacHIQulYqHBhUtjXq4AIBr.webp',
+      '/media/works_prod/24.09.26_emalex_er1/uUn2kzcnh7r8fq_y6Mzn-TBbX7Qm-2a1wvdoHP1eMWjNCMDakNOPljh06sf-O3gW1dCGQmj_EbSML-QjNEIDVTx9.webp',
     ],
   },
   {
@@ -147,7 +147,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Алюминиевая кромка, цвет хром', 'Нестандартная высота полотна 2300 мм', 'Широкий наличник 90 мм'],
     tags:        ['Частный дом', 'Минимализм'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/17.09.26_razvyazka/2026-09-17%2012.33.17.webp',
+      '/media/works_prod/17.09.26_razvyazka/2026-09-17%2012.33.17.webp',
     ],
   },
   {
@@ -164,12 +164,12 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Каркасно-щитовая конструкция', 'Алюминиевая кромка с 4-х сторон, чёрный цвет'],
     tags:        ['Квартира', 'Минимализм'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.07.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.10.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.15.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.17.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.20.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.09.26_basic/2026-09-16%2013.37.22.webp',
+      '/media/works_prod/16.09.26_basic/2026-09-16%2013.37.07.webp',
+      '/media/works_prod/16.09.26_basic/2026-09-16%2013.37.10.webp',
+      '/media/works_prod/16.09.26_basic/2026-09-16%2013.37.15.webp',
+      '/media/works_prod/16.09.26_basic/2026-09-16%2013.37.17.webp',
+      '/media/works_prod/16.09.26_basic/2026-09-16%2013.37.20.webp',
+      '/media/works_prod/16.09.26_basic/2026-09-16%2013.37.22.webp',
     ],
   },
   {
@@ -186,7 +186,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Покрытие Эмалекс бежевый (Taupe)', 'Декоративная фрезеровка', 'Фурнитура Morelli STEPS S8 OMD', 'Цвет фурнитуры — матовое итальянское золото'],
     tags:        ['Квартира', 'Эмалекс', 'Классика'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/15.09.26_emalex-taupe/EmalexEC2_taupe.webp',
+      '/media/works_prod/15.09.26_emalex-taupe/EmalexEC2_taupe.webp',
     ],
   },
   {
@@ -203,7 +203,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Без наличников', 'Высокие полотна', 'Дизайн: Екатерина Квашнина'],
     tags:        ['Скрытые двери', 'Дизайнерский интерьер'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/8.09.26/invisible_art.webp',
+      '/media/works_prod/8.09.26/invisible_art.webp',
     ],
   },
   {
@@ -220,8 +220,8 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Модель Р1', 'Покрытие Эмалекс «Серый»'],
     tags:        ['Частный дом', 'Эмаль'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/6.09.26/Ir_zdmGZWYk2hAjBrdmneS_TmLsCyMud6uTRUik81Wl4xtenJkBpZjOZSNxotjLByyCETk75zwhdvPjAm6sIOllh.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/6.09.26/MmR_QiEUwtn2edaaK0Wkj1EVILFHJRvkVfKnPZF4cuSbS7RoAJk2Z0FaI1GXNXoYwp_EI17SKC8-pz12zYQ_57_g.webp',
+      '/media/works_prod/6.09.26/Ir_zdmGZWYk2hAjBrdmneS_TmLsCyMud6uTRUik81Wl4xtenJkBpZjOZSNxotjLByyCETk75zwhdvPjAm6sIOllh.webp',
+      '/media/works_prod/6.09.26/MmR_QiEUwtn2edaaK0Wkj1EVILFHJRvkVfKnPZF4cuSbS7RoAJk2Z0FaI1GXNXoYwp_EI17SKC8-pz12zYQ_57_g.webp',
     ],
   },
   {
@@ -238,9 +238,9 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Профиль Grafia', 'Декор R12', 'Цвет Old Gold Matt', 'Стекло Satinato Bianco', 'Ручка RD03 (300 мм)', '2 трека', 'Открывание — два полотна в угол вправо'],
     tags:        ['Перегородка', 'Квартира'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/partition/UEvgoB7D3CP-KR7frI473Mhu1y4O_fOcbWRrP4NcEV711I2VSvpQwxEhWxrhdpF_5PvWTiDr0Li_WqYBLpM-Vg_z.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/partition/_xg_Zu5H7-MaO4zCTQUVa_abuTWvm9Fs8MjQRxNaNsWNyHMJSHf9ytnbFutnmsi6YUorOTQ82snBdAVAZYkAqKud.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/partition/oeHTJXcYD72CvwGP0NePoHGom86OsJqE-G8JEtq4a3d_PWKfbRP-vLF336YPtX1Ro5FHjgy9G8rGQEvS8FiqY1KX.webp',
+      '/media/works_prod/partition/UEvgoB7D3CP-KR7frI473Mhu1y4O_fOcbWRrP4NcEV711I2VSvpQwxEhWxrhdpF_5PvWTiDr0Li_WqYBLpM-Vg_z.webp',
+      '/media/works_prod/partition/_xg_Zu5H7-MaO4zCTQUVa_abuTWvm9Fs8MjQRxNaNsWNyHMJSHf9ytnbFutnmsi6YUorOTQ82snBdAVAZYkAqKud.webp',
+      '/media/works_prod/partition/oeHTJXcYD72CvwGP0NePoHGom86OsJqE-G8JEtq4a3d_PWKfbRP-vLF336YPtX1Ro5FHjgy9G8rGQEvS8FiqY1KX.webp',
     ],
   },
   {
@@ -257,8 +257,8 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Цвет PVC Sharkskin', 'Внутренняя панель Glanta Emalex Ice', 'Полотно 112 мм, короб 117 мм, масса 108 кг', 'Два замка Гардиан + ночная задвижка', 'Три контура уплотнения'],
     tags:        ['Входная дверь', 'Квартира'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/metal/25.07.25/RzrpB87m9cVsoMMoyzHj0V_8u-yIeT9kENDZ0YATIokYuHyFb4L12u64a_-5_pKLt4BVUPvjZkUfRFuFfFKnshuh.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/metal/25.07.25/YlaM9Daz1helkM9jhpcUin87NbjbdGXkVu__fyTURxOFoITfdWG-x2ZQwT_CTIUKSM6RdblVF1BTWx4LHz5dP_co.webp',
+      '/media/works_prod/metal/25.07.25/RzrpB87m9cVsoMMoyzHj0V_8u-yIeT9kENDZ0YATIokYuHyFb4L12u64a_-5_pKLt4BVUPvjZkUfRFuFfFKnshuh.webp',
+      '/media/works_prod/metal/25.07.25/YlaM9Daz1helkM9jhpcUin87NbjbdGXkVu__fyTURxOFoITfdWG-x2ZQwT_CTIUKSM6RdblVF1BTWx4LHz5dP_co.webp',
     ],
   },
   {
@@ -275,12 +275,12 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Цвет «Серебро»', 'Покрытие эмаль', 'Классический филёнчатый дизайн', 'Щитовое полотно на МДФ и инженерном массиве'],
     tags:        ['Квартира', 'Эмаль', 'Классика'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/2O_3moxea9jLTgH8uZbsCVECujmF4v2E8dAsl3IohqVkozfek8vkSMU-5ubzeHE-84tIMAWD5FI_0U8-suQqLLWL.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/E5FNEFcfZphYbLe9YGLcTyfCsFPA4uG2-F-pSDi47iv-fhZCDOUODwRE_Os-0_nzLJ0SZFY5XcidTqGLIy9wU2et.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/GMFqIw4_x64U-8TcHUnBZt7DYDeVcedpxCmMuuiq0wAwqdeR7GtO2cFzr68Qkuee1fyLGgtN83jUUGUsQQ-bCBpR.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/IVsphjirBh3wRehCgrC4LM1dVJQxJIgWR6UcKEcTO8LvPwkXxQz3f4RCBNZjdN8is8pdeWyeBi4X4nMF0m3oC9i1.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/lFe6P3BUlaJAmy5KSaBdIVhWisGrXRv6uTSoUEzjuTt8wdqzdK8-Ca8zYvADwEqYd4-0RaA83LY31wYYvtrUVcYZ.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/26.08.26_fenix2/mzQm4g9IS_8lw7o3oFaPW_NkxrotZkJdHli1SOsdVOOa4qFKLiW5SpVouSqtkK2-p2mCDmTY3pmhmNhUIBDbnXI4.webp',
+      '/media/works_prod/26.08.26_fenix2/2O_3moxea9jLTgH8uZbsCVECujmF4v2E8dAsl3IohqVkozfek8vkSMU-5ubzeHE-84tIMAWD5FI_0U8-suQqLLWL.webp',
+      '/media/works_prod/26.08.26_fenix2/E5FNEFcfZphYbLe9YGLcTyfCsFPA4uG2-F-pSDi47iv-fhZCDOUODwRE_Os-0_nzLJ0SZFY5XcidTqGLIy9wU2et.webp',
+      '/media/works_prod/26.08.26_fenix2/GMFqIw4_x64U-8TcHUnBZt7DYDeVcedpxCmMuuiq0wAwqdeR7GtO2cFzr68Qkuee1fyLGgtN83jUUGUsQQ-bCBpR.webp',
+      '/media/works_prod/26.08.26_fenix2/IVsphjirBh3wRehCgrC4LM1dVJQxJIgWR6UcKEcTO8LvPwkXxQz3f4RCBNZjdN8is8pdeWyeBi4X4nMF0m3oC9i1.webp',
+      '/media/works_prod/26.08.26_fenix2/lFe6P3BUlaJAmy5KSaBdIVhWisGrXRv6uTSoUEzjuTt8wdqzdK8-Ca8zYvADwEqYd4-0RaA83LY31wYYvtrUVcYZ.webp',
+      '/media/works_prod/26.08.26_fenix2/mzQm4g9IS_8lw7o3oFaPW_NkxrotZkJdHli1SOsdVOOa4qFKLiW5SpVouSqtkK2-p2mCDmTY3pmhmNhUIBDbnXI4.webp',
     ],
   },
   {
@@ -296,15 +296,15 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Элегант 2, Атум Про Х35',
     features:    ['Цвет «Red Oak»', 'Остекление Crystal Cloud', 'Вертикальный рисунок', 'Двойной контур наличников'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/1H1zVvHsAotizJxLnQ9wKcMOfy0mGIuGGO6fCjJihOE_u1RflDeSXEkr6Bb6lzHCJMWinzISko75kTcLfXdZTI1T.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/3WhyOgZqpI_L2XNRDuRU7wWVxB7fT9buLQJV3eY8PHoCZreKhd2OjHrhPUaVJg-dYe7DNzEV7GugFzWJLxDMO5iJ.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/5lRqR3ir9tCATh5KMkaki1aBI0JAYmXABFerFIfIROWAUNyySl9isgTbJbHkSRh52XsvC0xihAdxIC1XI7xZUxfG.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/6bq2uYDCU5D9_QvVsnkNPo1-DjxwCDbpo0Cv2xE_bpDhx7dj_RcAlHhssaLAvJC3OYUbFI5m1t5QmDJL0Oa2p7Ou.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/8-e0aLhw5MYXEmRl1qRu7VICjtMr_obLjP-TnTnDt7yOcqFymxbFzIMNTDCcc1AlQMQBacWwjxqfb6TaKEEMBeft.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/HqWUZlOCWXIQkIPnZJb8Ql5R0mJjO7hVflGsqNeYPiTrrNZSxTq1sAU9SBvhcgD4Ciyplt1b0fClLj6RUdCmRF57.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/Z_Xi0fbvJD4Vz8ZEip-DG2FbUMdiaaG1tfpNgIv_zFdoEdQ4UFhKEvM9AboaKllxKQKsqYd9ErP7uSTQGe9PKBTJ.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/gOqCSzaW_25SkEtATxsTJOxjGQxc-f7svfAbCcpzlo8MkyloMLmPUoM2g_aaS2_j0R2UZVJbKPM_JZvpIYDZ-vGX.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/9.03.26_atumpro/kejKoj_DWTbf5miCE6w4DgeUNa5nErM99_xrNjnIL8co54WTRwQBup1CtKRoQ72Y6DIU2lbnAO_6PuDqXyPxjmlb.webp',
+      '/media/works_prod/9.03.26_atumpro/1H1zVvHsAotizJxLnQ9wKcMOfy0mGIuGGO6fCjJihOE_u1RflDeSXEkr6Bb6lzHCJMWinzISko75kTcLfXdZTI1T.webp',
+      '/media/works_prod/9.03.26_atumpro/3WhyOgZqpI_L2XNRDuRU7wWVxB7fT9buLQJV3eY8PHoCZreKhd2OjHrhPUaVJg-dYe7DNzEV7GugFzWJLxDMO5iJ.webp',
+      '/media/works_prod/9.03.26_atumpro/5lRqR3ir9tCATh5KMkaki1aBI0JAYmXABFerFIfIROWAUNyySl9isgTbJbHkSRh52XsvC0xihAdxIC1XI7xZUxfG.webp',
+      '/media/works_prod/9.03.26_atumpro/6bq2uYDCU5D9_QvVsnkNPo1-DjxwCDbpo0Cv2xE_bpDhx7dj_RcAlHhssaLAvJC3OYUbFI5m1t5QmDJL0Oa2p7Ou.webp',
+      '/media/works_prod/9.03.26_atumpro/8-e0aLhw5MYXEmRl1qRu7VICjtMr_obLjP-TnTnDt7yOcqFymxbFzIMNTDCcc1AlQMQBacWwjxqfb6TaKEEMBeft.webp',
+      '/media/works_prod/9.03.26_atumpro/HqWUZlOCWXIQkIPnZJb8Ql5R0mJjO7hVflGsqNeYPiTrrNZSxTq1sAU9SBvhcgD4Ciyplt1b0fClLj6RUdCmRF57.webp',
+      '/media/works_prod/9.03.26_atumpro/Z_Xi0fbvJD4Vz8ZEip-DG2FbUMdiaaG1tfpNgIv_zFdoEdQ4UFhKEvM9AboaKllxKQKsqYd9ErP7uSTQGe9PKBTJ.webp',
+      '/media/works_prod/9.03.26_atumpro/gOqCSzaW_25SkEtATxsTJOxjGQxc-f7svfAbCcpzlo8MkyloMLmPUoM2g_aaS2_j0R2UZVJbKPM_JZvpIYDZ-vGX.webp',
+      '/media/works_prod/9.03.26_atumpro/kejKoj_DWTbf5miCE6w4DgeUNa5nErM99_xrNjnIL8co54WTRwQBup1CtKRoQ72Y6DIU2lbnAO_6PuDqXyPxjmlb.webp',
     ],
   },
   {
@@ -320,10 +320,10 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Урбан 1',
     features:    ['Цвет «Бетон Антик Лофт»', 'Алюминиевая кромка', 'Чёрный молдинг'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/12.03.26_urban/-c9niw81Q0pjyOPUKFEJpVWlhQlwpIgHowrNhzv-1MHOnf_rTdIZECkewUvjrEaiL-EdKWilBGV6d6HQDUoGa4eo.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/12.03.26_urban/S0dHdqCc5ePvjc_3TX7Dgpj9H27fygRkcLXwsI4YkwUKY8Oni1OLXY0wS5kSQLDjn10zgsOTRt0miwFrnWZMRzt8.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/12.03.26_urban/Wk6htKQ0_GAJ_cVzAoAqSs5rQ9iZf_6KnulyF3PpIZ3-jOETQcWVwUxeEkkgLRljji3HKUZRMnPxpv8EbgNLQ4-6.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/12.03.26_urban/nVZkh3jPl1bAC_tLohx2q5EB7eIZrMSigSyj0LZfMbmz616ElSCG1NxhjOWX1sqUGEzT8Vp6n41ud_LH-ahUfWB3.webp',
+      '/media/works_prod/12.03.26_urban/-c9niw81Q0pjyOPUKFEJpVWlhQlwpIgHowrNhzv-1MHOnf_rTdIZECkewUvjrEaiL-EdKWilBGV6d6HQDUoGa4eo.webp',
+      '/media/works_prod/12.03.26_urban/S0dHdqCc5ePvjc_3TX7Dgpj9H27fygRkcLXwsI4YkwUKY8Oni1OLXY0wS5kSQLDjn10zgsOTRt0miwFrnWZMRzt8.webp',
+      '/media/works_prod/12.03.26_urban/Wk6htKQ0_GAJ_cVzAoAqSs5rQ9iZf_6KnulyF3PpIZ3-jOETQcWVwUxeEkkgLRljji3HKUZRMnPxpv8EbgNLQ4-6.webp',
+      '/media/works_prod/12.03.26_urban/nVZkh3jPl1bAC_tLohx2q5EB7eIZrMSigSyj0LZfMbmz616ElSCG1NxhjOWX1sqUGEzT8Vp6n41ud_LH-ahUfWB3.webp',
     ],
   },
   {
@@ -339,10 +339,10 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Эмалекс Е27',
     features:    ['Покрытие Ренолит', 'Вставки стекла'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.04.26_emalex/4irkcFjsGwUT9zACW8JUbC8DWdWCxQANreG4l4ChGQtIZys7iQKJjfiUvzGjnzc2PsiCLoFAaTDNsG41NGvTkRCN.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.04.26_emalex/6z3FoyWFBFExYvJpIDAeTgD0bOtEGKw_d3PK5Nb97B22Rpbm_5_3g0hK1CKiwFtZlkxlZO7rtDzuO-Cb2qSf413D.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.04.26_emalex/DOsl7O1ZhQvZ6sLzV0CpBCBZ78xJD9wUVsnfvzIgbHi49FKRme8Dfq5q3NgCEo5ys18Pre4WiBfWC3iMPD3md21M.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/16.04.26_emalex/GGVloaR8uH-BAg_gpmgyTZ0XBmcv-uk94H1kOyYei9sHaMwmqqwRNsR697SD_eZqcn7SsurqlXWFFVpwHFcpS4wW.webp',
+      '/media/works_prod/16.04.26_emalex/4irkcFjsGwUT9zACW8JUbC8DWdWCxQANreG4l4ChGQtIZys7iQKJjfiUvzGjnzc2PsiCLoFAaTDNsG41NGvTkRCN.webp',
+      '/media/works_prod/16.04.26_emalex/6z3FoyWFBFExYvJpIDAeTgD0bOtEGKw_d3PK5Nb97B22Rpbm_5_3g0hK1CKiwFtZlkxlZO7rtDzuO-Cb2qSf413D.webp',
+      '/media/works_prod/16.04.26_emalex/DOsl7O1ZhQvZ6sLzV0CpBCBZ78xJD9wUVsnfvzIgbHi49FKRme8Dfq5q3NgCEo5ys18Pre4WiBfWC3iMPD3md21M.webp',
+      '/media/works_prod/16.04.26_emalex/GGVloaR8uH-BAg_gpmgyTZ0XBmcv-uk94H1kOyYei9sHaMwmqqwRNsR697SD_eZqcn7SsurqlXWFFVpwHFcpS4wW.webp',
     ],
   },
   {
@@ -358,12 +358,12 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Урбан 2В',
     features:    ['Цвет «Тауп»', 'Чёрная алюминиевая кромка'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.04.26_urban/1FflNkj7MwY6aXTOlGWKLDUOTuTty_tTGub87APF4q7FLfks4sJAKZT0piLR1uLWbVL9sz-GDo_SFDaSDID-a-Uu.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.04.26_urban/2mwr6ImyvnyqqPICoHAg6A0iQJayZ6FbcjoWjw4duOqs5WIFohiNciez57dZoT24E-5Lp3aZqMWQmneW7RinIlPO.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.04.26_urban/MYg1BIvn5nT-l5ikcen6coG0HGGio-vlaXKU9RT7045_sQXFbLtjPwzXWXU7E-n1bg5iOIT_5cM4eAdMz9ndZCBR.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.04.26_urban/UDgcLCU5fGjjGrlLbxXTteBj0IXrHm3k0szMI6VLarT3JaAcLSUO6rbF4TaCXPi_YrerJFSZFV2ZVPrgbKNh4-YP.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.04.26_urban/ZXRQqWdDrylyE3YOkGathxZKzuVQ6qWWZUcpOX16NC2stu4_4EziDwZEfSHIpVxzZI3BEeXs1niHXWvUzFiEfcSM.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.04.26_urban/bR0bKKXDG2TlHnMMEQk_MxECfzZA1P4tyAHzQ6j0pmcU4hNDai94ELjxodmM8lGFqQ2gD4qI689Uc9HVudHecxNF.webp',
+      '/media/works_prod/23.04.26_urban/1FflNkj7MwY6aXTOlGWKLDUOTuTty_tTGub87APF4q7FLfks4sJAKZT0piLR1uLWbVL9sz-GDo_SFDaSDID-a-Uu.webp',
+      '/media/works_prod/23.04.26_urban/2mwr6ImyvnyqqPICoHAg6A0iQJayZ6FbcjoWjw4duOqs5WIFohiNciez57dZoT24E-5Lp3aZqMWQmneW7RinIlPO.webp',
+      '/media/works_prod/23.04.26_urban/MYg1BIvn5nT-l5ikcen6coG0HGGio-vlaXKU9RT7045_sQXFbLtjPwzXWXU7E-n1bg5iOIT_5cM4eAdMz9ndZCBR.webp',
+      '/media/works_prod/23.04.26_urban/UDgcLCU5fGjjGrlLbxXTteBj0IXrHm3k0szMI6VLarT3JaAcLSUO6rbF4TaCXPi_YrerJFSZFV2ZVPrgbKNh4-YP.webp',
+      '/media/works_prod/23.04.26_urban/ZXRQqWdDrylyE3YOkGathxZKzuVQ6qWWZUcpOX16NC2stu4_4EziDwZEfSHIpVxzZI3BEeXs1niHXWvUzFiEfcSM.webp',
+      '/media/works_prod/23.04.26_urban/bR0bKKXDG2TlHnMMEQk_MxECfzZA1P4tyAHzQ6j0pmcU4hNDai94ELjxodmM8lGFqQ2gD4qI689Uc9HVudHecxNF.webp',
     ],
   },
   {
@@ -379,9 +379,9 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Эмалекс Р1',
     features:    ['Английская решётка', 'Нестандартный проём', 'Два активных полотна + под ригель'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/17.05.26_emalex/BIt6wKNc2NIsbt9T8GrAV9SaHs5sOLxyrU4TZkrkiNzkNlphbsug5aNT5KWEA1PTzecmmoSdD2UbdifP2nDAk5oo.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/17.05.26_emalex/5EoNVcUcT47KDMXXy5g6owL2bq1vgI1_mxzEEBNcC9iW1y-Xo5-1aKTQiUcMd9LiVEsP_uuUfjCHNNh54F2XEr9C.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/17.05.26_emalex/ur4piih_JmtwOZK_qR5XPp_Q8J4Q0t-A-mrJwzVN5_oHK7MYVJPLxS06Ri8_vwF-niuU8RF7mswaGL1UzYliJTta.webp',
+      '/media/works_prod/17.05.26_emalex/BIt6wKNc2NIsbt9T8GrAV9SaHs5sOLxyrU4TZkrkiNzkNlphbsug5aNT5KWEA1PTzecmmoSdD2UbdifP2nDAk5oo.webp',
+      '/media/works_prod/17.05.26_emalex/5EoNVcUcT47KDMXXy5g6owL2bq1vgI1_mxzEEBNcC9iW1y-Xo5-1aKTQiUcMd9LiVEsP_uuUfjCHNNh54F2XEr9C.webp',
+      '/media/works_prod/17.05.26_emalex/ur4piih_JmtwOZK_qR5XPp_Q8J4Q0t-A-mrJwzVN5_oHK7MYVJPLxS06Ri8_vwF-niuU8RF7mswaGL1UzYliJTta.webp',
     ],
   },
   {
@@ -397,9 +397,9 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Эмалекс ЕС2',
     features:    ['Молочный цвет', 'Фурнитура золото матовое', 'Внешние петли'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/3.06.26_emalex/b1jMls_7bdmocZ-NtSvYF7CTuaCmIvZp00hNvs1Or0kdkayzSwVYqH5q81Zm3V7F8qwOcdauIymM180AldXy6KMy.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/3.06.26_emalex/g4j_fneUQSw377uOAvte3pXIX6V6xzuXNyCyKfpHe1HeyWN8K2qFAvti7mNJs58NzxBnF-A88ilX66zQweRm_0XA.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/3.06.26_emalex/f-8H8HNJJ-5He5BBHejxHl65YzKn0z2eEkYKjjmjnESZ0PohQlNGP3FliMbAGLi3YMUsZygu4PcyNpGgPjWAatSl.webp',
+      '/media/works_prod/3.06.26_emalex/b1jMls_7bdmocZ-NtSvYF7CTuaCmIvZp00hNvs1Or0kdkayzSwVYqH5q81Zm3V7F8qwOcdauIymM180AldXy6KMy.webp',
+      '/media/works_prod/3.06.26_emalex/g4j_fneUQSw377uOAvte3pXIX6V6xzuXNyCyKfpHe1HeyWN8K2qFAvti7mNJs58NzxBnF-A88ilX66zQweRm_0XA.webp',
+      '/media/works_prod/3.06.26_emalex/f-8H8HNJJ-5He5BBHejxHl65YzKn0z2eEkYKjjmjnESZ0PohQlNGP3FliMbAGLi3YMUsZygu4PcyNpGgPjWAatSl.webp',
     ],
   },
   {
@@ -415,13 +415,13 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Феникс 2',
     features:    ['Белая эмаль'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/A0TR6adxAxveRyUgtMyY7u3rLJAcXNyEf8YFbv8k0Tu4tnmP384YF3wAYr-0uHBq603v2YwCcVsPOAkB1RwgevPE.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/6cIXXszFQqsPV7bvMzhjzApiMu257OgoYGJ-j7MmNZqLGYt-SMe38N-KAyw1os6x-P3bruzUOevQo_YNcbDeerxT.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/EdWIfzNzhsdp9F0gW8GTG6VoU43xLG4AjIEbVAuJMEAhSg6G7JYyrIljDKXrRgdOHGRNJktI0nKKu94LvzM2Ru7q.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/NcwLqdc3nxKBJQhmWSaEWxcj38ysWmUSJ2E168DhgeuVbcAZNzwv7uV1--Pv3NhZXCx-nkQ9MFg5kI-xwbDWgNE-.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/r48JZUI-xMR9vGryI4Gz5TNRcAlVpji1CxQHaITXIJ6-psVQuJzmkdDrLRg2LYmiRLuaDhz79yPmBKtkBFRAyv5H.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/xsDRb5PaD8ON9dlnJMlG8N7C0C8KBQEvnxZDvCD4yPNTgdJKEvsmIC7AOUYNpWiHbvwLX29l3mr1lF2JxPX7qKYC.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.06.26_fenix2/zgl6RaTl2AnhXfmhvh2MPhmK8_Q9Caa6RHd9xt87V-Jt1Dh85JDjJe2EgNuysJQX98gH_PleOkW_O38eRYFJnTto.webp',
+      '/media/works_prod/22.06.26_fenix2/A0TR6adxAxveRyUgtMyY7u3rLJAcXNyEf8YFbv8k0Tu4tnmP384YF3wAYr-0uHBq603v2YwCcVsPOAkB1RwgevPE.webp',
+      '/media/works_prod/22.06.26_fenix2/6cIXXszFQqsPV7bvMzhjzApiMu257OgoYGJ-j7MmNZqLGYt-SMe38N-KAyw1os6x-P3bruzUOevQo_YNcbDeerxT.webp',
+      '/media/works_prod/22.06.26_fenix2/EdWIfzNzhsdp9F0gW8GTG6VoU43xLG4AjIEbVAuJMEAhSg6G7JYyrIljDKXrRgdOHGRNJktI0nKKu94LvzM2Ru7q.webp',
+      '/media/works_prod/22.06.26_fenix2/NcwLqdc3nxKBJQhmWSaEWxcj38ysWmUSJ2E168DhgeuVbcAZNzwv7uV1--Pv3NhZXCx-nkQ9MFg5kI-xwbDWgNE-.webp',
+      '/media/works_prod/22.06.26_fenix2/r48JZUI-xMR9vGryI4Gz5TNRcAlVpji1CxQHaITXIJ6-psVQuJzmkdDrLRg2LYmiRLuaDhz79yPmBKtkBFRAyv5H.webp',
+      '/media/works_prod/22.06.26_fenix2/xsDRb5PaD8ON9dlnJMlG8N7C0C8KBQEvnxZDvCD4yPNTgdJKEvsmIC7AOUYNpWiHbvwLX29l3mr1lF2JxPX7qKYC.webp',
+      '/media/works_prod/22.06.26_fenix2/zgl6RaTl2AnhXfmhvh2MPhmK8_Q9Caa6RHd9xt87V-Jt1Dh85JDjJe2EgNuysJQX98gH_PleOkW_O38eRYFJnTto.webp',
     ],
   },
   {
@@ -437,9 +437,9 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Атум 5',
     features:    ['Цвет «Снежный»', 'Стекло «Сатин белый»'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.06.26_atum/l-X9QMeRWb7aABWysAuHELdjjAvG4kmkILfjtWTaOYYO8h3rN4kEf6FDPB2_aK2NDhiLoy4HWLIuUTy9sgx0ku5T.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.06.26_atum/kTqJbX7_eOhCO0PlN4bcwEnw6fUZ1MVFgtSUJutSzXFOS_nVpzhVQ23x5wLx_MiZWoa9iVnaJzXUy5fmFtLDlcaE.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.06.26_atum/f9IgrvJIMWhoOzg_jBNQ5tZLH0iAbao4BQ3c8lvLcC0RmqTr20i8IIBXTOYK4pNL7tiZM611ApazL3g1m63uFoXY.webp',
+      '/media/works_prod/23.06.26_atum/l-X9QMeRWb7aABWysAuHELdjjAvG4kmkILfjtWTaOYYO8h3rN4kEf6FDPB2_aK2NDhiLoy4HWLIuUTy9sgx0ku5T.webp',
+      '/media/works_prod/23.06.26_atum/kTqJbX7_eOhCO0PlN4bcwEnw6fUZ1MVFgtSUJutSzXFOS_nVpzhVQ23x5wLx_MiZWoa9iVnaJzXUy5fmFtLDlcaE.webp',
+      '/media/works_prod/23.06.26_atum/f9IgrvJIMWhoOzg_jBNQ5tZLH0iAbao4BQ3c8lvLcC0RmqTr20i8IIBXTOYK4pNL7tiZM611ApazL3g1m63uFoXY.webp',
     ],
   },
   {
@@ -455,10 +455,10 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Эмалекс Модерн Е33',
     features:    ['Цвет «Графит»', 'Стекло «Сатин графит»', 'Фурнитура Морелли'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/2.07.26_emalex/OYI_124-L8AunIqsi10EUKInKW_e7udvVxv2bAgklqYevPO-YsE5nQAjEHZ-HEnm_tXq0fXNAI13met85fMlkoLE.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/2.07.26_emalex/XgGAOwWkYJU6XWcDiFSSemomA_Ow9HE-c7AzpXiNU7aY1M49xjkxmkdaVi2tddV3gBUYD50Tb_NCCUgSFlxTxJWa.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/2.07.26_emalex/gnlhRacnaWdioBHjRxSpmPdwP_4msP8XXxIMCqtjrV7PqGiK83mmAoaf9Fzpq4-_XknQjIKfkRfut1vEIocJtqVu.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/2.07.26_emalex/wnd0pKVhRkw7Ycv69OST1A2Y9UBXNnqvW_YynD45hno2jJVsGb_g9ahJ0IzrA7TOyb9R9BVEGkZ1_Xi41u7Kce2I.webp',
+      '/media/works_prod/2.07.26_emalex/OYI_124-L8AunIqsi10EUKInKW_e7udvVxv2bAgklqYevPO-YsE5nQAjEHZ-HEnm_tXq0fXNAI13met85fMlkoLE.webp',
+      '/media/works_prod/2.07.26_emalex/XgGAOwWkYJU6XWcDiFSSemomA_Ow9HE-c7AzpXiNU7aY1M49xjkxmkdaVi2tddV3gBUYD50Tb_NCCUgSFlxTxJWa.webp',
+      '/media/works_prod/2.07.26_emalex/gnlhRacnaWdioBHjRxSpmPdwP_4msP8XXxIMCqtjrV7PqGiK83mmAoaf9Fzpq4-_XknQjIKfkRfut1vEIocJtqVu.webp',
+      '/media/works_prod/2.07.26_emalex/wnd0pKVhRkw7Ycv69OST1A2Y9UBXNnqvW_YynD45hno2jJVsGb_g9ahJ0IzrA7TOyb9R9BVEGkZ1_Xi41u7Kce2I.webp',
     ],
   },
   {
@@ -474,13 +474,13 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Феникс 2',
     features:    ['Эмаль', 'Цвет «Магнолия»'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191909.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191908.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191907.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191906.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191905.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191904.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.08.26_fenix2/IMG_20260813_191844.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191909.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191908.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191907.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191906.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191905.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191904.webp',
+      '/media/works_prod/13.08.26_fenix2/IMG_20260813_191844.webp',
     ],
   },
   {
@@ -497,9 +497,9 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Цвет «Шёлк бежевый»'],
     tags:        ['Загородный дом', 'ПЭТ', 'Внешние петли'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/10.08.26_Innova/a7-3z7ZtVUBul-zTxTjFT9hX82TiMp9dQ_q2H9DikICfdFIUgu0lUc-m74qoE-UZwbkpmmG9KVMTUfheO73SPwcd.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/10.08.26_Innova/ctSABCZ85q73IYYaTBpuLad8jMt9MgK9CB3aRR-iisvy8YEjlphZjchFRSLH89iLzMhBC220EigU-ALvHIdbQzg6.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/10.08.26_Innova/wtn7_6T__9cEkWeCadqLNYCpsDhfCutF_VbAnDzrUDcNNR9GGn3qlflxhLIeLOI7JVnGHLEuKN1CjPweH_XuHder.webp',
+      '/media/works_prod/10.08.26_Innova/a7-3z7ZtVUBul-zTxTjFT9hX82TiMp9dQ_q2H9DikICfdFIUgu0lUc-m74qoE-UZwbkpmmG9KVMTUfheO73SPwcd.webp',
+      '/media/works_prod/10.08.26_Innova/ctSABCZ85q73IYYaTBpuLad8jMt9MgK9CB3aRR-iisvy8YEjlphZjchFRSLH89iLzMhBC220EigU-ALvHIdbQzg6.webp',
+      '/media/works_prod/10.08.26_Innova/wtn7_6T__9cEkWeCadqLNYCpsDhfCutF_VbAnDzrUDcNNR9GGn3qlflxhLIeLOI7JVnGHLEuKN1CjPweH_XuHder.webp',
     ],
   },
   {
@@ -515,14 +515,14 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Феникс Рондо',
     features:    ['Эмаль', 'Стиль арт-деко'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/WDacVRGW8VGWPEjKrxH-qN7rGiyrSk27Vm0UF2oD7uJuc-dd1YpgTFMzyDwEkz9iB5hV0uKxd10w-aVHx2kq2BBa.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/y1vSUNbfaJB8te9GJwwSX_3cXrIf4LA9ZL3MG6iAgMvePZERSRtYzCQ7HFYxVGSug9UP6MOgdpWVx6uh06oXkYBi.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/vb1nlvpK7ThrwW8avttqzvqIujkgKE8V96-O5pV3yzLhHds5irSbNhk9hMnTd7IL9YzY90C_1bbElNfJt8XlxcZt.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/X_sec2cS7Gz5k0sqVfSV_WbrY49UR51bAUI3T1sYy-JixtyUBiSpevJEDXSqO7nQbVo3mUkdT9qXvZtsFPKiCWg-.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/cGkXPyKSayh80M74ggKI-e5VU44YYVWuIgRsCasbjf7bXzIFeEpDCZQz0ynYSwjQe9kHRHbVOnzFyl8bCB32qJ01.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/U09bvr-RTc5DtUqZLRR6_DuaiSPa6F1n8Qz8vq71Tam1yRAI0dRhJWRdK63Ftmyy42pNAPETHJ8yt34xHpJH-z2Z.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/IYEqsV-_OB0zcx0DrpsHjzPtyIbSJ4p1LEpJKLQMQ90V4NoAJ26CM75Ax-uf-ri-h8xutVaNgVEJKqeKmWf5R9aE.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/23.07.26_fenix_emal/IYEqsV-_OB0zcx0DrpsHjzPtyIbSJ4p1LEpJKLQMQ90V4NoAJ26CM75Ax-uf-ri-h8xutVaNgVEJKqeKmWf5R9aE-1.webp',
+      '/media/works_prod/23.07.26_fenix_emal/WDacVRGW8VGWPEjKrxH-qN7rGiyrSk27Vm0UF2oD7uJuc-dd1YpgTFMzyDwEkz9iB5hV0uKxd10w-aVHx2kq2BBa.webp',
+      '/media/works_prod/23.07.26_fenix_emal/y1vSUNbfaJB8te9GJwwSX_3cXrIf4LA9ZL3MG6iAgMvePZERSRtYzCQ7HFYxVGSug9UP6MOgdpWVx6uh06oXkYBi.webp',
+      '/media/works_prod/23.07.26_fenix_emal/vb1nlvpK7ThrwW8avttqzvqIujkgKE8V96-O5pV3yzLhHds5irSbNhk9hMnTd7IL9YzY90C_1bbElNfJt8XlxcZt.webp',
+      '/media/works_prod/23.07.26_fenix_emal/X_sec2cS7Gz5k0sqVfSV_WbrY49UR51bAUI3T1sYy-JixtyUBiSpevJEDXSqO7nQbVo3mUkdT9qXvZtsFPKiCWg-.webp',
+      '/media/works_prod/23.07.26_fenix_emal/cGkXPyKSayh80M74ggKI-e5VU44YYVWuIgRsCasbjf7bXzIFeEpDCZQz0ynYSwjQe9kHRHbVOnzFyl8bCB32qJ01.webp',
+      '/media/works_prod/23.07.26_fenix_emal/U09bvr-RTc5DtUqZLRR6_DuaiSPa6F1n8Qz8vq71Tam1yRAI0dRhJWRdK63Ftmyy42pNAPETHJ8yt34xHpJH-z2Z.webp',
+      '/media/works_prod/23.07.26_fenix_emal/IYEqsV-_OB0zcx0DrpsHjzPtyIbSJ4p1LEpJKLQMQ90V4NoAJ26CM75Ax-uf-ri-h8xutVaNgVEJKqeKmWf5R9aE.webp',
+      '/media/works_prod/23.07.26_fenix_emal/IYEqsV-_OB0zcx0DrpsHjzPtyIbSJ4p1LEpJKLQMQ90V4NoAJ26CM75Ax-uf-ri-h8xutVaNgVEJKqeKmWf5R9aE-1.webp',
     ],
   },
   {
@@ -538,15 +538,15 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Иннова 03В, Иннова 01В',
     features:    ['Цвет «Шёлк Белый»', 'Глухие и со стеклом'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/b_E-N5mLPwpV1erz0Jb1g0bnRbmvA2WSo6HAKHDt0WBj6sduL3i71Fbc-q3imMzaLMRX04khGPGriquDuU--b3zs.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/1yu0zbctjL621JOBdubsa8rfuHjHJizAUZzJjbqucnrJVVPyy4_MbHe1_bgufkj0pbj30XV1vRTCIvHJ96dwjVkO.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/AQmaV9k4enBGzZWkVhQdwPa73p6YXISVXN5W9G3wCtxrV3b3euywPHmMf5cR5lL7UBu6Zf0iSdQNuowiGVHPMu6Z.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/H5T40S0OygVtMJWwe48TjQTV9nFqm7lvlSgRahE4_Rt3QsqKSviC0sWtZV2GV7cdl0VIrp0Zf2F4S5BIJYtcp-0h.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/SopWxZxymKZD-X7o-i3jhuTO98vZ-i4reuKUkCcO4jR6oO-4cIVIhtlYEbVkvMidmdOz488N0AB5thimtDNiEmqL.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/kpyiOmT2jSQ4_qzL5yI52ZNYyu8b_-7V299AQbbSSgiwvlF4dzpJ3k4Vh7CA4DekTu4lnaBNXE40Ysm8zomimWF6.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/o9CinrY5XbO2oK-Tj_rOsTHkORorzlGOtNrkxoP0NApW410rzZqeztBXMl0889EsyRJBqmq2ieT83JqsZutj57cX.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/pIUlA8sAYfWipeuXyQ4qz4uoXSYR3z_CRg7nMCV39myl8ZdXgo8clXXwr9bG2gf-dV5dedhSpa53M-No8lI2FefT.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/22.07.26_Innova/pmE99gasbURUKdwuqsppmFn-WbF9pwS3M_XqS87jlhC4gFACKn_goHRyBE9pCMyd6DLif0oYZyJonnWYjhI8OW54.webp',
+      '/media/works_prod/22.07.26_Innova/b_E-N5mLPwpV1erz0Jb1g0bnRbmvA2WSo6HAKHDt0WBj6sduL3i71Fbc-q3imMzaLMRX04khGPGriquDuU--b3zs.webp',
+      '/media/works_prod/22.07.26_Innova/1yu0zbctjL621JOBdubsa8rfuHjHJizAUZzJjbqucnrJVVPyy4_MbHe1_bgufkj0pbj30XV1vRTCIvHJ96dwjVkO.webp',
+      '/media/works_prod/22.07.26_Innova/AQmaV9k4enBGzZWkVhQdwPa73p6YXISVXN5W9G3wCtxrV3b3euywPHmMf5cR5lL7UBu6Zf0iSdQNuowiGVHPMu6Z.webp',
+      '/media/works_prod/22.07.26_Innova/H5T40S0OygVtMJWwe48TjQTV9nFqm7lvlSgRahE4_Rt3QsqKSviC0sWtZV2GV7cdl0VIrp0Zf2F4S5BIJYtcp-0h.webp',
+      '/media/works_prod/22.07.26_Innova/SopWxZxymKZD-X7o-i3jhuTO98vZ-i4reuKUkCcO4jR6oO-4cIVIhtlYEbVkvMidmdOz488N0AB5thimtDNiEmqL.webp',
+      '/media/works_prod/22.07.26_Innova/kpyiOmT2jSQ4_qzL5yI52ZNYyu8b_-7V299AQbbSSgiwvlF4dzpJ3k4Vh7CA4DekTu4lnaBNXE40Ysm8zomimWF6.webp',
+      '/media/works_prod/22.07.26_Innova/o9CinrY5XbO2oK-Tj_rOsTHkORorzlGOtNrkxoP0NApW410rzZqeztBXMl0889EsyRJBqmq2ieT83JqsZutj57cX.webp',
+      '/media/works_prod/22.07.26_Innova/pIUlA8sAYfWipeuXyQ4qz4uoXSYR3z_CRg7nMCV39myl8ZdXgo8clXXwr9bG2gf-dV5dedhSpa53M-No8lI2FefT.webp',
+      '/media/works_prod/22.07.26_Innova/pmE99gasbURUKdwuqsppmFn-WbF9pwS3M_XqS87jlhC4gFACKn_goHRyBE9pCMyd6DLif0oYZyJonnWYjhI8OW54.webp',
     ],
   },
   {
@@ -562,10 +562,10 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Линия ВР 1',
     features:    ['Индивидуальный цвет (вне RAL)', 'Фурнитура в тон кромке'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.07.26_sector/PW10blsDnTOf-SZUI7dmbdxTgZYG1XIFtbMzOkgjhmuIqdV36SS5IwlK3DjeJgNFi_KFOyuftOs5z10lcBobEUbB.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.07.26_sector/j17wYkkdOXvmpe_z3GWJSsLF8ZqywUOHg_5vpkCGMakKRoM5n0mjf7oIlQIz1QQmdpMKJ27_y94Sy0DeG-wst5I9.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.07.26_sector/eAduEvSO0IUVBH0jODWrrZQBOFZFG6jFIthp7PvDIyWuV00YXrnvYwKOqE3D2ujMSM9vKcm1bjX0cCR15oc2t6B7.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/13.07.26_sector/B1iLLgkUAwlNpohXJOf5rFG0cSNDhavwuHSMC6fSgk3ePTC9eCBgyJit9SI8PfSw2o3ULkgcIzQkz9cHzHiCfKqB.webp',
+      '/media/works_prod/13.07.26_sector/PW10blsDnTOf-SZUI7dmbdxTgZYG1XIFtbMzOkgjhmuIqdV36SS5IwlK3DjeJgNFi_KFOyuftOs5z10lcBobEUbB.webp',
+      '/media/works_prod/13.07.26_sector/j17wYkkdOXvmpe_z3GWJSsLF8ZqywUOHg_5vpkCGMakKRoM5n0mjf7oIlQIz1QQmdpMKJ27_y94Sy0DeG-wst5I9.webp',
+      '/media/works_prod/13.07.26_sector/eAduEvSO0IUVBH0jODWrrZQBOFZFG6jFIthp7PvDIyWuV00YXrnvYwKOqE3D2ujMSM9vKcm1bjX0cCR15oc2t6B7.webp',
+      '/media/works_prod/13.07.26_sector/B1iLLgkUAwlNpohXJOf5rFG0cSNDhavwuHSMC6fSgk3ePTC9eCBgyJit9SI8PfSw2o3ULkgcIzQkz9cHzHiCfKqB.webp',
     ],
   },
   {
@@ -581,14 +581,14 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     model:       'Эмалекс Р1',
     features:    ['Серый цвет', 'Глухие и со стеклом'],
     images: [
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/8OJ8s3Dqkj9GAcHUR7zk4c3WOpteyOXwLZqY_EXViePZosxWoKNauvEchEot1_UNmTb6STIVbngZ86yrAJnshLN1.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/OJrRL-0NYCmCUU6Brr-BIFo-H45Wi9MOU1cuX4Y_wwT4_X6hYOx-HnqF1RSPzoa1IKeoB4KkutLG4wscGeeirUzN.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/R26Dqm0LFW_uccaPZ4BFiviKt_sCWh6XCYtaXKwN8PeuUw1Dc7_UxTi84Kbg3kBqd7hunzbaCfEbSCkN4F6pXNfJ.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/ROwgKpfye1c9XLTHt_ZCYbIVqVG2XzZuoz_kAzp7IyFb6g3Qet85-xYbomVs2LljHD7eu0yr9gnTTMbm5gI_bi1M.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/_43W5DX7vX7HehCUFP59YtpaYz2oIjASRoVkSBwFD4amAAzdZtF71UgCtvy78LdXZahZqcYyWYz3qBFZVEXGxX-G.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/dDd16bHHpB1JppzRMe4H1eEbyB4-XE8y6gdH8FxNDzcEZTOGbNPnNGGAR9sMr_IhQiskUAP0nV-irK_rI9GM2An-.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/gY-q0RsgbxvVy_dfi6zs86J361arw5mUf7WMt8xOID-1II72lL735CwdEZz1F0GUoKqDxwhQkaj24usp_sn0hzES.webp',
-      'https://storage.yandexcloud.net/vfd74ru/works_prod/11.07.26_emalex/iw_h87YXDRFwRGYi1Hmq8gBKd-_RUnluHEfXEHb-jLalQA3yRXM8_EOJF5UQl8HM4MAXrOOQ1lmg-FUgiUqnRtwR.webp',
+      '/media/works_prod/11.07.26_emalex/8OJ8s3Dqkj9GAcHUR7zk4c3WOpteyOXwLZqY_EXViePZosxWoKNauvEchEot1_UNmTb6STIVbngZ86yrAJnshLN1.webp',
+      '/media/works_prod/11.07.26_emalex/OJrRL-0NYCmCUU6Brr-BIFo-H45Wi9MOU1cuX4Y_wwT4_X6hYOx-HnqF1RSPzoa1IKeoB4KkutLG4wscGeeirUzN.webp',
+      '/media/works_prod/11.07.26_emalex/R26Dqm0LFW_uccaPZ4BFiviKt_sCWh6XCYtaXKwN8PeuUw1Dc7_UxTi84Kbg3kBqd7hunzbaCfEbSCkN4F6pXNfJ.webp',
+      '/media/works_prod/11.07.26_emalex/ROwgKpfye1c9XLTHt_ZCYbIVqVG2XzZuoz_kAzp7IyFb6g3Qet85-xYbomVs2LljHD7eu0yr9gnTTMbm5gI_bi1M.webp',
+      '/media/works_prod/11.07.26_emalex/_43W5DX7vX7HehCUFP59YtpaYz2oIjASRoVkSBwFD4amAAzdZtF71UgCtvy78LdXZahZqcYyWYz3qBFZVEXGxX-G.webp',
+      '/media/works_prod/11.07.26_emalex/dDd16bHHpB1JppzRMe4H1eEbyB4-XE8y6gdH8FxNDzcEZTOGbNPnNGGAR9sMr_IhQiskUAP0nV-irK_rI9GM2An-.webp',
+      '/media/works_prod/11.07.26_emalex/gY-q0RsgbxvVy_dfi6zs86J361arw5mUf7WMt8xOID-1II72lL735CwdEZz1F0GUoKqDxwhQkaj24usp_sn0hzES.webp',
+      '/media/works_prod/11.07.26_emalex/iw_h87YXDRFwRGYi1Hmq8gBKd-_RUnluHEfXEHb-jLalQA3yRXM8_EOJF5UQl8HM4MAXrOOQ1lmg-FUgiUqnRtwR.webp',
     ],
   },
   {
@@ -642,7 +642,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     images: [
       `${CDN_OW}21.10.25/GVUk8kmwYRgdLkO2nAKVkccb7ZReMFQ6bm4DrPVaYG8k6uoAOmZcr20wr3usWUdS_Fy_mFk80Vs8CvZz3aXui6tE-1.webp`,
       `${CDN_OW}21.10.25/GVUk8kmwYRgdLkO2nAKVkccb7ZReMFQ6bm4DrPVaYG8k6uoAOmZcr20wr3usWUdS_Fy_mFk80Vs8CvZz3aXui6tE.webp`,
-      `${CDN_OW}21.10.25/pOSS22itQBq3S9XIiFeQOneKqFxzLZhxhtl8ZP3_Yrnm-uYizzeYzgQguHSSu7mrgZgiQY8m0znFwLKu5seYQ8Qb.webp`,
+      `${CDN_OW}21.10.25/pOSS22itQBq3S9XIiFeQOneKqFxzLZhxhtl8ZP3_Yrnm-uYizveWzgQguHSSu7mrgZgiQY8m0znFwLKu5seYQ8Qb.webp`,
     ],
   },
   {
@@ -680,8 +680,8 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
       `${CDN_OW}29.07.25/-tygOqs6wWnQRncuyldbijKD30OM1RSc1rm0INTl1Xf5-7kpZwGgQxV25AAdzllP-FNh7amcKdZ0Lxb7er_V3P6P.webp`,
       `${CDN_OW}29.07.25/A6w3g6VFobsKsLaxAhvYypDKKbhmM5qT16v_5cirjfO-Oww6diFQXoMt4lpjN5-rwjCXh9IvvlhRJRCAOXVbi0x7.webp`,
       `${CDN_OW}29.07.25/L_thnz01M389akNR7PIdwcMnaC2bMpOJoK-P4464-Hu_bogj6prnFk_kvd7Ae6DlAtqWVQseR9BTWeuqPMgEC3CZ.webp`,
-      `${CDN_OW}29.07.25/bJnzaZd486cmu-j3C-T_LVXmEWQ_2CZp9PMAIO4HuYVC_mzHjl9cmAIo5yoIxn9y85cv9DVHxVOEbKEe59n.webp`,
-      `${CDN_OW}29.07.25/bzDNJ6XEeYDby_Uflth_lNZjvZ9a88OPkGw7VEa2VAniUt-6wE1b--lV8Uy4AojA2Jr8cshdowIhUFfQZfx9_HlEp.webp`,
+      `${CDN_OW}29.07.25/bJnzaZd486cmu-j3C-T_LVXmEWQ_2CZp9PMAIO4HuYVC_mzHjnDif0kRXUtRFCN6GOJe82Lq0QUziz__uNTynd9t.webp`,
+      `${CDN_OW}29.07.25/bzDNJ6XEeYDby_Uflth_lNZjvZ9a88OPkGw7VEa2VAniUt-6wE1b--lV8Uy4AojA2Jr8cshdwIhUFfQZfx9_HlEp.webp`,
       `${CDN_OW}29.07.25/wtyYghspdRhfrTNLaeRWb4NIlTxv5EKE4fjYu59AFNATzLNut6rDqFJfDaL4ix2LDryK6YCH8ITGgArplRG7twF0.webp`,
     ],
   },

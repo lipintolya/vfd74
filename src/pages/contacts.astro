@@ -14,7 +14,7 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Салон ВФД (Владимирская фабрика дверей)',
-  image: 'https://storage.yandexcloud.net/catalog-vfd/logo.webp',
+  image: 'https://vfd74.ru/logo-schema.png',
   description: companyLegalInfo.activity.description,
   telephone: companyLegalInfo.contacts.phone.map((p) => p.raw),
   email: companyLegalInfo.contacts.email,
@@ -100,7 +100,7 @@ const structuredData = [localBusinessSchema, faqSchema]
   <section class="section pt-0">
     <div class="container">
       <QuoteCta
-        image="https://storage.yandexcloud.net/vfd74ru/Main_page/left_bento/cover_doors.webp"
+        image="/media/Main_page/left_bento/cover_doors.webp"
         title="Готовы выбрать двери или перегородки?"
         description="Приходите в салон, звоните или пишите в Telegram — поможем подобрать модель и рассчитаем стоимость с монтажом"
         primaryHref="https://t.me/vfddoors74"

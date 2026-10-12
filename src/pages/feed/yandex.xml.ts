@@ -67,7 +67,8 @@ const isAvailable = (e: ModelEntry) =>
 function offerXml(e: ModelEntry, site: URL): string {
   const spec     = getSeriesSpec(e.seriesSlug, e.coatingSlug)
   const trim     = describeTrim(e.model.trim)
-  const pictures = [...new Set(e.colors.map(c => c.photo))].slice(0, MAX_PICTURES)
+  /* Фото локальные (/media/…), а Яндексу в фиде нужны абсолютные ссылки. */
+  const pictures = [...new Set(e.colors.map(c => new URL(c.photo, site).href))].slice(0, MAX_PICTURES)
   const params: [string, string, string?][] = [
     ['Серия', e.seriesName],
     ['Покрытие', e.coatingName],

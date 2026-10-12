@@ -10,6 +10,7 @@
  * правке и товары снимут с показа.
  */
 import { supabase } from './supabase'
+import { resolveMedia } from './media-resolve'
 import { buildModelSlugMap } from './slugify'
 import { getColorsByCoatingSlug } from './catalog-data'
 import { adjustPrice } from './price-adjustments'
@@ -105,7 +106,7 @@ async function loadModelEntries(): Promise<ModelEntry[]> {
         id:          color.id,
         name:        color.name,
         hex:         normalizeHex(color.hex_preview),
-        photo:       row.photo_url  ?? '',
+        photo:       resolveMedia(row.photo_url),
         price:       adjustedPrice,
         coatingSlug: coating?.slug  ?? '',
       })

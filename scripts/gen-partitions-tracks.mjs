@@ -15,20 +15,19 @@
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
 const OUT_DIR = new URL('../public/renders/partitions/', import.meta.url)
 await mkdir(OUT_DIR, { recursive: true })
 
 const jobs = [
-  { src: 'https://storage.yandexcloud.net/catalog-vfd/alum_info/alum-first.webp',  out: 'track-1.webp', width: 700, quality: 76 },
-  { src: 'https://storage.yandexcloud.net/catalog-vfd/alum_info/alum-second.webp', out: 'track-2.webp', width: 700, quality: 76 },
-  { src: 'https://storage.yandexcloud.net/catalog-vfd/alum_info/alum-third.webp',  out: 'track-3.webp', width: 700, quality: 76 },
+  { src: '/media/alum_info/alum-first.webp',  out: 'track-1.webp', width: 700, quality: 76 },
+  { src: '/media/alum_info/alum-second.webp', out: 'track-2.webp', width: 700, quality: 76 },
+  { src: '/media/alum_info/alum-third.webp',  out: 'track-3.webp', width: 700, quality: 76 },
 ]
 
 for (const { src, out, width, quality } of jobs) {
-  const res = await fetch(src)
-  if (!res.ok) throw new Error(`HTTP ${res.status} на ${src}`)
-  const buf = Buffer.from(await res.arrayBuffer())
+  const buf = await readMedia(src)
   const resized = await sharp(buf).resize({ width, withoutEnlargement: true }).webp({ quality }).toBuffer()
   await writeFile(new URL(out, OUT_DIR), resized)
   console.log(`${out}: ${(buf.length / 1024).toFixed(0)}KB -> ${(resized.length / 1024).toFixed(0)}KB`)

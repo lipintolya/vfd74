@@ -9,19 +9,18 @@
  * полноразмерный CDN-оригинал под 44-пиксельную иконку.
  *
  * Запуск: node scripts/gen-portfolio-category-thumb.mjs
- * Когда запускать снова: если заменили исходник в облаке (CATEGORY_COVERS.entrance).
+ * Когда запускать снова: если заменили исходник в public/media (CATEGORY_COVERS.entrance).
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
+import { readMedia } from './lib/media.mjs'
 
-const SRC = 'https://storage.yandexcloud.net/vfd74ru/metal_doors/Termo/ComfortTermo/render_confort_termo.webp'
+const SRC = '/media/metal_doors/Termo/ComfortTermo/render_confort_termo.webp'
 const OUT = new URL('../public/renders/portfolio/', import.meta.url)
 
 await mkdir(OUT, { recursive: true })
 
-const res = await fetch(SRC)
-if (!res.ok) throw new Error(`HTTP ${res.status} на ${SRC}`)
-const buf = Buffer.from(await res.arrayBuffer())
+const buf = await readMedia(SRC)
 
 const thumb = await sharp(buf).resize({ width: 176, height: 176, fit: 'cover' }).webp({ quality: 78 }).toBuffer()
 await writeFile(new URL('category-entrance.webp', OUT), thumb)

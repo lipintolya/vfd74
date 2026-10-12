@@ -5,6 +5,7 @@
  * дублировать JOIN и нормализацию цветов в каждом месте.
  */
 import { supabase } from './supabase'
+import { resolveMedia } from './media-resolve'
 import { buildModelSlugMap } from './slugify'
 import { getSeriesSpec } from '../data/series-descriptions'
 import { SERIES_COVER_PREVIEWS, SERIES_COVER_THUMBS } from '../data/series-cover-previews'
@@ -66,6 +67,9 @@ export async function getCatalogCards(): Promise<{
     .order('price_rrp', { ascending: true })
 
   if (error) console.error('Supabase error:', error.message)
+
+  /* Фото в БД — облачные ссылки; на сборке подменяем на локальные /media/… */
+  for (const row of data ?? []) row.photo_url = resolveMedia(row.photo_url)
 
   /* ── Полный набор цветов на модель (по всем строкам, не только первой) —
      нужен для корректной фильтрации: модель может подходить под фильтр
