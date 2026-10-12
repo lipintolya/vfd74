@@ -54,14 +54,7 @@
   #btt-btn:active { transform: scale(0.94); animation: none; }
 
   @media (max-width: 640px) {
-    #btt-btn { right: 1rem; }
-  }
-
-  /* Снизу справа стоит кнопка звонка (CallButton) — «Наверх» над ней */
-  #btt-btn { bottom: 5rem; transition-property: opacity, transform, background, border-color, bottom; }
-  @media (max-width: 640px) {
-    #btt-btn { bottom: calc(4.75rem + env(safe-area-inset-bottom)); }
-    :global(html.has-cookie-banner) #btt-btn { bottom: calc(10.5rem + env(safe-area-inset-bottom)); }
+    #btt-btn { bottom: 1.25rem; right: 1rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
