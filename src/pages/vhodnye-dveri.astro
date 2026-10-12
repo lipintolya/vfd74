@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
+import RelatedArticleCard from '../components/articles/RelatedArticleCard.astro'
 import ProcessSteps from '../components/partitions/ProcessSteps.astro'
 import EntranceDoorShowcase from '../components/entrance-doors/EntranceDoorShowcase.vue'
 import { ENTRANCE_DOOR_MODELS, ENTRANCE_SKINS, minPriceOf } from '../data/entrance-doors'
@@ -303,6 +304,10 @@ const structuredData = [faqSchema, serviceSchema, ...productSchemas]
       </div>
     </div>
   </section>
+
+  <!-- Статья по теме: перелинковка раздел → блог (src/lib/articles.ts —
+       карточка появляется, когда статья опубликована) -->
+  <RelatedArticleCard slugs={['vhodnaya-dver-s-termorazryvom-dlya-doma']} asSection />
 
   <!-- ══════════════════════════════════════════════
        КАК ПРОХОДИТ ПОКУПКА

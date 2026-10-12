@@ -29,9 +29,17 @@ export const ARTICLE_COVER_PREVIEWS: Record<string, { card: ImageVariant[]; hero
     card: [{ src: '/renders/articles/covers/loft-industrial-chic-v-interere-card-480.webp', w: 480 }, { src: '/renders/articles/covers/loft-industrial-chic-v-interere-card-800.webp', w: 800 }],
     hero: [{ src: '/renders/articles/covers/loft-industrial-chic-v-interere-hero-960.webp', w: 960 }, { src: '/renders/articles/covers/loft-industrial-chic-v-interere-hero-1600.webp', w: 1600 }],
   },
+  '/media/invisible/cover.webp': {
+    card: [{ src: '/renders/articles/covers/skrytye-dveri-plyusy-i-minusy-card-480.webp', w: 480 }, { src: '/renders/articles/covers/skrytye-dveri-plyusy-i-minusy-card-800.webp', w: 800 }],
+    hero: [{ src: '/renders/articles/covers/skrytye-dveri-plyusy-i-minusy-hero-960.webp', w: 960 }, { src: '/renders/articles/covers/skrytye-dveri-plyusy-i-minusy-hero-1600.webp', w: 1600 }],
+  },
   '/media/statya/1.10.26/render_showroom.webp': {
     card: [{ src: '/renders/articles/covers/sovremennaya-klassika-v-interiere-card-480.webp', w: 480 }, { src: '/renders/articles/covers/sovremennaya-klassika-v-interiere-card-800.webp', w: 800 }],
     hero: [{ src: '/renders/articles/covers/sovremennaya-klassika-v-interiere-hero-960.webp', w: 960 }, { src: '/renders/articles/covers/sovremennaya-klassika-v-interiere-hero-1600.webp', w: 1600 }],
+  },
+  '/media/metal_doors/covers/homecover_render.webp': {
+    card: [{ src: '/renders/articles/covers/vhodnaya-dver-s-termorazryvom-dlya-doma-card-480.webp', w: 480 }, { src: '/renders/articles/covers/vhodnaya-dver-s-termorazryvom-dlya-doma-card-800.webp', w: 800 }],
+    hero: [{ src: '/renders/articles/covers/vhodnaya-dver-s-termorazryvom-dlya-doma-hero-960.webp', w: 960 }, { src: '/renders/articles/covers/vhodnaya-dver-s-termorazryvom-dlya-doma-hero-1600.webp', w: 1600 }],
   },
   '/media/promo_main/7A842D48-5D78-48B9-AFEE-AA8492800B85.webp': {
     card: [{ src: '/renders/articles/covers/vneshnie-i-skrytye-petli-raznitsa-card-480.webp', w: 480 }, { src: '/renders/articles/covers/vneshnie-i-skrytye-petli-raznitsa-card-800.webp', w: 800 }],
@@ -71,6 +79,32 @@ export const ARTICLE_IMAGE_VARIANTS: Record<string, ImageVariant[]> = {
     [{ src: '/renders/articles/images/cover-024585-640.webp', w: 640 }, { src: '/renders/articles/images/cover-024585-960.webp', w: 960 }, { src: '/renders/articles/images/cover-024585-1280.webp', w: 1280 }, { src: '/renders/articles/images/cover-024585-1600.webp', w: 1600 }],
   '/media/invisible/invisible.webp':
     [{ src: '/renders/articles/images/invisible-60134b-640.webp', w: 640 }, { src: '/renders/articles/images/invisible-60134b-960.webp', w: 960 }],
+  '/media/invisible/invisible_cover.webp':
+    [{ src: '/renders/articles/images/invisible_cover-ead2a4-640.webp', w: 640 }, { src: '/renders/articles/images/invisible_cover-ead2a4-960.webp', w: 960 }, { src: '/renders/articles/images/invisible_cover-ead2a4-1280.webp', w: 1280 }, { src: '/renders/articles/images/invisible_cover-ead2a4-1600.webp', w: 1600 }],
+  '/media/invisible/invisible_door.webp':
+    [{ src: '/renders/articles/images/invisible_door-1764af-640.webp', w: 640 }, { src: '/renders/articles/images/invisible_door-1764af-960.webp', w: 960 }, { src: '/renders/articles/images/invisible_door-1764af-1280.webp', w: 1280 }, { src: '/renders/articles/images/invisible_door-1764af-1600.webp', w: 1600 }],
+  '/media/invisible/invisible_info/invisible_lr.webp':
+    [{ src: '/renders/articles/images/invisible_lr-d45220-640.webp', w: 640 }, { src: '/renders/articles/images/invisible_lr-d45220-960.webp', w: 960 }, { src: '/renders/articles/images/invisible_lr-d45220-1280.webp', w: 1280 }, { src: '/renders/articles/images/invisible_lr-d45220-1600.webp', w: 1600 }],
+  '/media/invisible/invisible_reverse.webp':
+    [{ src: '/renders/articles/images/invisible_reverse-8c3f83-640.webp', w: 640 }, { src: '/renders/articles/images/invisible_reverse-8c3f83-960.webp', w: 960 }],
+  '/media/invisible/ourworks/17.10.25/4a4dICVgZw4zQ6eyxWyX5g57oGMNz6Trzt-g6f3fkxy2Ra4Cd8s3NaEcbOmf-SUdpMvyCmcDiZyx_2sM2UuDzEIJ.webp':
+    [{ src: '/renders/articles/images/4a4dICVgZw4zQ6eyxWyX5g57oGMNz6Trzt-g6f3f-e58442-640.webp', w: 640 }],
+  '/media/invisible/ourworks/21.10.25/GVUk8kmwYRgdLkO2nAKVkccb7ZReMFQ6bm4DrPVaYG8k6uoAOmZcr20wr3usWUdS_Fy_mFk80Vs8CvZz3aXui6tE-1.webp':
+    [{ src: '/renders/articles/images/GVUk8kmwYRgdLkO2nAKVkccb7ZReMFQ6bm4DrPVa-bb1d1b-640.webp', w: 640 }, { src: '/renders/articles/images/GVUk8kmwYRgdLkO2nAKVkccb7ZReMFQ6bm4DrPVa-bb1d1b-960.webp', w: 960 }],
+  '/media/invisible/ourworks/29.07.25/-tygOqs6wWnQRncuyldbijKD30OM1RSc1rm0INTl1Xf5-7kpZwGgQxV25AAdzllP-FNh7amcKdZ0Lxb7er_V3P6P.webp':
+    [{ src: '/renders/articles/images/-tygOqs6wWnQRncuyldbijKD30OM1RSc1rm0INTl-0ad09c-640.webp', w: 640 }, { src: '/renders/articles/images/-tygOqs6wWnQRncuyldbijKD30OM1RSc1rm0INTl-0ad09c-960.webp', w: 960 }],
+  '/media/invisible/render_alum_lite.webp':
+    [{ src: '/renders/articles/images/render_alum_lite-7d862c-640.webp', w: 640 }, { src: '/renders/articles/images/render_alum_lite-7d862c-960.webp', w: 960 }, { src: '/renders/articles/images/render_alum_lite-7d862c-1280.webp', w: 1280 }],
+  '/media/invisible/render_alum_pro.webp':
+    [{ src: '/renders/articles/images/render_alum_pro-448f23-640.webp', w: 640 }, { src: '/renders/articles/images/render_alum_pro-448f23-960.webp', w: 960 }, { src: '/renders/articles/images/render_alum_pro-448f23-1280.webp', w: 1280 }],
+  '/media/metal_doors/Termo/ComfortTermo/render_confort_termo.webp':
+    [{ src: '/renders/articles/images/render_confort_termo-1a2559-640.webp', w: 640 }, { src: '/renders/articles/images/render_confort_termo-1a2559-960.webp', w: 960 }],
+  '/media/metal_doors/Termo/Richmond/render_richmond.webp':
+    [{ src: '/renders/articles/images/render_richmond-803fab-640.webp', w: 640 }, { src: '/renders/articles/images/render_richmond-803fab-960.webp', w: 960 }, { src: '/renders/articles/images/render_richmond-803fab-1280.webp', w: 1280 }],
+  '/media/metal_doors/Termo/StrongTermo/render_strong_termo.webp':
+    [{ src: '/renders/articles/images/render_strong_termo-774839-640.webp', w: 640 }, { src: '/renders/articles/images/render_strong_termo-774839-960.webp', w: 960 }],
+  '/media/metal_doors/covers/render_hall.webp':
+    [{ src: '/renders/articles/images/render_hall-8f6877-640.webp', w: 640 }, { src: '/renders/articles/images/render_hall-8f6877-960.webp', w: 960 }, { src: '/renders/articles/images/render_hall-8f6877-1280.webp', w: 1280 }, { src: '/renders/articles/images/render_hall-8f6877-1600.webp', w: 1600 }],
   '/media/statya/1.10.26/emalex_er2_cover.webp':
     [{ src: '/renders/articles/images/emalex_er2_cover-f06468-640.webp', w: 640 }, { src: '/renders/articles/images/emalex_er2_cover-f06468-960.webp', w: 960 }, { src: '/renders/articles/images/emalex_er2_cover-f06468-1280.webp', w: 1280 }],
   '/media/statya/1.10.26/reference_cover_palette.webp':
@@ -89,6 +123,8 @@ export const ARTICLE_IMAGE_VARIANTS: Record<string, ImageVariant[]> = {
     [{ src: '/renders/articles/images/urban_render_pro-35b2c5-640.webp', w: 640 }, { src: '/renders/articles/images/urban_render_pro-35b2c5-960.webp', w: 960 }, { src: '/renders/articles/images/urban_render_pro-35b2c5-1280.webp', w: 1280 }, { src: '/renders/articles/images/urban_render_pro-35b2c5-1600.webp', w: 1600 }],
   '/media/works_prod/12.03.26_urban/-c9niw81Q0pjyOPUKFEJpVWlhQlwpIgHowrNhzv-1MHOnf_rTdIZECkewUvjrEaiL-EdKWilBGV6d6HQDUoGa4eo.webp':
     [{ src: '/renders/articles/images/-c9niw81Q0pjyOPUKFEJpVWlhQlwpIgHowrNhzv--5e36dd-640.webp', w: 640 }, { src: '/renders/articles/images/-c9niw81Q0pjyOPUKFEJpVWlhQlwpIgHowrNhzv--5e36dd-960.webp', w: 960 }],
+  '/media/works_prod/8.09.26/invisible_art.webp':
+    [{ src: '/renders/articles/images/invisible_art-399cea-640.webp', w: 640 }, { src: '/renders/articles/images/invisible_art-399cea-960.webp', w: 960 }],
   '/renders/alum-covers/1.webp':
     [{ src: '/renders/articles/images/1-f49a4c-640.webp', w: 640 }, { src: '/renders/articles/images/1-f49a4c-960.webp', w: 960 }, { src: '/renders/articles/images/1-f49a4c-1280.webp', w: 1280 }, { src: '/renders/articles/images/1-f49a4c-1600.webp', w: 1600 }],
   '/renders/alum-covers/3.webp':

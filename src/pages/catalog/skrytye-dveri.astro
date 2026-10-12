@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../../components/ui/FaqAccordion.astro'
+import RelatedArticleCard from '../../components/articles/RelatedArticleCard.astro'
 import ColorSelector      from '../../components/catalog/ColorSelector.vue'
 import InfoImageViewer    from '../../components/catalog/InfoImageViewer.vue'
 import WorksGallery      from '../../components/catalog/WorksGallery.vue'
@@ -826,6 +827,10 @@ const structuredData = canonicalUrl ? [
       </div>
     </section>
   )}
+
+  <!-- Статья по теме: перелинковка раздел → блог (src/lib/articles.ts —
+       карточка появляется, когда статья опубликована) -->
+  <RelatedArticleCard slugs={['skrytye-dveri-plyusy-i-minusy']} asSection />
 
   <!-- ══════════════════════════════════════════════
        FAQ

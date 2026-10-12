@@ -9,6 +9,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../../components/ui/FaqAccordion.astro'
+import RelatedArticleCard from '../../components/articles/RelatedArticleCard.astro'
 import SectionHeading from '../../components/partitions/SectionHeading.astro'
 import { INVISIBLE_WORKS } from '../../data/skrytye-dveri-works'
 import { merchantPolicy } from '../../lib/contacts-data'
@@ -254,6 +255,10 @@ const structuredData = canonicalUrl ? [
       </div>
     </section>
   )}
+
+  <!-- Статья по теме: перелинковка раздел → блог (src/lib/articles.ts —
+       карточка появляется, когда статья опубликована) -->
+  <RelatedArticleCard slugs={['skrytye-dveri-plyusy-i-minusy']} asSection />
 
   <!-- FAQ -->
   <section class="section bg-white">
