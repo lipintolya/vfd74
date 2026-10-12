@@ -1,12 +1,13 @@
 ---
-import { getCollection, render } from 'astro:content'
+import { render } from 'astro:content'
+import { getPublishedArticles, newestFirst } from '../../lib/articles'
 import { articleCoverImg } from '../../lib/article-images'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import FaqAccordion from '../../components/ui/FaqAccordion.astro'
 import ArticleCard from '../../components/articles/ArticleCard.astro'
 
 export async function getStaticPaths() {
-  const articles = await getCollection('articles')
+  const articles = await getPublishedArticles()
   return articles.map((article) => {
     const slug = article.id
     return { params: { slug }, props: { article, allArticles: articles } }
@@ -15,14 +16,21 @@ export async function getStaticPaths() {
 
 const { article, allArticles } = Astro.props
 
-/* Читайте также — 3 других статьи, свежие сверху. Со временем статей
-   станет больше 4 — тогда есть смысл подбирать по теме, а не просто
-   «остальные», но пока их 6, ротации достаточно. */
-const relatedArticles = allArticles
-  .filter(a => a.id !== article.id)
-  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
-  .slice(0, 3)
-const { Content } = await render(article)
+/* Читайте также — 3 статьи: сначала те, что указаны во фронтматтере
+   `related` (тематическая перелинковка), оставшиеся места — самые свежие.
+   Ещё не опубликованные статьи сюда не попадают (allArticles уже
+   отфильтрован по дате, см. src/lib/articles.ts). */
+const byId = new Map(allArticles.map(a => [a.id, a]))
+const curated = (article.data.related ?? [])
+  .map(id => byId.get(id))
+  .filter((a): a is typeof article => a !== undefined && a.id !== article.id)
+const rest = newestFirst(allArticles).filter(a => a.id !== article.id && !curated.includes(a))
+const relatedArticles = [...curated, ...rest].slice(0, 3)
+const { Content, headings } = await render(article)
+
+/* Содержание — только H2 (разделы); короткие статьи без него обходятся.
+   Якоря — id заголовков, которые Markdoc расставляет сам. */
+const tocItems = headings.filter(h => h.depth === 2)
 
 const slug = article.id
 const canonicalUrl = `https://vfd74.ru/articles/${slug}/`
@@ -32,6 +40,7 @@ const blogPostingSchema = {
   '@type': 'BlogPosting',
   headline: article.data.title,
   description: article.data.description,
+  inLanguage: 'ru-RU',
   ...(article.data.coverImage ? { image: new URL(article.data.coverImage, Astro.site).href } : {}),
   datePublished: article.data.publishDate.toISOString(),
   /* dateModified обязателен для валидного BlogPosting (Google Rich Results) —
@@ -142,6 +151,24 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
             </p>
           </header>
 
+          <!-- Содержание — якорные ссылки на разделы (быстрый переход и
+               sitelinks-подсказки в выдаче) -->
+          {tocItems.length >= 4 && (
+            <nav class="article-toc" aria-labelledby="article-toc-title">
+              <p id="article-toc-title" class="article-toc__title">Содержание</p>
+              <ol class="article-toc__list" role="list">
+                {tocItems.map((h, i) => (
+                  <li>
+                    <a href={`#${h.slug}`}>
+                      <span class="article-toc__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                      <span>{h.text}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
+
           <!-- Body -->
           <div class="article-body">
             <Content />
@@ -204,6 +231,11 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
     max-width: 80rem;
     margin-inline: auto;
   }
+  .article-body :global(h2),
+  .article-body :global(h3) {
+    /* якорь из содержания не уезжает под фиксированную шапку */
+    scroll-margin-top: calc(var(--header-height, 88px) + 1rem);
+  }
   .article-body :global(h2) {
     font-size: clamp(1.375rem, 1.15rem + 1vw, 1.875rem);
     font-weight: 500;
@@ -233,6 +265,13 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
     margin-bottom: 1.25rem;
     color: var(--color-body);
     line-height: 1.8;
+  }
+  /* Списки прямо в тексте — того же кегля, что и абзацы (раньше были мельче).
+     Списки внутри {% callout %} не трогаем: у них свой компактный размер
+     (Markdoc кладёт содержимое в <article>, поэтому берём только его прямых детей). */
+  .article-body :global(article > ul),
+  .article-body :global(article > ol) {
+    font-size: clamp(1rem, 0.95rem + 0.35vw, 1.1875rem);
   }
   .article-body :global(ul) { list-style-type: disc; }
   .article-body :global(ol) { list-style-type: decimal; }
@@ -307,6 +346,50 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
     width: 100%;
     border-radius: 0.75rem;
     margin: 1.5rem 0;
+  }
+
+  /* ── Содержание ── */
+  .article-toc {
+    max-width: 80rem;
+    margin: 0 auto 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e2e8f0;
+  }
+  .article-toc__title {
+    margin: 0 0 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #475569;
+  }
+  .article-toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (min-width: 768px) {
+    .article-toc__list { columns: 2; column-gap: 3rem; }
+  }
+  .article-toc__list li {
+    break-inside: avoid;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .article-toc__list a {
+    display: flex;
+    gap: 0.875rem;
+    padding: 0.625rem 0;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: #0f172a;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .article-toc__list a:hover { color: #0f766e; }
+  .article-toc__n {
+    flex: none;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
   }
 
   /* ── FAQ ── */

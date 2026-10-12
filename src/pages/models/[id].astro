@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content'
+import { getPublishedArticles } from '../../lib/articles'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import ProductColorPicker from '../../components/catalog/ProductColorPicker.vue'
@@ -42,7 +42,7 @@ const hasPlinth   = accessories.some(item => item.category === 'plinth')
    сторону: статьи ссылались на каталог, карточки моделей — никогда обратно
    на блог). Ищем первую статью, у которой seriesSlug модели указан
    в relatedSeriesSlugs. */
-const allArticles = await getCollection('articles')
+const allArticles = await getPublishedArticles()
 const relatedArticle = allArticles.find(a => a.data.relatedSeriesSlugs?.includes(seriesSlug))
 
 const CATEGORY_ORDER: AccessoryCategory[] = ['kit', 'box', 'nalichnik', 'kapitel', 'dobor', 'plinth', 'decorative']

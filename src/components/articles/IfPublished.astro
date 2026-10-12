@@ -1,0 +1,19 @@
+---
+/**
+ * {% ifpublished to="slug" %}…{% /ifpublished %} — выводит содержимое, только
+ * если статья `to` уже опубликована (src/lib/articles.ts). Нужно, чтобы
+ * ссылаться на статью, которая выйдет по расписанию, не оставляя до выхода
+ * ни мёртвой ссылки, ни упоминания несуществующей статьи: предложение с
+ * ссылкой просто появится в день публикации.
+ */
+import { getPublishedArticles } from '../../lib/articles'
+
+interface Props {
+  /** Слаг статьи = имя файла в src/content/articles без .mdoc */
+  to: string
+}
+
+const { to } = Astro.props
+const published = (await getPublishedArticles()).some(a => a.id === to)
+---
+{published && <slot />}

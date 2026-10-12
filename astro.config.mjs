@@ -1,5 +1,5 @@
 // @ts-check
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
@@ -113,6 +113,29 @@ async function fetchModelImages() {
 
 const modelImages = await fetchModelImages()
 
+/** слаг статьи → дата последнего изменения для <lastmod> в sitemap
+    (updatedDate, иначе publishDate из фронтматтера). Даты настоящие:
+    статья с будущей publishDate в сборку не попадает вовсе
+    (src/lib/articles.ts), так что «заранее» в sitemap ничего не уходит. */
+function loadArticleDates() {
+  const dates = new Map()
+  try {
+    const dir = path.join(process.cwd(), 'src/content/articles')
+    for (const file of readdirSync(dir)) {
+      if (!file.endsWith('.mdoc')) continue
+      const text = readFileSync(path.join(dir, file), 'utf8')
+      const pick = (key) => text.match(new RegExp(`^${key}:\\s*['"]?(\\d{4}-\\d{2}-\\d{2})`, 'm'))?.[1]
+      const date = pick('updatedDate') ?? pick('publishDate')
+      if (date) dates.set(file.replace(/\.mdoc$/, ''), new Date(`${date}T00:00:00Z`).toISOString())
+    }
+  } catch {
+    /* без lastmod sitemap остаётся валидным */
+  }
+  return dates
+}
+
+const articleDates = loadArticleDates()
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://vfd74.ru',
@@ -178,6 +201,11 @@ export default defineConfig({
         }
         if (/\/articles\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.7 }
+        }
+        const articleMatch = u.match(/\/articles\/([a-z0-9-]+)\/?$/)
+        if (articleMatch) {
+          const lastmod = articleDates.get(articleMatch[1])
+          return { ...item, changefreq: 'monthly', priority: 0.7, ...(lastmod ? { lastmod } : {}) }
         }
         if (/\/portfolio\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }

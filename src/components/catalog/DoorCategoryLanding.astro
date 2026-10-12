@@ -8,7 +8,7 @@
  * что на /catalog/?coating=...). Описание покрытия (tagline/benefits/closing)
  * берётся напрямую из coatingGroupCopy — единый источник с /catalog.
  */
-import { getCollection } from 'astro:content'
+import { getPublishedArticles } from '../../lib/articles'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../ui/Breadcrumbs.astro'
 import SeriesCard from './SeriesCard.astro'
@@ -43,7 +43,7 @@ const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
    (models/[id].astro): ищем статью, чей relatedSeriesSlugs пересекается
    с сериями этого покрытия. */
 const landingSeriesSlugs = new Set(seriesCardsData.map(s => s.slug))
-const allArticles = await getCollection('articles')
+const allArticles = await getPublishedArticles()
 const relatedArticle = allArticles.find(a => a.data.relatedSeriesSlugs?.some(s => landingSeriesSlugs.has(s)))
 
 /* Фильтры для CatalogClient — те же опции, что на /catalog/, лендинг

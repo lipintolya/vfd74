@@ -83,5 +83,27 @@ export default defineMarkdocConfig({
       render: component('./src/components/articles/CoatingPrices.astro'),
       selfClosing: true,
     },
+
+    // Цены «от» на скрытые двери / уличные входные двери с терморазрывом
+    // прямо из данных страниц (не устаревают) —
+    // {% linePrices of="hidden" /%} или {% linePrices of="thermo" /%}
+    linePrices: {
+      render: component('./src/components/articles/LinePrices.astro'),
+      selfClosing: true,
+      attributes: {
+        of: { type: String, required: true, matches: ['hidden', 'thermo'] },
+      },
+    },
+
+
+    // Показывает содержимое только когда статья `to` опубликована — для фраз
+    // вида «подробнее — в статье …» про статью, которая выйдет позже:
+    // {% ifpublished to="slug" %}Подробнее — в статье [«…»](/articles/slug/).{% /ifpublished %}
+    ifpublished: {
+      render: component('./src/components/articles/IfPublished.astro'),
+      attributes: {
+        to: { type: String, required: true },
+      },
+    },
   },
 })

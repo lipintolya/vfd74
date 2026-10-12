@@ -1,0 +1,175 @@
+---
+/**
+ * {% linePrices of="hidden" /%} — цены «от» на скрытые двери ВФД;
+ * {% linePrices of="thermo" /%} — цены «от» на уличные входные двери с
+ * терморазрывом.
+ *
+ * Берёт цифры из тех же модулей, что и страницы /catalog/skrytye-dveri/ и
+ * /vhodnye-dveri/ (с учётом действующей акции), поэтому в статье цены не
+ * устаревают при каждой правке прайса — как {% coatingPrices /%}.
+ */
+import {
+  SECRET_MIN_BLADE_PRICE, SECRET_MIN_KIT_PRICE,
+  SECRET_REVERS_MIN_BLADE_PRICE, SECRET_REVERS_MIN_KIT_PRICE,
+  REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE,
+} from '../../data/skrytye-dveri-products'
+import { ENTRANCE_DOOR_MODELS, minPriceOf } from '../../data/entrance-doors'
+
+interface Props {
+  of: 'hidden' | 'thermo'
+}
+
+interface Row {
+  name:   string
+  href:   string
+  note:   string
+  prices: { label: string; value: number }[]
+}
+
+const { of } = Astro.props
+const fmt = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
+
+const spec = (model: (typeof ENTRANCE_DOOR_MODELS)[number], label: string) =>
+  model.specs.find(s => s.label === label)?.value
+
+let rows: Row[] = []
+let note = ''
+
+if (of === 'hidden') {
+  rows = [
+    {
+      name: '«Секрет»', href: '/catalog/skrytye-dveri/',
+      note: 'Открывается «на себя», полотно в грунте под покраску',
+      prices: [
+        { label: 'Полотно', value: SECRET_MIN_BLADE_PRICE },
+        { label: 'Комплект с коробом', value: SECRET_MIN_KIT_PRICE },
+      ],
+    },
+    {
+      name: '«Секрет Реверс»', href: '/catalog/skrytye-dveri/',
+      note: 'Открывается «от себя», в сторону соседней комнаты',
+      prices: [
+        { label: 'Полотно', value: SECRET_REVERS_MIN_BLADE_PRICE },
+        { label: 'Комплект с коробом', value: SECRET_REVERS_MIN_KIT_PRICE },
+      ],
+    },
+    {
+      name: '«Рефлекс»', href: '/catalog/skrytye-dveri/#reflex',
+      note: 'Зеркальное полотно во всю высоту, до 2,5 м',
+      prices: [
+        { label: 'Полотно', value: REFLEX_MIN_BLADE_PRICE },
+        { label: 'Комплект с коробом', value: REFLEX_MIN_KIT_PRICE },
+      ],
+    },
+  ]
+  note = 'Цены «от» — для самой доступной кромки и стороны открывания; они берутся со страницы скрытых дверей и обновляются вместе с ней. Комплект включает полотно и скрытый короб со скрытыми петлями. Ручка, стопор и завёртка WC — отдельно, монтаж считается отдельно.'
+} else {
+  rows = ENTRANCE_DOOR_MODELS
+    .filter(m => m.purpose === 'house')
+    .map(m => ({
+      name: m.name,
+      href: `/vhodnye-dveri/#${m.id}`,
+      note: [
+        spec(m, 'Толщина дверного полотна') && `полотно ${spec(m, 'Толщина дверного полотна')}`,
+        spec(m, 'Толщина короба') && `короб ${spec(m, 'Толщина короба')}`,
+        spec(m, 'Вес дверного блока') && `блок ${spec(m, 'Вес дверного блока')}`,
+      ].filter(Boolean).join(' · '),
+      prices: [{ label: 'Дверь с накладкой изнутри', value: minPriceOf(m) }],
+    }))
+  note = 'Цена «от» — за дверной блок с самой доступной накладкой изнутри; другие накладки стоят иначе, их цены — на странице входных дверей. Порог из нержавеющей стали — дополнительная опция, монтаж считается отдельно.'
+}
+---
+
+{rows.length > 0 && (
+  <div class="lprices">
+    <ul class="lprices__list" role="list">
+      {rows.map(r => (
+        <li class="lprices__row">
+          <div class="lprices__head">
+            <a href={r.href} class="lprices__name">{r.name}</a>
+            <span class="lprices__prices">
+              {r.prices.map(p => (
+                <span class="lprices__price">
+                  <span class="lprices__label">{p.label}</span> от {fmt(p.value)}
+                </span>
+              ))}
+            </span>
+          </div>
+          <p class="lprices__note">{r.note}</p>
+        </li>
+      ))}
+    </ul>
+    <p class="lprices__foot">{note}</p>
+  </div>
+)}
+
+<style>
+/* Все правила с префиксом .lprices и повышенной специфичностью: статья задаёт
+   глобальные стили ul/li/p/a (.article-body :global(...)) — без этого список
+   получал маркеры, отступы и подчёркнутые ссылки (тот же приём, что в
+   CoatingPrices). */
+.lprices {
+  margin: 1.75rem 0;
+}
+.lprices .lprices__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+}
+.lprices .lprices__row {
+  margin: 0;
+  padding: 1rem 1.25rem;
+}
+.lprices .lprices__row + .lprices__row {
+  border-top: 1px solid #e5e7eb;
+}
+.lprices .lprices__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.lprices .lprices__name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #0f172a;
+  text-decoration: none;
+}
+.lprices a.lprices__name:hover {
+  color: #0f766e;
+}
+.lprices .lprices__prices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+.lprices .lprices__price {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.lprices .lprices__label {
+  font-weight: 400;
+  color: #64748b;
+}
+.lprices .lprices__note {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #64748b;
+}
+.lprices .lprices__foot {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+</style>

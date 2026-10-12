@@ -46,6 +46,11 @@ a.dphoto__frame:hover {
   height: 100%;
   object-fit: cover;
   display: block;
+  /* глобальное правило статьи (.article-body img) даёт картинке margin
+     1.5rem по вертикали и скругление — внутри квадратной плитки это сдвигало
+     кадр вниз и оставляло светлую полосу сверху (как в Card.astro). */
+  margin: 0 !important;
+  border-radius: 0 !important;
 }
 .dphoto__caption {
   margin: 0.5rem 0 0;
