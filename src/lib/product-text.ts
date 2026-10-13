@@ -107,8 +107,31 @@ export function priceLabel(m: Pick<ModelEntry, 'minPrice' | 'maxPrice'>): string
   return `${m.maxPrice && m.maxPrice > m.minPrice ? 'от ' : ''}${formatRub(m.minPrice)}`
 }
 
-export const productTitle = (m: NamingInput) =>
-  `${productName(m)} — купить в Челябинске | ВФД`
+/** Целевая длина <title>: дальше поиск обрезает заголовок многоточием. */
+const TITLE_MAX = 70
+
+/**
+ * <title> страницы модели. Полное название — «Межкомнатная дверь Урбан 2ГР,
+ * Эмалекс, кромка чёрная — купить в Челябинске | ВФД»; у длинных названий
+ * по очереди убираем «| ВФД», слово «Межкомнатная», «купить в» и только в
+ * самую последнюю очередь — кромку/остекление: ею различаются некоторые SKU,
+ * без неё заголовки разных страниц совпали бы.
+ */
+export function productTitle(m: NamingInput): string {
+  const full   = productName(m)
+  const noTrim = productName({ ...m, model: { ...m.model, trim: null } })
+  const short  = (name: string) => name.replace(new RegExp(`^${DOOR_TYPE}`), 'Дверь')
+  const candidates = [
+    `${full} — купить в Челябинске | ВФД`,
+    `${full} — купить в Челябинске`,
+    `${short(full)} — купить в Челябинске | ВФД`,
+    `${short(full)} — купить в Челябинске`,
+    `${short(full)} — Челябинск | ВФД`,
+    `${short(full)} — Челябинск`,
+    `${short(noTrim)} — купить в Челябинске | ВФД`,
+  ]
+  return candidates.find(t => t.length <= TITLE_MAX) ?? candidates[candidates.length - 1]!
+}
 
 /** <meta description>: здесь как раз место цене и городу (в отличие от фида). */
 export function productMetaDescription(m: ModelEntry): string {

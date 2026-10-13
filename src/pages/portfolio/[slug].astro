@@ -38,7 +38,9 @@ const titleSuffix = [
   city && !isInTitle(city) ? city : '',
 ].filter(Boolean).join(', ')
 // Второе тире подряд читается плохо: если в заголовке уже есть « — », место — через запятую.
-const pageTitle = `${work.title}${titleSuffix ? `${work.title.includes(' — ') ? ', ' : ' — '}${titleSuffix}` : ''} | ВФД`
+const pageTitle = work.seoTitle
+  ? `${work.seoTitle} | ВФД`
+  : `${work.title}${titleSuffix ? `${work.title.includes(' — ') ? ', ' : ' — '}${titleSuffix}` : ''} | ВФД`
 
 const doorWord = (n: number) =>
   n === 1 ? 'дверь' : n < 5 ? 'двери' : 'дверей'

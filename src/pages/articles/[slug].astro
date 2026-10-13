@@ -87,7 +87,7 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
 ---
 
 <BaseLayout
-  title={`${article.data.title} — ВФД Челябинск`}
+  title={article.data.seoTitle ? `${article.data.seoTitle} | ВФД` : `${article.data.title} — ВФД Челябинск`}
   description={article.data.description}
   structuredData={structuredData}
   ogType="article"

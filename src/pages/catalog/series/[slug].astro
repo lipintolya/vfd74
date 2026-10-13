@@ -79,7 +79,17 @@ const modelsPhrase   = `${series.modelCount} ${pluralRu(series.modelCount, ['м�
 
 /* Тип товара первым — по нему ищут («межкомнатные двери скинель»),
    а само название серии тип не называет. */
-const pageTitle = `Межкомнатные двери ${series.name}${coatingPhrase ? ` (${coatingPhrase})` : ''} — купить в Челябинске, цены | ВФД`
+/* Лесенка до ~70 знаков (дальше выдача обрезает заголовок): сначала убираем
+   «, цены», затем «| ВФД», в последнюю очередь — «Межкомнатные». */
+const titleCore   = `${series.name}${coatingPhrase ? ` (${coatingPhrase})` : ''}`
+const titleLadder = [
+  `Межкомнатные двери ${titleCore} — купить в Челябинске, цены | ВФД`,
+  `Межкомнатные двери ${titleCore} — купить в Челябинске | ВФД`,
+  `Межкомнатные двери ${titleCore} — купить в Челябинске`,
+  `Двери ${titleCore} — купить в Челябинске | ВФД`,
+  `Двери ${titleCore} — купить в Челябинске`,
+]
+const pageTitle = titleLadder.find(t => t.length <= 70) ?? titleLadder[titleLadder.length - 1]!
 /* Короткая генерация всегда в meta — та же причина, что на models/[id].astro:
    spec.description (маркетинговый текст серии) длиннее ~155 символов нормы
    SERP-сниппета и не упоминает город/цену — Google обрежет её на середине

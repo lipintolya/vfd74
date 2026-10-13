@@ -5,6 +5,8 @@ const articles = defineCollection({
   loader: glob({ pattern: '*.mdoc', base: './src/content/articles' }),
   schema: z.object({
     title: z.string(),
+    /** Короткий <title> (до ~60 знаков, без бренда); H1 остаётся полным `title`. */
+    seoTitle: z.string().optional(),
     description: z.string(),
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
