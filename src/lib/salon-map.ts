@@ -20,13 +20,13 @@ const PALETTES = {
   light: {
     bg: '#f8fafc', green: '#e6f2ec', water: '#d9e6f2', building: '#e2e8f0',
     roadCasing: '#cbd5e1', road: '#ffffff', rail: '#94a3b8', salon: '#0d9488',
-    label: '#64748b', halo: '#f8fafc', signal: '#14b8a6', ink: '#0f172a',
+    landmark: '#b6c2d1', label: '#64748b', halo: '#f8fafc', signal: '#14b8a6', ink: '#0f172a',
     card: '#ffffff', cardStroke: '#e2e8f0',
   },
   dark: {
     bg: '#18181a', green: '#1e1e21', water: '#1f2937', building: '#232227',
     roadCasing: '#18181a', road: '#34343a', rail: '#52525b', salon: '#14b8a6',
-    label: '#8b8b94', halo: '#18181a', signal: '#2dd4bf', ink: '#ffffff',
+    landmark: '#3f3f46', label: '#8b8b94', halo: '#18181a', signal: '#2dd4bf', ink: '#ffffff',
     card: '#232227', cardStroke: '#3f3f46',
   },
 } as const
@@ -43,17 +43,46 @@ export function salonMapSvg(variant: SalonMapVariant): string {
 
   /* Тёмная карта — широкая полоса вокруг метки (футер ~3:1): подписи вне
      полосы или торчащие за её край не рисуем — иначе их обрезало бы. */
-  const bandH = variant === 'dark' ? 336 : H
+  const bandH = variant === 'dark' ? 360 : H
   const bandTop = (H - bandH) / 2
   const fits = (x: number, y: number, text: string, angle: number) => {
-    const half = (text.length * 12) / 2
+    const half = (text.length * 11) / 2
     const hx = half * Math.abs(Math.cos((angle * Math.PI) / 180))
-    const hy = half * Math.abs(Math.sin((angle * Math.PI) / 180)) + 12
-    return x - hx > 15 && x + hx < W - 15 && y - hy > bandTop + 10 && y + hy < bandTop + bandH - 10
+    const hy = half * Math.abs(Math.sin((angle * Math.PI) / 180)) + 10
+    return x - hx > 15 && x + hx < W - 15 && y - hy > bandTop + 6 && y + hy < bandTop + bandH - 6
   }
 
-  const labels = map.labels
-    .filter((l) => fits((l.x / 100) * W, (l.y / 100) * H, l.text, l.angle))
+  // Ориентиры (Лента Гипер): плашка под зданием, чтобы не закрывать улицу рядом
+  type Box = [number, number, number, number]
+  const taken: Box[] = []
+  const landmarks = map.landmarks
+    .map((m) => {
+      const w = m.text.length * 13 + 30
+      const x = (m.x / 100) * W
+      const y = (m.bottom / 100) * H + 24
+      taken.push([x - w / 2, y - 19, x + w / 2, y + 19])
+      return { m, x, y, w }
+    })
+    .filter(({ y }) => y > bandTop + 20 && y < bandTop + bandH - 20)
+    .map(({ m, x, y, w }) =>
+      `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="${-w / 2}" y="-19" width="${w}" height="38" rx="10" fill="${C.card}" stroke="${C.cardStroke}" stroke-width="1.5"/><text y="1" font-family="${FONT}" font-size="19" font-weight="700" fill="${C.ink}" text-anchor="middle" dominant-baseline="middle">${esc(m.text)}</text></g>`)
+    .join('')
+  // Подпись салона тоже занимает место
+  taken.push(variant === 'light' ? [cx + 24, cy - 104, cx + 342, cy - 28] : [cx + 21, cy - 40, cx + 270, cy])
+
+  // На каждую улицу в JSON несколько мест для подписи — берём первое, что целиком в кадре и ничего не закрывает
+  const clear = (x: number, y: number, text: string, angle: number) => {
+    const half = (text.length * 11) / 2
+    const hx = half * Math.abs(Math.cos((angle * Math.PI) / 180)) + 4
+    const hy = half * Math.abs(Math.sin((angle * Math.PI) / 180)) + 10
+    return taken.every(([x1, y1, x2, y2]) => x + hx < x1 || x - hx > x2 || y + hy < y1 || y - hy > y2)
+  }
+  const chosen = [...new Set(map.labels.map((l) => l.text))].flatMap((text) => {
+    const spot = map.labels.find((l) => l.text === text && fits((l.x / 100) * W, (l.y / 100) * H, l.text, l.angle) && clear((l.x / 100) * W, (l.y / 100) * H, l.text, l.angle))
+    return spot ? [spot] : []
+  })
+
+  const labels = chosen
     .map((l) => {
       const x = (l.x / 100) * W
       const y = (l.y / 100) * H
@@ -87,9 +116,11 @@ export function salonMapSvg(variant: SalonMapVariant): string {
 <path d="${L.rail}" stroke="${C.rail}" stroke-width="2" stroke-dasharray="10 6"/>
 <path d="${L.major}" stroke="${C.roadCasing}" stroke-width="16"/>
 <path d="${L.major}" stroke="${C.road}" stroke-width="13"/>
+<path d="${L.landmark}" fill="${C.landmark}"/>
 <path d="${L.salon}" fill="${C.salon}" stroke="${C.salon}" stroke-width="4"/>
 </g>
 <g font-family="${FONT}" font-size="19" font-weight="600" fill="${C.label}" text-anchor="middle" dominant-baseline="middle" stroke="${C.halo}" stroke-width="4" paint-order="stroke">${labels}</g>
+${landmarks}
 <circle class="pulse" cx="${cx}" cy="${cy}" r="26" fill="${C.signal}"/>
 <circle cx="${cx}" cy="${cy}" r="10" fill="${C.signal}" stroke="${variant === 'light' ? '#ffffff' : C.bg}" stroke-width="4"/>
 ${pin}

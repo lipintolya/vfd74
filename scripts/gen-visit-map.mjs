@@ -83,12 +83,16 @@ if (!salon) {
 }
 console.log('здание салона:', salon ? `way ${salon.id}` : 'не найдено — подсветки не будет')
 
+/* Ориентиры для местных: здание с таким именем в OSM подсвечивается и
+   подписывается (text — как называют люди, name — как записано в OSM) */
+const LANDMARKS = [{ name: 'Лента', text: 'Лента Гипер' }]
+
 /* Слой по тегам. Пешеходные дорожки и дворовые проезды не рисуем — шум */
 const MAJOR = /^(motorway|trunk|primary|secondary)(_link)?$/
 const MINOR = /^(tertiary|tertiary_link|residential|unclassified|living_street|pedestrian)$/
 function layer(e) {
   const t = e.tags ?? {}
-  if (t.building) return salon && e.id === salon.id ? 'salon' : 'building'
+  if (t.building) return LANDMARKS.some((l) => l.name === t.name) ? 'landmark' : salon && e.id === salon.id ? 'salon' : 'building'
   if (t.natural === 'water' || t.waterway) return t.waterway ? 'river' : 'water'
   if (t.landuse || t.leisure || t.natural) return 'green'
   if (t.railway) return t.service ? null : 'rail'
@@ -96,7 +100,7 @@ function layer(e) {
   if (t.highway && MINOR.test(t.highway)) return 'minor'
   return null
 }
-const CLOSED = new Set(['building', 'salon', 'water', 'green'])
+const CLOSED = new Set(['building', 'salon', 'landmark', 'water', 'green'])
 
 /* Точки ближе 2 единиц (3 м) друг к другу выбрасываем */
 function toPath(pts, closed) {
@@ -111,7 +115,8 @@ function toPath(pts, closed) {
   return 'M' + out.map(([x, y]) => `${Math.round(x)} ${Math.round(y)}`).join('L') + (closed ? 'Z' : '')
 }
 
-const layers = { green: [], water: [], river: [], building: [], minor: [], rail: [], major: [], salon: [] }
+const layers = { green: [], water: [], river: [], building: [], minor: [], rail: [], major: [], landmark: [], salon: [] }
+const landmarks = []
 const named = new Map() // имя улицы → её отрезки (way)
 for (const e of elements) {
   const t = e.tags ?? {}
@@ -121,6 +126,13 @@ for (const e of elements) {
   const d = toPath(pts, CLOSED.has(l))
   if (!d) continue
   layers[l].push(d)
+  if (l === 'landmark') {
+    const [cx, cy] = [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length]
+    const x = (cx / W) * 100
+    const y = (cy / H) * 100
+    const bottom = (Math.max(...pts.map((p) => p[1])) / H) * 100 // низ здания: плашку ставим под ним, чтобы не закрывать улицу рядом
+    if (x > 5 && x < 95 && y > 5 && y < 95) landmarks.push({ text: LANDMARKS.find((k) => k.name === t.name).text, x: +x.toFixed(2), y: +y.toFixed(2), bottom: +bottom.toFixed(2) })
+  }
   if ((l === 'major' || l === 'minor') && t.name) {
     if (!named.has(t.name)) named.set(t.name, [])
     named.get(t.name).push({ pts, major: l === 'major' })
@@ -153,20 +165,21 @@ const labels = [...named.entries()].flatMap(([name, ways]) => {
     .filter((w) => length(w.pts) > 90)
     .map((w) => ({ ...w, len: length(w.pts), at: midpoint(w.pts) }))
     .filter(({ at }) => at.x > 10 && at.x < 90 && at.y > 24 && at.y < 76 && Math.hypot(at.x - 50, at.y - 50) > 8)
-    // подпись целиком в кадре: ~13 единиц на символ (19px, semibold), с полем 20 единиц
+    // подпись целиком в кадре: ~11 единиц на символ (19px, semibold), с полем 20 единиц
     .filter(({ at }) => {
-      const half = (SHORT.reduce((t, [re, r]) => t.replace(re, r), name).length * 13) / 2
+      const half = (SHORT.reduce((t, [re, r]) => t.replace(re, r), name).length * 11) / 2
       const hx = half * Math.abs(Math.cos((at.angle * Math.PI) / 180))
       const hy = half * Math.abs(Math.sin((at.angle * Math.PI) / 180))
       const [x, y] = [(at.x / 100) * W, (at.y / 100) * H]
       return x - hx > 20 && x + hx < W - 20 && y - hy > 20 && y + hy < H - 20
     })
     .sort((a, b) => b.len - a.len)
-  // Сначала — средняя полоса по высоте: на страницах карта обрезана сверху и снизу (object-cover), поэтому подписи — только из средней полосы 24–76%
-  const best = fit.find(({ at }) => at.y > 30 && at.y < 70) ?? fit[0]
-  if (!best) return []
+  // Несколько вариантов места на улицу: страницы режут карту по-разному
+  // (контакты — почти целиком, футер — узкой полосой), и рендер берёт первый,
+  // который целиком попал в его кадр. Средняя полоса — в приоритете.
+  const spots = [...fit.filter(({ at }) => at.y > 30 && at.y < 70), ...fit.filter(({ at }) => !(at.y > 30 && at.y < 70))].slice(0, 3)
   const text = SHORT.reduce((s, [re, r]) => s.replace(re, r), name)
-  return [{ text, x: +best.at.x.toFixed(2), y: +best.at.y.toFixed(2), angle: best.at.angle, major: best.major }]
+  return spots.map((b) => ({ text, x: +b.at.x.toFixed(2), y: +b.at.y.toFixed(2), angle: b.at.angle, major: b.major }))
 })
 
 const out = {
@@ -175,6 +188,7 @@ const out = {
   height: H,
   layers: Object.fromEntries(Object.entries(layers).map(([k, v]) => [k, v.join('')])),
   labels,
+  landmarks,
 }
 await writeFile(new URL('src/data/visit-map.json', ROOT), JSON.stringify(out))
-console.log('visit-map.json:', JSON.stringify(out).length, 'байт;', labels.map((l) => l.text).join(', '))
+console.log('visit-map.json:', JSON.stringify(out).length, 'байт;', [...new Set(labels.map((l) => l.text))].join(', '), '| ориентиры:', landmarks.map((l) => l.text).join(', ') || 'не найдены')
