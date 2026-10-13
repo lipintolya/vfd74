@@ -36,12 +36,10 @@ const CONTACTS = {
   address: companyLegalInfo.address.legal,
 }
 
-/* Раньше здесь был живой iframe Yandex Maps (свой JS + тайлы) — карта
-   декоративная (pointer-events:none, aria-hidden, клик ведёт по MAP_LINK
-   отдельной ссылкой), но футер общий для всех ~400 страниц сайта, так что
-   iframe грузился на каждой. Заменён на статичный скриншот Static Maps API
-   (см. scripts/gen-footer-map.mjs) — то же визуально, без JS-рантайма. */
-const MAP_PREVIEW_IMAGE = '/renders/footer-map.webp'
+/* Собственная тёмная карта окрестностей салона (src/lib/salon-map.ts,
+   данные OpenStreetMap): один лёгкий SVG вместо iframe Яндекс Карт и
+   скриншота — футер общий для всех ~400 страниц, файл кешируется. */
+const MAP_PREVIEW_IMAGE = '/salon-map-dark.svg'
 const MAP_LINK = 'https://yandex.ru/maps/-/CPTwZPi-'
 
 /* ============================================================
@@ -357,13 +355,14 @@ onUnmounted(() => {
             <img
               :src="MAP_PREVIEW_IMAGE"
               alt=""
-              width="650"
-              height="450"
+              width="1000"
+              height="336"
               loading="lazy"
               decoding="async"
               class="absolute inset-0 w-full h-full object-cover"
               aria-hidden="true"
             />
+            <span class="absolute right-2 bottom-1.5 text-[0.625rem] text-white/40 pointer-events-none">© участники OpenStreetMap</span>
             <a
               :href="MAP_LINK"
               target="_blank"

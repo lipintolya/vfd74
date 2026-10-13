@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { companyLegalInfo, getFormattedHours } from '../../lib/contacts-data'
 import { paymentMethods } from '../about/about-data'
 
@@ -23,11 +22,6 @@ const hours = saturday!.time === sunday!.time
   ? [weekdays!, { day: 'Сб–Вс', time: saturday!.time }]
   : [weekdays!, saturday!, sunday!]
 
-/* Yandex-карта — тяжёлый сторонний iframe (свой JS + тайлы): до клика
-   показываем статичный снимок карты с меткой салона (тот же, что в футере). */
-const mapLoaded = ref(false)
-const { lat, lng } = address.coordinates
-const MAP_SRC = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=17&pt=${lng}%2C${lat}&l=map`
 </script>
 
 <template>
@@ -126,32 +120,23 @@ const MAP_SRC = `https://yandex.ru/map-widget/v1/?ll=${lng}%2C${lat}&z=17&pt=${l
           </div>
 
           <div class="relative min-h-72 flex-1 bg-slate-100">
-            <iframe
-              v-if="mapLoaded"
-              :src="MAP_SRC"
-              title="Салон ВФД на Яндекс Картах"
-              class="absolute inset-0 h-full w-full border-0"
+            <img
+              src="/salon-map-light.svg"
+              alt="Карта: салон ВФД на ул. Братьев Кашириных, 131Б, рядом перекрёсток с ул. Чичерина"
+              width="1000"
+              height="720"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 h-full w-full object-cover"
             />
-            <button
-              v-else
-              type="button"
-              class="group absolute inset-0 h-full w-full"
-              aria-label="Открыть интерактивную карту"
-              @click="mapLoaded = true"
-            >
-              <img
-                src="/renders/footer-map.webp"
-                alt=""
-                width="650"
-                height="450"
-                loading="lazy"
-                decoding="async"
-                class="h-full w-full object-cover"
-              />
-              <span class="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/95 px-4 py-2 text-sm font-semibold text-ink shadow-md ring-1 ring-slate-900/5 transition-colors group-hover:bg-white">
-                Открыть интерактивную карту
-              </span>
-            </button>
+            <span class="pointer-events-none absolute bottom-2 right-3 text-[0.6875rem] text-slate-500">© участники OpenStreetMap</span>
+            <a
+              :href="ROUTE"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="absolute inset-0"
+              aria-label="Открыть карту с расположением салона в Яндекс Картах (открывается в новой вкладке)"
+            />
           </div>
         </div>
       </div>
