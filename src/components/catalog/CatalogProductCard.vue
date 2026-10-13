@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { calcKitPrice, BASE_KIT_DESCRIPTION } from '../../data/accessories'
 import { isMadeToOrder, isInStock } from '../../lib/made-to-order'
+import { thumbSrcset } from '../../lib/model-thumbs.mjs'
 import type { CatalogCardItem } from './types'
 
 const props = withDefaults(defineProps<{
@@ -36,6 +37,17 @@ const activeSwatch = computed(() => props.card.colorSwatches[activeSwatchIdx.val
 /* Фото не переключаем на пустое — у цвета без фото под эту модель остаётся
    текущее/дефолтное фото, а не пустой плейсхолдер (цвет выглядел бы "сломанным"). */
 const activePhoto = computed(() => activeSwatch.value?.photo || props.card.photo)
+
+/* Эскизы фото (scripts/gen-model-thumbs.mjs): карточка показывает дверь шириной
+   130–300 CSS px, а оригинал — 500–1300 px. srcset строится из пути фото; у фото,
+   для которого эскиза нет, сервер ставит noThumb — тогда остаётся один оригинал.
+   sizes — ширина картинки в сетке каталога (2 колонки до lg, 3 на lg, 4 на xl;
+   см. CatalogGrid и отступы фото-блока). */
+const THUMB_SIZES = '(min-width: 1920px) 310px, (min-width: 1280px) 246px, (min-width: 1024px) calc(33vw - 77px), calc(50vw - 56px)'
+const photoSrcset = computed(() => {
+  const noThumb = activeSwatch.value?.photo ? activeSwatch.value.noThumb : props.card.noThumb
+  return noThumb ? undefined : thumbSrcset(activePhoto.value) || undefined
+})
 /* Цену не наследуем от базовой при отсутствии фото — цена под конкретный
    цвет не подтверждена, честнее показать «По запросу», чем чужую цифру. */
 const activePrice = computed(() => activeSwatch.value?.available === false ? null : (activeSwatch.value?.price ?? props.card.price))
@@ -126,6 +138,8 @@ const inStock     = computed(() => isInStock(props.card.id, activeColorName.valu
         v-if="activePhoto"
         :key="activePhoto"
         :src="activePhoto"
+        :srcset="photoSrcset"
+        :sizes="photoSrcset ? THUMB_SIZES : undefined"
         :alt="`${card.name} — ${activeColorName}`"
         class="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
         :loading="priority ? 'eager' : 'lazy'"

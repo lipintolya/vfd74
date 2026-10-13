@@ -35,6 +35,7 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { CLOUD_BUCKETS } from '../src/lib/media-path.mjs'
+import { dbPhotos } from './lib/db-photos.mjs'   // фото цветов из Supabase
 
 const ROOT      = fileURLToPath(new URL('..', import.meta.url))
 const MEDIA_DIR = path.join(ROOT, 'public/media')
@@ -50,6 +51,10 @@ const REMOTE_FILE_RE = new RegExp(
 /* Любой «хвост» облака, в т.ч. константы-базы без имени файла
    ('…/vfd74ru/metal_doors/') — для замены префикса. */
 const REMOTE_PREFIX_RE = new RegExp(`https://storage\\.yandexcloud\\.net/(?:${BUCKETS})(?=[/'"\`])`, 'g')
+/* Эскизы фото моделей (src/lib/model-thumbs.mjs): ссылка в собранном сайте на
+   несуществующий эскиз — ошибка сборки (карточка без эскиза получает noThumb). */
+const THUMB_REF_RE = /\/renders\/models\/([^'"`<>\\\s,]+?\.webp)(?![A-Za-z0-9])/gi
+const THUMBS_DIR   = path.join(ROOT, 'public/renders/models')
 const LOCAL_REF_RE = new RegExp(`/media/([^'"\`<>\\\\]+?\\.(?:${EXT}))(?![A-Za-z0-9])`, 'gi')
 
 const args = new Set(process.argv.slice(2))
@@ -75,24 +80,6 @@ async function sourceFiles(roots, ext = SCAN_EXT) {
   const out = []
   for (const r of roots) for await (const f of walk(r)) if (ext.test(f)) out.push(f)
   return out
-}
-
-/* Фото цветов из Supabase — единственный источник картинок вне исходников. */
-async function dbPhotos() {
-  let env = {}
-  try {
-    const t = await readFile(path.join(ROOT, '.env'), 'utf8')
-    for (const l of t.split('\n')) { const m = l.match(/^([A-Z_]+)=(.*)$/); if (m) env[m[1]] = m[2].trim() }
-  } catch { /* .env может не быть — тогда берём из окружения */ }
-  const url = process.env.PUBLIC_SUPABASE_URL ?? env.PUBLIC_SUPABASE_URL
-  const key = process.env.PUBLIC_SUPABASE_ANON_KEY ?? env.PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) { console.warn('! Supabase не настроен — фото каталога пропущены'); return [] }
-  const res = await fetch(`${url}/rest/v1/model_colors?select=photo_url`, {
-    headers: { apikey: key, Authorization: `Bearer ${key}`, Range: '0-9999' },
-    signal: AbortSignal.timeout(30_000),
-  })
-  if (!res.ok) throw new Error(`Supabase: HTTP ${res.status}`)
-  return (await res.json()).map((r) => r.photo_url).filter(Boolean)
 }
 
 async function download(rel, tries = 5) {
@@ -169,6 +156,7 @@ if (listFlag !== -1) {
 /* ── --check / --dist ── */
 if (CHECK || DIST) {
   const missing = new Set()
+  const missingThumbs = new Set()
   const remote  = new Set()
   const files = DIST
     ? await sourceFiles(['dist'], /\.(html|js|css|xml|json)$/)
@@ -179,6 +167,11 @@ if (CHECK || DIST) {
       if (!(await fileOk(toDiskPath(m[1])))) missing.add(decode(m[1]))
     }
     for (const m of text.matchAll(REMOTE_FILE_RE)) remote.add(decode(m[1]))
+    if (DIST) {
+      for (const m of text.matchAll(THUMB_REF_RE)) {
+        if (!(await fileOk(path.join(THUMBS_DIR, decode(m[1]))))) missingThumbs.add(decode(m[1]))
+      }
+    }
   }
   if (!DIST) {
     for (const url of await dbPhotos()) {
@@ -190,9 +183,13 @@ if (CHECK || DIST) {
   if (remote.size) console.log(`${DIST ? '! ' : ''}Облачных ссылок осталось: ${remote.size} (npm run media:sync переведёт их на /media)`)
   if (missing.size) { console.log(`Нет на диске (${missing.size}):`); for (const m of missing) console.log('  ✗', m) }
   else console.log('Все /media/… на месте')
+  if (missingThumbs.size) {
+    console.log(`Нет эскизов (${missingThumbs.size}) — npm run gen:model-thumbs:`)
+    for (const m of missingThumbs) console.log('  ✗', m)
+  }
   // В dist облачные ссылки — предупреждение (так работает запасной вариант для
   // фото из БД, которых ещё нет в public/media); сломанная локальная — ошибка.
-  process.exit(missing.size || (!DIST && remote.size) ? 1 : 0)
+  process.exit(missing.size || missingThumbs.size || (!DIST && remote.size) ? 1 : 0)
 }
 
 /* ── локализация ── */

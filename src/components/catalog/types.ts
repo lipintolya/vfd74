@@ -23,8 +23,10 @@ export interface CatalogCardItem {
       существует, хотя на деле просто нет фото. Такие цвета НЕ участвуют в
       фильтре каталога (см. colorNames/allColors) — иначе фильтр по ним давал
       бы пустую выдачу. */
-  colorSwatches: { name: string; hex: string; price: number | null; photo: string; available: boolean }[]
+  colorSwatches: { name: string; hex: string; price: number | null; photo: string; available: boolean; noThumb?: true }[]
   photo: string
+  /** Нет эскизов фото обложки (gen-model-thumbs) — карточка берёт оригинал. */
+  noThumb?: true
   price: number | null
   hasGlass: boolean
   /** Бейдж "Новинка" — см. src/lib/new-models.ts */

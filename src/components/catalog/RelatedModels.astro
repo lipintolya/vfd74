@@ -9,6 +9,8 @@
 import type { ModelEntry } from '../../lib/model-entries'
 import { cleanModelName, priceLabel, pluralRu } from '../../lib/product-text'
 import { describeTrim } from '../../lib/trim-labels'
+import { thumbSrcset } from '../../lib/model-thumbs.mjs'
+import { thumbMissing } from '../../lib/media-resolve'
 
 interface Props {
   models:      ModelEntry[]
@@ -22,6 +24,11 @@ const { models, seriesName, seriesSlug, seriesTotal } = Astro.props
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
+/* Ширина фото в сетке блока: 2 колонки до 640, 3 до 1024, 4 дальше (с учётом
+   внутренних отступов карточки). Эскизы — scripts/gen-model-thumbs.mjs;
+   нет эскиза у фото — остаётся оригинал. */
+const THUMB_SIZES = '(min-width: 1280px) 265px, (min-width: 1024px) calc(25vw - 55px), (min-width: 640px) calc(33vw - 56px), calc(50vw - 48px)'
+
 /* Подпись под названием: покрытие и, если задано, кромка/остекление — ею
    различаются SKU с одинаковым названием («Урбан 1» с золотой/чёрной кромкой). */
 const cards = models.map(m => {
@@ -32,6 +39,7 @@ const cards = models.map(m => {
     href:  `/models/${m.slug}/`,
     name,
     photo: cover.photo,
+    srcset: thumbMissing(cover.photo) ? '' : thumbSrcset(cover.photo),
     alt:   `${name} — ${cover.name}`,
     meta:  [m.coatingName, trim && capitalize(trim)].filter(Boolean).join(' · '),
     price: priceLabel(m),
@@ -60,6 +68,8 @@ const totalLabel = `${seriesTotal} ${pluralRu(seriesTotal, ['модель', 'м�
               <span class="rm__photo">
                 <img
                   src={card.photo}
+                  srcset={card.srcset || undefined}
+                  sizes={card.srcset ? THUMB_SIZES : undefined}
                   alt={card.alt}
                   width="240"
                   height="300"

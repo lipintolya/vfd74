@@ -5,7 +5,7 @@
  * дублировать JOIN и нормализацию цветов в каждом месте.
  */
 import { supabase } from './supabase'
-import { resolveMedia } from './media-resolve'
+import { resolveMedia, thumbMissing } from './media-resolve'
 import { buildModelSlugMap } from './slugify'
 import { getSeriesSpec } from '../data/series-descriptions'
 import { SERIES_COVER_PREVIEWS, SERIES_COVER_THUMBS } from '../data/series-cover-previews'
@@ -77,7 +77,7 @@ export async function getCatalogCards(): Promise<{
      Свотчи (name+hex) — та же карта, чтобы на карточке в каталоге сразу было
      видно все доступные цвета, а не только тот, что выбран для обложки. ── */
   const colorsByModel = new Map<string, string[]>()
-  const colorSwatchesByModel = new Map<string, { name: string; hex: string; price: number | null; photo: string; available: boolean }[]>()
+  const colorSwatchesByModel = new Map<string, NonNullable<CatalogCardItem['colorSwatches']>>()
   for (const row of (data ?? [])) {
     const model = row.models as any
     const color = row.colors as any
@@ -95,6 +95,7 @@ export async function getCatalogCards(): Promise<{
         price:     adjustPrice(seriesSlug, row.price_rrp ?? null),
         photo:     row.photo_url,
         available: true,
+        ...(thumbMissing(row.photo_url) ? { noThumb: true as const } : {}),
       })
     }
     colorSwatchesByModel.set(model.id, swatches)
@@ -139,6 +140,7 @@ export async function getCatalogCards(): Promise<{
       colorNames:  colorsByModel.get(model.id) ?? [color.name],
       colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url) }],
       photo:       cover?.photo ?? row.photo_url ?? '',
+      ...(thumbMissing(cover?.photo ?? row.photo_url) ? { noThumb: true as const } : {}),
       price:       cover?.price ?? adjustPrice(seriesSlug, row.price_rrp ?? null),
       hasGlass:    model.has_glass ?? false,
       isNew:       isNewModel(model.id),
