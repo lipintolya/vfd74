@@ -11,6 +11,8 @@ import InfoImageViewer from '../../components/catalog/InfoImageViewer.vue'
 import { describeTrim } from '../../lib/trim-labels'
 import { merchantPolicy } from '../../lib/contacts-data'
 import { getModelEntries } from '../../lib/model-entries'
+import { relatedModels } from '../../lib/related-models'
+import RelatedModels from '../../components/catalog/RelatedModels.astro'
 import { DOOR_CATEGORIES } from '../../data/door-categories'
 import type { ModelEntry } from '../../lib/model-entries'
 import {
@@ -64,6 +66,11 @@ const canonicalUrl  = Astro.site ? new URL(`/models/${slug}/`, Astro.site).href 
    явно говорит роботу не индексировать и не учитывать эту версию отдельной
    страницей, ссылка при этом продолжает открываться. */
 const isUuidRoute   = Astro.params.id !== slug
+
+/* «Другие модели серии» — только на канонической странице: UUID-копия закрыта
+   от индексации и ссылок раздавать не должна. getModelEntries() кэшируется на
+   сборку — повторных запросов к Supabase нет. */
+const related = isUuidRoute ? null : relatedModels(entry, await getModelEntries())
 /* Имя модели для показа: без лишних пробелов и латинских букв-двойников
    внутри кириллических слов (см. cleanModelName). */
 const displayName = cleanModelName(model.name)
@@ -288,6 +295,15 @@ const structuredData = [{
         </div>
       </div>
     </section>
+  )}
+
+  {related && (
+    <RelatedModels
+      models={related.models}
+      seriesName={seriesName}
+      seriesSlug={seriesSlug}
+      seriesTotal={related.seriesTotal}
+    />
   )}
 
   {relatedArticle && (

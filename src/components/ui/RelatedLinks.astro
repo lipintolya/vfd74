@@ -1,0 +1,88 @@
+---
+/**
+ * «Смотрите также» — перелинковка между однотипными страницами (лендинги по
+ * покрытию/цвету/стилю, сценарии скрытых дверей). Серверный, строгий список
+ * ссылок-плашек без иконок; данные собираются в src/lib/site-links.ts.
+ */
+import type { SiteLinkGroup } from '../../lib/site-links'
+
+interface Props {
+  groups:   SiteLinkGroup[]
+  heading?: string
+}
+
+const { groups, heading = 'Смотрите также' } = Astro.props
+const visible = groups.filter(g => g.links.length > 0)
+---
+
+{visible.length > 0 && (
+  <section class="section">
+    <div class="container">
+      <h2 class="related-links__heading">{heading}</h2>
+      <div class="related-links__groups">
+        {visible.map(group => (
+          <div class="related-links__group">
+            <p class="related-links__group-title">{group.title}</p>
+            <ul class="related-links__list" role="list">
+              {group.links.map(link => (
+                <li><a href={link.href} class="related-links__link">{link.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+.related-links__heading {
+  margin: 0 0 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+.related-links__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.related-links__group-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #64748b;
+}
+.related-links__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.related-links__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  text-decoration: none;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+.related-links__link:hover {
+  border-color: #14b8a6;
+  color: #0d9488;
+}
+.related-links__link:focus-visible {
+  outline: 2px solid #14b8a6;
+  outline-offset: 2px;
+}
+</style>

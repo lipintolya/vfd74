@@ -5,6 +5,7 @@ import Footer from '../components/layout/Footer.vue'
 import { absolutizeAssets } from '../lib/media-path.mjs'
 import YandexMetrika from '../components/analytics/YandexMetrika.astro'
 import BackToTop from '../components/ui/BackToTop.astro'
+import SiteLinks from '../components/layout/SiteLinks.astro'
 import { HERO_COVER_IMAGE } from '../data/hero-image'
 
 interface Props {
@@ -142,6 +143,9 @@ const structuredDataJson = structuredData
     >
       <slot />
     </main>
+
+    <!-- Серверный блок ссылок на все разделы: Header/Footer ниже — client:only, в HTML без JS их нет -->
+    <SiteLinks />
 
     <!-- Footer: модальное окно требует Vue -->
     <Footer client:only="vue" />

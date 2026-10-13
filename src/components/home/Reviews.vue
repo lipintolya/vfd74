@@ -324,6 +324,9 @@ onUnmounted(() => {
           />
           Яндекс Карты
         </a>
+        <a v-if="headingTag !== 'h1'" href="/reviews/" class="btn btn-primary sm:ml-auto">
+          Все отзывы на сайте
+        </a>
       </div>
 
     </div>

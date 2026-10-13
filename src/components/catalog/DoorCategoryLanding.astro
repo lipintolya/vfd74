@@ -14,6 +14,8 @@ import Breadcrumbs from '../ui/Breadcrumbs.astro'
 import SeriesCard from './SeriesCard.astro'
 import FaqAccordion from '../ui/FaqAccordion.astro'
 import CatalogClient from './CatalogClient.vue'
+import RelatedLinks from '../ui/RelatedLinks.astro'
+import { relatedLandings } from '../../lib/site-links'
 import { getSeriesCardsData } from '../../lib/catalog-data'
 import { getSeriesSpec, coatingGroupCopy } from '../../data/series-descriptions'
 import type { DoorCategory } from '../../data/door-categories'
@@ -183,6 +185,8 @@ const structuredData = canonicalUrl ? [
       </div>
     </section>
   )}
+
+  <RelatedLinks groups={relatedLandings(`/catalog/${category.slug}/`, 'coating')} />
 
   <section class="section">
     <div class="container">

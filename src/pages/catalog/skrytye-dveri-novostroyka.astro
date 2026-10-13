@@ -10,6 +10,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../../components/ui/FaqAccordion.astro'
 import RelatedArticleCard from '../../components/articles/RelatedArticleCard.astro'
+import RelatedLinks from '../../components/ui/RelatedLinks.astro'
+import { HIDDEN_DOOR_LINKS } from '../../lib/site-links'
 import SectionHeading from '../../components/partitions/SectionHeading.astro'
 import { INVISIBLE_WORKS } from '../../data/skrytye-dveri-works'
 import { merchantPolicy } from '../../lib/contacts-data'
@@ -231,6 +233,7 @@ const structuredData = canonicalUrl ? [
   <!-- Статья по теме: перелинковка раздел → блог (src/lib/articles.ts —
        карточка появляется, когда статья опубликована) -->
   <RelatedArticleCard slugs={['skrytye-dveri-plyusy-i-minusy']} asSection />
+  <RelatedLinks heading="Другие сценарии скрытых дверей" groups={[{ title: 'Скрытые двери', links: HIDDEN_DOOR_LINKS.filter(l => l.href !== '/catalog/skrytye-dveri-novostroyka/') }]} />
 
   <!-- FAQ -->
   <section class="section bg-white">

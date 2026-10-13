@@ -13,6 +13,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import Breadcrumbs from '../ui/Breadcrumbs.astro'
 import FaqAccordion from '../ui/FaqAccordion.astro'
 import CatalogClient from './CatalogClient.vue'
+import RelatedLinks from '../ui/RelatedLinks.astro'
+import { relatedLandings } from '../../lib/site-links'
 import type { StyleCategory } from '../../data/style-categories'
 import type { CatalogCardItem } from './types'
 
@@ -148,6 +150,8 @@ const structuredData = canonicalUrl ? [
       />
     </div>
   </div>
+
+  <RelatedLinks groups={relatedLandings(`/catalog/${category.slug}/`, 'style')} />
 
   <section class="section">
     <div class="container">

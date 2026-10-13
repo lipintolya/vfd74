@@ -1,0 +1,172 @@
+---
+/**
+ * «Другие модели серии» на странице модели — перелинковка модель → соседние
+ * модели той же серии (подбор: src/lib/related-models.ts). Серверный блок
+ * без гидрации: обычные ссылки в статическом HTML, поэтому их видят и
+ * поисковые роботы, и покупатель без JS. Данные — из тех же ModelEntry, что
+ * у самой страницы и товарного фида (цена и фото обязаны совпадать).
+ */
+import type { ModelEntry } from '../../lib/model-entries'
+import { cleanModelName, priceLabel, pluralRu } from '../../lib/product-text'
+import { describeTrim } from '../../lib/trim-labels'
+
+interface Props {
+  models:      ModelEntry[]
+  seriesName:  string
+  seriesSlug:  string
+  /** Всего моделей в серии, включая текущую. */
+  seriesTotal: number
+}
+
+const { models, seriesName, seriesSlug, seriesTotal } = Astro.props
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+/* Подпись под названием: покрытие и, если задано, кромка/остекление — ею
+   различаются SKU с одинаковым названием («Урбан 1» с золотой/чёрной кромкой). */
+const cards = models.map(m => {
+  const cover = m.colors[0]!
+  const name  = cleanModelName(m.model.name)
+  const trim  = describeTrim(m.model.trim)?.phrase
+  return {
+    href:  `/models/${m.slug}/`,
+    name,
+    photo: cover.photo,
+    alt:   `${name} — ${cover.name}`,
+    meta:  [m.coatingName, trim && capitalize(trim)].filter(Boolean).join(' · '),
+    price: priceLabel(m),
+  }
+})
+
+const totalLabel = `${seriesTotal} ${pluralRu(seriesTotal, ['модель', 'модели', 'моделей'])}`
+---
+
+{cards.length > 0 && (
+  <section class="section rm" aria-labelledby="related-models-title">
+    <div class="container">
+      <div class="rm__head">
+        <h2 id="related-models-title" class="rm__title">Другие модели серии «{seriesName}»</h2>
+        {seriesTotal > cards.length + 1 && (
+          <a href={`/catalog/series/${seriesSlug}/`} class="rm__all">
+            Вся серия — {totalLabel}
+          </a>
+        )}
+      </div>
+
+      <ul class="rm__grid" role="list">
+        {cards.map(card => (
+          <li>
+            <a href={card.href} class="rm__card">
+              <span class="rm__photo">
+                <img
+                  src={card.photo}
+                  alt={card.alt}
+                  width="240"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="rm__name">{card.name}</span>
+              {card.meta && <span class="rm__meta">{card.meta}</span>}
+              {card.price && <span class="rm__price">{card.price}</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+.rm__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.rm__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+  color: #0f172a;
+}
+.rm__all {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0d9488;
+  text-decoration: none;
+}
+.rm__all:hover {
+  color: #0f766e;
+  text-decoration: underline;
+}
+
+.rm__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 640px) {
+  .rm__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .rm__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+}
+
+.rm__card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0.75rem 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #fff;
+  text-decoration: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.rm__card:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 6px 20px -8px rgba(15, 23, 42, 0.18);
+}
+.rm__photo {
+  display: block;
+  aspect-ratio: 4 / 5;
+  margin-bottom: 0.75rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  overflow: hidden;
+}
+.rm__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem;
+  object-fit: contain;
+}
+.rm__name {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #0f172a;
+}
+.rm__meta {
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #64748b;
+}
+.rm__price {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+</style>
