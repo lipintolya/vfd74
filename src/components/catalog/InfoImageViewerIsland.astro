@@ -1,0 +1,65 @@
+---
+/**
+ * InfoImageViewer как client:only-остров с зарезервированным местом.
+ *
+ * Зачем client:only: модалка в Teleport на SSR даёт hydration mismatch (см.
+ * комментарии у /catalog/decor). Но до загрузки JS остров пуст — страница
+ * рисуется без карточки, а когда Vue монтирует её, всё ниже уезжает на ~200 px.
+ * На странице серии блок «О коллекции» лежит прямо под первым экраном, и этот
+ * сдвиг давал CLS 0,19 (порог «хорошо» — 0,1). Слот `fallback` Astro показывает
+ * до гидрации: кладём туда пустой блок высотой в готовую карточку, которую
+ * считаем по тем же числам, что и стили InfoImageViewer.vue:
+ *   карточка = рамка 2px + шапка (~3,6rem: отступы 2×0,875rem + кнопка «Увеличить»)
+ *   + картинка шириной в карточку
+ *   с пропорцией aspectRatio; сетка 2 колонки (3 у columns=3), на ≤720px — одна.
+ * Поменяете отступы шапки/сетки в InfoImageViewer.vue — поправьте формулу в
+ * <style> ниже. Для variant="diagram" (высота по картинке, потолок 22rem)
+ * резервировать нечего — используйте InfoImageViewer напрямую.
+ */
+import InfoImageViewer from './InfoImageViewer.vue'
+
+interface Props {
+  images:       { src: string; caption: string; alt: string; srcset?: string; sizes?: string }[]
+  variant?:     'photo' | 'wide'
+  /** «ширина / высота», как у InfoImageViewer. */
+  aspectRatio?: string
+  columns?:     2 | 3
+}
+
+const { images, variant = 'wide', aspectRatio = '16 / 9', columns = 2 } = Astro.props
+
+const [w, h] = aspectRatio.split('/').map(Number)
+const ratio = w && h ? w / h : 16 / 9
+const count = images.length
+/* .iiv:has(.iiv-card:only-child) — один элемент занимает всю ширину. */
+const cols = count === 1 ? 1 : columns
+const rows = Math.ceil(count / cols)
+---
+
+<InfoImageViewer client:only="vue" images={images} variant={variant} aspectRatio={aspectRatio} columns={columns}>
+  <div
+    slot="fallback"
+    class="iiv-ph"
+    style={`--ar:${ratio.toFixed(4)};--cols-d:${cols};--rows-d:${rows};--count:${count}`}
+    aria-hidden="true"
+  ></div>
+</InfoImageViewer>
+
+<style>
+.iiv-ph {
+  --cols: var(--cols-d);
+  --rows: var(--rows-d);
+  /* Ширина контента .container: min(экран, 80rem) минус боковые поля. */
+  --content: calc(min(100vw, 80rem) - 2 * clamp(1rem, 4vw, 2rem));
+  --card-w: calc((var(--content) - (var(--cols) - 1) * 1rem) / var(--cols));
+  --card-h: calc(var(--card-w) / var(--ar) + 3.6rem + 3px);
+  min-height: calc(var(--rows) * var(--card-h) + (var(--rows) - 1) * 1rem);
+  margin: 1.5rem 0;
+}
+@media (min-width: 1920px) {
+  .iiv-ph { --content: calc(96rem - 2 * 2rem); }
+}
+@media (max-width: 720px) {
+  .iiv-ph { --cols: 1; --rows: var(--count); }
+}
+</style>

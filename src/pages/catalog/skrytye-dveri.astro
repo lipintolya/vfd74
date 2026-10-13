@@ -5,6 +5,7 @@ import FaqAccordion from '../../components/ui/FaqAccordion.astro'
 import RelatedArticleCard from '../../components/articles/RelatedArticleCard.astro'
 import ColorSelector      from '../../components/catalog/ColorSelector.vue'
 import InfoImageViewer    from '../../components/catalog/InfoImageViewer.vue'
+import InfoImageViewerIsland from '../../components/catalog/InfoImageViewerIsland.astro'
 import WorksGallery      from '../../components/catalog/WorksGallery.vue'
 import PromoBanner       from '../../components/ui/PromoBanner.vue'
 import PhotoAutoplaySlider from '../../components/ui/PhotoAutoplaySlider.vue'
@@ -416,8 +417,7 @@ const structuredData = canonicalUrl ? [
 
       <!-- Короб «Секрет» — два варианта конструкции, разрезы кликабельны (модалка) -->
       <h3 class="sd-h3" style="margin-top: 2.5rem">Короб «Секрет»: Стандарт и Лайт — в чём разница</h3>
-      <InfoImageViewer
-        client:only="vue"
+      <InfoImageViewerIsland
         variant="wide"
         aspectRatio="5 / 4"
         images={[
@@ -585,8 +585,7 @@ const structuredData = canonicalUrl ? [
       <!-- Схема определения стороны открывания — свой экземпляр InfoImageViewer:
            client:only="vue", тот же безопасный паттерн, что уже используется
            выше на этой странице (не хайдрейтим Teleport-модалку через SSR). -->
-      <InfoImageViewer
-        client:only="vue"
+      <InfoImageViewerIsland
         variant="wide"
         aspectRatio="16 / 9"
         images={[
