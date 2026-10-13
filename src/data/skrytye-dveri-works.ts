@@ -22,6 +22,23 @@ export interface InvisibleWork {
 
 export const INVISIBLE_WORKS: InvisibleWork[] = [
   {
+    id:       '2026-10-05',
+    date:     '2026-10-05',
+    label:    '5.10.2026',
+    title:    'Монтаж 3 скрытых дверей «Секрет» в ЖК Привилегия на этапе черновой отделки',
+    story:    'Установили 3 двери: короб смонтирован заподлицо со стеной до финишной отделки, зазоры заполнены монтажной пеной, полотна стоят в заводском грунте — позже их окрасят вместе со стеной.',
+    location: 'Челябинск, ЖК Привилегия',
+    series:   'Секрет',
+    edge:     'Чёрная',
+    coating:  'Грунт под покраску',
+    features: ['Монтаж на этапе черновой отделки', 'Короб заподлицо', 'Без наличников'],
+    images: [
+      '/media/works_prod/5.10.26_sekret/sekret-privilegiya-1.webp',
+      '/media/works_prod/5.10.26_sekret/sekret-privilegiya-2.webp',
+      '/media/works_prod/5.10.26_sekret/sekret-privilegiya-3.webp',
+    ],
+  },
+  {
     id:       '2026-09-08',
     date:     '2026-09-08',
     label:    '8.09.2026',
