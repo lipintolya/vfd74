@@ -24,3 +24,12 @@ ssh root@SERVER 'nginx -t && systemctl reload nginx'
 
 Заголовки не должны зависеть от git-деплоя: `git push production` их не меняет —
 конфиг nginx применяется вручную по этой инструкции.
+
+## Другие настройки сервера (не в git, зафиксированы здесь)
+
+- `/etc/systemd/journald.conf.d/size.conf` — `SystemMaxUse=200M`. Диск VPS 8,7 ГБ, журнал
+  systemd вырастал до ~900 МБ и занимал десятую часть диска. Вернуть размер вручную:
+  `journalctl --vacuum-size=200M`, потом `systemctl restart systemd-journald`.
+- Открыты только 22, 80, 443 (ufw); `fail2ban` и `unattended-upgrades` включены.
+- `/models/` отвечает 404 (`location = /models/` в `vfd74.ru.conf`); у файловых папок
+  (`/media/`, `/_astro/`) 403 — так и задумано.
