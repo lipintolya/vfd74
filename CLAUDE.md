@@ -13,7 +13,9 @@ npm run dev       # astro dev — local dev server
 npm run build     # astro build — static build into dist/
 npm run preview   # preview the production build locally
 npm run gen:renders  # regenerate public/renders/alum-covers/*.webp from public/media originals (see scripts/gen-render-gallery.mjs)
-npm run media:sync   # localize new cloud URLs / Supabase photos into public/media (see Images / media below)
+npm run media:sync   # localize new cloud URLs / Supabase photos into public/media, then make their thumbnails (see Images / media below)
+npm run gen:model-thumbs  # only thumbnails of catalog photos: public/renders/models/<path>-320|640.webp (idempotent; -- --force rebuilds all)
+npm run gen:responsive    # srcset variants for hero slides, home promo sliders, category cards, plinth scheme (scripts/gen-responsive.mjs)
 npm run media:check  # verify every /media/... referenced by src + DB exists on disk
 npm run deploy    # git push production main — DO NOT run unless the user explicitly asks
 ```
@@ -23,6 +25,10 @@ There is no test runner or linter configured in this repo. `tsconfig.json` exten
 ## Deployment — never run automatically
 
 Deploys go out via `git push production main` to a `post-receive` hook on a Beget VPS (see `deploy/post-receive`, `deploy/setup-server.sh`): it checks out `main`, runs `npm ci && npm run build`, then `rsync`'s `dist/` to the nginx web root. **Do not push to the `production` remote or run `npm run deploy` unless the user explicitly asks in that turn.** Default to local build/preview only.
+
+## Server (nginx)
+
+Конфиг nginx лежит в `deploy/nginx/` (`vfd74.ru.conf` + `vfd74-perf.conf` — кеш-заголовки одной переменной, Brotli, HSTS), порядок применения — в `deploy/nginx/README.md`. `git push production` его **не** меняет: конфиг ставится на сервер вручную, поэтому правки в репозитории не действуют, пока их не применили.
 
 ## Architecture
 
@@ -43,6 +49,8 @@ Deploys go out via `git push production main` to a `post-receive` hook on a Bege
   - крупные фото — только `<img>` с `srcset`/`sizes` и `loading="lazy"`, не CSS `background-image` (фон браузер грузит сразу, без ленивой загрузки);
   - слайдеры (`HeroSlider.vue`, `PhotoAutoplaySlider.vue`) кладут все слайды в DOM, поэтому `src` у неактивных слайдов задаётся лениво — иначе `loading="lazy"` не срабатывает (картинки «в зоне видимости») и грузятся все сразу;
   - ресайзы 640w/960w для слайдов, промо-слайдеров, карточек «Каталог» на главной и схемы плинтуса делает `npm run gen:responsive` (`scripts/gen-responsive.mjs`, список `JOBS`); новая картинка в таком месте → строка в `JOBS` + `srcset` в компоненте. Картинки статей и портфолио — свои `gen:*`, для страниц каталога подходит `articleImg()` из `src/lib/article-images.ts`;
+  - **эскизы фото моделей**: `/media/<путь>.webp` → `/renders/models/<путь>-320.webp` и `-640.webp` (3–9 КБ вместо 14–45 КБ). Делает `scripts/gen-model-thumbs.mjs` из фото `model_colors` (входит в `npm run media:sync`, идемпотентен); `srcset` строит чистая функция `thumbSrcset()` из `src/lib/model-thumbs.mjs` (её же использует Vue-карточка `CatalogProductCard.vue` и `RelatedModels.astro`). Нет эскиза у фото (новый цвет, не запускали `gen:model-thumbs`) — `catalog-data.ts` ставит `noThumb`, карточка берёт оригинал и в логе сборки предупреждение `[media] нет эскиза`; ссылка в `dist` на несуществующий эскиз роняет `postbuild`. Эскизы коммитятся вместе с `public/media`;
+  - **CLS**: остров `client:only` пуст до загрузки JS, а потом раздвигает страницу (на страницах серий это давало CLS 0,19). Карточки `InfoImageViewer` с `client:only` ставь через `components/catalog/InfoImageViewerIsland.astro` — он кладёт в слот `fallback` пустой блок высотой в готовую карточку (формула — по стилям `InfoImageViewer.vue`, при их правке обнови её). Запасные шрифты `Rubik Fallback`/`Manrope Fallback` в `global.css` подогнаны по метрикам (`size-adjust`, `ascent-override`), чтобы подмена шрифта не перестраивала строки; цифры считаются fontTools по файлам из `public/fonts`;
   - `preloadImage` в `BaseLayout` с `preloadImageSrcset` обязан иметь тот же `sizes`, что у самого `<img>` (`preloadImageSizes`), иначе браузер скачает картинку дважды.
 - Files keep the exact key from the cloud, including odd names (spaces, parentheses) — don't rename; refs are percent-encoded by the browser.
 
