@@ -105,4 +105,17 @@ export const PROMOS: Promo[] = [
     discount: '-8%',
     validUntil: '2026-09-30',
   },
+  {
+    id: 7,
+    title: 'Двери «Феникс» в эмали Магнолия',
+    subtitle: 'Скидка -10% на полотно, -5% на погонаж',
+    description:
+      'Элегантная классика, светостойкое эмалевое покрытие и безупречный белый цвет — для интерьеров, которые останутся актуальными надолго. Серия «Феникс» сочетает МДФ и инженерный массив, а эмаль обладает высоким укрывным эффектом. Акция действует до 31.10.2026, количество товара ограничено.',
+    image: '/renders/promo/fenix2-magnolia-800.webp',
+    imageSrcset: '/renders/promo/fenix2-magnolia-640.webp 640w, /renders/promo/fenix2-magnolia-800.webp 800w',
+    ctaText: 'Смотреть «Феникс 2»',
+    ctaLink: '/models/feniks-2-skinel/',
+    discount: '-10%',
+    validUntil: '2026-10-31',
+  },
 ]

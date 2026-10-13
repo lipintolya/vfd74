@@ -24,6 +24,7 @@ const sources = [
   { src: '/media/sale/basic_z.webp', base: 'basic-z' },
   { src: '/media/promo_main/emalex_ec2_promo.webp', base: 'emalex-ec2-promo' },
   { src: '/media/promo_main/64443281-F5F2-4877-9AEA-304CD417BF8D.webp', base: 'urban-graphite' },
+  { src: '/media/promo_main/fenix2.webp', base: 'fenix2-magnolia' },
 ]
 
 const widths = [
