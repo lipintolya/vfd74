@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 /**
  * Общий кросс-фейд автослайдер с точками-навигацией (.dot-nav__* из
@@ -13,11 +13,34 @@ const props = defineProps<{
   images: string[]
   alt: string
   intervalMs?: number
+  /** Для файлов /renders/home/<имя>.webp (1300w) есть ресайзы <имя>-640.webp и
+      <имя>-960.webp (scripts/gen-home-slider-variants.mjs) — отдаём их через
+      srcset. Остальные пути и вызовы без флага берутся как есть. */
+  responsive?: boolean
 }>()
+
+/* Карточка слайдера: на мобильном/планшете во всю ширину, с lg — ~55vw. */
+const SIZES = '(max-width: 1023px) 100vw, 55vw'
+const hasVariants = (src: string) => props.responsive && src.startsWith('/renders/home/')
+const srcsetOf = (src: string) => {
+  const base = src.replace(/\.webp$/, '')
+  return `${base}-640.webp 640w, ${base}-960.webp 960w, ${src} 1300w`
+}
 
 const interval = props.intervalMs ?? 5000
 
 const activeSlide      = ref(0)
+
+/* Все <img> стоят в DOM друг на друге (кросс-фейд по opacity), поэтому
+   loading="lazy" их не откладывает — браузер тянет все сразу при подходе к
+   секции. Запрос делаем только для текущего слайда и для следующего: пока
+   src не задан, <img> ничего не грузит. */
+const loaded = ref<boolean[]>(props.images.map((_, i) => i === 0))
+const ensureLoaded = (i: number) => {
+  const n = props.images.length
+  if (n > 0) loaded.value[(i % n + n) % n] = true
+}
+watch(activeSlide, i => { ensureLoaded(i); ensureLoaded(i + 1) })
 const isPaused         = ref(false)
 const autoplayEnabled  = ref(true)
 let timer: ReturnType<typeof setInterval> | undefined
@@ -33,6 +56,7 @@ const onPauseEnd   = () => { isPaused.value = false; start() }
 onMounted(() => {
   autoplayEnabled.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
   start()
+  ensureLoaded(1)
 })
 onUnmounted(stop)
 </script>
@@ -50,7 +74,9 @@ onUnmounted(stop)
     <img
       v-for="(src, i) in images"
       :key="src"
-      :src="src"
+      :src="loaded[i] ? src : undefined"
+      :srcset="hasVariants(src) && loaded[i] ? srcsetOf(src) : undefined"
+      :sizes="hasVariants(src) ? SIZES : undefined"
       :alt="alt"
       loading="lazy"
       decoding="async"

@@ -5,6 +5,9 @@ interface InfoImage {
   src: string
   caption: string
   alt: string
+  /** Облегчённые варианты для превью в карточке (в модалке — всегда src). */
+  srcset?: string
+  sizes?: string
 }
 
 const props = withDefaults(defineProps<{
@@ -76,7 +79,7 @@ onUnmounted(() => {
           :aria-label="`Открыть изображение: ${img.caption}`"
           @click="open(img)"
         >
-          <img :src="img.src" :alt="img.alt" loading="lazy" decoding="async" />
+          <img :src="img.src" :srcset="img.srcset" :sizes="img.srcset ? img.sizes : undefined" :alt="img.alt" loading="lazy" decoding="async" />
         </button>
       </figure>
     </div>

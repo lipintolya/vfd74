@@ -44,6 +44,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         <div class="relative aspect-4/3 sm:aspect-video lg:aspect-auto">
           <PhotoAutoplaySlider
             :images="SLIDES"
+            responsive
             alt="Межкомнатная дверь серии «Техно» в цвете Эмалекс белый"
           />
         </div>

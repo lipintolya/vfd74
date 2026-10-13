@@ -5,6 +5,10 @@ interface Category {
   title:    string
   subtitle: string
   image:    string
+  /** Ресайзы 640w/960w (scripts/gen-catalog-categories.mjs) + оригинал. */
+  srcset:   string
+  /** Ширина карточки в сетке: 1 колонка → 2 колонки (md) → 1/3 или 2/3 (lg). */
+  sizes:    string
   href:     string
   cta:      string
 }
@@ -14,6 +18,8 @@ const CATEGORIES: Category[] = [
     title:    'Межкомнатные двери',
     subtitle: 'Широкий выбор моделей, покрытий и цветов от официального дилера ВФД',
     image:    '/media/Main_page/left_bento/cover_doors.webp',
+    srcset:   '/renders/home/cat-interior-640.webp 640w, /renders/home/cat-interior-960.webp 960w, /media/Main_page/left_bento/cover_doors.webp 1280w',
+    sizes:    '(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw',
     href:     '/catalog/',
     cta:      'Смотреть каталог',
   },
@@ -21,6 +27,8 @@ const CATEGORIES: Category[] = [
     title:    'Входные двери',
     subtitle: 'Стальные двери с накладкой изнутри под интерьер — с монтажом в Челябинске',
     image:    '/media/metal_doors/Optima/render_optima.webp',
+    srcset:   '/renders/home/cat-entrance-640.webp 640w, /renders/home/cat-entrance-960.webp 960w, /media/metal_doors/Optima/render_optima.webp 1122w',
+    sizes:    '(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 66vw',
     href:     '/vhodnye-dveri/',
     cta:      'Смотреть входные',
   },
@@ -28,6 +36,8 @@ const CATEGORIES: Category[] = [
     title:    'Алюминиевые перегородки',
     subtitle: 'Стеклянные перегородки с алюминиевым профилем — под ключ за 45 дней',
     image:    '/media/catalog_preview/catalog-preview3.webp',
+    srcset:   '/renders/home/cat-partitions-640.webp 640w, /renders/home/cat-partitions-960.webp 960w, /media/catalog_preview/catalog-preview3.webp 1280w',
+    sizes:    '(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 66vw',
     href:     '/partitions/',
     cta:      'Смотреть перегородки',
   },
@@ -82,10 +92,19 @@ const { sectionRef, visible } = useScrollReveal(0.15)
             class="group relative flex h-full aspect-4/3 flex-col overflow-hidden rounded-[1.375rem] no-underline md:aspect-auto md:min-h-105 lg:min-h-135 focus-visible:outline-2 focus-visible:outline-teal-500 focus-visible:outline-offset-3"
             :aria-label="CATEGORIES[0]!.title"
           >
-            <!-- Background -->
-            <div
-              class="absolute inset-0 bg-cover bg-center transition-transform duration-600 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
-              :style="{ backgroundImage: `url(${CATEGORIES[0]!.image})` }"
+            <!-- Background — <img>, а не CSS background-image: фон браузер грузит сразу
+                 при отрисовке, а <img loading="lazy"> — только на подходе к секции
+                 (и подбирает размер по srcset). -->
+            <img
+              :src="CATEGORIES[0]!.image"
+              :srcset="CATEGORIES[0]!.srcset"
+              :sizes="CATEGORIES[0]!.sizes"
+              alt=""
+              width="960"
+              height="960"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-600 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
               aria-hidden="true"
             />
             <!-- Overlay -->
@@ -128,10 +147,17 @@ const { sectionRef, visible } = useScrollReveal(0.15)
               class="group relative flex h-full aspect-3/2 flex-col overflow-hidden rounded-[1.375rem] no-underline md:aspect-auto md:min-h-50 lg:min-h-63.75 focus-visible:outline-2 focus-visible:outline-teal-500 focus-visible:outline-offset-3"
               :aria-label="cat.title"
             >
-              <!-- Background -->
-              <div
-                class="absolute inset-0 bg-cover bg-center transition-transform duration-600 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
-                :style="{ backgroundImage: `url(${cat.image})` }"
+              <!-- Background — см. комментарий у первой карточки -->
+              <img
+                :src="cat.image"
+                :srcset="cat.srcset"
+                :sizes="cat.sizes"
+                alt=""
+                width="960"
+                height="640"
+                loading="lazy"
+                decoding="async"
+                class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-600 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
                 aria-hidden="true"
               />
               <!-- Overlay -->

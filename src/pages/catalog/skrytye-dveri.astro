@@ -11,6 +11,7 @@ import PhotoAutoplaySlider from '../../components/ui/PhotoAutoplaySlider.vue'
 import { INVISIBLE_WORKS } from '../../data/skrytye-dveri-works'
 import { PROMOS } from '../../data/promos'
 import { merchantPolicy } from '../../lib/contacts-data'
+import { articleImg } from '../../lib/article-images'
 import {
   IMAGES,
   INFO_IMAGES,
@@ -46,13 +47,23 @@ import {
 
 const secretPromo = PROMOS.find(p => p.id === 3)
 
-const REFLEX_CDN = '/media/invisible/'
+/* Первые три кадра — те же фото, что в слайдере «Рефлекс» на главной: готовые
+   1300w с ресайзами 640/960 (/renders/home/reflex-N*.webp, PhotoAutoplaySlider
+   responsive); оригиналы в /media/invisible/ — 1400–1670 px по 90–130 КБ. */
 const REFLEX_IMAGES = [
-  `${REFLEX_CDN}2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp`,
-  `${REFLEX_CDN}A158F8FC-901B-4262-BDF6-D68E573300C8.webp`,
-  `${REFLEX_CDN}41CFB5EC-5142-462A-A702-E9AECDE149AD.webp`,
+  '/renders/home/reflex-1.webp',
+  '/renders/home/reflex-2.webp',
+  '/renders/home/reflex-3.webp',
   REFLEX_IMAGE,
 ]
+
+/* Обложка hero и разрезы коробов: ресайзы из карты картинок статей
+   (scripts/gen-article-images.mjs) — телефону не нужны 1920 px. */
+const HERO_SIZES = '(max-width: 1279px) 100vw, 1216px'
+const heroImg    = articleImg(IMAGES.heroCover)
+const BOX_SIZES  = '(max-width: 767px) 100vw, 600px'
+const boxLite    = articleImg(BOX_LITE_IMAGE)
+const boxPro     = articleImg(BOX_PRO_IMAGE)
 
 const PHONE = '+79000297888'
 const TG    = 'https://t.me/vfddoors74'
@@ -177,7 +188,9 @@ const structuredData = canonicalUrl ? [
   title="Двери скрытого монтажа в Челябинске: скрытые двери, цены | ВФД"
   description={`Двери скрытого монтажа («невидимки») «Секрет», «Секрет Реверс» и «Рефлекс» в Челябинске: полотно вровень со стеной, без наличников и видимых петель. Комплект от ${fmt(SECRET_MIN_KIT_PRICE)}. Замер бесплатно по Челябинску при заказе, монтаж под ключ.`}
   ogImage={IMAGES.invisible}
-  preloadImage={IMAGES.heroCover}
+  preloadImage={heroImg.src}
+  preloadImageSrcset={heroImg.srcset}
+  preloadImageSizes={HERO_SIZES}
   canonical={canonicalUrl}
   structuredData={structuredData}
 >
@@ -199,7 +212,9 @@ const structuredData = canonicalUrl ? [
     <section class="sd-hero" aria-label="Двери скрытого монтажа">
       <img
         class="sd-hero__bg"
-        src={IMAGES.heroCover}
+        src={heroImg.src}
+        srcset={heroImg.srcset}
+        sizes={heroImg.srcset ? HERO_SIZES : undefined}
         alt=""
         aria-hidden="true"
         width="1920"
@@ -406,8 +421,8 @@ const structuredData = canonicalUrl ? [
         variant="wide"
         aspectRatio="5 / 4"
         images={[
-          { src: BOX_LITE_IMAGE, caption: 'Короб «Секрет Лайт» — разрез', alt: 'Разрез короба «Секрет Лайт»: алюминиевый профиль с наполнением из массива сосны' },
-          { src: BOX_PRO_IMAGE,  caption: 'Короб «Секрет» — профиль',     alt: 'Профиль короба «Секрет»: монолитный алюминиевый сплав со штукатурным крылом' },
+          { ...boxLite, sizes: BOX_SIZES, caption: 'Короб «Секрет Лайт» — разрез', alt: 'Разрез короба «Секрет Лайт»: алюминиевый профиль с наполнением из массива сосны' },
+          { ...boxPro, sizes: BOX_SIZES, caption: 'Короб «Секрет» — профиль',     alt: 'Профиль короба «Секрет»: монолитный алюминиевый сплав со штукатурным крылом' },
         ]}
       />
       <div class="sd-box-types">
@@ -478,6 +493,7 @@ const structuredData = canonicalUrl ? [
             <PhotoAutoplaySlider
               client:visible
               images={REFLEX_IMAGES}
+              responsive
               alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
             />
           </div>

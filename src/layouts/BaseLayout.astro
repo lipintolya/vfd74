@@ -22,6 +22,10 @@ interface Props {
       2.5s на десктопе). Опционально: только для картинок, у которых
       есть заранее сгенерированный уменьшенный вариант. */
   preloadImageSrcset?: string
+  /** sizes для preloadImageSrcset — обязан совпадать с sizes самого <img>, иначе
+      браузер выберет другой кандидат и скачает картинку дважды. По умолчанию —
+      слот hero главной (во всю ширину до lg, дальше 55vw). */
+  preloadImageSizes?: string
   /** ISO-дата публикации — только для ogType="article" (og:article:published_time) */
   publishedTime?: string
 }
@@ -36,6 +40,7 @@ const {
   structuredData,
   preloadImage,
   preloadImageSrcset,
+  preloadImageSizes = '(max-width: 1023px) 100vw, 55vw',
   publishedTime,
 } = Astro.props
 
@@ -118,7 +123,7 @@ const structuredDataJson = structuredData
         href={preloadImage}
         fetchpriority="high"
         imagesrcset={preloadImageSrcset}
-        imagesizes={preloadImageSrcset ? '(max-width: 1023px) 100vw, 55vw' : undefined}
+        imagesizes={preloadImageSrcset ? preloadImageSizes : undefined}
       />
     )}
 

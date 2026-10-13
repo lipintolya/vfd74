@@ -40,6 +40,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         <div class="relative aspect-5/6 sm:aspect-4/3 lg:order-last lg:aspect-auto">
           <PhotoAutoplaySlider
             :images="SLIDES"
+            responsive
             alt="Межкомнатная дверь Урбан Штрих 2А в цвете Эмалекс бежевый с чёрным молдингом"
           />
         </div>

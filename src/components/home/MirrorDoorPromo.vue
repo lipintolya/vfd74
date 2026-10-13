@@ -73,6 +73,7 @@ const { sectionRef, visible } = useScrollReveal(0.15)
         <div class="order-1 relative aspect-4/3 sm:aspect-video lg:order-2 lg:aspect-auto">
           <PhotoAutoplaySlider
             :images="SLIDES"
+            responsive
             alt="Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной"
           />
         </div>

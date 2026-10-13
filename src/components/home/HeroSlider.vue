@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
 
 const SLIDER_INTERVAL_MS = 9000
@@ -8,6 +8,9 @@ const SWIPE_THRESHOLD    = 50
 interface Slide {
   id:          number
   image:       string
+  /** srcset с ресайзами (public/renders/hero, scripts/gen-hero-slides.mjs);
+      оригинал — самый широкий кандидат. У первого слайда свой набор. */
+  srcset?:     string
   title:       string
   subtitle:    string
   description: string
@@ -44,6 +47,7 @@ const slides: Slide[] = [
        второй слайд (сразу после H1) для максимальной видимости. */
     id: 6,
     image: '/renders/hero/comforttermo-promo.webp',
+    srcset: '/renders/hero/comforttermo-promo-640.webp 640w, /renders/hero/comforttermo-promo-960.webp 960w, /renders/hero/comforttermo-promo.webp 1122w',
     title: 'Входные двери с терморазрывом',
     subtitle: 'Уличная дверь «Комфорт Термо» для частного дома',
     description: 'Полотно 110 мм, короб с терморазрывом 150 мм, 3 контура EPDM-уплотнения, цвет «Букле графит» — от 42 660 ₽',
@@ -53,6 +57,7 @@ const slides: Slide[] = [
   {
     id: 5,
     image: '/media/Main_page/left_bento/strix_render.webp',
+    srcset: '/renders/hero/strix-render-640.webp 640w, /renders/hero/strix-render-960.webp 960w, /media/Main_page/left_bento/strix_render.webp 1254w',
     title: 'Премиум дизайн по доступной цене',
     subtitle: 'Новинка — «Штрих» уже в каталоге',
     description: 'Серия Урбан: алюминиевая кромка с графичным акцентом, покрытие Эмалекс — от 14 300 ₽ за полотно',
@@ -62,6 +67,7 @@ const slides: Slide[] = [
   {
     id: 2,
     image: '/media/Main_page_perfomance-covers/innova_render.webp',
+    srcset: '/renders/hero/innova-render-640.webp 640w, /renders/hero/innova-render-960.webp 960w, /media/Main_page_perfomance-covers/innova_render.webp 1448w',
     title: 'Серия «Иннова» уже в салоне',
     subtitle: 'Не оставляет отпечатков пальцев',
     description: 'Новинка в инновационном покрытии ПЭТ',
@@ -71,6 +77,7 @@ const slides: Slide[] = [
   {
     id: 3,
     image: '/media/covers/linea-1.webp',
+    srcset: '/renders/hero/linea-1-640.webp 640w, /renders/hero/linea-1-960.webp 960w, /media/covers/linea-1.webp 1536w',
     title: 'Серия «Линеа» уже в салоне',
     subtitle: 'Современный дизайн по доступной цене',
     description: 'Светостойкая эмаль с фрезерованными элементами и алюминиевым декором',
@@ -80,6 +87,7 @@ const slides: Slide[] = [
   {
     id: 4,
     image: '/media/Main_page/left_bento/render_urban2.webp',
+    srcset: '/renders/hero/urban2-render-640.webp 640w, /renders/hero/urban2-render-960.webp 960w, /media/Main_page/left_bento/render_urban2.webp 1254w',
     title: 'Урбан — городской стиль для вашего интерьера',
     subtitle: 'Двери от 18 000 ₽ за комплект',
     description: 'Лаконичные формы, полипропиленовое покрытие Ренолит (Германия) с эффектом эмали',
@@ -96,6 +104,18 @@ const isPaused        = ref(false)
 const autoplayEnabled = ref(true)
 
 const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0])
+
+/* Картинки слайдов лежат в DOM все сразу (кросс-фейд по opacity), поэтому
+   loading="lazy" их не откладывает: они «в зоне видимости» и браузер тянет
+   все пять сразу после LCP (~500 КБ на телефоне, мимо глаз пользователя).
+   Загружаем слайд только когда он активен или станет следующим/предыдущим —
+   пока src не задан, <img> запроса не делает. */
+const loaded = ref<boolean[]>(slides.map((_, i) => i === 0))
+const ensureLoaded = (i: number) => {
+  const n = slides.length
+  loaded.value[(i % n + n) % n] = true
+}
+watch(activeIndex, i => { ensureLoaded(i); ensureLoaded(i + 1); ensureLoaded(i - 1) })
 
 let timer: ReturnType<typeof setInterval> | null = null
 
@@ -136,6 +156,12 @@ onMounted(() => {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   autoplayEnabled.value = !prefersReduced
   if (!prefersReduced) start()
+
+  /* Следующий слайд подгружаем заранее, когда страница уже дорисована и
+     канал свободен, — к первой смене (через 9 с) он будет готов. */
+  const warmNext = () => setTimeout(() => ensureLoaded(1), 1500)
+  if (document.readyState === 'complete') warmNext()
+  else window.addEventListener('load', warmNext, { once: true })
 })
 onUnmounted(stop)
 </script>
@@ -167,9 +193,9 @@ onUnmounted(stop)
             <img
               v-for="(slide, i) in slides"
               :key="slide.id"
-              :src="slide.image"
-              :srcset="i === 0 ? HERO_COVER_IMAGE_SRCSET : undefined"
-              :sizes="i === 0 ? '(max-width: 1023px) 100vw, 55vw' : undefined"
+              :src="loaded[i] ? slide.image : undefined"
+              :srcset="i === 0 ? HERO_COVER_IMAGE_SRCSET : loaded[i] ? slide.srcset : undefined"
+              :sizes="i === 0 || slide.srcset ? '(max-width: 1023px) 100vw, 55vw' : undefined"
               alt=""
               :fetchpriority="i === 0 ? 'high' : undefined"
               :loading="i === 0 ? 'eager' : 'lazy'"

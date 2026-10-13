@@ -67,6 +67,9 @@ const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
         variant="photo"
         images={[{
           src: IMAGES.plintus,
+          /* Ресайзы — scripts/gen-responsive.mjs; в модалке открывается оригинал. */
+          srcset: '/renders/decor/plintus-type-960.webp 960w, /renders/decor/plintus-type-1440.webp 1440w, /media/decor/plintus/plintus_type.webp 1920w',
+          sizes: '(max-width: 1279px) 100vw, 1216px',
           caption: 'Плинтус в интерьере',
           alt: 'Плинтус в цвет дверного полотна — ВФД',
         }]}
