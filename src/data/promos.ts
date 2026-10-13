@@ -118,4 +118,17 @@ export const PROMOS: Promo[] = [
     discount: '-10%',
     validUntil: '2026-10-31',
   },
+  {
+    id: 8,
+    title: 'Двери «Маями»',
+    subtitle: 'Скидка -10% на полотно, -5% на погонаж',
+    description:
+      'Лаконичная геометрия, матовая эмаль и актуальный дизайн для интерьеров в стиле лофт, минимализм и современная классика. Прочная щитовая конструкция толщиной 37 мм и светостойкая итальянская эмаль делают модель практичным решением на каждый день. Акция действует до 31.10.2026.',
+    image: '/renders/promo/miami-800.webp',
+    imageSrcset: '/renders/promo/miami-640.webp 640w, /renders/promo/miami-800.webp 800w',
+    ctaText: 'Смотреть «Маями»',
+    ctaLink: '/models/mayami-winter/',
+    discount: '-10%',
+    validUntil: '2026-10-31',
+  },
 ]
