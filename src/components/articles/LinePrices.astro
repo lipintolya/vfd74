@@ -12,6 +12,7 @@ import {
   SECRET_MIN_BLADE_PRICE, SECRET_MIN_KIT_PRICE,
   SECRET_REVERS_MIN_BLADE_PRICE, SECRET_REVERS_MIN_KIT_PRICE,
   REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE,
+  INSTALL_FROM_PRICE,
 } from '../../data/skrytye-dveri-products'
 import { ENTRANCE_DOOR_MODELS, minPriceOf } from '../../data/entrance-doors'
 
@@ -62,7 +63,7 @@ if (of === 'hidden') {
       ],
     },
   ]
-  note = 'Цены «от» — для самой доступной кромки и стороны открывания; они берутся со страницы скрытых дверей и обновляются вместе с ней. Комплект включает полотно и скрытый короб со скрытыми петлями. Ручка, стопор и завёртка WC — отдельно, монтаж считается отдельно.'
+  note = `Цены «от» — для самой доступной кромки и стороны открывания; они берутся со страницы скрытых дверей и обновляются вместе с ней. Комплект включает полотно и скрытый короб со скрытыми петлями. Ручка, стопор и завёртка WC — отдельно. Монтаж нашей бригадой — от ${fmt(INSTALL_FROM_PRICE)} за дверь, оплачивается отдельно.`
 } else {
   rows = ENTRANCE_DOOR_MODELS
     .filter(m => m.purpose === 'house')

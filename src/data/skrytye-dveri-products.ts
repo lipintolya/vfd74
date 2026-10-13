@@ -143,6 +143,9 @@ export const CUSTOM_HEIGHT_TIERS = [
 
 export const CUSTOM_LEAD_TIME = '6–8 недель'
 
+// Монтаж скрытой двери нашей бригадой: цена «от» за одну дверь, ₽ (подтверждено владельцем)
+export const INSTALL_FROM_PRICE = 4500
+
 // Рассчитать цену комплекта с надбавкой за нестандартную высоту (округление вверх)
 export function calcCustomPrice(basePrice: number, surcharge: number): number {
   return Math.ceil(basePrice * (1 + surcharge) / 10) * 10
