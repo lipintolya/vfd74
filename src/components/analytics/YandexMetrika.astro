@@ -15,6 +15,15 @@
  *   отличающийся от отрендеренного на сервере → "Hydration completed but
  *   contains mismatches" в проде. К моменту window.load гидратация уже
  *   гарантированно завершена.
+ *
+ * Цели (JS-события): делегированный обработчик кликов по контактным ссылкам.
+ * Он стоит на странице, а не в компонентах, поэтому ловит ссылки везде —
+ * в Vue-островах (шапка, подвал, модалки), на статических страницах и в
+ * статьях. Названия целей — идентификаторы JS-событий; в интерфейсе
+ * Метрики (Цели → Добавить цель → «JavaScript-событие») их нужно завести
+ * с теми же идентификаторами. Список — в CLAUDE.md, раздел «Analytics».
+ * До загрузки tag.js (событие window.load) `ym` ещё не функция — клик
+ * молча пропускается, на работу страницы это не влияет.
  */
 const isProd = import.meta.env.PROD
 ---
@@ -40,6 +49,38 @@ const isProd = import.meta.env.PROD
         ecommerce:           'dataLayer',
       });
     });
+  </script>
+)}
+{isProd && (
+  <script is:inline>
+    (function () {
+      var COUNTER = 106993554;
+      /* Первое совпадение выигрывает. Короткая ссылка yandex.ru/maps/-/… ведёт на
+         карточку салона (маршрут), поиск yandex.ru/maps/?text=… и 2gis.ru — на
+         страницы отзывов. */
+      var GOALS = [
+        ['phone_click',    /^tel:/i],
+        ['email_click',    /^mailto:/i],
+        ['telegram_click', /^https?:\/\/(t|telegram)\.me\//i],
+        ['vk_click',       /^https?:\/\/(www\.)?vk\.com\//i],
+        ['max_click',      /^https?:\/\/(www\.)?max\.ru\//i],
+        ['whatsapp_click', /^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i],
+        ['route_click',    /^https?:\/\/yandex\.ru\/maps\/-\//i],
+        ['review_platform_click', /^https?:\/\/(yandex\.ru\/maps\/\?|(go\.)?2gis\.(ru|com)\/)/i]
+      ];
+      document.addEventListener('click', function (e) {
+        if (typeof window.ym !== 'function') return;
+        var el = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+        if (!el) return;
+        var href = el.getAttribute('href') || '';
+        for (var i = 0; i < GOALS.length; i++) {
+          if (GOALS[i][1].test(href)) {
+            window.ym(COUNTER, 'reachGoal', GOALS[i][0], { page: location.pathname });
+            return;
+          }
+        }
+      }, true);
+    })();
   </script>
 )}
 {isProd && (
