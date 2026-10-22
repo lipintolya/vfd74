@@ -612,10 +612,9 @@ onUnmounted(() => {
               <li
                 v-for="item in DEV_SERVICES"
                 :key="item"
-                class="flex items-start gap-3 border-b border-white/8 py-2 text-sm text-white/80 last:border-b-0"
+                class="border-b border-white/8 py-2 text-sm text-white/80 last:border-b-0"
               >
-                <span class="mt-[0.6em] h-px w-3 shrink-0 bg-teal-400" aria-hidden="true" />
-                <span>{{ item }}</span>
+                {{ item }}
               </li>
             </ul>
 
