@@ -183,14 +183,7 @@ export interface Step {
   title:   string
   text:    string
   details: string[]
-  /** Декоративное фото без фона (cutout PNG/WEBP) в правом нижнем углу
-      плитки — опционально, не у всех шагов есть подходящий кадр. */
-  image?:  string
-  /** Override ширины image (CSS-значение, напр. clamp(...)) — по умолчанию
-      общий размер из ProcessSteps.astro; нужен, когда конкретный кадр
-      визуально крупнее/мельче остальных при одинаковой ширине контейнера. */
-  imageWidth?: string
-  /** Ссылка-действие внизу плитки — опционально. */
+  /** Ссылка-действие внизу шага — опционально. */
   cta?: { label: string; href: string; external?: boolean }
 }
 
