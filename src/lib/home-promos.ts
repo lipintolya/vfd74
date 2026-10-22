@@ -19,9 +19,7 @@ import {
 
 export interface PromoPrice {
   value: number
-  /** Что стоит эту цену — обычным текстом после цифры: «за полотно» */
-  per:   string
-  /** Цена до скидки — зачёркнутой после цены */
+  /** Цена до скидки — зачёркнутой рядом */
   old?:  number
   /** Минимальная цена линейки — выводится с «от» */
   from?: boolean
@@ -33,29 +31,35 @@ export interface HomePromo {
   /** Короткое имя на вкладке: на телефоне 4 вкладки делят ширину экрана */
   tab:     string
   title:   string
-  /** Две-три фразы живым текстом: что это, чем хорошо, есть ли на
-      складе. Статус и свойства — словами в тексте, не плашкой над
-      заголовком, не списком и не цветной строкой под ценой */
+  /** Две короткие фразы живым текстом: что это и есть ли на складе.
+      Статус и свойства — словами, без плашек, списков и цветных строк */
   text:    string
-  /** Условие акции — фразой над ценами */
+  /** Условие акции — фразой над ценой */
   offer?:  string
-  prices:  PromoPrice[]
+  /** Цена полотна — главная, крупно (как в карточках каталога) */
+  price?:  PromoPrice
+  /** Цена комплекта — второй строкой обычным текстом, с составом */
+  kit?:    PromoPrice & { includes: string }
   cta:     { label: string; href: string }
   /** Кадры слайдера; /renders/home/<имя>.webp имеют ресайзы 640/960 */
   images:  string[]
   alt:     string
-  /** Пропорции фото на телефоне (по умолчанию 4/3); с sm — общие */
-  ratio?:  string
 }
 
-/** Цены «полотно / комплект» карточки каталога; null — карточки нет */
-const catalogPrices = (card?: { price: number | null; coatingSlug: string; colorName: string }) => {
-  if (!card?.price) return []
-  return [
-    { value: card.price, per: 'за полотно' },
-    { value: card.price + calcKitPrice(card.coatingSlug, card.colorName), per: 'за комплект' },
-  ]
-}
+/** Состав комплекта межкомнатной двери (BASE_KIT_DESCRIPTION — короб
+    2,5 шт, наличники 5 шт) — коротко для строки под ценой */
+const KIT_INTERIOR = 'с коробом и наличниками'
+/** У скрытых дверей наличников нет — комплект: полотно и алюминиевый короб */
+const KIT_HIDDEN = 'с алюминиевым коробом'
+
+/** Цены полотна и комплекта карточки каталога; карточки нет — без цен */
+const catalogPrices = (card?: { price: number | null; coatingSlug: string; colorName: string }) =>
+  card?.price
+    ? {
+        price: { value: card.price },
+        kit:   { value: card.price + calcKitPrice(card.coatingSlug, card.colorName), includes: KIT_INTERIOR },
+      }
+    : {}
 
 /* «Штрих 2А» в каталоге две записи (чёрный и золотой молдинг) — ищем по id.
    Обложка карточки уже переставлена на бежевый из наличия (IN_STOCK_OVERRIDE
@@ -75,8 +79,8 @@ export async function getHomePromos(): Promise<HomePromo[]> {
     tab:    'Техно',
     title:  'Серия Техно',
     /* Свойства — из преимуществ Эмалекса на /catalog/ (coatingGroupCopy) */
-    text:   'Новая коллекция в покрытии Эмалекс — сдержанный, технологичный характер интерьера. Покрытие не боится царапин и сколов, легко моется и не желтеет от солнца. Техно 1 в белом есть на складе.',
-    prices: catalogPrices(tehnoCard),
+    text:   'Новая коллекция в покрытии Эмалекс: не боится царапин, легко моется и не желтеет. Техно 1 белый — на складе.',
+    ...catalogPrices(tehnoCard),
     cta:    { label: 'Смотреть серию', href: '/catalog/series/tehno/' },
     images: ['/renders/home/tehno-1.webp', '/renders/home/tehno-2.webp', '/renders/home/tehno-3.webp'],
     alt:    'Межкомнатная дверь серии «Техно» в цвете Эмалекс белый',
@@ -86,30 +90,25 @@ export async function getHomePromos(): Promise<HomePromo[]> {
     id:      'shtrih',
     tab:     'Штрих 2А',
     title:   'Урбан Штрих 2А',
-    text:    'Новая модель серии Урбан: графичный чёрный молдинг на бежевом полотне. Эмалекс защищает от царапин и сколов, алюминиевая кромка бережёт торцы. Есть на складе — без ожидания изготовления.',
-    prices:  catalogPrices(shtrihCard),
+    text:    'Бежевый Эмалекс с графичным чёрным молдингом и алюминиевой кромкой. Есть на складе — без ожидания.',
+    ...catalogPrices(shtrihCard),
     cta:     { label: 'Смотреть модель', href: `/models/${shtrihCard.slug}/` },
-    /* Кадры почти квадратные (1145×1374), дверь по центру — на телефоне
-       5:6, чтобы не срезать полотно сверху и снизу */
     images:  ['/renders/home/shtrih-2a-1.webp', '/renders/home/shtrih-2a-2.webp', '/renders/home/shtrih-2a-3.webp'],
     alt:     'Межкомнатная дверь Урбан Штрих 2А в цвете Эмалекс бежевый с чёрным молдингом',
-    ratio:   '5 / 6',
   } : null
 
   const secret: HomePromo = {
     id:     'secret',
     tab:    'Секрет',
     title:  'Скрытые двери «Секрет»',
-    text:   'Полотно заподлицо со стеной, алюминиевый короб без наличников и видимых петель. Приходит в грунте — под покраску, штукатурку или обои в цвет стены. Есть в наличии в Челябинске.',
+    text:   'Полотно вровень со стеной, без наличников и видимых петель — красится в цвет стены. Есть в наличии в Челябинске.',
     offer:  SECRET_PROMO_ACTIVE
       ? `Акция −${Math.round(SECRET_PROMO_DISCOUNT * 100)}% до ${formatDate(SECRET_PROMO_VALID_UNTIL)}`
       : undefined,
-    prices: [
-      { value: SECRET_MIN_BLADE_PRICE, per: 'за полотно', from: true,
-        old: SECRET_PROMO_ACTIVE ? SECRET_MIN_BLADE_PRICE_ORIGINAL : undefined },
-      { value: SECRET_MIN_KIT_PRICE, per: 'за комплект', from: true,
-        old: SECRET_PROMO_ACTIVE ? SECRET_MIN_KIT_PRICE_ORIGINAL : undefined },
-    ],
+    price:  { value: SECRET_MIN_BLADE_PRICE, from: true,
+              old: SECRET_PROMO_ACTIVE ? SECRET_MIN_BLADE_PRICE_ORIGINAL : undefined },
+    kit:    { value: SECRET_MIN_KIT_PRICE, from: true, includes: KIT_HIDDEN,
+              old: SECRET_PROMO_ACTIVE ? SECRET_MIN_KIT_PRICE_ORIGINAL : undefined },
     cta:    { label: 'Смотреть скрытые двери', href: '/catalog/skrytye-dveri/' },
     /* Последний кадр — оригинал из /media: он и так лёгкий (15 КБ) */
     images: [
@@ -125,11 +124,9 @@ export async function getHomePromos(): Promise<HomePromo[]> {
     id:      'reflex',
     tab:     'Рефлекс',
     title:   'Скрытая дверь с зеркалом «Рефлекс»',
-    text:    'Новинка среди скрытых дверей: зеркало во всю высоту полотна, дверь вровень со стеной — комната визуально шире и светлее. Размеры индивидуальные, высота до 2,5 м, кромка чёрная, серебро или золото.',
-    prices:  [
-      { value: REFLEX_MIN_BLADE_PRICE, per: 'за полотно',  from: true },
-      { value: REFLEX_MIN_KIT_PRICE,   per: 'за комплект', from: true },
-    ],
+    text:    'Зеркало во всю высоту полотна, дверь вровень со стеной. Размеры под проём, высота до 2,5 м.',
+    price:   { value: REFLEX_MIN_BLADE_PRICE, from: true },
+    kit:     { value: REFLEX_MIN_KIT_PRICE,   from: true, includes: KIT_HIDDEN },
     cta:     { label: 'Смотреть «Рефлекс»', href: '/catalog/skrytye-dveri/#reflex' },
     images:  ['/renders/home/reflex-1.webp', '/renders/home/reflex-2.webp', '/renders/home/reflex-3.webp', REFLEX_IMAGE],
     alt:     'Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной',
