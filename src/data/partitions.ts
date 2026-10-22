@@ -182,7 +182,11 @@ export interface Step {
   num:     string
   title:   string
   text:    string
-  details: string[]
+  /** Спек-лист под абзацем — опционально (на главной шаги без него). */
+  details?: string[]
+  /** Цена/условие шага крупно внизу колонки; `mark` — звёздочка-ссылка
+      на сноску о дате цен (сноску выводит секция). */
+  price?: { value: string; note: string; mark?: boolean }
   /** Ссылка-действие внизу шага — опционально. */
   cta?: { label: string; href: string; external?: boolean }
 }

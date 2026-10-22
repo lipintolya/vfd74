@@ -1,27 +1,45 @@
 ---
 import ProcessSteps from '../partitions/ProcessSteps.astro'
 import { howItWorksSteps } from '../../data/how-it-works'
+import { PRICES_DATE_LABEL } from '../../data/services'
+
+const hasMarks = howItWorksSteps.some((s) => s.price?.mark)
 ---
 
-<!-- Графитовая панель внутри контейнера, а не тёмная секция во всю ширину:
-     продолжает бенто hero выше (те же скругления и тон --color-graphite) и
-     не ломает общее правило отступов соседних .section. -->
-<section class="section bg-white" aria-labelledby="how-we-work-heading">
+<!-- Тёмная полоса во всю ширину. Общее правило зануляет padding-top у
+     .section, идущей за другой .section (см. global.css), — у полосы свои
+     отступы внутри (иначе контент прилипнет к краю фона) и margin-bottom:
+     следующая секция тоже останется без padding-top, белый зазор под
+     полосой даёт этот margin. -->
+<section
+  class="section how-band bg-graphite"
+  aria-labelledby="how-we-work-heading"
+>
   <div class="container">
-    <div class="rounded-2xl bg-graphite px-5 py-9 sm:rounded-3xl sm:px-8 sm:py-12 lg:px-12 lg:py-14">
 
-      <header class="mb-10 grid gap-4 md:mb-14 lg:grid-cols-12 lg:items-end lg:gap-8">
-        <div class="lg:col-span-7">
-          <p class="t-eyebrow mb-3 text-white/55">Процесс</p>
-          <h2 id="how-we-work-heading" class="t-h2 text-white">Как мы работаем</h2>
-        </div>
-        <p class="t-lead max-w-md text-white/60 lg:col-span-5 lg:justify-self-end">
-          От выбора модели до готовой установки — 4&nbsp;понятных шага, без скрытых доплат
-        </p>
-      </header>
+    <header class="mb-10 grid gap-4 sm:mb-14 lg:mb-20 lg:grid-cols-12 lg:items-end lg:gap-8">
+      <h2 id="how-we-work-heading" class="t-h2 text-step-6 text-white lg:col-span-7">
+        Как мы работаем
+      </h2>
+      <p class="t-lead max-w-sm text-white/55 lg:col-span-5 lg:justify-self-end">
+        От выбора модели до установки — без посредников и&nbsp;субподрядчиков.
+      </p>
+    </header>
 
-      <ProcessSteps items={howItWorksSteps} dark />
+    <ProcessSteps items={howItWorksSteps} dark noteId="how-we-work-note" />
 
-    </div>
+    {hasMarks && (
+      <p id="how-we-work-note" class="t-meta mt-10 max-w-xl text-white/45 sm:mt-14">
+        * Цены актуальны на&nbsp;{PRICES_DATE_LABEL} Точную стоимость рассчитаем после замера.
+      </p>
+    )}
+
   </div>
 </section>
+
+<style>
+  .how-band {
+    padding-block: clamp(3.5rem, 8vw, 6.5rem);  /* без слоя — перебивает @layer components */
+    margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+  }
+</style>
