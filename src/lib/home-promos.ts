@@ -1,6 +1,6 @@
 /**
- * Промо-блоки новинок на главной (Техно, Штрих 2А, «Секрет», «Рефлекс») —
- * данные для одного шаблона components/home/ProductPromo.astro.
+ * Новинки на главной (Техно, Штрих 2А, «Секрет», «Рефлекс») — данные для
+ * одного блока с вкладками components/home/Novelties.astro.
  *
  * Цены не пишем руками: Техно и Штрих — из того же Supabase-каталога, что
  * и /catalog/ (getCatalogCards + calcKitPrice), скрытые двери — из
@@ -28,15 +28,15 @@ export interface PromoPrice {
 }
 
 export interface HomePromo {
-  /** Ключ блока — из него id заголовка (aria-labelledby) */
+  /** Ключ — из него id вкладки и панели */
   id:      string
+  /** Короткое имя на вкладке: на телефоне 4 вкладки делят ширину экрана */
+  tab:     string
   title:   string
-  /** Одна-две фразы живым текстом: что это, чем хорошо. Статус
-      («новая», «в наличии») — словами в тексте, не плашкой над заголовком,
-      факты — в предложении, не списком */
+  /** Две-три фразы живым текстом: что это, чем хорошо, есть ли на
+      складе. Статус и свойства — словами в тексте, не плашкой над
+      заголовком, не списком и не цветной строкой под ценой */
   text:    string
-  /** Что лежит на складе — фразой под ценами */
-  stock?:  string
   /** Условие акции — фразой над ценами */
   offer?:  string
   prices:  PromoPrice[]
@@ -46,8 +46,6 @@ export interface HomePromo {
   alt:     string
   /** Пропорции фото на телефоне (по умолчанию 4/3); с sm — общие */
   ratio?:  string
-  /** Фото справа на десктопе — блоки чередуются, не читаются копией */
-  reverse?: boolean
 }
 
 /** Цены «полотно / комплект» карточки каталога; null — карточки нет */
@@ -64,7 +62,7 @@ const catalogPrices = (card?: { price: number | null; coatingSlug: string; color
    в made-to-order.ts), поэтому price/colorName — именно он. */
 const SHTRIH_2A_ID = '7434f55c-b2a8-4f12-b0c6-56c7c57888eb'
 
-export async function getHomePromos() {
+export async function getHomePromos(): Promise<HomePromo[]> {
   const { cards } = await getCatalogCards()
 
   /* У «Техно 1» обложка карточки — цвет из наличия (withInStockFirst в
@@ -74,10 +72,10 @@ export async function getHomePromos() {
 
   const tehno: HomePromo = {
     id:     'tehno',
+    tab:    'Техно',
     title:  'Серия Техно',
     /* Свойства — из преимуществ Эмалекса на /catalog/ (coatingGroupCopy) */
-    text:   'Новая коллекция на покрытии Эмалекс — сдержанный, технологичный характер интерьера. Покрытие не боится царапин и сколов, легко моется и не желтеет от солнца.',
-    stock:  'Техно 1 белый — в наличии на складе.',
+    text:   'Новая коллекция в покрытии Эмалекс — сдержанный, технологичный характер интерьера. Покрытие не боится царапин и сколов, легко моется и не желтеет от солнца. Техно 1 в белом есть на складе.',
     prices: catalogPrices(tehnoCard),
     cta:    { label: 'Смотреть серию', href: '/catalog/series/tehno/' },
     images: ['/renders/home/tehno-1.webp', '/renders/home/tehno-2.webp', '/renders/home/tehno-3.webp'],
@@ -86,9 +84,9 @@ export async function getHomePromos() {
 
   const shtrih: HomePromo | null = shtrihCard ? {
     id:      'shtrih',
+    tab:     'Штрих 2А',
     title:   'Урбан Штрих 2А',
-    text:    'Новая модель серии Урбан: графичный чёрный молдинг на спокойном бежевом полотне. Эмалекс защищает от царапин и сколов, алюминиевая кромка бережёт торцы.',
-    stock:   'Эмалекс бежевый — в наличии на складе, без ожидания изготовления.',
+    text:    'Новая модель серии Урбан: графичный чёрный молдинг на бежевом полотне. Эмалекс защищает от царапин и сколов, алюминиевая кромка бережёт торцы. Есть на складе — без ожидания изготовления.',
     prices:  catalogPrices(shtrihCard),
     cta:     { label: 'Смотреть модель', href: `/models/${shtrihCard.slug}/` },
     /* Кадры почти квадратные (1145×1374), дверь по центру — на телефоне
@@ -96,14 +94,13 @@ export async function getHomePromos() {
     images:  ['/renders/home/shtrih-2a-1.webp', '/renders/home/shtrih-2a-2.webp', '/renders/home/shtrih-2a-3.webp'],
     alt:     'Межкомнатная дверь Урбан Штрих 2А в цвете Эмалекс бежевый с чёрным молдингом',
     ratio:   '5 / 6',
-    reverse: true,
   } : null
 
   const secret: HomePromo = {
     id:     'secret',
+    tab:    'Секрет',
     title:  'Скрытые двери «Секрет»',
-    text:   'Полотно заподлицо со стеной, алюминиевый короб без наличников и видимых петель. Приходит в грунте — под покраску, штукатурку или обои в цвет стены.',
-    stock:  'Есть в наличии в Челябинске.',
+    text:   'Полотно заподлицо со стеной, алюминиевый короб без наличников и видимых петель. Приходит в грунте — под покраску, штукатурку или обои в цвет стены. Есть в наличии в Челябинске.',
     offer:  SECRET_PROMO_ACTIVE
       ? `Акция −${Math.round(SECRET_PROMO_DISCOUNT * 100)}% до ${formatDate(SECRET_PROMO_VALID_UNTIL)}`
       : undefined,
@@ -126,6 +123,7 @@ export async function getHomePromos() {
 
   const reflex: HomePromo = {
     id:      'reflex',
+    tab:     'Рефлекс',
     title:   'Скрытая дверь с зеркалом «Рефлекс»',
     text:    'Новинка среди скрытых дверей: зеркало во всю высоту полотна, дверь вровень со стеной — комната визуально шире и светлее. Размеры индивидуальные, высота до 2,5 м, кромка чёрная, серебро или золото.',
     prices:  [
@@ -135,8 +133,8 @@ export async function getHomePromos() {
     cta:     { label: 'Смотреть «Рефлекс»', href: '/catalog/skrytye-dveri/#reflex' },
     images:  ['/renders/home/reflex-1.webp', '/renders/home/reflex-2.webp', '/renders/home/reflex-3.webp', REFLEX_IMAGE],
     alt:     'Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной',
-    reverse: true,
   }
 
-  return { tehno, shtrih, secret, reflex }
+  /* Порядок вкладок; Штрих — только если модель нашлась в каталоге */
+  return [tehno, shtrih, secret, reflex].filter((p): p is HomePromo => p !== null)
 }

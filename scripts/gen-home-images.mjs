@@ -1,7 +1,7 @@
 /**
  * Генерирует public/renders/home/*.webp — уменьшенные локальные копии
  * картинок главной страницы (Features.vue и промо-слайдеры
- * ProductPromo.astro, данные — src/lib/home-promos.ts).
+ * Novelties.astro, данные — src/lib/home-promos.ts).
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
  * ~5 МБ на главной), а на экране:

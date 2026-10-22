@@ -1,0 +1,304 @@
+---
+/**
+ * «Новинки» на главной — один блок с вкладками вместо четырёх промо подряд
+ * (те растягивали главную одним и тем же приёмом). Данные — lib/home-promos.ts.
+ *
+ * Вкладки — имена товаров текстом, выбранная подчёркнута. Панель: фото
+ * слева, справа название, две-три фразы живым текстом (статус и наличие —
+ * словами, без плашек и цветных строк), цены «10 500 ₽ за полотно»
+ * столбиком, кнопка. Фото с острыми углами.
+ *
+ * Скорость: все панели — в серверном HTML (тексты и ссылки видят
+ * поисковики), неактивные — с атрибутом hidden. Их фото не грузятся
+ * (lazy-картинки в display:none браузер не запрашивает), а остров
+ * слайдера (client:visible) не гидрируется, пока панель не откроют.
+ * Переключение — несколько строк скрипта ниже, по образцу ARIA Tabs:
+ * стрелки ←/→, Home/End, фокус ходит по вкладкам.
+ */
+import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
+import { rub } from '../../data/services'
+import { typograph } from '../../lib/typograph'
+import type { HomePromo } from '../../lib/home-promos'
+
+interface Props {
+  items: HomePromo[]
+}
+const { items } = Astro.props
+---
+
+{items.length > 0 && (
+  <section class="section bg-white" aria-labelledby="novelties-heading">
+    <div class="container">
+
+      <header class="nv-head" style={`--nv-n:${items.length}`}>
+        <h2 id="novelties-heading" class="t-h2 nv-h2">Новинки</h2>
+        <div class="nv-tabs" role="tablist" aria-label="Новинки" data-nv-tabs>
+          {items.map((p, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="nv-tab"
+              id={`nv-tab-${p.id}`}
+              aria-controls={`nv-panel-${p.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              {p.tab}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {items.map((p, i) => (
+        <div
+          class="nv-panel"
+          role="tabpanel"
+          id={`nv-panel-${p.id}`}
+          aria-labelledby={`nv-tab-${p.id}`}
+          hidden={i !== 0}
+        >
+          <div class="nv-media" style={`--nv-ratio:${p.ratio ?? '4 / 3'}`}>
+            <PhotoAutoplaySlider
+              client:visible
+              images={p.images}
+              alt={p.alt}
+              responsive
+              sizes="(max-width: 1023px) calc(100vw - 2rem), min(56vw, 44rem)"
+            />
+          </div>
+
+          <div class="nv-body">
+            <h3 class="t-h3 nv-title">{typograph(p.title)}</h3>
+            <p class="nv-text">{typograph(p.text)}</p>
+
+            {p.offer && <p class="nv-offer">{typograph(p.offer)}</p>}
+
+            {p.prices.length > 0 && (
+              <ul class="nv-prices" role="list">
+                {p.prices.map((pr) => (
+                  <li class="nv-price">
+                    <span class="t-price">{pr.from && 'от\u00a0'}{rub(pr.value)}</span>
+                    {pr.old && <s class="nv-old">{rub(pr.old)}</s>}
+                    <span class="nv-per">{pr.per}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <a href={p.cta.href} class="btn btn-primary nv-cta">
+              {p.cta.label}
+              <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </section>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-nv-tabs]').forEach((list) => {
+    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')]
+
+    const select = (next: HTMLButtonElement, focus = false) => {
+      for (const tab of tabs) {
+        const on = tab === next
+        tab.setAttribute('aria-selected', String(on))
+        tab.tabIndex = on ? 0 : -1
+        const panel = document.getElementById(tab.getAttribute('aria-controls') ?? '')
+        if (panel) panel.hidden = !on
+      }
+      if (focus) next.focus()
+    }
+
+    list.addEventListener('click', (e) => {
+      const tab = (e.target as Element).closest<HTMLButtonElement>('[role="tab"]')
+      if (tab) select(tab)
+    })
+
+    list.addEventListener('keydown', (e) => {
+      const i = tabs.indexOf(document.activeElement as HTMLButtonElement)
+      if (i < 0) return
+      const n = tabs.length
+      const to =
+        e.key === 'ArrowRight' ? (i + 1) % n :
+        e.key === 'ArrowLeft'  ? (i - 1 + n) % n :
+        e.key === 'Home'       ? 0 :
+        e.key === 'End'        ? n - 1 : -1
+      if (to < 0) return
+      e.preventDefault()
+      select(tabs[to]!, true)
+    })
+  })
+</script>
+
+<style>
+  /* Шапка: заголовок и вкладки на одной линейке; выбранная вкладка
+     подчёркнута поверх неё. На телефоне вкладки — под заголовком,
+     делят ширину поровну (имена короткие), без горизонтального скролла. */
+  .nv-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2.5rem;
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid #e2e8f0;  /* slate-200 */
+  }
+  .nv-h2 { margin: 0 0 0.875rem; }
+
+  .nv-tabs {
+    display: grid;
+    grid-template-columns: repeat(var(--nv-n), minmax(0, 1fr));
+    width: 100%;
+  }
+  @media (width >= 48rem) {
+    .nv-tabs {
+      display: flex;
+      gap: 2.25rem;
+      width: auto;
+    }
+  }
+
+  .nv-tab {
+    position: relative;
+    appearance: none;
+    margin: 0;
+    padding: 0.875rem 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: var(--text-step-1);
+    font-weight: 500;
+    line-height: 1.3;
+    color: #64748b;  /* slate-500 */
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 200ms var(--ease-out);
+  }
+  @media (width >= 48rem) {
+    .nv-tab { font-size: var(--text-step-2); }
+  }
+  .nv-tab:hover { color: var(--color-ink); }
+  .nv-tab[aria-selected='true'] { color: var(--color-ink); }
+  .nv-tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transition: transform 250ms var(--ease-out);
+  }
+  .nv-tab[aria-selected='true']::after { transform: scaleX(1); }
+  .nv-tab:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+
+  /* Панель: фото и текст; на десктопе фото 7/12, текст 5/12 по центру */
+  .nv-panel {
+    display: grid;
+    gap: 1.75rem;
+    animation: nv-in 350ms var(--ease-out);
+  }
+  .nv-panel[hidden] { display: none; }
+  @keyframes nv-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .nv-media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--nv-ratio);
+    background: #f1f5f9;  /* slate-100 — место под кадр, пока он грузится */
+  }
+  @media (width >= 40rem) {
+    .nv-media { aspect-ratio: 4 / 3; }
+  }
+
+  .nv-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .nv-title {
+    margin: 0;
+    text-wrap: balance;
+  }
+  .nv-text {
+    margin: 1rem 0 0;
+    max-width: 34rem;
+    font-size: var(--text-step-2);
+    line-height: 1.6;
+    color: #475569;  /* slate-600 — на белом 7.5:1 */
+    text-wrap: pretty;
+  }
+
+  .nv-offer {
+    margin: 1.75rem 0 0;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: #b91c1c;  /* red-700 */
+  }
+
+  /* Цена — цифра крупно и сразу за ней обычным текстом, что за эти
+     деньги; столбиком, как на ценнике */
+  .nv-prices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nv-offer + .nv-prices { margin-top: 0.75rem; }
+  .nv-price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0 0.5rem;
+  }
+  .nv-old {
+    font-size: var(--text-step-1);
+    font-variant-numeric: tabular-nums;
+    color: #94a3b8;  /* slate-400 */
+  }
+  .nv-per {
+    font-size: var(--text-step-1);
+    color: #64748b;  /* slate-500 */
+  }
+
+  /* Кнопка — системная .btn-primary, крупнее; на телефоне во всю ширину */
+  .nv-cta {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0.9375rem 1.5rem;
+    font-size: var(--text-step-1);
+    gap: 0.5rem;
+  }
+  .nv-cta:hover .btn-arrow-icon { transform: translateX(2px); }
+  @media (width >= 30rem) {
+    .nv-cta { width: auto; }
+  }
+
+  @media (width >= 64rem) {
+    .nv-panel {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: clamp(2.5rem, 5vw, 4.5rem);
+      align-items: center;
+    }
+    .nv-media { aspect-ratio: 5 / 4; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nv-panel { animation: none; }
+    .nv-tab, .nv-tab::after { transition: none; }
+  }
+</style>
