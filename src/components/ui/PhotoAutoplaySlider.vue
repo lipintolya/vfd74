@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 
 /**
- * Общий кросс-фейд автослайдер с точками-навигацией (.dot-nav__* из
- * global.css) — тот же паттерн, что в HeroSlider.vue, вынесенный в
- * компонент после третьего дублирования (HiddenDoorsPromo, SherwoodPromo).
- * Корень — position:relative на всю ширину/высоту родителя: сам блок
- * с пропорциями (aspect-*) задаёт вызывающая сторона через class на теге
- * <PhotoAutoplaySlider>.
+ * Общий кросс-фейд автослайдер фото с точками-навигацией (.dot-nav__* из
+ * global.css) — тот же паттерн, что в HeroSlider.vue. Корень заполняет
+ * родителя: пропорции (aspect-ratio) задаёт вызывающая сторона.
+ *
+ * Фото здесь — к товару рядом, а не главное содержание: слайдер не должен
+ * отвлекать от чтения. Поэтому смена раз в 8 с (на 5 с кадр менялся раньше,
+ * чем успевали дочитать описание), автопрокрутка идёт только пока слайдер
+ * на экране и вкладка активна, замирает под курсором и при фокусе на точках.
+ * На телефоне листается свайпом.
  */
 const props = defineProps<{
   images: string[]
@@ -17,19 +20,23 @@ const props = defineProps<{
       <имя>-960.webp (scripts/gen-home-slider-variants.mjs) — отдаём их через
       srcset. Остальные пути и вызовы без флага берутся как есть. */
   responsive?: boolean
+  /** sizes для srcset — ширина слайдера в раскладке вызывающей стороны */
+  sizes?: string
 }>()
 
-/* Карточка слайдера: на мобильном/планшете во всю ширину, с lg — ~55vw. */
-const SIZES = '(max-width: 1023px) 100vw, 55vw'
+const SIZES = props.sizes ?? '(max-width: 1023px) 100vw, 55vw'
+const SWIPE_PX = 40
 const hasVariants = (src: string) => props.responsive && src.startsWith('/renders/home/')
 const srcsetOf = (src: string) => {
   const base = src.replace(/\.webp$/, '')
   return `${base}-640.webp 640w, ${base}-960.webp 960w, ${src} 1300w`
 }
 
-const interval = props.intervalMs ?? 5000
+const interval = props.intervalMs ?? 8000
+const count = props.images.length
 
-const activeSlide      = ref(0)
+const root        = useTemplateRef<HTMLElement>('root')
+const activeSlide = ref(0)
 
 /* Все <img> стоят в DOM друг на друге (кросс-фейд по opacity), поэтому
    loading="lazy" их не откладывает — браузер тянет все сразу при подходе к
@@ -37,51 +44,99 @@ const activeSlide      = ref(0)
    src не задан, <img> ничего не грузит. */
 const loaded = ref<boolean[]>(props.images.map((_, i) => i === 0))
 const ensureLoaded = (i: number) => {
-  const n = props.images.length
-  if (n > 0) loaded.value[(i % n + n) % n] = true
+  if (count > 0) loaded.value[(i % count + count) % count] = true
 }
 watch(activeSlide, i => { ensureLoaded(i); ensureLoaded(i + 1) })
-const isPaused         = ref(false)
-const autoplayEnabled  = ref(true)
-let timer: ReturnType<typeof setInterval> | undefined
 
-const next  = () => { activeSlide.value = (activeSlide.value + 1) % props.images.length }
-const stop  = () => { if (timer) { clearInterval(timer); timer = undefined } }
-const start = () => { stop(); if (autoplayEnabled.value && props.images.length > 1) timer = setInterval(next, interval) }
-const goTo  = (i: number) => { activeSlide.value = i; start() }
+/* Автопрокрутка идёт, только когда нет ни одной причины стоять:
+   слайдер за экраном, вкладка скрыта, курсор/фокус внутри, палец на фото */
+const holds = new Set<string>()
+const playing         = ref(false)
+const autoplayEnabled = ref(false)
+let timer: ReturnType<typeof setTimeout> | undefined
 
-const onPauseStart = () => { isPaused.value = true;  stop() }
-const onPauseEnd   = () => { isPaused.value = false; start() }
+const go   = (i: number) => { activeSlide.value = (i % count + count) % count }
+const stop = () => { clearTimeout(timer); timer = undefined }
+const schedule = () => {
+  stop()
+  playing.value = autoplayEnabled.value && count > 1 && holds.size === 0
+  if (playing.value) timer = setTimeout(() => { go(activeSlide.value + 1); schedule() }, interval)
+}
+const hold    = (why: string) => { holds.add(why);    schedule() }
+const release = (why: string) => { holds.delete(why); schedule() }
+
+/* Выбор кадра вручную перезапускает отсчёт с полного интервала */
+const goTo = (i: number) => { go(i); schedule() }
+
+let touchX = 0
+let touchY = 0
+const onTouchStart = (e: TouchEvent) => {
+  const t = e.touches[0]
+  if (!t) return
+  touchX = t.clientX
+  touchY = t.clientY
+  hold('touch')
+}
+const onTouchEnd = (e: TouchEvent) => {
+  const t = e.changedTouches[0]
+  if (t) {
+    const dx = touchX - t.clientX
+    const dy = touchY - t.clientY
+    if (Math.abs(dx) > SWIPE_PX && Math.abs(dx) > Math.abs(dy)) go(activeSlide.value + (dx > 0 ? 1 : -1))
+  }
+  release('touch')
+}
+
+let io: IntersectionObserver | undefined
+const onVisibility = () => (document.hidden ? hold('tab') : release('tab'))
 
 onMounted(() => {
   autoplayEnabled.value = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  start()
+  holds.add('offscreen')
+  if (root.value && 'IntersectionObserver' in window) {
+    io = new IntersectionObserver(([e]) => {
+      e?.isIntersecting ? release('offscreen') : hold('offscreen')
+    }, { threshold: 0.4 })
+    io.observe(root.value)
+  } else {
+    holds.delete('offscreen')
+  }
+  document.addEventListener('visibilitychange', onVisibility)
+  schedule()
   ensureLoaded(1)
 })
-onUnmounted(stop)
+onUnmounted(() => {
+  stop()
+  io?.disconnect()
+  document.removeEventListener('visibilitychange', onVisibility)
+})
 </script>
 
 <template>
   <div
+    ref="root"
     class="pas-root"
-    @mouseenter="onPauseStart"
-    @mouseleave="onPauseEnd"
-    @touchstart.passive="onPauseStart"
-    @touchend.passive="onPauseEnd"
+    @mouseenter="hold('hover')"
+    @mouseleave="release('hover')"
+    @focusin="hold('focus')"
+    @focusout="release('focus')"
+    @touchstart.passive="onTouchStart"
+    @touchend.passive="onTouchEnd"
   >
     <!-- loading="lazy" у всех, включая первый: слайдер везде стоит ниже
-         первого экрана, eager первого кадра отбирал канал у LCP-картинки hero. -->
+         первого экрана, eager первого кадра отбирал канал у LCP-картинки hero.
+         Описание (alt) — у первого кадра; остальные — те же ракурсы того же
+         товара, скринридер не читает одно и то же несколько раз. -->
     <img
       v-for="(src, i) in images"
       :key="src"
       :src="loaded[i] ? src : undefined"
       :srcset="hasVariants(src) && loaded[i] ? srcsetOf(src) : undefined"
       :sizes="hasVariants(src) ? SIZES : undefined"
-      :alt="alt"
+      :alt="i === 0 ? alt : ''"
+      :aria-hidden="i === 0 ? undefined : 'true'"
       loading="lazy"
       decoding="async"
-      width="1672"
-      height="941"
       class="pas-img"
       :class="{ 'pas-img--on': i === activeSlide }"
     />
@@ -89,8 +144,8 @@ onUnmounted(stop)
     <slot />
 
     <div
-      v-if="images.length > 1"
-      class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2"
+      v-if="count > 1"
+      class="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1"
       role="tablist"
       aria-label="Навигация по фото"
     >
@@ -99,7 +154,7 @@ onUnmounted(stop)
         :key="src"
         type="button"
         role="tab"
-        :aria-label="`Фото ${i + 1}`"
+        :aria-label="`Фото ${i + 1} из ${count}`"
         :aria-selected="i === activeSlide"
         class="dot-nav__btn"
         @click="goTo(i)"
@@ -109,7 +164,7 @@ onUnmounted(stop)
           :class="{ 'dot-nav__item--active': i === activeSlide }"
         >
           <span
-            v-if="i === activeSlide && autoplayEnabled && !isPaused"
+            v-if="i === activeSlide && playing"
             :key="activeSlide"
             class="dot-nav__progress"
             :style="{ animationDuration: `${interval}ms` }"
@@ -125,6 +180,7 @@ onUnmounted(stop)
   position: relative;
   width: 100%;
   height: 100%;
+  touch-action: pan-y;  /* вертикальный скролл страницы — браузеру, горизонталь — свайпу */
 }
 .pas-img {
   position: absolute;
@@ -133,7 +189,7 @@ onUnmounted(stop)
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1250ms ease-in-out;
+  transition: opacity 1000ms ease-in-out;
 }
 .pas-img--on {
   opacity: 1;

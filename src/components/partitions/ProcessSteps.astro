@@ -4,7 +4,7 @@
  * сотрудничество») — колонки на общей линейке, а не плитки: тонкая
  * линия сверху, короткий бирюзовый отрезок — начало шага, номер того же
  * цвета (нумерация — реальная последовательность). Ниже заголовок и абзац;
- * опционально — спек-лист (язык BenefitList, без иконок), цена/условие
+ * опционально — спек-лист (тонкие разделители, без иконок), цена/условие
  * крупно и ссылка-действие.
  *
  * Колонки: 1 на телефоне (номер — узкой колонкой слева), 2 от sm, от lg —
@@ -18,6 +18,7 @@
  * при prefers-reduced-motion и если список уже на экране — всё видно сразу.
  */
 import type { Step } from '../../data/partitions'
+import { typograph } from '../../lib/typograph'
 
 interface Props {
   items: Step[]
@@ -28,8 +29,6 @@ interface Props {
 }
 const { items, dark = false, noteId } = Astro.props
 const cols = items.length % 4 !== 0 && items.length % 3 === 0 ? 3 : 4
-/* В узкой колонке «500 ₽» рвалось на «500» и «₽» — склеиваем знак с числом */
-const nbspRub = (t: string) => t.replace(/ ₽/g, ' ₽')
 ---
 
 <ol
@@ -41,11 +40,11 @@ const nbspRub = (t: string) => t.replace(/ ₽/g, ' ₽')
   {items.map((s, i) => (
     <li class="ps-step" style={`--i:${i}`}>
       <span class="ps-num" aria-hidden="true">{s.num}</span>
-      <h3 class="ps-title">{s.title}</h3>
-      <p class="ps-text">{s.text}</p>
+      <h3 class="ps-title">{typograph(s.title)}</h3>
+      <p class="ps-text">{typograph(s.text)}</p>
       {s.details?.length ? (
         <ul class="ps-list" role="list">
-          {s.details.map((d) => <li class="ps-item">{nbspRub(d)}</li>)}
+          {s.details.map((d) => <li class="ps-item">{typograph(d)}</li>)}
         </ul>
       ) : <span class="ps-slot" aria-hidden="true" />}
       {s.price ? (
@@ -56,7 +55,7 @@ const nbspRub = (t: string) => t.replace(/ ₽/g, ' ₽')
               <a href={`#${noteId}`} class="ps-mark" aria-label="Примечание о ценах">*</a>
             )}
           </span>
-          <span class="ps-note">{nbspRub(s.price.note)}</span>
+          <span class="ps-note">{typograph(s.price.note)}</span>
         </p>
       ) : <span class="ps-slot" aria-hidden="true" />}
       {s.cta && (
@@ -166,7 +165,7 @@ const nbspRub = (t: string) => t.replace(/ ₽/g, ' ₽')
      в чужие строки). Высоты не имеет. */
   .ps-slot { display: none; }
 
-  /* Спек-лист — тот же язык, что BenefitList: тонкие разделители и
+  /* Спек-лист — тонкие разделители и
      короткий штрих вместо иконки */
   .ps-list {
     list-style: none;

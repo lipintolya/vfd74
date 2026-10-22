@@ -54,6 +54,8 @@ Deploys go out via `git push production main` to a `post-receive` hook on a Bege
   - `preloadImage` в `BaseLayout` с `preloadImageSrcset` обязан иметь тот же `sizes`, что у самого `<img>` (`preloadImageSizes`), иначе браузер скачает картинку дважды.
 - Files keep the exact key from the cloud, including odd names (spaces, parentheses) — don't rename; refs are percent-encoded by the browser.
 
+**Home product promos** (Техно, Штрих 2А, «Секрет», «Рефлекс»): one static template `components/home/ProductPromo.astro`, data in `src/lib/home-promos.ts` (prices live — catalog via `getCatalogCards`, hidden doors via `skrytye-dveri-products.ts`). New promo = new object there + one `<ProductPromo {...promo} />` line in `index.astro`, not a new component. Only the photo slider (`PhotoAutoplaySlider`, 8 s, autoplays only on screen) is an island. Short data texts go through `typograph()` (`src/lib/typograph.ts`) — no line starting with «—», no hanging prepositions, «500 ₽» unbroken.
+
 **Maps**: no Yandex iframe/screenshot. The salon map is our own vector map of the surroundings built from OpenStreetMap (`scripts/gen-visit-map.mjs` → `src/data/visit-map.json`; rendered by `src/lib/salon-map.ts` into `/salon-map-dark.svg` for the footer and `/salon-map-light.svg` for `/contacts/`, see `src/pages/salon-map-*.svg.ts`). Re-run the generator only if `address.coordinates` in `contacts-data.ts` changes; keep the «© участники OpenStreetMap» credit next to the map. Route buttons still open Yandex Maps.
 
 **Blog articles** (`src/content/articles/*.mdoc`, Markdoc; schema in `src/content.config.ts`):

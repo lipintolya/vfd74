@@ -429,7 +429,7 @@ onUnmounted(stop)
 
 /* Точки-навигация — общий вид и прогресс-бар вынесены в global.css
    (.dot-nav__btn/.dot-nav__item/.dot-nav__progress), единая система для
-   всех автослайдеров сайта (Hero, HiddenDoorsPromo, SherwoodPromo). */
+   всех автослайдеров сайта (Hero, PhotoAutoplaySlider). */
 @media (prefers-reduced-motion: reduce) {
   .hero-slide,
   .hero-content-enter-active,

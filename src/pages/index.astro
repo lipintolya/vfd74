@@ -8,10 +8,7 @@ import { reviews } from '../data/reviews'
 import HeroSlider from '../components/home/HeroSlider.vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
-import HiddenDoorsPromo from '../components/home/HiddenDoorsPromo.vue'
-import MirrorDoorPromo from '../components/home/MirrorDoorPromo.vue'
-import TehnoPromo from '../components/home/TehnoPromo.vue'
-import ShtrihPromo from '../components/home/ShtrihPromo.vue'
+import ProductPromo from '../components/home/ProductPromo.astro'
 import Features from '../components/home/Features.vue'
 import CatalogCategories from '../components/home/CatalogCategories.vue'
 import Promo from '../components/home/Promo.vue'
@@ -22,35 +19,13 @@ import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import { faqs } from '../components/home/faq-data'
 import HowWeWork from '../components/home/HowWeWork.astro'
 import { howToSchema } from '../data/how-it-works'
-import { getCatalogCards } from '../lib/catalog-data'
-import { calcKitPrice } from '../data/accessories'
+import { getHomePromos } from '../lib/home-promos'
 import { companyLegalInfo } from '../lib/contacts-data'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
-/* Цена промо-плитки «Техно» — живой запрос к тому же Supabase-каталогу,
-   что и /catalog/ (getCatalogCards), а не число в коде: обложка карточки
-   у "Техно 1" уже переставлена на цвет из наличия (см. withInStockFirst
-   в catalog-data.ts), так что card.price/card.colorName здесь — это именно
-   белый. Комплект считаем той же формулой, что везде (calcKitPrice). */
-const { cards: catalogCards } = await getCatalogCards()
-const tehnoCard = catalogCards.find(c => c.seriesSlug === 'tehno' && c.name === 'Техно 1')
-const tehnoBladePrice = tehnoCard?.price ?? null
-const tehnoKitPrice = tehnoCard?.price
-  ? tehnoCard.price + calcKitPrice(tehnoCard.coatingSlug, tehnoCard.colorName)
-  : null
-
-/* Промо «Урбан Штрих 2А» (бежевый, чёрный молдинг — в наличии) — та же схема.
-   Ищем по id модели: записей «Штрих 2А» две (чёрный и золотой молдинг).
-   Обложка карточки уже переставлена на бежевый из наличия (IN_STOCK_OVERRIDE
-   в made-to-order.ts), поэтому card.price/colorName — именно он. */
-const SHTRIH_2A_ID = '7434f55c-b2a8-4f12-b0c6-56c7c57888eb'
-const shtrihCard = catalogCards.find(c => c.id === SHTRIH_2A_ID)
-const shtrihBladePrice = shtrihCard?.price ?? null
-const shtrihKitPrice = shtrihCard?.price
-  ? shtrihCard.price + calcKitPrice(shtrihCard.coatingSlug, shtrihCard.colorName)
-  : null
-const shtrihHref = shtrihCard ? `/models/${shtrihCard.slug}/` : null
+/* Промо новинок — данные и живые цены из каталога в lib/home-promos.ts */
+const promos = await getHomePromos()
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -133,13 +108,11 @@ const localBusinessSchema = {
 >
   <HeroSlider client:load />
   <HowWeWork />
-  <TehnoPromo bladePrice={tehnoBladePrice} kitPrice={tehnoKitPrice} client:visible />
+  <ProductPromo {...promos.tehno} />
   <PromoStripBanner />
-  {shtrihHref && (
-    <ShtrihPromo modelHref={shtrihHref} bladePrice={shtrihBladePrice} kitPrice={shtrihKitPrice} client:visible />
-  )}
-  <HiddenDoorsPromo client:visible />
-  <MirrorDoorPromo client:visible />
+  {promos.shtrih && <ProductPromo {...promos.shtrih} />}
+  <ProductPromo {...promos.secret} />
+  <ProductPromo {...promos.reflex} />
   <Features client:visible />
   <CatalogCategories client:visible />
   <Reviews client:visible />

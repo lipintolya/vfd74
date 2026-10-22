@@ -1,7 +1,7 @@
 /**
  * Генерирует public/renders/home/*.webp — уменьшенные локальные копии
  * картинок главной страницы (Features.vue и промо-слайдеры
- * TehnoPromo/ShtrihPromo/MirrorDoorPromo/HiddenDoorsPromo).
+ * ProductPromo.astro, данные — src/lib/home-promos.ts).
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
  * ~5 МБ на главной), а на экране:
@@ -45,19 +45,19 @@ const jobs = [
   [FEAT + 'card-3.webp', 'features-card-3.webp', F],
   ...['f1', 'f2', 'f3', 'f4', 't1', 't2', 't3', 'foto1', 'foto2', 'foto3', 'foto4', 'foto6']
     .map(n => [CARDS + n + '.webp', `features-${n}.webp`, F]),
-  // TehnoPromo.vue
+  // Техно (home-promos.ts)
   [TEHNO + 'tehno_render_1.webp', 'tehno-1.webp', P],
   [TEHNO + 'tehno_render.webp',   'tehno-2.webp', P],
   [TEHNO + 'render_3.webp',       'tehno-3.webp', P],
-  // ShtrihPromo.vue — рендер-обложка и фото Урбан Штрих 2А
+  // Штрих 2А (home-promos.ts) — рендер-обложка и фото Урбан Штрих 2А
   [STRIX + 'strix_2a_2.webp', 'shtrih-2a-1.webp', P],
   [STRIX + 'strix_2a_1.webp', 'shtrih-2a-2.webp', P],
   [STRIX + 'strix_2a_3.webp', 'shtrih-2a-3.webp', P],
-  // MirrorDoorPromo.vue
+  // «Рефлекс» (home-promos.ts)
   [INVIS + '2213EA7D-2E12-4D33-9BC3-63E4943E0098.webp', 'reflex-1.webp', P],
   [INVIS + 'A158F8FC-901B-4262-BDF6-D68E573300C8.webp', 'reflex-2.webp', P],
   [INVIS + '41CFB5EC-5142-462A-A702-E9AECDE149AD.webp', 'reflex-3.webp', P],
-  // HiddenDoorsPromo.vue (reverse_render_11zon.webp не трогаем — оригинал 15КB,
+  // «Секрет» (home-promos.ts) (reverse_render_11zon.webp не трогаем — оригинал 15КB,
   // пережатие делало его только тяжелее)
   [BENTO + 'secret_render_cover.webp',                  'secret-cover.webp', P],
   [INVIS + 'B2AB966B-4BC6-43E2-AEAA-7DA6B3CEDCC5.webp', 'secret-2.webp', P],
