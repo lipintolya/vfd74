@@ -28,7 +28,6 @@ import type { DoorCategoryFaq } from './door-categories'
 
 export interface StyleCategory {
   slug: string
-  eyebrow: string
   h1: string
   intro: string
   metaTitle: string
@@ -50,7 +49,6 @@ export interface StyleCategory {
 export const STYLE_CATEGORIES: StyleCategory[] = [
   {
     slug: 'loft-dveri',
-    eyebrow: 'Стиль',
     h1: 'Двери в стиле лофт в Челябинске',
     intro: 'Строгая геометрия, контраст фактур и лаконичные линии без декоративной избыточности — двери серий, которые в каталоге ВФД созданы для лофт-пространств и современных интерьеров.',
     metaTitle: 'Двери в стиле лофт в Челябинске — купить, цены | ВФД',
@@ -69,7 +67,6 @@ export const STYLE_CATEGORIES: StyleCategory[] = [
   },
   {
     slug: 'minimalizm-dveri',
-    eyebrow: 'Стиль',
     h1: 'Двери в стиле минимализм в Челябинске',
     intro: 'Чистые линии, ровный цвет без лишней фактуры и ничего лишнего на полотне — двери серий, которые в каталоге ВФД описаны как решение для минималистичных и скандинавских интерьеров.',
     metaTitle: 'Двери в стиле минимализм в Челябинске — купить, цены | ВФД',
@@ -88,7 +85,6 @@ export const STYLE_CATEGORIES: StyleCategory[] = [
   },
   {
     slug: 'skandinavskiy-dveri',
-    eyebrow: 'Стиль',
     h1: 'Двери в скандинавском стиле в Челябинске',
     intro: 'Светлые оттенки, натуральная простота и ничего лишнего на полотне — белые межкомнатные двери в покрытиях Эмалекс и Эмаль из каталога ВФД, которые создают уютный скандинавский интерьер.',
     metaTitle: 'Двери в скандинавском стиле в Челябинске — купить, цены | ВФД',

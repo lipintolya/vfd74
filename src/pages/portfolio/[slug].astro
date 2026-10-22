@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import ProjectSlider from '../../components/portfolio/ProjectSlider.vue'
-import { PORTFOLIO_WORKS, CATEGORY_LABELS, CATEGORY_BADGE_COLORS, OBJECT_TYPE_LABELS } from '../../data/portfolio-works'
+import { PORTFOLIO_WORKS, CATEGORY_LABELS, OBJECT_TYPE_LABELS } from '../../data/portfolio-works'
 import { companyLegalInfo } from '../../lib/contacts-data'
 
 export async function getStaticPaths() {
@@ -101,15 +101,12 @@ const breadcrumbSchema = {
         <div>
           <!-- Header -->
           <header class="mt-8 mb-6 lg:mt-0">
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-              <span class="inline-flex items-center gap-1.5">
-                <span class:list={['h-1.5 w-1.5 rounded-full', CATEGORY_BADGE_COLORS[work.category]]} aria-hidden="true" />
-                {CATEGORY_LABELS[work.category]}
-              </span>
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3 text-step-1 text-slate-500">
+              <span>{CATEGORY_LABELS[work.category]}</span>
               <span class="text-slate-300" aria-hidden="true">·</span>
-              <span class="normal-case tracking-normal">{OBJECT_TYPE_LABELS[work.objectType]}</span>
+              <span>{OBJECT_TYPE_LABELS[work.objectType]}</span>
               <span class="text-slate-300" aria-hidden="true">·</span>
-              <time datetime={work.date} class="tabular-nums normal-case tracking-normal">{work.label}</time>
+              <time datetime={work.date} class="tabular-nums">{work.label}</time>
             </div>
             <h1 class="text-2xl font-medium leading-tight tracking-tight text-slate-900 md:text-3xl">
               {work.title}

@@ -134,7 +134,6 @@ function openDecorLightbox() {
         </div>
       </div>
       <div class="dlv__decor-body">
-        <p class="dlv__decor-eyebrow">Тип декора</p>
         <h3 class="dlv__decor-title">{{ decor.title }}</h3>
         <p class="dlv__decor-desc">{{ decor.description }}</p>
       </div>
@@ -326,14 +325,6 @@ function openDecorLightbox() {
   padding: clamp(1rem, 2vw, 1.375rem);
 }
 
-.dlv__decor-eyebrow {
-  margin: 0;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #0d9488;
-}
 .dlv__decor-title {
   margin: 0;
   font-size: clamp(1rem, 1.6vw, 1.1875rem);

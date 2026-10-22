@@ -177,7 +177,7 @@ const structuredData = canonicalUrl ? [
       </div>
       <div class="sr-hero__body">
         <h1 class="sr-hero__h1">
-          <span class="sr-eyebrow">{'Межкомнатные двери серии '}</span>{series.name}
+          <span class="sr-only">{'Межкомнатные двери серии '}</span>{series.name}
         </h1>
         {spec.tagline && <p class="sr-hero__tagline">{spec.tagline}</p>}
         <div class="sr-hero__actions">
@@ -429,15 +429,6 @@ const structuredData = canonicalUrl ? [
 </BaseLayout>
 
 <style>
-.sr-eyebrow {
-  display: block;
-  margin: 0 0 0.875rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
-}
 .sr-h2 {
   margin: 0 0 1rem;
   font-size: clamp(1.625rem, 3vw, 2.125rem);
@@ -532,11 +523,6 @@ const structuredData = canonicalUrl ? [
 .sr-hero__crumbs :global(.breadcrumbs__link:hover) { color: #fff; background: rgba(255,255,255,0.14); }
 .sr-hero__crumbs :global(.breadcrumbs__icon) { color: rgba(255,255,255,0.35); }
 .sr-hero__body { margin-top: auto; color: #fff; }
-/* Надзаголовок — часть H1 («Межкомнатные двери серии Скинель»), выглядит
-   как прежний eyebrow над названием. */
-.sr-hero__h1 .sr-eyebrow {
-  line-height: 1.4;
-}
 .sr-hero__h1 {
   margin: 0 0 0.75rem;
   font-size: clamp(2.25rem, 5vw, 3.5rem);

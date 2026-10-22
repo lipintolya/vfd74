@@ -267,14 +267,6 @@ h4.font-medium, h5.font-medium, h6.font-medium {
   color: #94a3b8;                                    /* slate-400 */
 }
 
-/* Надзаголовок секции. Был teal + uppercase + tracking-widest — троп
-   лендингов; акцент оставлен за выбранным состоянием и главным CTA. */
-.t-eyebrow {
-  font-size: var(--text-step-0);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: #475569;                                    /* slate-600 */
-}
 /* Подпись над группой контролов */
 .t-label {
   font-size: var(--text-step-0);
@@ -365,14 +357,6 @@ astro-island:has(> .section) + .section,
   padding-top: clamp(1rem, 2vw, 1.5rem);
 }
 
-/* Промо-строка на главной зажата между двумя .section — те уже дают
-   свой padding-top/bottom (по clamp(2.5rem,4vw,3.5rem) с каждой стороны),
-   поэтому сама строка без вертикальных отступов, иначе они складываются
-   и зазор после неё становится заметно больше, чем перед ней. */
-.promo-strip-wrap {
-  padding-top:    0;
-  padding-bottom: 0;
-}
 
 /* ── Buttons ── */
 .btn {

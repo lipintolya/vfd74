@@ -30,7 +30,6 @@ const hours = saturday!.time === sunday!.time
 
       <!-- ── Шапка + быстрые действия ── -->
       <header class="mb-10 max-w-3xl lg:mb-14">
-        <p class="t-eyebrow mb-3">Салон на Братьев Кашириных</p>
         <h1 class="t-h1 mb-4">Контакты салона дверей ВФД в Челябинске</h1>
         <p class="m-0 mb-6 t-lead text-slate-600">
           Позвоните, напишите в мессенджер или приезжайте в салон — покажем двери и перегородки

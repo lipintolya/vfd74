@@ -2,44 +2,51 @@
 /**
  * src/components/home/PromoStripBanner.astro
  *
- * Компактная строка-анонс акций между хиро и остальным контентом главной.
- * Ведёт к блоку #promo (Promo.vue). Раньше была высокая тёмная секция
- * с фоновой картинкой интерьера, несвязанной с конкретными акциями —
- * заменена на тонкий info-bar с реальной актуальной акцией.
+ * Полоса «Бесплатный замер» на главной — во всю ширину экрана, тот же тёмный
+ * тон, что у «Как мы работаем». Слева предложение и условие одной фразой,
+ * справа действие: номер телефона кнопкой (на десктопе tel: не набрать —
+ * номер виден целиком; клик считается целью phone_click в Метрике) и
+ * ссылка на все акции.
  *
- * Переход — не обычный якорь: страница длинная (~9-10к px), а ниже
- * PromoStripBanner ещё лежат несколько client:visible/client:idle
- * островов — пока анимированный scroll-behavior:smooth едет вниз, их
- * картинки и разметка догружаются и меняют высоту документа под ногами
- * (замерено: +~440px за первые ~300мс скролла). Анимация целится в
- * зафиксированную на старте точку, поэтому скролл иногда не долетает и
- * приземляется в блок «Портфолио» прямо перед #promo, а не в сами акции.
- * Мгновенный прыжок (behavior:'instant') снимает саму возможность гонки —
- * он не анимируется, значит нечему "не долетать".
+ * «Все акции» — не обычный якорь: страница длинная (~9-10к px), а ниже
+ * лежат client:visible/client:idle острова — пока плавный скролл едет вниз,
+ * их разметка догружается и меняет высоту документа под ногами (замерено:
+ * +~440px за первые ~300мс), и скролл приземлялся мимо #promo. Мгновенный
+ * прыжок (behavior:'instant') гонки не допускает.
  */
+import { companyLegalInfo } from '../../lib/contacts-data'
+
+const phone = companyLegalInfo.contacts.phone[0]!
 ---
 
-<div class="promo-strip-wrap">
-  <div class="container">
-    <a
-      href="#promo"
-      class="promo-strip group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl bg-graphite px-6 py-6 no-underline sm:flex-row sm:items-center sm:justify-between sm:px-9 sm:py-7"
-    >
-      <p class="relative z-10 text-base font-medium text-white sm:text-lg">
-        Бесплатный замер по Челябинску — при заказе межкомнатных дверей
+<section class="measure-band" aria-labelledby="measure-band-heading">
+  <div class="container measure-band__inner">
+    <div>
+      <h2 id="measure-band-heading" class="measure-band__title">
+        Бесплатный замер по&nbsp;Челябинску
+      </h2>
+      <p class="measure-band__text">
+        При заказе межкомнатных дверей. Замерщик снимет размеры проёма
+        и&nbsp;рассчитает стоимость на&nbsp;месте.
       </p>
-      <span class="promo-strip__cta relative z-10 inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-teal-400 transition-transform group-hover:translate-x-0.5">
+    </div>
+
+    <div class="measure-band__actions">
+      <a href={`tel:${phone.raw}`} class="btn measure-band__call" aria-label={`Записаться на замер: ${phone.label}`}>
+        {phone.label}
+      </a>
+      <a href="#promo" class="measure-band__link" data-promo-jump>
         Все акции
-        <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-      </span>
-    </a>
+      </a>
+    </div>
   </div>
-</div>
+</section>
 
 <script>
-  document.querySelectorAll('.promo-strip').forEach((el) => {
+  document.querySelectorAll<HTMLAnchorElement>('[data-promo-jump]').forEach((el) => {
     el.addEventListener('click', (e) => {
       const target = document.getElementById('promo')
       if (!target) return
@@ -51,35 +58,86 @@
 </script>
 
 <style>
-  /* Hover-язык тёмных плашек главной —
-     градиентная teal-подсветка через ::before (браузеры не интерполируют
-     плавно между solid и gradient background напрямую) + приподнятая
-     рамка/тень/translateY, для визуальной консистентности тёмных
-     элементов на главной. */
-  .promo-strip {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: box-shadow 300ms ease, transform 300ms ease, border-color 300ms ease;
+  /* Не .section: соседняя секция ниже сохраняет свой padding-top (общее
+     правило зануляет его только после .section), а сверху воздух даёт
+     padding-bottom секции «Новинки» */
+  .measure-band {
+    background: var(--color-graphite);
+    color: #fff;
   }
-  .promo-strip::before {
-    content: '';
-    position: absolute;
-    z-index: 0;
-    inset: 0;
-    background: linear-gradient(155deg, transparent 40%, rgba(20, 184, 166, 0.16) 100%);
-    opacity: 0;
-    transition: opacity 400ms ease;
-    pointer-events: none;
+  .measure-band__inner {
+    display: grid;
+    gap: 1.75rem;
+    padding-block: clamp(2.5rem, 6vw, 4rem);
   }
-  .promo-strip:hover {
-    border-color: rgba(45, 212, 191, 0.4);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
-    transform: translateY(-3px);
+  @media (width >= 64rem) {
+    .measure-band__inner {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 3rem;
+    }
   }
-  .promo-strip:hover::before {
-    opacity: 1;
+
+  .measure-band__title {
+    margin: 0;
+    font-size: var(--text-step-5);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: #fff;
+    text-wrap: balance;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .promo-strip { transition: none; }
-    .promo-strip:hover { transform: none; }
+  .measure-band__text {
+    margin: 0.75rem 0 0;
+    max-width: 36rem;
+    font-size: var(--text-step-2);
+    line-height: 1.55;
+    color: rgb(255 255 255 / 0.62);
+    text-wrap: pretty;
+  }
+
+  .measure-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+  }
+
+  /* Белая кнопка на тёмном — главное действие; номер цифрами одинаковой
+     ширины, чтобы читался как номер */
+  .measure-band__call {
+    padding: 0.9375rem 1.625rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-ink);
+    font-size: var(--text-step-2);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .measure-band__call:hover { background: #ccfbf1; }  /* teal-100 */
+  .measure-band__call:focus-visible { outline-color: #fff; }
+
+  .measure-band__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-block: 0.5rem;  /* зона нажатия */
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.75);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .measure-band__link:hover { color: #fff; }
+  .measure-band__link:hover .btn-arrow-icon { transform: translateX(2px); }
+  .measure-band__link:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Телефон: кнопка во всю ширину — под большой палец */
+  @media (width < 30rem) {
+    .measure-band__call { width: 100%; }
   }
 </style>

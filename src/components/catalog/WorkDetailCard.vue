@@ -190,7 +190,7 @@ onUnmounted(() => {
 
       <!-- Specs column -->
       <div class="flex flex-col">
-        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Спецификация</p>
+        <p class="mb-1 text-step-1 font-semibold text-ink">Спецификация</p>
         <dl class="m-0 flex flex-col">
           <div
             v-for="spec in specsFor(work)"

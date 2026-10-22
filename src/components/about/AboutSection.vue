@@ -89,7 +89,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
         <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
 
           <div class="order-2 lg:order-1">
-            <p class="t-eyebrow mb-3">Официальный дилер Владимирской фабрики дверей</p>
 
             <h1 class="t-h1 mb-5">
               Салон дверей ВФД в Челябинске — <span class="text-teal-600">всё начинается с дверей</span>
@@ -215,7 +214,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     ======================================================= -->
     <section class="section bg-white">
       <div class="container">
-        <p class="t-eyebrow mb-3">Ассортимент</p>
         <h2 class="t-h2 mb-8 md:mb-10">Что можно выбрать в салоне</h2>
         <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           <a
@@ -240,7 +238,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     ======================================================= -->
     <section class="section bg-white">
       <div class="container">
-        <p class="t-eyebrow mb-3 text-center">Пространство салона</p>
         <h2 class="t-h2 mb-3 text-center">Большой выбор</h2>
         <p class="mx-auto mb-10 max-w-2xl text-center t-lead text-slate-600 md:mb-14">
           Обширная экспозиция дверей и перегородок в одном из самых крупных салонов Владимирской
@@ -265,7 +262,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               />
               <div class="absolute inset-0 bg-linear-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
               <div class="absolute inset-x-0 bottom-0 p-6 text-white">
-                <span class="mb-2 inline-block text-xs font-semibold uppercase tracking-widest opacity-80">Экспозиция</span>
                 <h3 class="m-0 mb-1 text-xl font-medium leading-tight sm:text-2xl">Большой выставочный зал</h3>
                 <p class="m-0 text-sm opacity-85">Реальные образцы дверей из наличия и под заказ</p>
               </div>
@@ -289,7 +285,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               />
               <div class="absolute inset-0 bg-linear-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
               <div class="absolute inset-x-0 bottom-0 p-5 text-white">
-                <span class="mb-1.5 inline-block text-xs font-semibold uppercase tracking-widest opacity-80">Консультация</span>
                 <h3 class="m-0 text-lg font-medium leading-tight">Подбор под интерьер</h3>
               </div>
             </div>
@@ -312,7 +307,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               />
               <div class="absolute inset-0 bg-linear-to-t from-slate-900/85 via-slate-900/10 to-transparent"></div>
               <div class="absolute inset-x-0 bottom-0 p-5 text-white">
-                <span class="mb-1.5 inline-block text-xs font-semibold uppercase tracking-widest opacity-80">Материалы</span>
                 <h3 class="m-0 text-lg font-medium leading-tight">Цвета и покрытия</h3>
               </div>
             </div>
@@ -342,7 +336,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
           </div>
 
           <div>
-            <p class="t-eyebrow mb-3">Руководитель салона</p>
             <h2 class="t-h2 mb-1.5">{{ director.name }}</h2>
             <p class="m-0 mb-6 text-slate-500">{{ director.position }}</p>
 
@@ -371,7 +364,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     ======================================================= -->
     <section class="section bg-white">
       <div class="container">
-        <p class="t-eyebrow mb-3 text-center">Галерея</p>
         <h2 class="t-h2 mb-10 text-center md:mb-14">Интерьер салона</h2>
 
         <div class="grid grid-cols-2 gap-3.5 lg:grid-cols-3 lg:gap-4">
@@ -404,7 +396,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     ======================================================= -->
     <section class="section bg-slate-50">
       <div class="container">
-        <p class="t-eyebrow mb-3 text-center">Оплата</p>
         <h2 class="t-h2 mb-10 text-center md:mb-14">Удобные способы оплаты</h2>
 
         <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
@@ -434,7 +425,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     ======================================================= -->
     <section class="section bg-white">
       <div class="container">
-        <p class="t-eyebrow mb-3 text-center">Реквизиты</p>
         <h2 class="t-h2 mb-10 text-center md:mb-14">Официальная информация</h2>
 
         <div class="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-slate-200">

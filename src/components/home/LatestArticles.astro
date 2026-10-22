@@ -23,9 +23,6 @@ const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mon
            мобильном кнопка уходит под текст на всю ширину. -->
       <header class="mb-10 flex flex-col gap-6 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
         <div class="max-w-2xl">
-          <p class="mb-3 inline-flex items-center rounded-full border border-white/15 px-3 py-1 text-xs font-medium uppercase tracking-widest text-teal-400">
-            Блог
-          </p>
           <h2 id="articles-heading" class="text-3xl font-medium leading-tight tracking-tight text-white md:text-5xl">
             Полезные статьи о дверях, фурнитуре и дизайне
           </h2>
@@ -60,7 +57,7 @@ const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', mon
                 <div class="flex flex-1 flex-col p-6 sm:p-0">
                   <time
                     datetime={article.data.publishDate.toISOString()}
-                    class="mb-4 inline-flex w-fit items-center rounded-full border border-white/15 px-3 py-1 text-xs font-medium uppercase tracking-widest tabular-nums text-teal-400"
+                    class="mb-3 block text-sm tabular-nums text-slate-400"
                   >
                     {dateStr(article.data.publishDate)}
                   </time>

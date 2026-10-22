@@ -12,7 +12,6 @@ interface Slide {
       оригинал — самый широкий кандидат. У первого слайда свой набор. */
   srcset?:     string
   title:       string
-  subtitle:    string
   description: string
   cta?:        string
   ctaHref?:    string
@@ -37,8 +36,7 @@ const slides: Slide[] = [
        уходила из кадра — прижимаем кадр влево. */
     imagePosition: 'left center',
     title: 'ВФД Челябинск — двери на Братьев Кашириных',
-    subtitle: 'Официальный дилер',
-    description: 'Подберём дверь для дома или квартиры: каталог моделей, цены и установка',
+    description: 'Официальный дилер ВФД: подберём дверь для дома или квартиры, покажем цены и установим',
     cta: 'Смотреть каталог',
     ctaHref: '/catalog/',
   },
@@ -49,8 +47,7 @@ const slides: Slide[] = [
     image: '/renders/hero/comforttermo-promo.webp',
     srcset: '/renders/hero/comforttermo-promo-640.webp 640w, /renders/hero/comforttermo-promo-960.webp 960w, /renders/hero/comforttermo-promo.webp 1122w',
     title: 'Входные двери с терморазрывом',
-    subtitle: 'Уличная дверь «Комфорт Термо» для частного дома',
-    description: 'Полотно 110 мм, короб с терморазрывом 150 мм, 3 контура EPDM-уплотнения, цвет «Букле графит» — от 42 660 ₽',
+    description: '«Комфорт Термо» для частного дома: полотно 110 мм, короб с терморазрывом 150 мм, 3 контура уплотнения — от 42 660 ₽',
     cta: 'Смотреть дверь',
     ctaHref: '/vhodnye-dveri/#comforttermo',
   },
@@ -59,8 +56,7 @@ const slides: Slide[] = [
     image: '/media/Main_page/left_bento/strix_render.webp',
     srcset: '/renders/hero/strix-render-640.webp 640w, /renders/hero/strix-render-960.webp 960w, /media/Main_page/left_bento/strix_render.webp 1254w',
     title: 'Премиум дизайн по доступной цене',
-    subtitle: 'Новинка — «Штрих» уже в каталоге',
-    description: 'Серия Урбан: алюминиевая кромка с графичным акцентом, покрытие Эмалекс — от 14 300 ₽ за полотно',
+    description: 'Новинка «Штрих» из серии Урбан: алюминиевая кромка с графичным акцентом, покрытие Эмалекс — от 14 300 ₽ за полотно',
     cta: 'Смотреть модель',
     ctaHref: '/models/shtrih-2a-urban-78543d/',
   },
@@ -69,8 +65,7 @@ const slides: Slide[] = [
     image: '/media/Main_page_perfomance-covers/innova_render.webp',
     srcset: '/renders/hero/innova-render-640.webp 640w, /renders/hero/innova-render-960.webp 960w, /media/Main_page_perfomance-covers/innova_render.webp 1448w',
     title: 'Серия «Иннова» уже в салоне',
-    subtitle: 'Не оставляет отпечатков пальцев',
-    description: 'Новинка в инновационном покрытии ПЭТ',
+    description: 'Новинка в покрытии ПЭТ — не оставляет отпечатков пальцев',
     cta: 'Смотреть каталог',
     ctaHref: '/catalog/',
   },
@@ -79,7 +74,6 @@ const slides: Slide[] = [
     image: '/media/covers/linea-1.webp',
     srcset: '/renders/hero/linea-1-640.webp 640w, /renders/hero/linea-1-960.webp 960w, /media/covers/linea-1.webp 1536w',
     title: 'Серия «Линеа» уже в салоне',
-    subtitle: 'Современный дизайн по доступной цене',
     description: 'Светостойкая эмаль с фрезерованными элементами и алюминиевым декором',
     cta: 'Смотреть каталог',
     ctaHref: '/catalog/',
@@ -89,8 +83,7 @@ const slides: Slide[] = [
     image: '/media/Main_page/left_bento/render_urban2.webp',
     srcset: '/renders/hero/urban2-render-640.webp 640w, /renders/hero/urban2-render-960.webp 960w, /media/Main_page/left_bento/render_urban2.webp 1254w',
     title: 'Урбан — городской стиль для вашего интерьера',
-    subtitle: 'Двери от 18 000 ₽ за комплект',
-    description: 'Лаконичные формы, полипропиленовое покрытие Ренолит (Германия) с эффектом эмали',
+    description: 'Лаконичные формы и покрытие Ренолит (Германия) с эффектом эмали — от 18 000 ₽ за комплект',
     cta: 'Смотреть модель',
     ctaHref: '/models/urban-2gr-urban-a2d505/',
   },
@@ -223,9 +216,6 @@ onUnmounted(stop)
           <div class="relative z-10 flex h-full items-end">
             <Transition name="hero-content" mode="out-in">
               <div :key="currentSlide.id" class="hero-content-text p-5 sm:p-8 lg:p-10 max-w-2xl text-white pb-14 sm:pb-16" aria-live="polite" aria-atomic="true">
-                <p class="text-xs uppercase tracking-widest text-white/75 mb-2 sm:mb-3">
-                  {{ currentSlide.subtitle }}
-                </p>
                 <h1 class="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-medium mb-3 sm:mb-4 leading-tight">
                   {{ currentSlide.title }}
                 </h1>
@@ -298,7 +288,6 @@ onUnmounted(stop)
             />
             <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/35 to-black/5" aria-hidden="true" />
             <div class="relative z-10 h-full p-5 sm:p-6 flex flex-col justify-end text-white">
-              <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Дизайнерские решения</p>
               <h3 class="text-lg sm:text-xl font-medium mb-2 leading-snug">
                 Алюминиевые перегородки и системы открывания
               </h3>
@@ -342,7 +331,6 @@ onUnmounted(stop)
               <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/40 to-black/10" aria-hidden="true" />
               <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-end text-white">
                 <div class="min-h-18 sm:min-h-21">
-                  <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Портфолио</p>
                   <h4 class="font-medium text-sm sm:text-base leading-snug mb-1 line-clamp-2">Фотоотчёты с объектов</h4>
                   <p class="text-sm text-white/75 line-clamp-2">
                     <span class="sm:hidden">Живые фото с объектов</span>
@@ -365,7 +353,6 @@ onUnmounted(stop)
             <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-graphite">
               <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-end text-white">
                 <div class="min-h-18 sm:min-h-21">
-                  <p class="text-xs uppercase tracking-widest text-white/60 mb-1">Салон ВФД</p>
                   <h4 class="font-medium text-sm sm:text-base mb-1 leading-snug line-clamp-2">Полный цикл: от замера до монтажа</h4>
                   <p class="text-sm text-white/75 line-clamp-2">Работаем в Челябинске с 2014 года</p>
                 </div>

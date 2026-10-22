@@ -202,7 +202,6 @@ const structuredData = canonicalUrl ? [
         <header id="series-title" class="max-w-2xl mb-8 md:mb-10" style="scroll-margin-top: 7.5rem">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p class="t-eyebrow mb-3">Каталог дверей ВФД</p>
               <h1 class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">Межкомнатные двери в Челябинске</h1>
             </div>
             {/* Полные карточки серий (фото+цена каждой) переехали на
@@ -291,9 +290,6 @@ const structuredData = canonicalUrl ? [
             <div data-series-card class={`grid gap-0 overflow-hidden rounded-2xl border border-l-4 sm:grid-cols-2 ${PANEL} ${accent.stripe}`}>
               <div class="flex flex-col justify-between gap-6 p-5 sm:p-7">
                 <div>
-                  <p class={`m-0 mb-2 text-xs font-semibold uppercase tracking-wide ${accent.label}`}>
-                    Покрытие
-                  </p>
                   <h2 class="m-0 mb-3 text-2xl font-medium text-ink sm:text-3xl">{group.name}</h2>
                   {group.tagline && (
                     <p class="m-0 mb-2 text-sm font-semibold text-ink">{group.tagline}</p>
@@ -401,7 +397,7 @@ const structuredData = canonicalUrl ? [
 
             {group.benefits.length > 0 && (
               <details class="group/benefits mt-6 border-t border-slate-200 pt-6">
-                <summary class={`m-0 flex w-fit cursor-pointer list-none items-center gap-1.5 text-xs font-semibold uppercase tracking-wide [&::-webkit-details-marker]:hidden ${accent.label}`}>
+                <summary class={`m-0 flex w-fit cursor-pointer list-none items-center gap-1.5 text-step-1 font-semibold [&::-webkit-details-marker]:hidden ${accent.label}`}>
                   Почему выбирают {group.name}
                   <svg class="h-3 w-3 shrink-0 transition-transform duration-200 group-open/benefits:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
@@ -438,7 +434,7 @@ const structuredData = canonicalUrl ? [
              «Не оставляют отпечатков» продаёт лучше, чем «Двери ПЭТ». -->
         <div class="mt-2 mb-8 grid gap-4 sm:grid-cols-3 md:mb-10">
           <div class="min-w-0">
-            <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по покрытию</p>
+            <p class="mb-2.5 text-step-1 font-semibold text-ink">Двери по покрытию</p>
             <ul class="flex flex-wrap gap-2" role="list">
               {[
                 { slug: 'dveri-emal',     label: 'Двери в эмали' },
@@ -458,7 +454,7 @@ const structuredData = canonicalUrl ? [
           </div>
 
           <div class="min-w-0">
-            <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по цвету</p>
+            <p class="mb-2.5 text-step-1 font-semibold text-ink">Двери по цвету</p>
             <ul class="flex flex-wrap gap-2" role="list">
               {COLOR_CATEGORIES.map(c => (
                 <li>
@@ -474,7 +470,7 @@ const structuredData = canonicalUrl ? [
           </div>
 
           <div class="min-w-0">
-            <p class="mb-2.5 text-xs font-semibold uppercase tracking-wide text-slate-400">Двери по стилю</p>
+            <p class="mb-2.5 text-step-1 font-semibold text-ink">Двери по стилю</p>
             <ul class="flex flex-wrap gap-2" role="list">
               {STYLE_CATEGORIES.map(c => (
                 <li>

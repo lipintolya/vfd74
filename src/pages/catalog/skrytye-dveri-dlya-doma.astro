@@ -124,7 +124,6 @@ const structuredData = canonicalUrl ? [
     <div class="container">
       <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
         <div class="order-2 lg:order-1">
-          <p class="t-eyebrow mb-3">Для частного дома</p>
           <h1 class="t-h1 mb-5">Скрытые двери для дома и коттеджа</h1>
           <p class="m-0 mb-4 t-lead text-slate-600">
             В частном доме потолки часто выше стандартных 2000 мм, а стены — капитальнее
@@ -160,7 +159,6 @@ const structuredData = canonicalUrl ? [
   <section class="section bg-white">
     <div class="container">
       <SectionHeading
-        eyebrow="Высокие потолки"
         title="Нестандартная высота — под заказ"
         subtitle={`Надбавка применяется к полотну и коробу. Максимальная высота — 2700 мм. Срок изготовления: ${CUSTOM_LEAD_TIME}.`}
       />
@@ -201,7 +199,6 @@ const structuredData = canonicalUrl ? [
           />
         </div>
         <div class="order-1 lg:order-2">
-          <p class="t-eyebrow mb-3">Для просторной прихожей</p>
           <h2 class="t-h2 mb-4">«Рефлекс» — дверь и зеркало в одном полотне</h2>
           <p class="m-0 mb-4 text-sm leading-relaxed text-slate-600 sm:text-base">
             В прихожей загородного дома часто нет отдельного места под большое зеркало —
@@ -218,7 +215,6 @@ const structuredData = canonicalUrl ? [
   <section class="section bg-white">
     <div class="container">
       <SectionHeading
-        eyebrow="Стоимость"
         title="Сколько стоит скрытая дверь для дома"
         subtitle={`Полотно от ${fmt(SECRET_MIN_BLADE_PRICE)}, комплект с коробом от ${fmt(SECRET_MIN_KIT_PRICE)}. Точная цена — с учётом кромки, стороны открывания и высоты потолка.`}
       />
@@ -232,7 +228,7 @@ const structuredData = canonicalUrl ? [
   {houseWork && (
     <section class="section bg-white">
       <div class="container">
-        <SectionHeading eyebrow="Наш пример" title="Скрытая дверь в частном доме" />
+        <SectionHeading title="Скрытая дверь в частном доме" />
         <div class="grid grid-cols-1 gap-4 overflow-hidden rounded-2xl border border-slate-200 sm:grid-cols-2">
           <div class="aspect-4/3 overflow-hidden bg-slate-100 sm:aspect-auto">
             <img

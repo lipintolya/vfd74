@@ -132,9 +132,6 @@ onUnmounted(() => {
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
       >
         <div class="max-w-2xl">
-          <p class="t-eyebrow mb-3">
-            Отзывы клиентов
-          </p>
           <component :is="headingTag" id="reviews-heading" class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
             Репутация, подтверждённая фактами
           </component>

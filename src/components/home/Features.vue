@@ -34,10 +34,9 @@ const WORDS: string[] = [
    Файлы заранее кадрированы тем же центральным кропом, что даёт object-cover. */
 const IMG = '/renders/home/features-'
 
-const FEATURES: (Feature & { eyebrow: string })[] = [
+const FEATURES: Feature[] = [
   {
     id: 1,
-    eyebrow: 'Фабрика',
     title: 'Двери напрямую с фабрики',
     text: 'Официальный дилер Владимирской фабрики дверей — без посредников и переплат.',
     images: [
@@ -53,7 +52,6 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
   },
   {
     id: 2,
-    eyebrow: 'Сервис',
     title: 'Всё — от выбора до монтажа',
     text: 'Консультация, замер, доставка и установка под ключ. Одна команда с 2014 года.',
     images: [
@@ -68,7 +66,6 @@ const FEATURES: (Feature & { eyebrow: string })[] = [
   },
   {
     id: 3,
-    eyebrow: 'Шоурум',
     title: 'Большая выставка ВФД',
     text: '60+ моделей вживую на Кашириных, 131Б — сравните, не по фото.',
     images: [
@@ -186,9 +183,6 @@ onBeforeUnmount(stopCycle)
       <!-- ── Header ── -->
       <div class="mb-10 md:mb-16">
         <header class="max-w-3xl">
-          <p class="t-eyebrow mb-3" aria-hidden="true">
-            Почему выбирают нас
-          </p>
 
           <h2 id="features-heading" class="mb-4 text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
             Вы нашли
@@ -293,9 +287,6 @@ onBeforeUnmount(stopCycle)
 
           <!-- Контент под фото — свой паддинг, фото само в отступы не заворачиваем -->
           <div class="relative flex flex-1 flex-col p-6 sm:p-7">
-            <p class="relative mb-3 text-xs font-medium uppercase tracking-widest text-teal-400" aria-hidden="true">
-              {{ feature.eyebrow }}
-            </p>
 
             <h3
               class="relative mb-3 text-xl font-medium leading-[1.15] tracking-tight text-white sm:text-[1.375rem]"

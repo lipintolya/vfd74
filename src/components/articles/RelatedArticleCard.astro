@@ -14,11 +14,10 @@ import { getPublishedArticles } from '../../lib/articles'
 interface Props {
   /** Слаги статей по порядку показа; не опубликованные пропускаются. */
   slugs: string[]
-  eyebrow?: string
   asSection?: boolean
 }
 
-const { slugs, eyebrow = 'Статья по теме', asSection = false } = Astro.props
+const { slugs, asSection = false } = Astro.props
 const published = await getPublishedArticles()
 const articles = slugs
   .map(slug => published.find(a => a.id === slug))
@@ -30,7 +29,6 @@ const articles = slugs
     <div class:list={[asSection && 'container', 'related-article-list']}>
       {articles.map(article => (
         <a href={`/articles/${article.id}/`} class="related-article-card">
-          <span class="related-article-card__eyebrow">{eyebrow}</span>
           <span class="related-article-card__title">{article.data.title}</span>
           <span class="related-article-card__cta">
             Читать
@@ -66,13 +64,6 @@ const articles = slugs
 .related-article-card:hover {
   border-color: #99f6e4;
   background: #f0fdfa;
-}
-.related-article-card__eyebrow {
-  flex-basis: 100%;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: #64748b;
 }
 .related-article-card__title {
   font-size: 1rem;

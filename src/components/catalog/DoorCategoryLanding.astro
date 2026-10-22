@@ -105,7 +105,6 @@ const structuredData = canonicalUrl ? [
   <div class="section bg-white" style="padding-bottom: 0">
     <div class="container">
       <header class="max-w-2xl mb-8 md:mb-10">
-        <p class="t-eyebrow mb-3">{category.eyebrow}</p>
         <h1 class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">{category.h1}</h1>
         <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">{category.intro}</p>
       </header>
@@ -115,10 +114,6 @@ const structuredData = canonicalUrl ? [
           <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
             <div class="col-span-2 flex h-full flex-col justify-between gap-6 rounded-2xl border border-slate-200 bg-white p-5 sm:col-span-1 sm:p-7">
               <div>
-                <p class="m-0 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  <span class="h-1.5 w-1.5 rounded-full bg-slate-400" aria-hidden="true"></span>
-                  Покрытие
-                </p>
                 <h2 class="m-0 mb-3 text-2xl font-medium text-ink sm:text-3xl">{coatingLabel}</h2>
                 {copy?.tagline && <p class="m-0 mb-2 text-sm font-semibold text-ink">{copy.tagline}</p>}
                 {description && <p class="m-0 text-sm leading-relaxed text-slate-700">{description}</p>}
@@ -135,7 +130,7 @@ const structuredData = canonicalUrl ? [
 
           {benefits.length > 0 && (
             <div class="mt-6 border-t border-slate-200 pt-6">
-              <p class="m-0 mb-4 text-xs font-semibold uppercase tracking-wide text-slate-400">Почему выбирают {coatingLabel}</p>
+              <h3 class="m-0 mb-4 text-lg font-medium text-ink">Почему выбирают {coatingLabel}</h3>
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
                 {benefits.map(b => (
                   <div class="rounded-xl border border-slate-200 bg-white p-5">
@@ -173,7 +168,6 @@ const structuredData = canonicalUrl ? [
     <section class="section">
       <div class="container">
         <a href={`/articles/${relatedArticle.id}/`} class="related-article-card">
-          <span class="related-article-card__eyebrow">Статья по теме</span>
           <span class="related-article-card__title">{relatedArticle.data.title}</span>
           <span class="related-article-card__cta">
             Читать
@@ -212,13 +206,6 @@ const structuredData = canonicalUrl ? [
 .related-article-card:hover {
   border-color: #99f6e4;
   background: #f0fdfa;
-}
-.related-article-card__eyebrow {
-  flex-basis: 100%;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: #64748b;
 }
 .related-article-card__title {
   font-size: 1rem;
