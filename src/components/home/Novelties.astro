@@ -1,14 +1,11 @@
 ---
 /**
- * «Новинки» на главной — один блок с вкладками вместо четырёх промо подряд
- * (те растягивали главную одним и тем же приёмом). Данные — lib/home-promos.ts.
+ * «Новинки» на главной — один блок с вкладками вместо промо подряд (те
+ * растягивали главную одним и тем же приёмом). Данные — lib/home-promos.ts,
+ * панель товара — общий ProductFeature.astro.
  *
  * Вкладки — сегментный переключатель: серая дорожка, выбранная вкладка —
- * тёмная «таблетка», которая переезжает между вкладками. Панель: фото
- * (одинаковой высоты у всех товаров — пропорции заданы блоком, не кадром),
- * название, две короткие фразы, цена полотна крупно и строкой ниже —
- * комплект с составом (иерархия как в карточках каталога: две цены
- * одинаковым кеглем читались как одна и та же).
+ * тёмная «таблетка», которая переезжает между вкладками.
  *
  * Скорость: все панели — в серверном HTML (тексты и ссылки видят
  * поисковики), неактивные — с атрибутом hidden: их фото не грузятся
@@ -17,17 +14,13 @@
  * Переключение — скрипт ниже, по образцу ARIA Tabs: стрелки ←/→,
  * Home/End, фокус ходит по вкладкам.
  */
-import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
-import { rub } from '../../data/services'
-import { typograph } from '../../lib/typograph'
-import type { HomePromo, PromoPrice } from '../../lib/home-promos'
+import ProductFeature from './ProductFeature.astro'
+import type { HomePromo } from '../../lib/home-promos'
 
 interface Props {
   items: HomePromo[]
 }
 const { items } = Astro.props
-
-const money = (p: PromoPrice) => `${p.from ? 'от\u00a0' : ''}${rub(p.value)}`
 ---
 
 {items.length > 0 && (
@@ -54,7 +47,7 @@ const money = (p: PromoPrice) => `${p.from ? 'от\u00a0' : ''}${rub(p.value)}`
               aria-selected={i === 0 ? 'true' : 'false'}
               tabindex={i === 0 ? 0 : -1}
             >
-              {p.tab}
+              {p.tab ?? p.title}
             </button>
           ))}
         </div>
@@ -68,45 +61,7 @@ const money = (p: PromoPrice) => `${p.from ? 'от\u00a0' : ''}${rub(p.value)}`
           aria-labelledby={`nv-tab-${p.id}`}
           hidden={i !== 0}
         >
-          <div class="nv-media">
-            <PhotoAutoplaySlider
-              client:visible
-              images={p.images}
-              alt={p.alt}
-              responsive
-              sizes="(max-width: 1023px) calc(100vw - 2rem), min(56vw, 44rem)"
-            />
-          </div>
-
-          <div class="nv-body">
-            <h3 class="t-h2 nv-title">{typograph(p.title)}</h3>
-            <p class="nv-text">{typograph(p.text)}</p>
-
-            {p.offer && <p class="nv-offer">{typograph(p.offer)}</p>}
-
-            {p.price && (
-              <div class="nv-buy">
-                <p class="nv-price">
-                  <span class="t-price">{money(p.price)}</span>
-                  {p.price.old && <s class="nv-old">{rub(p.price.old)}</s>}
-                  <span class="nv-per">за полотно</span>
-                </p>
-                {p.kit && (
-                  <p class="nv-kit">
-                    Комплект {p.kit.includes}&nbsp;— <b>{money(p.kit)}</b>
-                    {p.kit.old && <s class="nv-old">{rub(p.kit.old)}</s>}
-                  </p>
-                )}
-              </div>
-            )}
-
-            <a href={p.cta.href} class="btn btn-primary nv-cta">
-              {p.cta.label}
-              <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
-          </div>
+          <ProductFeature item={p} />
         </div>
       ))}
 
@@ -242,112 +197,13 @@ const money = (p: PromoPrice) => `${p.from ? 'от\u00a0' : ''}${rub(p.value)}`
     outline-offset: 2px;
   }
 
-  /* Панель: фото и текст; на десктопе фото 7/12, текст 5/12 по центру */
-  .nv-panel {
-    display: grid;
-    gap: 1.5rem;
-    animation: nv-in 350ms var(--ease-out);
-  }
+  /* Панель — общий ProductFeature; здесь только показ/скрытие и
+     мягкое появление при переключении */
+  .nv-panel { animation: nv-in 350ms var(--ease-out); }
   .nv-panel[hidden] { display: none; }
   @keyframes nv-in {
     from { opacity: 0; }
     to   { opacity: 1; }
-  }
-
-  /* Пропорции фото задаёт блок, а не кадр: у всех новинок одна высота
-     на каждой ширине (квадрат на телефоне, 4:3 на планшете, 5:4 рядом
-     с текстом) — переключение вкладок не дёргает страницу */
-  .nv-media {
-    position: relative;
-    overflow: hidden;
-    aspect-ratio: 1 / 1;
-    border-radius: 1.25rem;
-    background: #f1f5f9;  /* slate-100 — место под кадр, пока он грузится */
-  }
-  @media (width >= 40rem) {
-    .nv-media { aspect-ratio: 4 / 3; border-radius: 1.5rem; }
-  }
-
-  .nv-body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .nv-title {
-    margin: 0;
-    text-wrap: balance;
-  }
-  .nv-text {
-    margin: 0.875rem 0 0;
-    max-width: 30rem;
-    font-size: var(--text-step-2);
-    line-height: 1.55;
-    color: #475569;  /* slate-600 — на белом 7.5:1 */
-    text-wrap: pretty;
-  }
-
-  .nv-offer {
-    margin: 1.5rem 0 0;
-    font-size: var(--text-step-1);
-    font-weight: 600;
-    color: #b91c1c;  /* red-700 */
-  }
-
-  /* Цена: полотно — крупно с «за полотно» той же строкой; комплект —
-     обычным текстом ниже, с составом. Разный кегль и вес — две цены
-     не путаются. */
-  .nv-buy { margin-top: 1.5rem; }
-  .nv-offer + .nv-buy { margin-top: 0.5rem; }
-  .nv-price {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0 0.5rem;
-    margin: 0;
-  }
-  .nv-per {
-    font-size: var(--text-step-1);
-    color: #64748b;  /* slate-500 */
-  }
-  .nv-kit {
-    margin: 0.5rem 0 0;
-    font-size: var(--text-step-1);
-    line-height: 1.5;
-    color: #475569;  /* slate-600 */
-  }
-  .nv-kit b {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-ink);
-    white-space: nowrap;
-  }
-  .nv-old {
-    margin-left: 0.375rem;
-    font-size: var(--text-step-1);
-    font-variant-numeric: tabular-nums;
-    color: #94a3b8;  /* slate-400 */
-  }
-
-  /* Кнопка — системная .btn-primary, крупнее; на телефоне во всю ширину */
-  .nv-cta {
-    width: 100%;
-    margin-top: 1.75rem;
-    padding: 0.9375rem 1.5rem;
-    font-size: var(--text-step-1);
-    gap: 0.5rem;
-  }
-  .nv-cta:hover .btn-arrow-icon { transform: translateX(2px); }
-  @media (width >= 30rem) {
-    .nv-cta { width: auto; }
-  }
-
-  @media (width >= 64rem) {
-    .nv-panel {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      gap: clamp(2.5rem, 5vw, 4.5rem);
-      align-items: center;
-    }
-    .nv-media { aspect-ratio: 5 / 4; }
   }
 
   @media (prefers-reduced-motion: reduce) {

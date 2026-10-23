@@ -1,6 +1,7 @@
 /**
- * Новинки на главной (Техно, Штрих 2А, «Секрет», «Рефлекс») — данные для
- * одного блока с вкладками components/home/Novelties.astro.
+ * Товары на главной: «Новинки» (Техно, Штрих 2А, «Рефлекс») — вкладки
+ * components/home/Novelties.astro, и отдельный блок «Скрытые двери из
+ * наличия» («Секрет» — не новинка). Оба рисует ProductFeature.astro.
  *
  * Цены не пишем руками: Техно и Штрих — из того же Supabase-каталога, что
  * и /catalog/ (getCatalogCards + calcKitPrice), скрытые двери — из
@@ -28,8 +29,9 @@ export interface PromoPrice {
 export interface HomePromo {
   /** Ключ — из него id вкладки и панели */
   id:      string
-  /** Короткое имя на вкладке: на телефоне 4 вкладки делят ширину экрана */
-  tab:     string
+  /** Короткое имя на вкладке «Новинок»: на телефоне вкладки делят ширину
+      экрана; без вкладки (отдельный блок) не нужно */
+  tab?:    string
   title:   string
   /** Две короткие фразы живым текстом: что это и есть ли на складе.
       Статус и свойства — словами, без плашек, списков и цветных строк */
@@ -66,7 +68,7 @@ const catalogPrices = (card?: { price: number | null; coatingSlug: string; color
    в made-to-order.ts), поэтому price/colorName — именно он. */
 const SHTRIH_2A_ID = '7434f55c-b2a8-4f12-b0c6-56c7c57888eb'
 
-export async function getHomePromos(): Promise<HomePromo[]> {
+export async function getHomePromos(): Promise<{ novelties: HomePromo[]; inStock: HomePromo }> {
   const { cards } = await getCatalogCards()
 
   /* У «Техно 1» обложка карточки — цвет из наличия (withInStockFirst в
@@ -99,9 +101,10 @@ export async function getHomePromos(): Promise<HomePromo[]> {
 
   const secret: HomePromo = {
     id:     'secret',
-    tab:    'Секрет',
-    title:  'Скрытые двери «Секрет»',
-    text:   'Полотно вровень со стеной, без наличников и видимых петель — красится в цвет стены. Есть в наличии в Челябинске.',
+    /* В наличии — кромки чёрная и серебро («хром»), см. SECRET_PRICES;
+       минимальные цены ниже — как раз у них (золото дороже) */
+    title:  'Скрытые двери из наличия с кромками чёрный и хром',
+    text:   'Полотно вровень со стеной, без наличников и видимых петель — красится в цвет стены. Забрать можно без ожидания изготовления.',
     offer:  SECRET_PROMO_ACTIVE
       ? `Акция −${Math.round(SECRET_PROMO_DISCOUNT * 100)}% до ${formatDate(SECRET_PROMO_VALID_UNTIL)}`
       : undefined,
@@ -132,6 +135,9 @@ export async function getHomePromos(): Promise<HomePromo[]> {
     alt:     'Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной',
   }
 
-  /* Порядок вкладок; Штрих — только если модель нашлась в каталоге */
-  return [tehno, shtrih, secret, reflex].filter((p): p is HomePromo => p !== null)
+  return {
+    /* Порядок вкладок; Штрих — только если модель нашлась в каталоге */
+    novelties: [tehno, shtrih, reflex].filter((p): p is HomePromo => p !== null),
+    inStock:   secret,
+  }
 }

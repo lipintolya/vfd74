@@ -1,0 +1,175 @@
+---
+/**
+ * Товар на главной: фото-слайдер и рядом название, две короткие фразы,
+ * цена полотна крупно и строкой ниже — комплект с составом (иерархия как
+ * в карточках каталога: две цены одинаковым кеглем читались как одна).
+ * Один шаблон на вкладки «Новинок» (Novelties.astro) и на отдельный блок
+ * «Скрытые двери из наличия» — данные в lib/home-promos.ts.
+ *
+ * Фото: пропорции задаёт блок, а не кадр — у всех товаров одна высота на
+ * каждой ширине (квадрат на телефоне, 4:3 на планшете, 5:4 рядом с
+ * текстом), переключение вкладок не дёргает страницу. Слайдер — остров
+ * client:visible, первый кадр приходит в серверной разметке.
+ */
+import PhotoAutoplaySlider from '../ui/PhotoAutoplaySlider.vue'
+import { rub } from '../../data/services'
+import { typograph } from '../../lib/typograph'
+import type { HomePromo, PromoPrice } from '../../lib/home-promos'
+
+interface Props {
+  item: HomePromo
+  /** h3 внутри секции с заголовком (вкладки), h2 — у самостоятельного блока */
+  headingTag?: 'h2' | 'h3'
+  headingId?: string
+  /** Фото справа на десктопе */
+  reverse?: boolean
+}
+const { item: p, headingTag: Heading = 'h3', headingId, reverse = false } = Astro.props
+
+const money = (pr: PromoPrice) => `${pr.from ? 'от\u00a0' : ''}${rub(pr.value)}`
+---
+
+<div class:list={['pf', { 'pf--reverse': reverse }]}>
+  <div class="pf-media">
+    <PhotoAutoplaySlider
+      client:visible
+      images={p.images}
+      alt={p.alt}
+      responsive
+      sizes="(max-width: 1023px) calc(100vw - 2rem), min(56vw, 44rem)"
+    />
+  </div>
+
+  <div class="pf-body">
+    <Heading id={headingId} class="t-h2 pf-title">{typograph(p.title)}</Heading>
+    <p class="pf-text">{typograph(p.text)}</p>
+
+    {p.offer && <p class="pf-offer">{typograph(p.offer)}</p>}
+
+    {p.price && (
+      <div class="pf-buy">
+        <p class="pf-price">
+          <span class="t-price">{money(p.price)}</span>
+          {p.price.old && <s class="pf-old">{rub(p.price.old)}</s>}
+          <span class="pf-per">за полотно</span>
+        </p>
+        {p.kit && (
+          <p class="pf-kit">
+            Комплект {p.kit.includes}&nbsp;— <b>{money(p.kit)}</b>
+            {p.kit.old && <s class="pf-old">{rub(p.kit.old)}</s>}
+          </p>
+        )}
+      </div>
+    )}
+
+    <a href={p.cta.href} class="btn btn-primary pf-cta">
+      {p.cta.label}
+      <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  .pf {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .pf-media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    border-radius: 1.25rem;
+    background: #f1f5f9;  /* slate-100 — место под кадр, пока он грузится */
+  }
+  @media (width >= 40rem) {
+    .pf-media { aspect-ratio: 4 / 3; border-radius: 1.5rem; }
+  }
+
+  .pf-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pf-title {
+    margin: 0;
+    text-wrap: balance;
+  }
+  .pf-text {
+    margin: 0.875rem 0 0;
+    max-width: 30rem;
+    font-size: var(--text-step-2);
+    line-height: 1.55;
+    color: #475569;  /* slate-600 — на белом 7.5:1 */
+    text-wrap: pretty;
+  }
+
+  .pf-offer {
+    margin: 1.5rem 0 0;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: #b91c1c;  /* red-700 */
+  }
+
+  /* Цена: полотно — крупно с «за полотно» той же строкой; комплект —
+     обычным текстом ниже, с составом. Разный кегль и вес — две цены
+     не путаются. */
+  .pf-buy { margin-top: 1.5rem; }
+  .pf-offer + .pf-buy { margin-top: 0.5rem; }
+  .pf-price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5rem;
+    margin: 0;
+  }
+  .pf-per {
+    font-size: var(--text-step-1);
+    color: #64748b;  /* slate-500 */
+  }
+  .pf-kit {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-step-1);
+    line-height: 1.5;
+    color: #475569;  /* slate-600 */
+  }
+  .pf-kit b {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .pf-old {
+    margin-left: 0.375rem;
+    font-size: var(--text-step-1);
+    font-variant-numeric: tabular-nums;
+    color: #94a3b8;  /* slate-400 */
+  }
+
+  /* Кнопка — системная .btn-primary, крупнее; на телефоне во всю ширину */
+  .pf-cta {
+    width: 100%;
+    margin-top: 1.75rem;
+    padding: 0.9375rem 1.5rem;
+    font-size: var(--text-step-1);
+    gap: 0.5rem;
+  }
+  .pf-cta:hover .btn-arrow-icon { transform: translateX(2px); }
+  @media (width >= 30rem) {
+    .pf-cta { width: auto; }
+  }
+
+  /* Десктоп: фото 7/12, текст 5/12 по центру высоты */
+  @media (width >= 64rem) {
+    .pf {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: clamp(2.5rem, 5vw, 4.5rem);
+      align-items: center;
+    }
+    .pf-media { aspect-ratio: 5 / 4; }
+    .pf--reverse { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+    .pf--reverse .pf-media { order: 2; }
+  }
+</style>

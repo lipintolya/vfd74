@@ -3,10 +3,11 @@
  * src/components/home/PromoStripBanner.astro
  *
  * Полоса «Бесплатный замер» на главной — во всю ширину экрана, тот же тёмный
- * тон, что у «Как мы работаем». Слева предложение и условие одной фразой,
- * справа действие: номер телефона кнопкой (на десктопе tel: не набрать —
- * номер виден целиком; клик считается целью phone_click в Метрике) и
- * ссылка на все акции.
+ * тон, что у «Как мы работаем». Слева предложение и условие, справа действие:
+ * оба номера салона кнопками (на десктопе tel: не набрать — номер виден
+ * целиком; клик считается целью phone_click в Метрике). Основной — белая
+ * кнопка, дополнительный — контурная: сразу видно, какой набирать первым.
+ * Рядом ссылка на все акции.
  *
  * «Все акции» — не обычный якорь: страница длинная (~9-10к px), а ниже
  * лежат client:visible/client:idle острова — пока плавный скролл едет вниз,
@@ -16,7 +17,7 @@
  */
 import { companyLegalInfo } from '../../lib/contacts-data'
 
-const phone = companyLegalInfo.contacts.phone[0]!
+const phones = companyLegalInfo.contacts.phone
 ---
 
 <section class="measure-band" aria-labelledby="measure-band-heading">
@@ -33,9 +34,15 @@ const phone = companyLegalInfo.contacts.phone[0]!
     </div>
 
     <div class="measure-band__actions">
-      <a href={`tel:${phone.raw}`} class="btn measure-band__call" aria-label={`Записаться на замер: ${phone.label}`}>
-        {phone.label}
-      </a>
+      {phones.map((phone, i) => (
+        <a
+          href={`tel:${phone.raw}`}
+          class:list={['btn measure-band__call', i === 0 ? 'measure-band__call--main' : 'btn-ghost']}
+          aria-label={`Записаться на замер: ${phone.label}`}
+        >
+          {phone.label}
+        </a>
+      ))}
       <a href="#promo" class="measure-band__link" data-promo-jump>
         Все акции
         <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -71,7 +78,9 @@ const phone = companyLegalInfo.contacts.phone[0]!
     gap: 1.75rem;
     padding-block: clamp(2.5rem, 6vw, 4rem);
   }
-  @media (width >= 64rem) {
+  /* Два номера и ссылка рядом с текстом помещаются только на широком
+     экране; уже — действия под текстом */
+  @media (width >= 80rem) {
     .measure-band__inner {
       grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
@@ -104,19 +113,21 @@ const phone = companyLegalInfo.contacts.phone[0]!
     gap: 1rem 1.75rem;
   }
 
-  /* Белая кнопка на тёмном — главное действие; номер цифрами одинаковой
-     ширины, чтобы читался как номер */
+  /* Номера — цифрами одинаковой ширины, чтобы читались как номер.
+     Основной — белая кнопка, дополнительный — системная .btn-ghost */
   .measure-band__call {
     padding: 0.9375rem 1.625rem;
     border-radius: 999px;
-    background: #fff;
-    color: var(--color-ink);
     font-size: var(--text-step-2);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
-  .measure-band__call:hover { background: #ccfbf1; }  /* teal-100 */
-  .measure-band__call:focus-visible { outline-color: #fff; }
+  .measure-band__call--main {
+    background: #fff;
+    color: var(--color-ink);
+  }
+  .measure-band__call--main:hover { background: #ccfbf1; }  /* teal-100 */
+  .measure-band__call:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
   .measure-band__link {
     display: inline-flex;
@@ -137,7 +148,7 @@ const phone = companyLegalInfo.contacts.phone[0]!
     border-radius: 2px;
   }
 
-  /* Телефон: кнопка во всю ширину — под большой палец */
+  /* Телефон: кнопки во всю ширину, одна под другой — под большой палец */
   @media (width < 30rem) {
     .measure-band__call { width: 100%; }
   }

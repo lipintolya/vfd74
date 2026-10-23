@@ -9,6 +9,7 @@ import HeroSlider from '../components/home/HeroSlider.vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import Novelties from '../components/home/Novelties.astro'
+import ProductFeature from '../components/home/ProductFeature.astro'
 import Features from '../components/home/Features.vue'
 import CatalogCategories from '../components/home/CatalogCategories.vue'
 import Promo from '../components/home/Promo.vue'
@@ -24,8 +25,8 @@ import { companyLegalInfo } from '../lib/contacts-data'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
-/* Новинки — данные и живые цены из каталога в lib/home-promos.ts */
-const novelties = await getHomePromos()
+/* Новинки и скрытые двери из наличия — данные и живые цены в lib/home-promos.ts */
+const { novelties, inStock } = await getHomePromos()
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -110,6 +111,13 @@ const localBusinessSchema = {
   <HowWeWork />
   <Novelties items={novelties} />
   <PromoStripBanner />
+  <!-- «Секрет» не новинка — отдельным блоком под замером, фото справа
+       (у «Новинок» слева) -->
+  <section class="section bg-white" aria-labelledby="in-stock-heading">
+    <div class="container">
+      <ProductFeature item={inStock} headingTag="h2" headingId="in-stock-heading" reverse />
+    </div>
+  </section>
   <Features client:visible />
   <CatalogCategories client:visible />
   <Reviews client:visible />
