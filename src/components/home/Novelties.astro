@@ -135,7 +135,9 @@ const { items } = Astro.props
 
   /* Сегментный переключатель: равные сегменты на серой дорожке.
      Выбранная — тёмная «таблетка» (.nv-thumb), до запуска скрипта —
-     фон самой вкладки (без JS выбранная тоже видна). */
+     фон самой вкладки (без JS выбранная тоже видна). Цвета нейтральные:
+     таблетка — графит --color-fg, как у .btn-primary («Связаться» в шапке),
+     дорожка и текст — серые без синевы (slate отдавал синим). */
   .nv-tabs {
     position: relative;
     display: grid;
@@ -143,7 +145,7 @@ const { items } = Astro.props
     width: 100%;
     padding: 0.25rem;
     border-radius: 999px;
-    background: #f1f5f9;  /* slate-100 */
+    background: #f4f4f5;  /* zinc-100 */
   }
   @media (width >= 48rem) {
     .nv-tabs {
@@ -159,8 +161,8 @@ const { items } = Astro.props
     width: var(--nv-w, 0);
     transform: translateX(var(--nv-x, 0));
     border-radius: 999px;
-    background: var(--color-ink);
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.2);
+    background: var(--color-fg);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
     opacity: 0;
   }
   .nv-tabs.is-ready .nv-thumb {
@@ -181,7 +183,7 @@ const { items } = Astro.props
     font-size: 0.875rem;
     font-weight: 600;
     line-height: 1;
-    color: #475569;  /* slate-600 */
+    color: #52525b;  /* zinc-600 — на zinc-100 7:1 */
     white-space: nowrap;
     cursor: pointer;
     transition: color 200ms var(--ease-out);
@@ -189,9 +191,9 @@ const { items } = Astro.props
   @media (width >= 48rem) {
     .nv-tab { padding: 0 1.375rem; font-size: var(--text-step-1); }
   }
-  .nv-tab:hover { color: var(--color-ink); }
+  .nv-tab:hover { color: var(--color-fg); }
   .nv-tab[aria-selected='true'] { color: #fff; }
-  .nv-tabs:not(.is-ready) .nv-tab[aria-selected='true'] { background: var(--color-ink); }
+  .nv-tabs:not(.is-ready) .nv-tab[aria-selected='true'] { background: var(--color-fg); }
   .nv-tab:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
