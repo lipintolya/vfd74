@@ -10,7 +10,15 @@
  * Цифра — начало заголовка («60+ моделей дверей…»), а не надпись над ним.
  * Каждая плитка — одна ссылка на всю площадь (растянутый ::after у <a>).
  *
- * Статичный HTML без JS. Фото — ресайзы 600/1000 и 768/1400 из
+ * Появление на телефоне и планшете (до lg, где плитки стопкой): каждая
+ * плитка проявляется, когда доходит до экрана, — подъём на 1.5rem и
+ * opacity, фото внутри «оседает» с scale 1.08, текст следом с шагом.
+ * Плитки, вошедшие в экран вместе (две рядом на планшете), — с шагом 90 мс.
+ * Только opacity/translate/scale — раскладка не пересчитывается. Без JS,
+ * при prefers-reduced-motion, на десктопе (бенто виден целиком) и для
+ * плиток, уже видимых при загрузке, — без анимации.
+ *
+ * Разметка статичная. Фото — ресайзы 600/1000 и 768/1400 из
  * public/media/about_page (scripts/gen-home-images.mjs features-), lazy.
  */
 import { typograph } from '../../lib/typograph'
@@ -26,7 +34,7 @@ import { typograph } from '../../lib/typograph'
       </p>
     </header>
 
-    <div class="ft-bento">
+    <div class="ft-bento" data-ft-reveal>
 
       <!-- Выставочный зал — главная плитка -->
       <article class="ft-tile ft-tile--hall">
@@ -277,8 +285,70 @@ import { typograph } from '../../lib/typograph'
     .ft-tile:hover .ft-img { transform: scale(1.03); }
     .ft-tile:hover .btn-arrow-icon { transform: translateX(3px); }
   }
+
+  /* ── Появление (data-state ставит скрипт, только на телефоне/планшете).
+     Масштаб фото — отдельным свойством scale, не transform: не спорит
+     с приближением при наведении. ── */
+  .ft-bento {
+    --ft-ease: cubic-bezier(0.22, 1, 0.36, 1);  /* быстрый старт, мягкая посадка */
+  }
+  .ft-tile[data-state] {
+    transition:
+      opacity   600ms var(--ft-ease) var(--ft-delay, 0ms),
+      translate 900ms var(--ft-ease) var(--ft-delay, 0ms);
+  }
+  .ft-tile[data-state] .ft-img {
+    transition:
+      scale     1400ms var(--ft-ease) var(--ft-delay, 0ms),
+      transform 700ms var(--ease-out);
+  }
+  .ft-tile[data-state] .ft-body > * {
+    transition:
+      opacity   500ms var(--ft-ease) calc(var(--ft-delay, 0ms) + var(--ft-step)),
+      translate 700ms var(--ft-ease) calc(var(--ft-delay, 0ms) + var(--ft-step));
+  }
+  .ft-body > :nth-child(1) { --ft-step: 160ms; }
+  .ft-body > :nth-child(2) { --ft-step: 240ms; }
+  .ft-body > :nth-child(3) { --ft-step: 320ms; }
+
+  .ft-tile[data-state='hidden'] { opacity: 0; translate: 0 1.5rem; }
+  .ft-tile[data-state='hidden'] .ft-img { scale: 1.08; }
+  .ft-tile[data-state='hidden'] .ft-body > * { opacity: 0; }
+  /* Ссылку не сдвигаем: transform на ней делает её опорным блоком для
+     растянутого ::after (кликабельная плитка) — после анимации ::after
+     прыгал к размеру плитки, и Chrome считал это сдвигом раскладки (CLS) */
+  .ft-tile[data-state='hidden'] .ft-body > :not(.ft-link) { translate: 0 0.625rem; }
+
   @media (prefers-reduced-motion: reduce) {
     .ft-img { transition: none; }
     .ft-tile:hover .ft-img { transform: none; }
   }
 </style>
+
+<script>
+  const bento = document.querySelector<HTMLElement>('[data-ft-reveal]')
+  const stacked = matchMedia('(width < 64rem)').matches
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  if (bento && stacked && !still && 'IntersectionObserver' in window) {
+    // Прячем только плитки ниже экрана — видимые при загрузке не мигают
+    const tiles = [...bento.querySelectorAll<HTMLElement>('.ft-tile')]
+      .filter((t) => t.getBoundingClientRect().top > innerHeight)
+    tiles.forEach((t) => { t.dataset.state = 'hidden' })
+
+    const io = new IntersectionObserver((entries) => {
+      // Вошедшие в экран одной пачкой (две плитки рядом) — с шагом 90 мс
+      entries
+        .filter((e) => e.isIntersecting)
+        .map((e) => e.target as HTMLElement)
+        .sort((a, b) => tiles.indexOf(a) - tiles.indexOf(b))
+        .forEach((tile, i) => {
+          tile.style.setProperty('--ft-delay', `${i * 90}ms`)
+          tile.dataset.state = 'shown'
+          io.unobserve(tile)
+        })
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' })
+
+    tiles.forEach((t) => io.observe(t))
+  }
+</script>
