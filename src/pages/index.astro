@@ -10,7 +10,7 @@ import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import Novelties from '../components/home/Novelties.astro'
 import ProductFeature from '../components/home/ProductFeature.astro'
-import Features from '../components/home/Features.vue'
+import Features from '../components/home/Features.astro'
 import CatalogCategories from '../components/home/CatalogCategories.vue'
 import Promo from '../components/home/Promo.vue'
 import Reviews from '../components/home/Reviews.vue'
@@ -118,7 +118,7 @@ const localBusinessSchema = {
       <ProductFeature item={inStock} headingTag="h2" headingId="in-stock-heading" reverse />
     </div>
   </section>
-  <Features client:visible />
+  <Features />
   <CatalogCategories client:visible />
   <Reviews client:visible />
   <PortfolioPreview />

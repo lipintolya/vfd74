@@ -1,6 +1,6 @@
 /**
  * Генерирует public/renders/home/*.webp — уменьшенные локальные копии
- * картинок главной страницы (Features.vue и промо-слайдеры
+ * картинок главной страницы (Features.astro и промо-слайдеры
  * Novelties.astro, данные — src/lib/home-promos.ts).
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
@@ -24,7 +24,6 @@ import { readMedia } from './lib/media.mjs'
 const OUT = new URL('../public/renders/home/', import.meta.url)
 await mkdir(OUT, { recursive: true })
 
-const CARDS    = '/media/Main_page/cards/'
 const FEAT     = '/media/features_block/'
 const TEHNO    = '/media/doors-main_renders/tehno/'
 const INVIS    = '/media/invisible/'
@@ -39,12 +38,10 @@ const F = { width: 800, height: 633, fit: 'cover', quality: 78 }
 const P = { width: 1300, quality: 78 }
 
 const jobs = [
-  // Features.vue
+  // Features.astro — по одному фото на карточку (слайдеры с 12 доп. кадрами убраны)
   [FEAT + 'card-1.webp', 'features-card-1.webp', F],
   [FEAT + 'card-2.webp', 'features-card-2.webp', F],
   [FEAT + 'card-3.webp', 'features-card-3.webp', F],
-  ...['f1', 'f2', 'f3', 'f4', 't1', 't2', 't3', 'foto1', 'foto2', 'foto3', 'foto4', 'foto6']
-    .map(n => [CARDS + n + '.webp', `features-${n}.webp`, F]),
   // Техно (home-promos.ts)
   [TEHNO + 'tehno_render_1.webp', 'tehno-1.webp', P],
   [TEHNO + 'tehno_render.webp',   'tehno-2.webp', P],

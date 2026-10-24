@@ -132,7 +132,7 @@ onUnmounted(() => {
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
       >
         <div class="max-w-2xl">
-          <component :is="headingTag" id="reviews-heading" class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
+          <component :is="headingTag" id="reviews-heading" :class="headingTag === 'h1' ? 't-h1' : 't-h2'">
             Репутация, подтверждённая фактами
           </component>
           <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">

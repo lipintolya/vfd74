@@ -1,0 +1,204 @@
+---
+/**
+ * «Официальный салон ВФД» на главной — три причины купить здесь: двери
+ * с фабрики, монтаж под ключ, выставка. Заголовок слева, лид справа (как
+ * у «Как мы работаем»), ниже три колонки: фото, название, одна фраза,
+ * ссылка.
+ *
+ * Раньше блок был Vue-островом: сменяющиеся слова в заголовке, карточки
+ * с двойной рамкой и тенью, иконки в кружках, «размытое» появление по
+ * очереди и слайдер на каждой карточке (15 фото в DOM — все грузились
+ * разом). Теперь статичный HTML без JS: текст виден сразу, на каждую
+ * карточку одно фото с lazy-загрузкой.
+ *
+ * Фото — локальные копии 800×633 (scripts/gen-home-images.mjs).
+ */
+import { typograph } from '../../lib/typograph'
+
+interface Reason {
+  title: string
+  text:  string
+  image: string
+  alt:   string
+  cta:   { label: string; href: string; external?: boolean }
+}
+
+const REASONS: Reason[] = [
+  {
+    title: 'Двери напрямую с фабрики',
+    text:  'Официальный дилер Владимирской фабрики дверей — без посредников и переплат.',
+    image: '/renders/home/features-card-1.webp',
+    alt:   'Салон ВФД на Братьев Кашириных, 131Б — вывеска «Двери прямо с фабрики»',
+    cta:   { label: 'Каталог дверей', href: '/catalog/' },
+  },
+  {
+    title: 'Замер и монтаж под ключ',
+    text:  'Консультация, замер, доставка и установка — одна команда с 2014 года.',
+    image: '/renders/home/features-card-2.webp',
+    alt:   'Входная дверь, установленная бригадой салона ВФД',
+    cta:   { label: 'Фотоотчёты с объектов', href: '/portfolio/' },
+  },
+  {
+    title: '60+ моделей в выставочном зале',
+    text:  'Сравните двери вживую, а не по фото: Братьев Кашириных, 131Б.',
+    image: '/renders/home/features-card-3.webp',
+    alt:   'Выставочный зал салона ВФД: межкомнатные двери и фурнитура',
+    /* Короткая ссылка на карточку салона — цель route_click в Метрике */
+    cta:   { label: 'Построить маршрут', href: 'https://yandex.ru/maps/-/CPTwZPi-', external: true },
+  },
+]
+---
+
+<section class="section bg-white" aria-labelledby="features-heading">
+  <div class="container">
+
+    <header class="ft-head">
+      <h2 id="features-heading" class="t-h2 ft-h2">Официальный салон ВФД в&nbsp;Челябинске</h2>
+      <p class="t-lead ft-lead">
+        Двери с фабрики, большая выставка и монтаж своей бригадой — в&nbsp;одном месте.
+      </p>
+    </header>
+
+    <ul class="ft-grid" role="list">
+      {REASONS.map((r) => (
+        <li class="ft-item">
+          <img
+            class="ft-img"
+            src={r.image}
+            alt={r.alt}
+            width="800"
+            height="633"
+            sizes="(min-width: 48rem) 33vw, 100vw"
+            loading="lazy"
+            decoding="async"
+          />
+          <h3 class="t-h3 ft-title">{typograph(r.title)}</h3>
+          <p class="ft-text">{typograph(r.text)}</p>
+          <a
+            href={r.cta.href}
+            class="ft-link"
+            {...(r.cta.external
+              ? { target: '_blank', rel: 'noopener noreferrer', 'aria-label': `${r.cta.label} (откроется в новой вкладке)` }
+              : {})}
+          >
+            {r.cta.label}
+            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+  </div>
+</section>
+
+<style>
+  /* Шапка — как у «Как мы работаем»: заголовок слева, лид справа */
+  .ft-head {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  @media (width >= 64rem) {
+    .ft-head {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+      gap: 2rem;
+    }
+  }
+  .ft-h2 { margin: 0; text-wrap: balance; }
+  .ft-lead {
+    margin: 0;
+    max-width: 30rem;
+    color: #475569;  /* slate-600 */
+    text-wrap: pretty;
+  }
+  @media (width >= 64rem) {
+    .ft-lead { justify-self: end; }
+  }
+
+  /* Три колонки с md; на телефоне — одна под другой */
+  .ft-grid {
+    display: grid;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* С md — subgrid: фото, заголовки, тексты и ссылки трёх карточек стоят
+     на общих линиях, даже если заголовок одной переносится на две строки.
+     Один ряд карточек — row-gap не нужен (он просочился бы в строки
+     subgrid), отступы — на элементах. Само правило subgrid — в конце
+     стилей: иначе базовое .ft-item { display: flex } ниже его перебивает. */
+  @media (width >= 48rem) {
+    .ft-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0 clamp(1.25rem, 2.5vw, 2rem);
+    }
+  }
+
+  .ft-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ft-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 1.25rem;
+    background: #f4f4f5;  /* zinc-100 — место под кадр, пока он грузится */
+  }
+  @media (width >= 40rem) {
+    .ft-img { border-radius: 1.5rem; }
+  }
+
+  .ft-title {
+    margin: 1.25rem 0 0;
+    text-wrap: balance;
+  }
+  .ft-text {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-step-1);
+    line-height: 1.6;
+    color: #475569;  /* slate-600 */
+    text-wrap: pretty;
+  }
+
+  /* Ссылка прижата к низу колонки — у трёх карточек на одной линии */
+  .ft-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    padding-bottom: 0.25rem;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: #0f766e;  /* teal-700 — на белом 5.4:1 */
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .ft-link:hover { color: #115e59; }
+  .ft-link:hover .btn-arrow-icon { transform: translateX(2px); }
+  .ft-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (width >= 48rem) {
+    @supports (grid-template-rows: subgrid) {
+      .ft-item {
+        display: grid;
+        grid-row: span 4;
+        grid-template-rows: subgrid;
+        row-gap: 0;
+        justify-items: start;
+      }
+      .ft-link { align-self: end; }
+    }
+  }
+</style>

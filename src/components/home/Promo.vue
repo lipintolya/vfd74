@@ -66,7 +66,7 @@ function toggleExpanded(id: string) {
         class="mx-auto mb-10 max-w-3xl text-center transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none md:mb-16"
         :class="visible ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
       >
-        <h2 id="promo-heading" class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">
+        <h2 id="promo-heading" class="t-h2">
           Акции и специальные предложения
         </h2>
         <p class="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600 md:text-lg">
