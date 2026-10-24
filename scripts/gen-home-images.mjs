@@ -5,15 +5,14 @@
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
  * ~5 МБ на главной), а на экране:
- *   - Features: карточка ~400×375 CSS-px (на мобильном — во всю ширину,
- *     ~800px с retina) → 800w;
+ *   - Features (бенто): плитки ~500 и ~700 CSS-px → по два размера под srcset;
  *   - промо-слайдеры: колонка ~половина контейнера (~650 CSS-px, ~1300
  *     с retina) → 1300w.
  * Все картинки слайдеров лежат в DOM одновременно (кросс-фейд по opacity),
  * поэтому грузятся все сразу при подлёте к секции — каждый лишний килобайт
  * тут умножается на число слайдов.
  *
- * Запуск: node scripts/gen-home-images.mjs
+ * Запуск: node scripts/gen-home-images.mjs [префикс файла, напр. features-]
  * Когда запускать снова: если заменили фото в public/media или добавили новое
  * в эти компоненты (тогда добавь строку в jobs и поменяй URL в компоненте).
  */
@@ -24,24 +23,22 @@ import { readMedia } from './lib/media.mjs'
 const OUT = new URL('../public/renders/home/', import.meta.url)
 await mkdir(OUT, { recursive: true })
 
-const FEAT     = '/media/features_block/'
+const ABOUT    = '/media/about_page/'
 const TEHNO    = '/media/doors-main_renders/tehno/'
 const INVIS    = '/media/invisible/'
 const BENTO    = '/media/Main_page/left_bento/'
 const STRIX    = '/media/promo_main/strix/'
 
-// Features: контейнер фото — aspect-[16/12.65] на всех брейкпоинтах, img с
-// object-cover (центр). Кадрируем заранее тем же центральным кропом: на экране
-// пиксель в пиксель то же самое, но без 2/3 высоты портретных исходников,
-// которые всё равно обрезались CSS'ом.
-const F = { width: 800, height: 633, fit: 'cover', quality: 78 }
 const P = { width: 1300, quality: 78 }
 
 const jobs = [
-  // Features.astro — по одному фото на карточку (слайдеры с 12 доп. кадрами убраны)
-  [FEAT + 'card-1.webp', 'features-card-1.webp', F],
-  [FEAT + 'card-2.webp', 'features-card-2.webp', F],
-  [FEAT + 'card-3.webp', 'features-card-3.webp', F],
+  // Features.astro (бенто «Официальный салон ВФД»): зал — портретная
+  // плитка (~500 CSS-px на десктопе, во всю ширину на телефоне), фасад —
+  // широкая (~700 CSS-px); по два размера под srcset
+  [ABOUT + 'g-1.webp',     'features-showroom-600.webp',  { width: 600,  quality: 78 }],
+  [ABOUT + 'g-1.webp',     'features-showroom-1000.webp', { width: 1000, quality: 76 }],
+  [ABOUT + 'vfd_out.webp', 'features-facade-768.webp',    { width: 768,  quality: 78 }],
+  [ABOUT + 'vfd_out.webp', 'features-facade-1400.webp',   { width: 1400, quality: 76 }],
   // Техно (home-promos.ts)
   [TEHNO + 'tehno_render_1.webp', 'tehno-1.webp', P],
   [TEHNO + 'tehno_render.webp',   'tehno-2.webp', P],
@@ -65,8 +62,12 @@ const jobs = [
   ['/media/info/reviews/2gis_logo.webp',   'logo-2gis.webp',   { width: 64, quality: 85 }],
 ]
 
+/* node scripts/gen-home-images.mjs features- — только файлы с этим
+   префиксом (чтобы не пересобирать всё ради одного блока) */
+const only = process.argv[2]
+
 let before = 0, after = 0
-for (const [src, out, { width, height, fit, quality }] of jobs) {
+for (const [src, out, { width, height, fit, quality }] of jobs.filter(([, out]) => !only || out.startsWith(only))) {
   const buf = await readMedia(src)
   const img = await sharp(buf).resize({ width, height, fit: fit ?? 'inside', withoutEnlargement: true }).webp({ quality }).toBuffer()
   await writeFile(new URL(out, OUT), img)
