@@ -1,0 +1,47 @@
+---
+/**
+ * Шапка секции главной: заголовок H2 слева, одна фраза-лид справа (на
+ * телефоне — под заголовком). Один вид у «Официального салона ВФД»,
+ * «Каталога» и т. д.; «Как мы работаем» — тот же расклад на тёмной полосе.
+ * Тексты проходят через typograph(): без висящих предлогов.
+ */
+import { typograph } from '../../lib/typograph'
+
+interface Props {
+  /** id заголовка — для aria-labelledby секции */
+  id:    string
+  title: string
+  lead?: string
+}
+const { id, title, lead } = Astro.props
+---
+
+<header class="sh">
+  <h2 id={id} class="t-h2 sh-title">{typograph(title)}</h2>
+  {lead && <p class="t-lead sh-lead">{typograph(lead)}</p>}
+</header>
+
+<style>
+  .sh {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  @media (width >= 64rem) {
+    .sh {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+      gap: 2rem;
+    }
+  }
+  .sh-title { margin: 0; text-wrap: balance; }
+  .sh-lead {
+    margin: 0;
+    max-width: 30rem;
+    color: #475569;  /* slate-600 */
+    text-wrap: pretty;
+  }
+  @media (width >= 64rem) {
+    .sh-lead { justify-self: end; }
+  }
+</style>

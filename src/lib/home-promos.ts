@@ -68,8 +68,16 @@ const catalogPrices = (card?: { price: number | null; coatingSlug: string; color
    в made-to-order.ts), поэтому price/colorName — именно он. */
 const SHTRIH_2A_ID = '7434f55c-b2a8-4f12-b0c6-56c7c57888eb'
 
-export async function getHomePromos(): Promise<{ novelties: HomePromo[]; inStock: HomePromo }> {
+export async function getHomePromos(): Promise<{
+  novelties: HomePromo[]
+  inStock: HomePromo
+  /** Минимальная цена полотна по каталогу — «от …» на плитке «Каталога»;
+      считаем здесь, чтобы не делать второй запрос к Supabase */
+  interiorMinPrice: number | null
+}> {
   const { cards } = await getCatalogCards()
+  const prices = cards.map(c => c.price).filter((p): p is number => p != null && p > 0)
+  const interiorMinPrice = prices.length ? Math.min(...prices) : null
 
   /* У «Техно 1» обложка карточки — цвет из наличия (withInStockFirst в
      catalog-data.ts), поэтому цена — белого */
@@ -139,5 +147,6 @@ export async function getHomePromos(): Promise<{ novelties: HomePromo[]; inStock
     /* Порядок вкладок; Штрих — только если модель нашлась в каталоге */
     novelties: [tehno, shtrih, reflex].filter((p): p is HomePromo => p !== null),
     inStock:   secret,
+    interiorMinPrice,
   }
 }

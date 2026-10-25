@@ -11,7 +11,7 @@ import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import Novelties from '../components/home/Novelties.astro'
 import ProductFeature from '../components/home/ProductFeature.astro'
 import Features from '../components/home/Features.astro'
-import CatalogCategories from '../components/home/CatalogCategories.vue'
+import CatalogCategories from '../components/home/CatalogCategories.astro'
 import Promo from '../components/home/Promo.vue'
 import Reviews from '../components/home/Reviews.vue'
 import LatestArticles from '../components/home/LatestArticles.astro'
@@ -26,7 +26,7 @@ import { companyLegalInfo } from '../lib/contacts-data'
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
 /* Новинки и скрытые двери из наличия — данные и живые цены в lib/home-promos.ts */
-const { novelties, inStock } = await getHomePromos()
+const { novelties, inStock, interiorMinPrice } = await getHomePromos()
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -119,7 +119,7 @@ const localBusinessSchema = {
     </div>
   </section>
   <Features />
-  <CatalogCategories client:visible />
+  <CatalogCategories interiorMinPrice={interiorMinPrice} />
   <Reviews client:visible />
   <PortfolioPreview />
   <Promo client:idle />

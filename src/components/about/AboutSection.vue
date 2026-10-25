@@ -233,8 +233,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
     </section>
 
     <!-- ======================================================
-         ЭКСПОЗИЦИЯ — те же double-bezel карточки, что в Features/
-         CatalogCategories на главной, вместо текста-поверх-фото.
+         ЭКСПОЗИЦИЯ — double-bezel карточки (на главной этот приём
+         уже заменён плитками: Features/CatalogCategories.astro).
     ======================================================= -->
     <section class="section bg-white">
       <div class="container">

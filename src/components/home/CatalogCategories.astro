@@ -1,0 +1,229 @@
+---
+/**
+ * «Каталог» на главной — три направления: межкомнатные, входные двери,
+ * перегородки. Три вертикальные фото-плитки в ряд (другой ритм, чем
+ * у бенто «Официальный салон ВФД» прямо над ним), на телефоне — стопкой.
+ * На плитке: название, цена «от» (живая: межкомнатные — минимум по
+ * каталогу, входные — по entrance-doors.ts) или срок, ссылка. Плитка —
+ * одна ссылка на всю площадь.
+ *
+ * Раньше — Vue-остров: двойная рамка с тенью, «размытое» появление,
+ * текст скрыт до загрузки JS, кнопки-пилюли. Теперь статичный HTML;
+ * появление на телефоне и планшете — общий lib/tile-reveal.ts.
+ *
+ * Фото — ресайзы 640/960 (scripts/gen-responsive.mjs cat-) + оригинал.
+ */
+import SectionHeader from './SectionHeader.astro'
+import { ENTRANCE_DOOR_MODELS, minPriceOf } from '../../data/entrance-doors'
+import { rub } from '../../data/services'
+import { typograph } from '../../lib/typograph'
+
+interface Props {
+  /** Минимальная цена полотна по каталогу (getHomePromos) */
+  interiorMinPrice: number | null
+}
+const { interiorMinPrice } = Astro.props
+
+const entranceMinPrice = Math.min(...ENTRANCE_DOOR_MODELS.map(minPriceOf))
+
+interface Category {
+  title: string
+  /** Цена «от» или срок — одной строкой под названием */
+  fact:  string | null
+  href:  string
+  img:   { src: string; srcset: string; alt: string; width: number; height: number }
+}
+
+const CATEGORIES: Category[] = [
+  {
+    title: 'Межкомнатные двери',
+    fact:  interiorMinPrice ? `от ${rub(interiorMinPrice)} за полотно` : null,
+    href:  '/catalog/',
+    img: {
+      src:    '/renders/home/cat-interior-960.webp',
+      srcset: '/renders/home/cat-interior-640.webp 640w, /renders/home/cat-interior-960.webp 960w, /media/Main_page/left_bento/cover_doors.webp 1280w',
+      alt:    'Белая межкомнатная дверь в светлом интерьере',
+      width: 960, height: 960,
+    },
+  },
+  {
+    title: 'Входные двери',
+    fact:  `от ${rub(entranceMinPrice)} с накладкой изнутри`,
+    href:  '/vhodnye-dveri/',
+    img: {
+      src:    '/renders/home/cat-entrance-960.webp',
+      srcset: '/renders/home/cat-entrance-640.webp 640w, /renders/home/cat-entrance-960.webp 960w, /media/metal_doors/Optima/render_optima.webp 1122w',
+      alt:    'Стальная входная дверь «Оптима» в тёмно-сером цвете',
+      width: 960, height: 1200,
+    },
+  },
+  {
+    title: 'Алюминиевые перегородки',
+    fact:  'Изготовление до 45 рабочих дней',
+    href:  '/partitions/',
+    img: {
+      src:    '/renders/home/cat-partitions-960.webp',
+      srcset: '/renders/home/cat-partitions-640.webp 640w, /renders/home/cat-partitions-960.webp 960w, /media/alum/saint_p_alum/tg4.webp 1080w',
+      alt:    'Реечная перегородка из чёрного алюминиевого профиля в гостиной',
+      width: 960, height: 1196,
+    },
+  },
+]
+---
+
+<section class="section bg-white" aria-labelledby="cat-heading">
+  <div class="container">
+
+    <SectionHeader
+      id="cat-heading"
+      title="Каталог"
+      lead="Межкомнатные и входные двери, алюминиевые перегородки — от официального дилера фабрики."
+    />
+
+    <ul class="cc-grid" role="list" data-tile-reveal>
+      {CATEGORIES.map((c) => (
+        <li class="cc-tile" data-reveal-tile>
+          <img
+            class="cc-img"
+            data-reveal-img
+            src={c.img.src}
+            srcset={c.img.srcset}
+            sizes="(min-width: 48rem) 33vw, calc(100vw - 2rem)"
+            width={c.img.width}
+            height={c.img.height}
+            alt={c.img.alt}
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="cc-body" data-reveal-body>
+            <h3 class="cc-title">{typograph(c.title)}</h3>
+            {c.fact && <p class="cc-fact">{typograph(c.fact)}</p>}
+            <!-- Название уже на плитке — ссылка коротко «Смотреть»;
+                 для скринридера её имя — название категории -->
+            <a class="cc-link" href={c.href} aria-label={c.title}>
+              Смотреть
+              <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+  </div>
+</section>
+
+<script>
+  import { revealTiles } from '../../lib/tile-reveal'
+  revealTiles()
+</script>
+
+<style>
+  /* Три колонки с md; на телефоне — стопкой */
+  .cc-grid {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (width >= 48rem) {
+    .cc-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 1.6vw, 1.5rem);
+    }
+  }
+
+  /* Плитка: фото на всю площадь, текст снизу на затемнении — тот же язык,
+     что у плитки зала в «Официальном салоне ВФД» */
+  .cc-tile {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    border-radius: 1.25rem;
+    background: #27272a;  /* zinc-800 — пока грузится фото */
+    color: #fff;
+  }
+  @media (width >= 40rem) {
+    .cc-tile { border-radius: 1.5rem; }
+  }
+  @media (width >= 48rem) {
+    .cc-tile { aspect-ratio: 4 / 5; }
+  }
+  .cc-tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.32) 42%, rgb(0 0 0 / 0) 70%);
+  }
+  .cc-img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 700ms var(--ease-out);
+  }
+
+  .cc-body {
+    padding: clamp(1.25rem, 2.2vw, 1.75rem);
+  }
+  .cc-title {
+    margin: 0;
+    font-size: var(--text-step-4);
+    /* на планшете три узкие колонки — на ступень меньше */
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-wrap: balance;
+  }
+  @media (48rem <= width < 64rem) {
+    .cc-title { font-size: var(--text-step-3); }
+  }
+  .cc-fact {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-step-1);
+    line-height: 1.45;
+    font-variant-numeric: tabular-nums;
+    color: rgb(255 255 255 / 0.82);
+  }
+
+  /* Ссылка — вся плитка: ::after растянут на неё */
+  .cc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 1rem;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+  }
+  .cc-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .cc-link:focus-visible { outline: none; }
+  .cc-tile:has(.cc-link:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) {
+    .cc-tile:hover .cc-img { transform: scale(1.03); }
+    .cc-tile:hover .btn-arrow-icon { transform: translateX(3px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cc-img { transition: none; }
+    .cc-tile:hover .cc-img { transform: none; }
+  }
+</style>

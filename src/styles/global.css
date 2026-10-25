@@ -684,3 +684,40 @@ astro-island:has(> .section) + .section,
 }
 
 }
+
+/* ============================================================
+   Появление плиток — src/lib/tile-reveal.ts (телефон и планшет).
+   Вне @layer намеренно: должно перебивать transition у фото в стилях
+   компонентов (там приближение при наведении).
+   Только opacity / translate / scale — раскладка не пересчитывается.
+   Масштаб фото — свойством scale, не transform: не спорит с hover.
+   Ссылку не сдвигаем: transform на ней делает её опорным блоком для
+   растянутого ::after (кликабельная плитка) — после анимации ::after
+   прыгал к размеру плитки и Chrome засчитывал сдвиг раскладки (CLS).
+   ============================================================ */
+[data-reveal-tile] {
+  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);  /* быстрый старт, мягкая посадка */
+}
+[data-reveal-tile][data-state] {
+  transition:
+    opacity   600ms var(--reveal-ease) var(--reveal-delay, 0ms),
+    translate 900ms var(--reveal-ease) var(--reveal-delay, 0ms);
+}
+[data-reveal-tile][data-state] [data-reveal-img] {
+  transition:
+    scale     1400ms var(--reveal-ease) var(--reveal-delay, 0ms),
+    transform 700ms  var(--ease-out);
+}
+[data-reveal-tile][data-state] [data-reveal-body] > * {
+  transition:
+    opacity   500ms var(--reveal-ease) calc(var(--reveal-delay, 0ms) + var(--reveal-step, 0ms)),
+    translate 700ms var(--reveal-ease) calc(var(--reveal-delay, 0ms) + var(--reveal-step, 0ms));
+}
+[data-reveal-body] > :nth-child(1) { --reveal-step: 160ms; }
+[data-reveal-body] > :nth-child(2) { --reveal-step: 240ms; }
+[data-reveal-body] > :nth-child(3) { --reveal-step: 320ms; }
+
+[data-reveal-tile][data-state='hidden'] { opacity: 0; translate: 0 1.5rem; }
+[data-reveal-tile][data-state='hidden'] [data-reveal-img] { scale: 1.08; }
+[data-reveal-tile][data-state='hidden'] [data-reveal-body] > * { opacity: 0; }
+[data-reveal-tile][data-state='hidden'] [data-reveal-body] > :not(a) { translate: 0 0.625rem; }

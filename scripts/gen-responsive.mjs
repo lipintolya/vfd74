@@ -13,10 +13,10 @@
  * Где используется:
  *  - HeroSlider.vue            — слайды 2–6 (hero/…)
  *  - PhotoAutoplaySlider.vue   — флаг `responsive`, /renders/home/<имя>-640|960
- *  - CatalogCategories.vue     — home/cat-*
+ *  - CatalogCategories.astro   — home/cat-* (плитки «Каталог» на главной)
  *  - PlinthSection.astro       — decor/plintus-type
  *
- * Запуск:        node scripts/gen-responsive.mjs
+ * Запуск:        node scripts/gen-responsive.mjs [часть пути, напр. cat-partitions]
  * Когда запускать снова: заменили исходник или добавили слайд/картинку —
  * допиши строку в JOBS и подключи srcset в компоненте.
  */
@@ -45,17 +45,22 @@ const JOBS = [
       'secret-cover', 'secret-2', 'secret-3']
     .map(n => ({ src: `/renders/home/${n}.webp`, out: `/renders/home/${n}`, widths: S })),
 
-  // CatalogCategories.vue
+  // CatalogCategories.astro — вертикальные плитки 4:5; перегородки — портретный
+  // кадр реечной перегородки (tg1 уже в hero главной, не повторяем)
   { src: '/media/Main_page/left_bento/cover_doors.webp',  out: '/renders/home/cat-interior',   widths: S },
   { src: '/media/metal_doors/Optima/render_optima.webp',  out: '/renders/home/cat-entrance',   widths: S },
-  { src: '/media/catalog_preview/catalog-preview3.webp',  out: '/renders/home/cat-partitions', widths: S },
+  { src: '/media/alum/saint_p_alum/tg4.webp',             out: '/renders/home/cat-partitions', widths: S },
 
   // PlinthSection.astro — схема на всю ширину контейнера (оригинал 1920 px)
   { src: '/media/decor/plintus/plintus_type.webp', out: '/renders/decor/plintus-type', widths: [960, 1440] },
 ]
 
+/* node scripts/gen-responsive.mjs cat-partitions — только записи, в пути
+   результата которых есть эта строка */
+const only = process.argv[2]
+
 let before = 0, after = 0
-for (const { src, out, widths } of JOBS) {
+for (const { src, out, widths } of JOBS.filter(j => !only || j.out.includes(only))) {
   const buf = await readMedia(src)
   for (const width of widths) {
     const file = new URL(`${out.slice(1)}-${width}.webp`, PUBLIC)
