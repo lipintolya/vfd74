@@ -11,7 +11,7 @@ import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import Novelties from '../components/home/Novelties.astro'
 import ProductFeature from '../components/home/ProductFeature.astro'
 import CatalogCategories from '../components/home/CatalogCategories.astro'
-import Promo from '../components/home/Promo.vue'
+import Promo from '../components/home/Promo.astro'
 import Reviews from '../components/home/Reviews.astro'
 import LatestArticles from '../components/home/LatestArticles.astro'
 import PortfolioPreview from '../components/portfolio/PortfolioPreview.astro'
@@ -120,7 +120,7 @@ const localBusinessSchema = {
   <CatalogCategories interiorMinPrice={interiorMinPrice} />
   <Reviews limit={4} />
   <PortfolioPreview />
-  <Promo client:idle />
+  <Promo />
   <LatestArticles />
 
   <!-- padding-top у смежных .section обычно зануляется (см. global.css),
