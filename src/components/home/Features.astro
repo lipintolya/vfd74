@@ -1,201 +1,253 @@
 ---
 /**
- * «Официальный салон ВФД» на главной — одна цельная сцена вместо мозаики
- * плиток: слева высокое фото выставочного зала, справа крупный заголовок,
- * фраза, четыре факта крупными цифрами на тонкой линейке (язык «Как мы
- * работаем»), адрес с часами и два действия — маршрут и звонок.
+ * «Официальный салон ВФД» на главной — по референсу пользователя: фото
+ * и две плитки, три карточки одной высоты в ряд.
+ *   1) тёмная фото-карточка выставочного зала: заголовок сверху, крупная
+ *      цифра внизу слева, круглая кнопка маршрута внизу справа;
+ *   2–3) графитовые плитки (--color-graphite — как у полосы замера и «Как
+ *      мы работаем»): заголовок сверху, текст прижат к низу. Без значков.
+ * Факты — с сайта: 60+ моделей (выставка), год основания — contacts-data.ts,
+ * гарантия на монтаж 1 год — FAQ, расчёт за 30 минут — полоса «Бесплатный
+ * замер».
  *
- * Факты — только с сайта: 60+ моделей (выставка), год основания, адрес,
- * часы и телефон — contacts-data.ts, гарантия на монтаж 1 год — FAQ и
- * «Как мы работаем», расчёт за 30 минут — полоса «Бесплатный замер».
- *
- * Статичный HTML без JS. Фото — ресайзы 600/1000 из public/media/about_page
- * (scripts/gen-home-images.mjs features-).
+ * Статичный HTML; появление на телефоне и планшете — lib/tile-reveal.ts.
  */
+import SectionHeader from './SectionHeader.astro'
 import { companyLegalInfo } from '../../lib/contacts-data'
 import { typograph } from '../../lib/typograph'
 
-const { activity, address, workingHours, contacts } = companyLegalInfo
-const phone = contacts.phone[0]!
-/* «г. Челябинск, ул. …» — город уже в заголовке; «Вход со стороны…» —
-   продолжение строки, со строчной (только первая буква) */
-const street = address.legal.replace(/^г\.\s*Челябинск,\s*/, '')
-const entrance = address.entrance.charAt(0).toLowerCase() + address.entrance.slice(1)
+const { activity } = companyLegalInfo
 
-const NBSP = '\u00a0'
-const FACTS = [
-  { value: '60+',                         text: 'моделей дверей в выставочном зале' },
-  { value: `с${NBSP}${activity.founded}`, text: 'работаем в Челябинске' },
-  { value: `1${NBSP}год`,                 text: 'гарантия на монтаж' },
-  { value: `30${NBSP}мин`,                text: 'на расчёт стоимости после замера' },
+const TILES = [
+  {
+    title: 'Замер и монтаж своей бригадой',
+    text:  `Консультация, замер, доставка и установка — одна команда с ${activity.founded} года. Стоимость рассчитаем в течение 30 минут после замера.`,
+  },
+  {
+    title: 'Гарантия на монтаж 1 год',
+    text:  'На двери и перегородки — гарантия производителя. Если что-то потребует внимания, обращайтесь напрямую в салон.',
+  },
 ]
 ---
 
 <section class="section bg-white" aria-labelledby="features-heading">
-  <div class="container fs">
+  <div class="container">
 
-    <figure class="fs-photo">
-      <img
-        src="/renders/home/features-showroom-1000.webp"
-        srcset="/renders/home/features-showroom-600.webp 600w, /renders/home/features-showroom-1000.webp 1000w"
-        sizes="(min-width: 64rem) 40vw, calc(100vw - 2rem)"
-        width="1000"
-        height="1333"
-        alt="Выставочный зал салона ВФД: межкомнатные двери и стенд с фурнитурой"
-        loading="lazy"
-        decoding="async"
-      />
-    </figure>
+    <SectionHeader
+      id="features-heading"
+      title="Официальный салон ВФД в Челябинске"
+      lead="Двери прямо с фабрики, без посредников — выбирайте вживую в выставочном зале."
+    />
 
-    <div class="fs-body">
-      <h2 id="features-heading" class="t-h2 fs-title">{typograph('Официальный салон ВФД в Челябинске')}</h2>
-      <p class="t-lead fs-lead">
-        {typograph('Двери прямо с фабрики, без посредников. Выбирайте вживую в выставочном зале — замер и монтаж сделаем своей бригадой.')}
-      </p>
+    <div class="fx" data-tile-reveal>
 
-      <dl class="fs-facts">
-        {FACTS.map((f) => (
-          <div class="fs-fact">
-            <dt class="fs-value">{f.value}</dt>
-            <dd class="fs-text">{typograph(f.text)}</dd>
+      <!-- 1. Выставочный зал — тёмная фото-карточка -->
+      <article class="fx-card fx-card--photo" data-reveal-tile>
+        <img
+          class="fx-img"
+          data-reveal-img
+          src="/renders/home/features-showroom-1000.webp"
+          srcset="/renders/home/features-showroom-600.webp 600w, /renders/home/features-showroom-1000.webp 1000w"
+          sizes="(min-width: 48rem) 34vw, calc(100vw - 2rem)"
+          width="1000"
+          height="1333"
+          alt="Выставочный зал салона ВФД: межкомнатные двери и стенд с фурнитурой"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="fx-photo-body" data-reveal-body>
+          <h3 class="fx-photo-title">{typograph('Выставочный зал на Кашириных')}</h3>
+          <p class="fx-metric">
+            <span class="fx-metric-label">Моделей в зале</span>
+            <span class="fx-metric-value">60+</span>
+          </p>
+          <a
+            class="fx-route"
+            href="https://yandex.ru/maps/-/CPTwZPi-"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Построить маршрут до салона (откроется в новой вкладке)"
+          >
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4.5 11.5 11.5 4.5M5.5 4.5h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- 2–3. Графитовые плитки -->
+      {TILES.map((t) => (
+        <article class="fx-card fx-card--dark" data-reveal-tile>
+          <div class="fx-tile-body" data-reveal-body>
+            <h3 class="fx-tile-title">{typograph(t.title)}</h3>
+            <p class="fx-tile-text">{typograph(t.text)}</p>
           </div>
-        ))}
-      </dl>
+        </article>
+      ))}
 
-      <p class="fs-visit">
-        <span class="fs-street">{typograph(`${street}, ${entrance}`)}</span>
-        <span class="fs-hours">{workingHours.shortDisplay}</span>
-      </p>
-
-      <div class="fs-actions">
-        <a
-          href="https://yandex.ru/maps/-/CPTwZPi-"
-          class="btn btn-primary fs-btn"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Построить маршрут до салона (откроется в новой вкладке)"
-        >
-          Построить маршрут
-          <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </a>
-        <a href={`tel:${phone.raw}`} class="btn btn-outline fs-btn fs-phone">
-          {phone.label}
-        </a>
-      </div>
     </div>
-
   </div>
 </section>
 
+<script>
+  import { revealTiles } from '../../lib/tile-reveal'
+  revealTiles()
+</script>
+
 <style>
-  /* Телефон: фото, под ним текст. С lg — фото 5/12 слева, текст 7/12
-     по центру высоты */
-  .fs {
+  /* Три карточки одной высоты: стопкой на телефоне, в ряд с md */
+  .fx {
     display: grid;
-    gap: 2rem;
+    gap: 1rem;
   }
-  @media (width >= 64rem) {
-    .fs {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: clamp(3rem, 6vw, 6rem);
-      align-items: center;
+  @media (width >= 48rem) {
+    .fx {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 1.6vw, 1.25rem);
     }
   }
 
-  .fs-photo {
-    margin: 0;
+  .fx-card {
+    position: relative;
+    isolation: isolate;
     overflow: hidden;
+    border-radius: 1.5rem;
+  }
+  @media (width >= 48rem) {
+    .fx-card { min-height: clamp(20rem, 30vw, 25rem); }
+  }
+
+  /* ── 1. Фото-карточка ── */
+  .fx-card--photo {
     aspect-ratio: 4 / 5;
-    border-radius: 1.25rem;
-    background: #f4f4f5;  /* zinc-100 — место под кадр, пока он грузится */
+    background: #27272a;  /* zinc-800 — пока грузится фото */
+    color: #fff;
   }
-  @media (width >= 40rem) {
-    .fs-photo { border-radius: 1.5rem; }
+  @media (width >= 48rem) {
+    .fx-card--photo { aspect-ratio: auto; }
   }
-  @media (width >= 40rem) and (width < 64rem) {
-    .fs-photo { aspect-ratio: 16 / 10; }  /* планшет: широкий кадр над текстом */
-  }
-  .fs-photo img {
-    display: block;
+  .fx-img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 55%;
+    transition: transform 700ms var(--ease-out);
   }
-
-  /* Заголовок — крупнее обычного .t-h2: главный тезис секции */
-  .fs-title {
+  /* Затемнение сверху и снизу — под заголовок и цифру */
+  .fx-card--photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(to bottom, rgb(0 0 0 / 0.55) 0%, rgb(0 0 0 / 0) 38%),
+      linear-gradient(to top,    rgb(0 0 0 / 0.65) 0%, rgb(0 0 0 / 0) 42%);
+  }
+  .fx-photo-body {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    padding: clamp(1.25rem, 2.2vw, 1.75rem);
+  }
+  .fx-photo-title {
+    grid-column: 1 / -1;
     margin: 0;
-    font-size: var(--text-step-6);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
+    max-width: 14ch;
+    font-size: var(--text-step-4);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #fff;
     text-wrap: balance;
   }
-  .fs-lead {
-    margin: 1.25rem 0 0;
-    max-width: 34rem;
-    color: #475569;  /* slate-600 */
-    text-wrap: pretty;
-  }
-
-  /* Факты 2×2: цифра крупно, подпись под ней; тонкая линия сверху */
-  .fs-facts {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.75rem clamp(1.25rem, 3vw, 2.5rem);
-    margin: clamp(2rem, 4vw, 2.75rem) 0 0;
-  }
-  .fs-fact {
-    padding-top: 1rem;
-    border-top: 1px solid #e4e4e7;  /* zinc-200 */
-  }
-  .fs-value {
-    font-family: var(--font-display);
-    font-size: clamp(2.25rem, 4.2vw, 3.5rem);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.035em;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-ink);
-    white-space: nowrap;
-  }
-  .fs-text {
-    margin: 0.5rem 0 0;
-    font-size: var(--text-step-1);
-    line-height: 1.45;
-    color: #52525b;  /* zinc-600 */
-  }
-
-  /* Адрес и часы — две строки над кнопками */
-  .fs-visit {
+  .fx-metric {
+    align-self: end;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    margin: clamp(2rem, 4vw, 2.75rem) 0 0;
-    font-size: var(--text-step-1);
-    line-height: 1.5;
+    margin: 0;
   }
-  .fs-street { color: var(--color-ink); font-weight: 500; }
-  .fs-hours  { color: #52525b; }
+  .fx-metric-label {
+    font-size: var(--text-step-1);
+    color: rgb(255 255 255 / 0.8);
+  }
+  .fx-metric-value {
+    font-family: var(--font-display);
+    font-size: clamp(2.75rem, 5vw, 4rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Круглая кнопка маршрута — на месте «датчика» референса; вся карточка
+     кликабельна (::after) */
+  .fx-route {
+    align-self: end;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-fg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .fx-route svg { width: 1.125rem; height: 1.125rem; }
+  .fx-route::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .fx-route:focus-visible { outline: none; }
+  .fx-card--photo:has(.fx-route:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
 
-  .fs-actions {
+  /* ── 2–3. Графитовые плитки — тот же тон, что у тёмных полос сайта ── */
+  .fx-card--dark {
+    background: var(--color-graphite);
+    color: #fff;
+  }
+  .fx-tile-body {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
+    flex-direction: column;
+    height: 100%;
+    padding: clamp(1.25rem, 2.2vw, 1.75rem);
   }
-  /* Кнопки — системные .btn-primary/.btn-outline, крупнее; на телефоне —
-     во всю ширину одна под другой */
-  .fs-btn {
-    padding: 0.9375rem 1.5rem;
+  .fx-tile-title {
+    margin: 0;
+    max-width: 16ch;
+    font-size: var(--text-step-4);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  /* Текст прижат к низу плитки */
+  .fx-tile-text {
+    margin: auto 0 0;
+    padding-top: 2rem;
     font-size: var(--text-step-1);
-    gap: 0.5rem;
+    line-height: 1.55;
+    color: rgb(255 255 255 / 0.68);
+    text-wrap: pretty;
   }
-  .fs-phone { font-variant-numeric: tabular-nums; }
-  .fs-btn:hover .btn-arrow-icon { transform: translateX(2px); }
-  @media (width < 30rem) {
-    .fs-btn { width: 100%; }
+
+  /* Планшет: три узкие колонки — заголовки на ступень меньше */
+  @media (48rem <= width < 64rem) {
+    .fx-photo-title, .fx-tile-title { font-size: var(--text-step-3); max-width: none; }
+  }
+
+  @media (hover: hover) {
+    .fx-card--photo:hover .fx-img { transform: scale(1.03); }
+    .fx-card--photo:hover .fx-route { transform: rotate(45deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fx-img, .fx-route { transition: none; }
+    .fx-card--photo:hover .fx-img, .fx-card--photo:hover .fx-route { transform: none; }
   }
 </style>
