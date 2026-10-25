@@ -24,8 +24,10 @@ import { typograph } from '../../lib/typograph'
 interface Props {
   /** На /reviews/ заголовок страницы — h1, на главной — h2 */
   headingTag?: 'h1' | 'h2'
+  /** Сколько отзывов показать (главная — 4, /reviews/ — все) */
+  limit?: number
 }
-const { headingTag = 'h2' } = Astro.props
+const { headingTag = 'h2', limit } = Astro.props
 
 const PLATFORM: Record<ReviewPlatform, string> = {
   yandex: 'Яндекс Карты',
@@ -43,6 +45,7 @@ const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 
 const sorted = [...reviews].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+const shown = limit ? sorted.slice(0, limit) : sorted
 const total = reviews.length
 const totalWord = pluralRu(total, ['отзыв', 'отзыва', 'отзывов'])
 
@@ -81,7 +84,7 @@ const LINKS = [
       itemscope
       itemtype="https://schema.org/ItemList"
     >
-      {sorted.map((r) => {
+      {shown.map((r) => {
         const size = sizeOf(r.text)
         const meta = [PLATFORM[r.platform], r.date && fmtDate(r.date)].filter(Boolean).join(' · ')
         return (
@@ -126,7 +129,7 @@ const LINKS = [
         )
       })}
 
-      <li class="rv-end">
+      <li class="rail-end">
         <RailEndCard value={total} text={`${totalWord} на Яндекс Картах и 2ГИС — читайте все и оставляйте свои`} fit="row">
           {LINKS.map((l) => (
             <a href={l.href} target="_blank" rel="noopener">
@@ -188,24 +191,6 @@ const LINKS = [
     --rail-col: 84%;
     --rail-col-md: 20rem;
     --rail-cols-lg: 4;
-  }
-
-  /* Итоговая плашка на десктопе — полной ширины под сеткой отзывов, а не
-     одинокой карточкой в последнем ряду */
-  @media (width >= 64rem) {
-    .rv-end { grid-column: 1 / -1; }
-    .rv-end :global(.rec) {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem 2.5rem;
-      min-height: 0;
-      padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem);
-    }
-    .rv-end :global(.rec-num) { font-size: clamp(3rem, 5vw, 4rem); }
-    .rv-end :global(.rec-text) { flex: 1 1 18rem; max-width: none; }
-    .rv-end :global(.rec-links) { margin-top: 0; }
   }
 
   /* ── Карточка: светлая плашка во всю высоту ряда; автор прижат к низу ── */

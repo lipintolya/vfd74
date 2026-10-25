@@ -771,3 +771,25 @@ astro-island:has(> .section) + .section,
 [data-reveal-tile][data-state='hidden'] [data-reveal-img] { scale: 1.08; }
 [data-reveal-tile][data-state='hidden'] [data-reveal-body] > * { opacity: 0; }
 [data-reveal-tile][data-state='hidden'] [data-reveal-body] > :not(a) { translate: 0 0.625rem; }
+
+/* Итоговая плашка ленты — на десктопе полной ширины под сеткой, а не одинокой
+   карточкой в последнем ряду. Ставится на <li> с RailEndCard. */
+@media (width >= 64rem) {
+  .rail-end { grid-column: 1 / -1; }
+  .rail-end > .rec.rec {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem 2.5rem;
+    height: auto;
+    min-height: 0;
+    padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem);
+    text-align: left;
+  }
+  .rail-end > .rec.rec .rec-num { font-size: clamp(3rem, 5vw, 4rem); }
+  .rail-end > .rec.rec .rec-text { flex: 1 1 18rem; max-width: none; margin-top: 0; }
+  .rail-end > .rec.rec .rec-links,
+  .rail-end > .rec.rec .rec-cta { margin-top: 0; }
+}

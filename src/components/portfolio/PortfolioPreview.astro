@@ -21,7 +21,7 @@ import { PORTFOLIO_WORKS, CATEGORY_LABELS } from '../../data/portfolio-works'
 import { pluralRu } from '../../lib/product-text'
 import { typograph } from '../../lib/typograph'
 
-const RAIL_SIZE = 8
+const RAIL_SIZE = 6
 
 const byDate = [...PORTFOLIO_WORKS].sort((a, b) => b.date.localeCompare(a.date))
 const preview = byDate.slice(0, RAIL_SIZE)
@@ -82,7 +82,7 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
           </li>
         ))}
 
-        <li>
+        <li class="rail-end">
           <RailEndCard
             value={total}
             text={`${totalWord} в портфолио — двери, перегородки, входные группы`}

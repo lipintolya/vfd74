@@ -1,18 +1,17 @@
 /**
  * Генерирует public/renders/home/*.webp — уменьшенные локальные копии
- * картинок главной страницы (Features.astro и промо-слайдеры
- * Novelties.astro, данные — src/lib/home-promos.ts).
+ * картинок главной страницы (промо-слайдеры Novelties.astro, данные —
+ * src/lib/home-promos.ts).
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
  * ~5 МБ на главной), а на экране:
- *   - Features: фото зала ~480 CSS-px → два размера под srcset;
  *   - промо-слайдеры: колонка ~половина контейнера (~650 CSS-px, ~1300
  *     с retina) → 1300w.
  * Все картинки слайдеров лежат в DOM одновременно (кросс-фейд по opacity),
  * поэтому грузятся все сразу при подлёте к секции — каждый лишний килобайт
  * тут умножается на число слайдов.
  *
- * Запуск: node scripts/gen-home-images.mjs [префикс файла, напр. features-]
+ * Запуск: node scripts/gen-home-images.mjs
  * Когда запускать снова: если заменили фото в public/media или добавили новое
  * в эти компоненты (тогда добавь строку в jobs и поменяй URL в компоненте).
  */
@@ -23,7 +22,6 @@ import { readMedia } from './lib/media.mjs'
 const OUT = new URL('../public/renders/home/', import.meta.url)
 await mkdir(OUT, { recursive: true })
 
-const ABOUT    = '/media/about_page/'
 const TEHNO    = '/media/doors-main_renders/tehno/'
 const INVIS    = '/media/invisible/'
 const BENTO    = '/media/Main_page/left_bento/'
@@ -32,10 +30,6 @@ const STRIX    = '/media/promo_main/strix/'
 const P = { width: 1300, quality: 78 }
 
 const jobs = [
-  // Features.astro («Официальный салон ВФД»): фото зала ~480 CSS-px на
-  // десктопе, во всю ширину на телефоне — два размера под srcset
-  [ABOUT + 'g-1.webp',     'features-showroom-600.webp',  { width: 600,  quality: 78 }],
-  [ABOUT + 'g-1.webp',     'features-showroom-1000.webp', { width: 1000, quality: 76 }],
   // Техно (home-promos.ts)
   [TEHNO + 'tehno_render_1.webp', 'tehno-1.webp', P],
   [TEHNO + 'tehno_render.webp',   'tehno-2.webp', P],
@@ -55,12 +49,8 @@ const jobs = [
   [INVIS + '937DECDF-6886-48EB-80B6-3495AA998F94.webp', 'secret-3.webp', P],
 ]
 
-/* node scripts/gen-home-images.mjs features- — только файлы с этим
-   префиксом (чтобы не пересобирать всё ради одного блока) */
-const only = process.argv[2]
-
 let before = 0, after = 0
-for (const [src, out, { width, height, fit, quality }] of jobs.filter(([, out]) => !only || out.startsWith(only))) {
+for (const [src, out, { width, height, fit, quality }] of jobs) {
   const buf = await readMedia(src)
   const img = await sharp(buf).resize({ width, height, fit: fit ?? 'inside', withoutEnlargement: true }).webp({ quality }).toBuffer()
   await writeFile(new URL(out, OUT), img)
