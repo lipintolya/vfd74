@@ -1,272 +1,201 @@
 ---
 /**
- * «Официальный салон ВФД» на главной — редакционный бенто из трёх плиток
- * разного веса вместо трёх одинаковых карточек:
- *   - большая плитка-фото выставочного зала с текстом поверх: «60+ моделей…»;
- *   - фасад: широкое фото, текст на светлой панели под ним — на самом фото
- *     вывеска и надписи на окнах, текст поверх с ними сливался;
- *   - графитовая плитка: «С 2014 года… своей бригадой».
- * Три разные поверхности (фото / светлая / графит) — плитки не одинаковые.
- * Цифра — начало заголовка («60+ моделей дверей…»), а не надпись над ним.
- * Каждая плитка — одна ссылка на всю площадь (растянутый ::after у <a>).
+ * «Официальный салон ВФД» на главной — одна цельная сцена вместо мозаики
+ * плиток: слева высокое фото выставочного зала, справа крупный заголовок,
+ * фраза, четыре факта крупными цифрами на тонкой линейке (язык «Как мы
+ * работаем»), адрес с часами и два действия — маршрут и звонок.
  *
- * Появление на телефоне и планшете — общий lib/tile-reveal.ts (стили в
- * global.css): плитка проявляется при входе в экран, фото «оседает»,
- * текст следом.
+ * Факты — только с сайта: 60+ моделей (выставка), год основания, адрес,
+ * часы и телефон — contacts-data.ts, гарантия на монтаж 1 год — FAQ и
+ * «Как мы работаем», расчёт за 30 минут — полоса «Бесплатный замер».
  *
- * Разметка статичная. Фото — ресайзы 600/1000 и 768/1400 из
- * public/media/about_page (scripts/gen-home-images.mjs features-), lazy.
+ * Статичный HTML без JS. Фото — ресайзы 600/1000 из public/media/about_page
+ * (scripts/gen-home-images.mjs features-).
  */
-import SectionHeader from './SectionHeader.astro'
+import { companyLegalInfo } from '../../lib/contacts-data'
 import { typograph } from '../../lib/typograph'
+
+const { activity, address, workingHours, contacts } = companyLegalInfo
+const phone = contacts.phone[0]!
+/* «г. Челябинск, ул. …» — город уже в заголовке; «Вход со стороны…» —
+   продолжение строки, со строчной (только первая буква) */
+const street = address.legal.replace(/^г\.\s*Челябинск,\s*/, '')
+const entrance = address.entrance.charAt(0).toLowerCase() + address.entrance.slice(1)
+
+const NBSP = '\u00a0'
+const FACTS = [
+  { value: '60+',                         text: 'моделей дверей в выставочном зале' },
+  { value: `с${NBSP}${activity.founded}`, text: 'работаем в Челябинске' },
+  { value: `1${NBSP}год`,                 text: 'гарантия на монтаж' },
+  { value: `30${NBSP}мин`,                text: 'на расчёт стоимости после замера' },
+]
 ---
 
 <section class="section bg-white" aria-labelledby="features-heading">
-  <div class="container">
+  <div class="container fs">
 
-    <SectionHeader
-      id="features-heading"
-      title="Официальный салон ВФД в Челябинске"
-      lead="Двери с фабрики, большая выставка и монтаж своей бригадой — в одном месте."
-    />
+    <figure class="fs-photo">
+      <img
+        src="/renders/home/features-showroom-1000.webp"
+        srcset="/renders/home/features-showroom-600.webp 600w, /renders/home/features-showroom-1000.webp 1000w"
+        sizes="(min-width: 64rem) 40vw, calc(100vw - 2rem)"
+        width="1000"
+        height="1333"
+        alt="Выставочный зал салона ВФД: межкомнатные двери и стенд с фурнитурой"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
 
-    <div class="ft-bento" data-tile-reveal>
+    <div class="fs-body">
+      <h2 id="features-heading" class="t-h2 fs-title">{typograph('Официальный салон ВФД в Челябинске')}</h2>
+      <p class="t-lead fs-lead">
+        {typograph('Двери прямо с фабрики, без посредников. Выбирайте вживую в выставочном зале — замер и монтаж сделаем своей бригадой.')}
+      </p>
 
-      <!-- Выставочный зал — главная плитка -->
-      <article class="ft-tile ft-tile--hall" data-reveal-tile>
-        <img
-          class="ft-img"
-          data-reveal-img
-          src="/renders/home/features-showroom-1000.webp"
-          srcset="/renders/home/features-showroom-600.webp 600w, /renders/home/features-showroom-1000.webp 1000w"
-          sizes="(min-width: 64rem) 42vw, calc(100vw - 2rem)"
-          width="1000"
-          height="1333"
-          alt="Выставочный зал салона ВФД: межкомнатные двери и стенд с фурнитурой"
-          loading="lazy"
-          decoding="async"
-        />
-        <div class="ft-body" data-reveal-body>
-          <h3 class="ft-title">
-            <span class="ft-num">60+</span>
-            {typograph('моделей дверей в выставочном зале')}
-          </h3>
-          <p class="ft-text">{typograph('Братьев Кашириных, 131Б — сравните вживую, а не по фото.')}</p>
-          <a
-            class="ft-link"
-            href="https://yandex.ru/maps/-/CPTwZPi-"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Построить маршрут до салона (откроется в новой вкладке)"
-          >
-            Построить маршрут
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
-        </div>
-      </article>
+      <dl class="fs-facts">
+        {FACTS.map((f) => (
+          <div class="fs-fact">
+            <dt class="fs-value">{f.value}</dt>
+            <dd class="fs-text">{typograph(f.text)}</dd>
+          </div>
+        ))}
+      </dl>
 
-      <!-- Фасад — двери с фабрики -->
-      <article class="ft-tile ft-tile--facade" data-reveal-tile>
-        <img
-          class="ft-img"
-          data-reveal-img
-          src="/renders/home/features-facade-1400.webp"
-          srcset="/renders/home/features-facade-768.webp 768w, /renders/home/features-facade-1400.webp 1400w"
-          sizes="(min-width: 64rem) 58vw, (min-width: 40rem) 50vw, calc(100vw - 2rem)"
-          width="1400"
-          height="933"
-          alt="Салон ВФД на Братьев Кашириных, 131Б — вывеска «Двери прямо с фабрики»"
-          loading="lazy"
-          decoding="async"
-        />
-        <div class="ft-body" data-reveal-body>
-          <h3 class="ft-title ft-title--plain">{typograph('Двери напрямую с фабрики')}</h3>
-          <p class="ft-text">{typograph('Официальный дилер Владимирской фабрики дверей — без посредников и переплат.')}</p>
-          <a class="ft-link" href="/catalog/">
-            Каталог дверей
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
-        </div>
-      </article>
+      <p class="fs-visit">
+        <span class="fs-street">{typograph(`${street}, ${entrance}`)}</span>
+        <span class="fs-hours">{workingHours.shortDisplay}</span>
+      </p>
 
-      <!-- Монтаж — графит, без фото -->
-      <article class="ft-tile ft-tile--dark" data-reveal-tile>
-        <div class="ft-body" data-reveal-body>
-          <h3 class="ft-title">
-            <span class="ft-num">С&nbsp;2014</span>
-            {typograph('года замеряем и монтируем своей бригадой')}
-          </h3>
-          <p class="ft-text">{typograph('Консультация, замер, доставка и установка — одна команда, без субподряда.')}</p>
-          <a class="ft-link" href="/portfolio/">
-            Фотоотчёты с объектов
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
-        </div>
-      </article>
-
+      <div class="fs-actions">
+        <a
+          href="https://yandex.ru/maps/-/CPTwZPi-"
+          class="btn btn-primary fs-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Построить маршрут до салона (откроется в новой вкладке)"
+        >
+          Построить маршрут
+          <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+        <a href={`tel:${phone.raw}`} class="btn btn-outline fs-btn fs-phone">
+          {phone.label}
+        </a>
+      </div>
     </div>
+
   </div>
 </section>
 
 <style>
-  /* ── Сетка: телефон — плитки одна под другой; планшет — зал во всю
-     ширину, фасад и монтаж рядом; с lg — бенто: зал слева на две строки,
-     фасад и монтаж справа друг над другом (высоты — по содержимому) ── */
-  .ft-bento {
+  /* Телефон: фото, под ним текст. С lg — фото 5/12 слева, текст 7/12
+     по центру высоты */
+  .fs {
     display: grid;
-    gap: 1rem;
-  }
-  @media (width >= 40rem) {
-    .ft-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .ft-tile--hall { grid-column: 1 / -1; }
+    gap: 2rem;
   }
   @media (width >= 64rem) {
-    .ft-bento {
+    .fs {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      gap: 1.5rem;
+      gap: clamp(3rem, 6vw, 6rem);
+      align-items: center;
     }
-    .ft-tile--hall { grid-column: auto; grid-row: span 2; }
   }
 
-  .ft-tile {
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+  .fs-photo {
+    margin: 0;
     overflow: hidden;
+    aspect-ratio: 4 / 5;
     border-radius: 1.25rem;
+    background: #f4f4f5;  /* zinc-100 — место под кадр, пока он грузится */
   }
   @media (width >= 40rem) {
-    .ft-tile { border-radius: 1.5rem; }
+    .fs-photo { border-radius: 1.5rem; }
   }
-
-  /* Зал: фото на всю плитку, текст поверх на затемнении снизу */
-  .ft-tile--hall {
-    aspect-ratio: 4 / 5;
-    background: #27272a;  /* zinc-800 — пока грузится фото */
-    color: #fff;
+  @media (width >= 40rem) and (width < 64rem) {
+    .fs-photo { aspect-ratio: 16 / 10; }  /* планшет: широкий кадр над текстом */
   }
-  @media (width >= 40rem) { .ft-tile--hall { aspect-ratio: 16 / 10; } }
-  @media (width >= 64rem) { .ft-tile--hall { aspect-ratio: auto; } }
-  .ft-tile--hall .ft-img {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    height: 100%;
-  }
-  .ft-tile--hall::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: linear-gradient(to top, rgb(0 0 0 / 0.78) 0%, rgb(0 0 0 / 0.35) 45%, rgb(0 0 0 / 0) 75%);
-  }
-
-  .ft-img {
+  .fs-photo img {
     display: block;
     width: 100%;
+    height: 100%;
     object-fit: cover;
-    transition: transform 700ms var(--ease-out);
+    object-position: center 55%;
   }
 
-  /* Фасад: широкое фото (вывеска целиком) и светлая панель с текстом */
-  .ft-tile--facade {
-    justify-content: flex-start;
-    background: #f4f4f5;  /* zinc-100 */
-    color: var(--color-ink);
-  }
-  .ft-tile--facade .ft-img {
-    aspect-ratio: 16 / 9;
-    object-position: center 30%;
-    background: #e4e4e7;  /* zinc-200 — пока грузится фото */
-  }
-  @media (width >= 64rem) {
-    .ft-tile--facade .ft-img { aspect-ratio: 21 / 9; }
-  }
-
-  .ft-tile--dark {
-    background: var(--color-graphite);
-    color: #fff;
-  }
-
-  .ft-body {
-    padding: clamp(1.25rem, 2.5vw, 2rem);
-  }
-
-  /* Заголовок плитки: цифра крупно — начало фразы, дальше обычным h3 */
-  .ft-title {
+  /* Заголовок — крупнее обычного .t-h2: главный тезис секции */
+  .fs-title {
     margin: 0;
-    font-size: var(--text-step-4);
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: inherit;
+    font-size: var(--text-step-6);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
     text-wrap: balance;
   }
-  .ft-num {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-family: var(--font-display);
-    font-size: clamp(3rem, 6.5vw, 5rem);
-    font-weight: 500;
-    line-height: 0.95;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-  .ft-text {
-    margin: 0.625rem 0 0;
-    max-width: 30rem;
-    font-size: var(--text-step-1);
-    line-height: 1.55;
-    color: rgb(255 255 255 / 0.78);
+  .fs-lead {
+    margin: 1.25rem 0 0;
+    max-width: 34rem;
+    color: #475569;  /* slate-600 */
     text-wrap: pretty;
   }
-  .ft-tile--facade .ft-text { color: #52525b; }  /* zinc-600 — на zinc-100 7:1 */
 
-  /* Ссылка — вся плитка: ::after растянут на неё */
-  .ft-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin-top: 1rem;
+  /* Факты 2×2: цифра крупно, подпись под ней; тонкая линия сверху */
+  .fs-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem clamp(1.25rem, 3vw, 2.5rem);
+    margin: clamp(2rem, 4vw, 2.75rem) 0 0;
+  }
+  .fs-fact {
+    padding-top: 1rem;
+    border-top: 1px solid #e4e4e7;  /* zinc-200 */
+  }
+  .fs-value {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 4.2vw, 3.5rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .fs-text {
+    margin: 0.5rem 0 0;
     font-size: var(--text-step-1);
-    font-weight: 600;
-    color: inherit;
-    text-decoration: none;
-  }
-  .ft-link::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-  }
-  .ft-link:focus-visible { outline: none; }
-  .ft-tile:has(.ft-link:focus-visible) {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 3px;
+    line-height: 1.45;
+    color: #52525b;  /* zinc-600 */
   }
 
-  /* Наведение: фото чуть приближается, стрелка сдвигается — только мышью */
-  @media (hover: hover) {
-    .ft-tile:hover .ft-img { transform: scale(1.03); }
-    .ft-tile:hover .btn-arrow-icon { transform: translateX(3px); }
+  /* Адрес и часы — две строки над кнопками */
+  .fs-visit {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: clamp(2rem, 4vw, 2.75rem) 0 0;
+    font-size: var(--text-step-1);
+    line-height: 1.5;
   }
+  .fs-street { color: var(--color-ink); font-weight: 500; }
+  .fs-hours  { color: #52525b; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .ft-img { transition: none; }
-    .ft-tile:hover .ft-img { transform: none; }
+  .fs-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  /* Кнопки — системные .btn-primary/.btn-outline, крупнее; на телефоне —
+     во всю ширину одна под другой */
+  .fs-btn {
+    padding: 0.9375rem 1.5rem;
+    font-size: var(--text-step-1);
+    gap: 0.5rem;
+  }
+  .fs-phone { font-variant-numeric: tabular-nums; }
+  .fs-btn:hover .btn-arrow-icon { transform: translateX(2px); }
+  @media (width < 30rem) {
+    .fs-btn { width: 100%; }
   }
 </style>
-
-<script>
-  import { revealTiles } from '../../lib/tile-reveal'
-  revealTiles()
-</script>

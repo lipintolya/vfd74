@@ -5,7 +5,7 @@
  *
  * Зачем: оригиналы на Yandex Cloud — до 1440×2560 и 1 МБ за файл (суммарно
  * ~5 МБ на главной), а на экране:
- *   - Features (бенто): плитки ~500 и ~700 CSS-px → по два размера под srcset;
+ *   - Features: фото зала ~480 CSS-px → два размера под srcset;
  *   - промо-слайдеры: колонка ~половина контейнера (~650 CSS-px, ~1300
  *     с retina) → 1300w.
  * Все картинки слайдеров лежат в DOM одновременно (кросс-фейд по opacity),
@@ -32,13 +32,10 @@ const STRIX    = '/media/promo_main/strix/'
 const P = { width: 1300, quality: 78 }
 
 const jobs = [
-  // Features.astro (бенто «Официальный салон ВФД»): зал — портретная
-  // плитка (~500 CSS-px на десктопе, во всю ширину на телефоне), фасад —
-  // широкая (~700 CSS-px); по два размера под srcset
+  // Features.astro («Официальный салон ВФД»): фото зала ~480 CSS-px на
+  // десктопе, во всю ширину на телефоне — два размера под srcset
   [ABOUT + 'g-1.webp',     'features-showroom-600.webp',  { width: 600,  quality: 78 }],
   [ABOUT + 'g-1.webp',     'features-showroom-1000.webp', { width: 1000, quality: 76 }],
-  [ABOUT + 'vfd_out.webp', 'features-facade-768.webp',    { width: 768,  quality: 78 }],
-  [ABOUT + 'vfd_out.webp', 'features-facade-1400.webp',   { width: 1400, quality: 76 }],
   // Техно (home-promos.ts)
   [TEHNO + 'tehno_render_1.webp', 'tehno-1.webp', P],
   [TEHNO + 'tehno_render.webp',   'tehno-2.webp', P],
