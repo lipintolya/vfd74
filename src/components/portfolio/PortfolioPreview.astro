@@ -88,6 +88,7 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
             text={`${totalWord} в портфолио — двери, перегородки, входные группы`}
             href="/portfolio/"
             cta="Смотреть все"
+            fit="row"
           />
         </li>
       </ul>
@@ -102,7 +103,11 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
   .pr-rail {
     --rail-col: 78%;
     --rail-col-md: 42%;
-    --rail-col-lg: min(21.5rem, 26vw);
+    --rail-cols-lg: 3;
+  }
+  /* На десктопе — три в ряд, квадратные фото, чтобы сетка не была слишком высокой */
+  @media (width >= 64rem) {
+    .pr-photo { aspect-ratio: 1 / 1; }
   }
 
   /* ── Карточка работы ── */

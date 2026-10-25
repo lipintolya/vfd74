@@ -43,6 +43,8 @@ const { prevLabel, nextLabel, allHref, allLabel } = Astro.props
 <style>
   .rc-arrows { display: flex; gap: 0.5rem; }
   .rc-arrows[hidden] { display: none; }
+  /* На десктопе лента — сетка без прокрутки: стрелки не нужны */
+  @media (width >= 64rem) { .rc-arrows { display: none; } }
   .rc-arrow {
     display: grid;
     place-items: center;

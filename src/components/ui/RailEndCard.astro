@@ -49,6 +49,10 @@ const Tag = href ? 'a' : 'div'
   }
   .rec--photo { aspect-ratio: 4 / 5; }
   .rec--row   { height: 100%; min-height: 16rem; }
+  /* На десктопе карточка занимает клетку сетки целиком */
+  @media (width >= 64rem) {
+    .rec--photo { aspect-ratio: auto; height: 100%; min-height: 16rem; }
+  }
 
   .rec-num {
     font-family: var(--font-display);
