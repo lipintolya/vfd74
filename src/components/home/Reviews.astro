@@ -1,0 +1,506 @@
+---
+/**
+ * «Отзывы клиентов» — лента отзывов с Яндекс Карт и 2ГИС. Данные —
+ * src/data/reviews.ts. Используется на главной (h2) и на /reviews/ (h1).
+ *
+ * Карточка: имя и площадка с датой сверху, текст, фото клиента. Длинный
+ * текст сворачивается на одну-две строки через нативный <details> — без JS.
+ * Фото — превью 640 (scripts/gen-responsive.mjs, /renders/reviews/*-640.webp),
+ * горизонтальная прокрутка внутри карточки, клик открывает оригинал в
+ * нативном <dialog> (Esc, стрелки, свайп — встроено в браузер).
+ *
+ * Статичный HTML: текст и даты видны без JS; скрипт — только стрелки ленты
+ * (lib/rail.ts) и диалог фото. Микроразметка Review сохранена для выдачи.
+ */
+import SectionHeader from './SectionHeader.astro'
+import { reviews, type Review, type ReviewPlatform } from '../../data/reviews'
+import { typograph } from '../../lib/typograph'
+
+interface Props {
+  /** На /reviews/ заголовок страницы — h1, на главной — h2 */
+  headingTag?: 'h1' | 'h2'
+  /** Первые карточки видны без прокрутки на /reviews/ — грузим сразу */
+  eagerFirst?: boolean
+}
+const { headingTag = 'h2', eagerFirst = false } = Astro.props
+
+const PLATFORM: Record<ReviewPlatform, string> = {
+  yandex: 'Яндекс Карты',
+  '2gis': '2ГИС',
+}
+
+const CUT = 240
+
+/** Текст делим на видимое начало и остаток под «Читать полностью» — по пробелу */
+const splitText = (text: string) => {
+  if (text.length <= CUT + 40) return { head: text, tail: '' }
+  const at = text.lastIndexOf(' ', CUT)
+  const cut = at > 0 ? at : CUT
+  return { head: text.slice(0, cut), tail: text.slice(cut).trim() }
+}
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+
+/** /media/info/reviews/rev_2_1.webp → /renders/reviews/rev_2_1-640.webp */
+const thumbOf = (src: string) =>
+  '/renders/reviews/' + src.split('/').pop()!.replace(/\.webp$/, '') + '-640.webp'
+
+const sorted = [...reviews].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
+const total = reviews.length
+const withPhotos = reviews.filter((r) => r.photos?.length).length
+
+const lead = `${total} отзывов с Яндекс Карт и 2ГИС — с датами и фото клиентов. Публикуем только верифицированные.`
+
+/* Все фото одного отзыва — в одном месте, чтобы диалог листал их по кругу */
+const photoAlt = (r: Review) => `Фото от клиента ${r.name} — отзыв о ВФД`
+---
+
+<section
+  class="section bg-white rv-section"
+  aria-labelledby="reviews-heading"
+  data-rail-scope
+  data-rv-section
+>
+  <div class="container">
+
+    <SectionHeader id="reviews-heading" title="Репутация, подтверждённая фактами" lead={lead} tag={headingTag}>
+      <Fragment slot="actions">
+        <div class="rv-arrows" data-rail-arrows hidden>
+          <button type="button" class="rv-arrow" data-rail-prev aria-label="Предыдущие отзывы" disabled>←</button>
+          <button type="button" class="rv-arrow" data-rail-next aria-label="Следующие отзывы">→</button>
+        </div>
+      </Fragment>
+    </SectionHeader>
+
+    <ul
+      class="rv-rail"
+      role="list"
+      aria-label="Отзывы клиентов"
+      data-rail
+      itemscope
+      itemtype="https://schema.org/ItemList"
+    >
+      {sorted.map((r, i) => {
+        const { head, tail } = splitText(r.text)
+        const photos = r.photos ?? []
+        return (
+          <li
+            class="rv-card"
+            data-rv-card
+            itemprop="itemListElement"
+            itemscope
+            itemtype="https://schema.org/Review"
+          >
+            <div class="rv-who">
+              <p class="rv-name" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                <span itemprop="name">{r.name}</span>
+              </p>
+              <p class="rv-src">
+                {PLATFORM[r.platform]}
+                {r.date && (
+                  <>
+                    <span class="rv-sep" aria-hidden="true">·</span>
+                    <time datetime={r.date} itemprop="datePublished">{fmtDate(r.date)}</time>
+                  </>
+                )}
+              </p>
+            </div>
+
+            <div class="rv-body" itemprop="reviewBody">
+              {tail ? (
+                <details class="rv-more">
+                  <summary>
+                    {typograph(head)}
+                    <span class="rv-ell">…</span>{' '}
+                    <span class="rv-expand">Читать полностью</span>
+                  </summary>
+                  <p>{typograph(tail)}</p>
+                </details>
+              ) : (
+                <p>{typograph(head)}</p>
+              )}
+            </div>
+
+            {photos.length > 0 && (
+              <div
+                class:list={['rv-photos', { 'rv-photos--one': photos.length === 1 }]}
+                data-rv-photos
+              >
+                {photos.map((src, j) => (
+                  <button
+                    type="button"
+                    class="rv-photo"
+                    data-rv-photo
+                    data-full={src}
+                    data-alt={photoAlt(r)}
+                    aria-label={`Открыть фото ${j + 1} из ${photos.length}`}
+                  >
+                    <img
+                      src={thumbOf(src)}
+                      alt=""
+                      width="640"
+                      height="800"
+                      loading={eagerFirst && i < 3 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <span class="rv-hidden" itemprop="itemReviewed" itemscope itemtype="https://schema.org/LocalBusiness">
+              <meta itemprop="name" content="ВФД (Фирменный салон Владимирской фабрики дверей)" />
+            </span>
+            <span class="rv-hidden" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+              <meta itemprop="ratingValue" content="5" />
+              <meta itemprop="bestRating" content="5" />
+            </span>
+          </li>
+        )
+      })}
+    </ul>
+
+    <div class="rv-foot">
+      <p class="rv-foot-text">
+        {withPhotos > 0 ? `Фото клиентов — в ${withPhotos} отзывах. ` : ''}Читайте больше отзывов и оставляйте свои.
+      </p>
+      <div class="rv-foot-actions">
+        <a
+          class="btn btn-outline"
+          href="https://2gis.ru/chelyabinsk/search/ВФД%20Владимирская%20фабрика%20дверей%20Братьев%20Кашириных%20131Б"
+          target="_blank"
+          rel="noopener"
+        >
+          2ГИС
+        </a>
+        <a
+          class="btn btn-outline"
+          href="https://yandex.ru/maps/?text=ВФД%20Владимирская%20фабрика%20дверей%20Челябинск%20Братьев%20Кашириных%20131Б"
+          target="_blank"
+          rel="noopener"
+        >
+          Яндекс Карты
+        </a>
+        {headingTag !== 'h1' && (
+          <a href="/reviews/" class="btn btn-primary">Все отзывы на сайте</a>
+        )}
+      </div>
+    </div>
+
+    <!-- Диалог фото — один на секцию; открывается из карточки -->
+    <dialog class="rv-dialog" data-rv-dialog aria-label="Фото от клиента">
+      <div class="rv-dlg-bar">
+        <span class="rv-dlg-cap" data-rv-cap></span>
+        <button type="button" class="rv-dlg-btn" data-rv-close>Закрыть</button>
+      </div>
+      <figure class="rv-dlg-fig">
+        <img data-rv-img alt="" />
+      </figure>
+      <div class="rv-dlg-nav">
+        <button type="button" class="rv-dlg-btn" data-rv-prev>Назад</button>
+        <button type="button" class="rv-dlg-btn" data-rv-next>Далее</button>
+      </div>
+    </dialog>
+
+  </div>
+</section>
+
+<script>
+  import { initRail } from '../../lib/rail'
+
+  document.querySelectorAll<HTMLElement>('[data-rv-section]').forEach((section) => {
+    const dlg = section.querySelector<HTMLDialogElement>('[data-rv-dialog]')
+    const img = section.querySelector<HTMLImageElement>('[data-rv-img]')
+    const cap = section.querySelector<HTMLElement>('[data-rv-cap]')
+    const prev = section.querySelector<HTMLButtonElement>('[data-rv-prev]')
+    const next = section.querySelector<HTMLButtonElement>('[data-rv-next]')
+    const close = section.querySelector<HTMLButtonElement>('[data-rv-close]')
+    if (!dlg || !img || !cap || !prev || !next || !close) return
+
+    initRail(section)
+
+    let shots: HTMLButtonElement[] = []
+    let idx = 0
+
+    const show = (n: number) => {
+      if (!shots.length) return
+      idx = (n + shots.length) % shots.length
+      const b = shots[idx]!
+      img.src = b.dataset.full ?? ''
+      img.alt = b.dataset.alt ?? ''
+      cap.textContent = shots.length > 1 ? `${idx + 1} из ${shots.length}` : ''
+      prev.hidden = next.hidden = shots.length < 2
+    }
+
+    section.querySelectorAll<HTMLButtonElement>('[data-rv-photo]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('[data-rv-photos]')
+        shots = [...(group?.querySelectorAll<HTMLButtonElement>('[data-rv-photo]') ?? [btn])]
+        show(shots.indexOf(btn))
+        dlg.showModal()
+      })
+    })
+
+    prev.addEventListener('click', () => show(idx - 1))
+    next.addEventListener('click', () => show(idx + 1))
+    close.addEventListener('click', () => dlg.close())
+    /* Клик по затемнённому фону — закрыть: target у самого <dialog> только вне
+       его содержимого, так что клик по кнопкам и фото сюда не попадает */
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close() })
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(idx - 1)
+      if (e.key === 'ArrowRight') show(idx + 1)
+    })
+    dlg.addEventListener('close', () => { img.removeAttribute('src') })
+  })
+</script>
+
+<style>
+  /* Лента уходит до края экрана на телефоне и планшете, на десктопе — с обеих
+     сторон (как «Фотоотчёты»); секция обрезает переполнение по себе */
+  .rv-section { overflow-x: clip; }
+
+  .rv-arrows { display: flex; gap: 0.5rem; }
+  .rv-arrows[hidden] { display: none; }
+  .rv-arrow {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--color-border);
+    color: var(--color-fg);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: box-shadow var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+  .rv-arrow:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--color-fg); }
+  .rv-arrow:disabled { opacity: 0.35; cursor: default; }
+  .rv-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  /* ── Лента ── */
+  .rv-rail {
+    --gutter: clamp(1rem, 4vw, 2rem);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    gap: 1rem;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 0 var(--gutter) 0.25rem;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+    /* Карточки — по своему содержимому: длинный отзыв не растягивает короткие
+       до пустых плашек */
+    align-items: start;
+  }
+  .rv-rail::-webkit-scrollbar { display: none; }
+  @media (width >= 40rem) {
+    .rv-rail { grid-auto-columns: 20rem; gap: 1.25rem; }
+  }
+  @media (width >= 64rem) {
+    .rv-rail {
+      --bleed: calc(max(0px, (100vw - 80rem) / 2) + 2rem);
+      grid-auto-columns: 24rem;
+      gap: 1.5rem;
+      margin-inline: calc(-1 * var(--bleed));
+      padding-inline: var(--bleed);
+      scroll-padding-inline: var(--bleed);
+    }
+  }
+  @media (width >= 1920px) {
+    .rv-rail { --bleed: calc((100vw - 96rem) / 2 + 2rem); }
+  }
+
+  /* ── Карточка: светлая плашка, текст крупнее обычного для карточек —
+     отзыв читается как текст, а не как подпись ── */
+  .rv-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+    padding: clamp(1.25rem, 2.4vw, 1.75rem);
+    border-radius: 1.5rem;
+    background: #f4f4f5;  /* zinc-100 */
+    scroll-snap-align: start;
+  }
+  @media (width >= 40rem) {
+    .rv-card { border-radius: 1.75rem; }
+  }
+
+  .rv-who {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .rv-name {
+    margin: 0;
+    font-size: var(--text-step-2);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .rv-src {
+    margin: 0;
+    font-size: var(--text-step-0);
+    line-height: 1.4;
+    color: #52525b;  /* zinc-600 — на zinc-100 ≥ 6:1 */
+  }
+  .rv-sep { margin: 0 0.4em; color: #a1a1aa; }
+
+  .rv-body p {
+    margin: 0;
+    font-size: var(--text-step-1);
+    line-height: 1.65;
+    color: #3f3f46;  /* zinc-700 */
+    text-wrap: pretty;
+  }
+
+  /* Сворачивание: summary — видимое начало, раскрытие — остаток текста */
+  .rv-more summary {
+    display: block;
+    list-style: none;
+    cursor: pointer;
+  }
+  .rv-more summary::-webkit-details-marker { display: none; }
+  .rv-more summary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  .rv-more p { margin-top: 0.75rem; }
+  .rv-expand {
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+  .rv-more[open] .rv-ell,
+  .rv-more[open] .rv-expand { display: none; }
+
+  /* ── Фото клиента: горизонтальная прокрутка внутри карточки ── */
+  .rv-photos {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 -0.25rem;
+    padding: 0 0.25rem;
+  }
+  .rv-photos::-webkit-scrollbar { display: none; }
+  .rv-photo {
+    flex: 0 0 84%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    border-radius: 1rem;
+    background: #e4e4e7;  /* zinc-200 — место под фото, пока грузится */
+    scroll-snap-align: start;
+    cursor: zoom-in;
+  }
+  .rv-photos--one .rv-photo { flex-basis: 100%; }
+  .rv-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .rv-photo:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .rv-hidden { display: none; }
+
+  /* ── Подвал: площадки и ссылка «Все отзывы» ── */
+  .rv-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: clamp(2rem, 4vw, 2.75rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid #e4e4e7;  /* zinc-200 */
+  }
+  @media (width >= 64rem) {
+    .rv-foot {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+  .rv-foot-text {
+    margin: 0;
+    font-size: var(--text-step-1);
+    color: #52525b;  /* zinc-600 */
+  }
+  .rv-foot-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  @media (width < 30rem) {
+    .rv-foot-actions .btn { flex: 1 1 auto; }
+  }
+
+  /* ── Диалог фото ── */
+  .rv-dialog {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    color: #fff;
+  }
+  .rv-dialog::backdrop { background: rgb(9 9 11 / 0.92); }
+  .rv-dialog[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+  .rv-dlg-bar,
+  .rv-dlg-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .rv-dlg-cap { font-size: var(--text-step-1); color: rgb(255 255 255 / 0.7); }
+  .rv-dlg-fig {
+    margin: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rv-dlg-fig img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0.75rem;
+  }
+  .rv-dlg-btn {
+    padding: 0.625rem 1.125rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .rv-dlg-btn:hover { background: rgb(255 255 255 / 0.22); }
+  .rv-dlg-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .rv-dlg-nav { justify-content: center; }
+</style>

@@ -51,6 +51,11 @@ const JOBS = [
   { src: '/media/metal_doors/Optima/render_optima.webp',  out: '/renders/home/cat-entrance',   widths: S },
   { src: '/media/alum/saint_p_alum/tg4.webp',             out: '/renders/home/cat-partitions', widths: S },
 
+  // Reviews.astro — фото клиентов в карточке ~300–380 px → превью 640; оригиналы
+  // открываются в диалоге из public/media/info/reviews
+  ...['XXXL', 'rev_1', 'rev_2_1', 'rev_4_1', 'rev_5_1']
+    .map(n => ({ src: `/media/info/reviews/${n}.webp`, out: `/renders/reviews/${n}`, widths: [640] })),
+
   // PlinthSection.astro — схема на всю ширину контейнера (оригинал 1920 px)
   { src: '/media/decor/plintus/plintus_type.webp', out: '/renders/decor/plintus-type', widths: [960, 1440] },
 ]

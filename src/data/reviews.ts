@@ -2,7 +2,7 @@
  * src/data/reviews.ts
  *
  * Реальные отзывы клиентов с Яндекс Карт и 2ГИС — используются в
- * src/components/home/Reviews.vue. Даты — ISO (YYYY-MM-DD) для
+ * src/components/home/Reviews.astro. Даты — ISO (YYYY-MM-DD) для
  * <time datetime> и schema.org Review/datePublished.
  *
  * Добавлять новый отзыв: просто добавь объект в конец нужного блока
@@ -61,7 +61,7 @@ export const reviews: Review[] = [
     platform: 'yandex',
     date:     '2025-06-30',
     text:     'Покупали дверную фурнитуру в этом месте, всё отлично и оперативно привезли. Быстро и профессионально.',
-    photos:   [`${PHOTO_BASE}/rev_2_1.webp`, `${PHOTO_BASE}/rev_2_2.webp`, `${PHOTO_BASE}/rev_3_3.webp`],
+    photos:   [`${PHOTO_BASE}/rev_2_1.webp`],
   },
 
   // ── 2ГИС ──────────────────────────────────────────────────────────────
@@ -106,7 +106,7 @@ export const reviews: Review[] = [
     platform: '2gis',
     date:     '2025-02-01',
     text:     'Однозначно могу порекомендовать этот салон. Понравилось всё — от помощи в выборе до монтажа, всё быстро и чётко. Общительный и приятный менеджер, всегда был на связи.',
-    photos:   [`${PHOTO_BASE}/rev_4_1.webp`, `${PHOTO_BASE}/rev_4_2.webp`],
+    photos:   [`${PHOTO_BASE}/rev_4_1.webp`],
   },
   {
     id:       '2gis-natalya-2',
@@ -135,7 +135,7 @@ export const reviews: Review[] = [
     platform: '2gis',
     date:     '2025-01-20',
     text:     'Заказали двери, и остались очень довольны 👏 Шикарный дизайн, смотрятся намного дороже, чем их стоимость 👏 Спасибо менеджеру Надежде, помогла подобрать, подробно всё проконсультировала 👍',
-    photos:   [`${PHOTO_BASE}/rev_5_1.webp`, `${PHOTO_BASE}/rev_5_2.webp`],
+    photos:   [`${PHOTO_BASE}/rev_5_1.webp`],
   },
   {
     id:       '2gis-igor',

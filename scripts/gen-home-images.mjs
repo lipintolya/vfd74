@@ -53,10 +53,6 @@ const jobs = [
   [BENTO + 'secret_render_cover.webp',                  'secret-cover.webp', P],
   [INVIS + 'B2AB966B-4BC6-43E2-AEAA-7DA6B3CEDCC5.webp', 'secret-2.webp', P],
   [INVIS + '937DECDF-6886-48EB-80B6-3495AA998F94.webp', 'secret-3.webp', P],
-  // Reviews.vue — логотипы площадок показываются 20×20 (64px — с запасом под retina),
-  // исходники 600×600
-  ['/media/info/reviews/yandex_logo.webp', 'logo-yandex.webp', { width: 64, quality: 85 }],
-  ['/media/info/reviews/2gis_logo.webp',   'logo-2gis.webp',   { width: 64, quality: 85 }],
 ]
 
 /* node scripts/gen-home-images.mjs features- — только файлы с этим

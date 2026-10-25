@@ -42,7 +42,7 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
 ---
 
 {preview.length > 0 && (
-  <section class="section bg-white pr-section" aria-labelledby="portfolio-preview-heading">
+  <section class="section bg-white pr-section" aria-labelledby="portfolio-preview-heading" data-rail-scope>
     <div class="container">
 
       <SectionHeader id="portfolio-preview-heading" title="Фотоотчёты с объектов" lead={lead}>
@@ -107,37 +107,8 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
 )}
 
 <script>
-  /* Стрелки ленты: прокрутка на ширину видимой части (кратно карточке —
-     дальше доводит scroll-snap), на краях кнопка гаснет. Показываются только
-     там, где есть мышь (hover) — на тач-экранах лента листается пальцем. */
-  document.querySelectorAll<HTMLElement>('[data-rail]').forEach((rail) => {
-    const section = rail.closest('section')
-    const arrows = section?.querySelector<HTMLElement>('[data-rail-arrows]')
-    const prev = section?.querySelector<HTMLButtonElement>('[data-rail-prev]')
-    const next = section?.querySelector<HTMLButtonElement>('[data-rail-next]')
-    if (!arrows || !prev || !next) return
-    if (!matchMedia('(hover: hover)').matches) return
-    arrows.hidden = false
-
-    const step = () => {
-      const item = rail.querySelector<HTMLElement>('li')
-      const gap = parseFloat(getComputedStyle(rail).columnGap) || 0
-      const card = item ? item.offsetWidth + gap : rail.clientWidth
-      return Math.max(card, Math.floor(rail.clientWidth / card) * card)
-    }
-    const update = () => {
-      const max = rail.scrollWidth - rail.clientWidth - 2
-      prev.disabled = rail.scrollLeft <= 2
-      next.disabled = rail.scrollLeft >= max
-    }
-    const smooth = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-
-    prev.addEventListener('click', () => rail.scrollBy({ left: -step(), behavior: smooth }))
-    next.addEventListener('click', () => rail.scrollBy({ left: step(), behavior: smooth }))
-    rail.addEventListener('scroll', update, { passive: true })
-    new ResizeObserver(update).observe(rail)
-    update()
-  })
+  import { initRail } from '../../lib/rail'
+  document.querySelectorAll<HTMLElement>('[data-rail-scope]').forEach(initRail)
 </script>
 
 <style>

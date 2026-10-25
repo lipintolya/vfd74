@@ -15,20 +15,23 @@ interface Props {
   id:    string
   title: string
   lead?: string
+  /** h1 — только когда секция на странице единственная главная (/reviews/) */
+  tag?:  'h1' | 'h2'
 }
-const { id, title, lead } = Astro.props
+const { id, title, lead, tag = 'h2' } = Astro.props
+const Heading = tag
 const hasActions = Astro.slots.has('actions')
 ---
 
 <header class:list={['sh', { 'sh--actions': hasActions }]}>
   {hasActions ? (
     <div class="sh-main">
-      <h2 id={id} class="t-h2 sh-title">{typograph(title)}</h2>
+      <Heading id={id} class={tag === 'h1' ? 't-h1 sh-title' : 't-h2 sh-title'}>{typograph(title)}</Heading>
       {lead && <p class="t-lead sh-lead">{typograph(lead)}</p>}
     </div>
   ) : (
     <>
-      <h2 id={id} class="t-h2 sh-title">{typograph(title)}</h2>
+      <Heading id={id} class={tag === 'h1' ? 't-h1 sh-title' : 't-h2 sh-title'}>{typograph(title)}</Heading>
       {lead && <p class="t-lead sh-lead">{typograph(lead)}</p>}
     </>
   )}
