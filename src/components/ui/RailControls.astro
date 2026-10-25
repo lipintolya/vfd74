@@ -1,0 +1,66 @@
+---
+/**
+ * Управление горизонтальной лентой (.rail в global.css) — стрелки «назад /
+ * вперёд» и необязательная ссылка «Все …». Ставится в слот `actions`
+ * у SectionHeader. Один на ленту; секция с лентой — data-rail-scope.
+ *
+ * Стрелки скрыты, пока скрипт не убедится, что у устройства есть мышь
+ * (lib/rail.ts) — на телефоне лента листается свайпом. Скрипт подключается
+ * один раз на страницу, сколько бы лент на ней ни было.
+ */
+interface Props {
+  prevLabel: string
+  nextLabel: string
+  /** Ссылка на весь раздел — «Все работы», «Все отзывы» */
+  allHref?:  string
+  allLabel?: string
+}
+const { prevLabel, nextLabel, allHref, allLabel } = Astro.props
+---
+
+<div class="rc-arrows" data-rail-arrows hidden>
+  <button type="button" class="rc-arrow" data-rail-prev aria-label={prevLabel} disabled>
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </button>
+  <button type="button" class="rc-arrow" data-rail-next aria-label={nextLabel}>
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </button>
+</div>
+{allHref && allLabel && (
+  <a href={allHref} class="btn btn-outline rc-all">
+    {allLabel}
+    <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </a>
+)}
+
+<script>
+  import { initRail } from '../../lib/rail'
+  document.querySelectorAll<HTMLElement>('[data-rail-scope]').forEach(initRail)
+</script>
+
+<style>
+  .rc-arrows { display: flex; gap: 0.5rem; }
+  .rc-arrows[hidden] { display: none; }
+  .rc-arrow {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--color-border);
+    color: var(--color-fg);
+    cursor: pointer;
+    transition: box-shadow var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+  .rc-arrow svg { width: 1rem; height: 1rem; }
+  .rc-arrow:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--color-fg); }
+  .rc-arrow:disabled { opacity: 0.35; cursor: default; }
+  .rc-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .rc-all { padding: 0.75rem 1.25rem; font-size: var(--text-step-1); }
+  .rc-all:hover .btn-arrow-icon { transform: translateX(2px); }
+</style>

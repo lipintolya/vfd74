@@ -3,61 +3,59 @@
  * «Отзывы клиентов» — лента отзывов с Яндекс Карт и 2ГИС. Данные —
  * src/data/reviews.ts. Используется на главной (h2) и на /reviews/ (h1).
  *
- * Карточка: имя и площадка с датой сверху, текст, фото клиента. Длинный
- * текст сворачивается на одну-две строки через нативный <details> — без JS.
- * Фото — превью 640 (scripts/gen-responsive.mjs, /renders/reviews/*-640.webp),
- * горизонтальная прокрутка внутри карточки, клик открывает оригинал в
- * нативном <dialog> (Esc, стрелки, свайп — встроено в браузер).
+ * Лента, стрелки и последняя карточка — общие с «Фотоотчётами»: .rail
+ * (global.css), RailControls, RailEndCard.
  *
- * Статичный HTML: текст и даты видны без JS; скрипт — только стрелки ленты
- * (lib/rail.ts) и диалог фото. Микроразметка Review сохранена для выдачи.
+ * Карточки одной высоты (по ряду ленты), без пустого низа: текст сверху,
+ * автор с площадкой и датой прижат к низу — подпись под цитатой. Размер
+ * текста зависит от длины: короткий отзыв — крупно, обычный — как текст,
+ * длинный — обрезан по строкам, «Читать полностью» открывает весь текст
+ * в нативном <dialog>. Без JS текст не обрезается и кнопка не видна.
+ *
+ * Статичный HTML (текст виден сразу), микроразметка Review сохранена.
  */
 import SectionHeader from './SectionHeader.astro'
-import { reviews, type Review, type ReviewPlatform } from '../../data/reviews'
+import RailControls from '../ui/RailControls.astro'
+import RailEndCard from '../ui/RailEndCard.astro'
+import { reviews, type ReviewPlatform } from '../../data/reviews'
+import { pluralRu } from '../../lib/product-text'
 import { typograph } from '../../lib/typograph'
 
 interface Props {
   /** На /reviews/ заголовок страницы — h1, на главной — h2 */
   headingTag?: 'h1' | 'h2'
-  /** Первые карточки видны без прокрутки на /reviews/ — грузим сразу */
-  eagerFirst?: boolean
 }
-const { headingTag = 'h2', eagerFirst = false } = Astro.props
+const { headingTag = 'h2' } = Astro.props
 
 const PLATFORM: Record<ReviewPlatform, string> = {
   yandex: 'Яндекс Карты',
   '2gis': '2ГИС',
 }
 
-const CUT = 240
-
-/** Текст делим на видимое начало и остаток под «Читать полностью» — по пробелу */
-const splitText = (text: string) => {
-  if (text.length <= CUT + 40) return { head: text, tail: '' }
-  const at = text.lastIndexOf(' ', CUT)
-  const cut = at > 0 ? at : CUT
-  return { head: text.slice(0, cut), tail: text.slice(cut).trim() }
-}
+/* Пороги по длине текста (знаков): до SHORT — крупная цитата, после LONG —
+   обрезка с «Читать полностью». Подобраны по данным: так карточки ряда
+   выходят близкой высоты. */
+const SHORT = 110
+const LONG = 260
+const sizeOf = (text: string) => (text.length <= SHORT ? 's' : text.length <= LONG ? 'm' : 'l')
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 
-/** /media/info/reviews/rev_2_1.webp → /renders/reviews/rev_2_1-640.webp */
-const thumbOf = (src: string) =>
-  '/renders/reviews/' + src.split('/').pop()!.replace(/\.webp$/, '') + '-640.webp'
-
 const sorted = [...reviews].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
 const total = reviews.length
-const withPhotos = reviews.filter((r) => r.photos?.length).length
+const totalWord = pluralRu(total, ['отзыв', 'отзыва', 'отзывов'])
 
-const lead = `${total} отзывов с Яндекс Карт и 2ГИС — с датами и фото клиентов. Публикуем только верифицированные.`
+const lead = `${total} ${totalWord} с Яндекс Карт и 2ГИС — публикуем только верифицированные, с датами.`
 
-/* Все фото одного отзыва — в одном месте, чтобы диалог листал их по кругу */
-const photoAlt = (r: Review) => `Фото от клиента ${r.name} — отзыв о ВФД`
+const LINKS = [
+  { label: '2ГИС', href: 'https://2gis.ru/chelyabinsk/search/ВФД%20Владимирская%20фабрика%20дверей%20Братьев%20Кашириных%20131Б' },
+  { label: 'Яндекс Карты', href: 'https://yandex.ru/maps/?text=ВФД%20Владимирская%20фабрика%20дверей%20Челябинск%20Братьев%20Кашириных%20131Б' },
+]
 ---
 
 <section
-  class="section bg-white rv-section"
+  class="section bg-white rail-scope"
   aria-labelledby="reviews-heading"
   data-rail-scope
   data-rv-section
@@ -66,34 +64,44 @@ const photoAlt = (r: Review) => `Фото от клиента ${r.name} — от
 
     <SectionHeader id="reviews-heading" title="Репутация, подтверждённая фактами" lead={lead} tag={headingTag}>
       <Fragment slot="actions">
-        <div class="rv-arrows" data-rail-arrows hidden>
-          <button type="button" class="rv-arrow" data-rail-prev aria-label="Предыдущие отзывы" disabled>←</button>
-          <button type="button" class="rv-arrow" data-rail-next aria-label="Следующие отзывы">→</button>
-        </div>
+        <RailControls
+          prevLabel="Предыдущие отзывы"
+          nextLabel="Следующие отзывы"
+          allHref={headingTag === 'h1' ? undefined : '/reviews/'}
+          allLabel="Все отзывы"
+        />
       </Fragment>
     </SectionHeader>
 
     <ul
-      class="rv-rail"
+      class="rail rv-rail"
       role="list"
       aria-label="Отзывы клиентов"
       data-rail
       itemscope
       itemtype="https://schema.org/ItemList"
     >
-      {sorted.map((r, i) => {
-        const { head, tail } = splitText(r.text)
-        const photos = r.photos ?? []
+      {sorted.map((r) => {
+        const size = sizeOf(r.text)
+        const meta = [PLATFORM[r.platform], r.date && fmtDate(r.date)].filter(Boolean).join(' · ')
         return (
           <li
             class="rv-card"
             data-rv-card
+            data-rv-meta={meta}
             itemprop="itemListElement"
             itemscope
             itemtype="https://schema.org/Review"
           >
-            <div class="rv-who">
-              <p class="rv-name" itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <p class:list={['rv-text', `rv-text--${size}`]} itemprop="reviewBody" data-rv-text>
+              {typograph(r.text)}
+            </p>
+            {size === 'l' && (
+              <button type="button" class="rv-more" data-rv-more hidden>Читать полностью</button>
+            )}
+
+            <div class="rv-by">
+              <p class="rv-name" itemprop="author" itemscope itemtype="https://schema.org/Person" data-rv-name>
                 <span itemprop="name">{r.name}</span>
               </p>
               <p class="rv-src">
@@ -107,48 +115,6 @@ const photoAlt = (r: Review) => `Фото от клиента ${r.name} — от
               </p>
             </div>
 
-            <div class="rv-body" itemprop="reviewBody">
-              {tail ? (
-                <details class="rv-more">
-                  <summary>
-                    {typograph(head)}
-                    <span class="rv-ell">…</span>{' '}
-                    <span class="rv-expand">Читать полностью</span>
-                  </summary>
-                  <p>{typograph(tail)}</p>
-                </details>
-              ) : (
-                <p>{typograph(head)}</p>
-              )}
-            </div>
-
-            {photos.length > 0 && (
-              <div
-                class:list={['rv-photos', { 'rv-photos--one': photos.length === 1 }]}
-                data-rv-photos
-              >
-                {photos.map((src, j) => (
-                  <button
-                    type="button"
-                    class="rv-photo"
-                    data-rv-photo
-                    data-full={src}
-                    data-alt={photoAlt(r)}
-                    aria-label={`Открыть фото ${j + 1} из ${photos.length}`}
-                  >
-                    <img
-                      src={thumbOf(src)}
-                      alt=""
-                      width="640"
-                      height="800"
-                      loading={eagerFirst && i < 3 ? 'eager' : 'lazy'}
-                      decoding="async"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-
             <span class="rv-hidden" itemprop="itemReviewed" itemscope itemtype="https://schema.org/LocalBusiness">
               <meta itemprop="name" content="ВФД (Фирменный салон Владимирской фабрики дверей)" />
             </span>
@@ -159,348 +125,176 @@ const photoAlt = (r: Review) => `Фото от клиента ${r.name} — от
           </li>
         )
       })}
+
+      <li>
+        <RailEndCard value={total} text={`${totalWord} на Яндекс Картах и 2ГИС — читайте все и оставляйте свои`} fit="row">
+          {LINKS.map((l) => (
+            <a href={l.href} target="_blank" rel="noopener">
+              {l.label}
+              <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          ))}
+        </RailEndCard>
+      </li>
     </ul>
 
-    <div class="rv-foot">
-      <p class="rv-foot-text">
-        {withPhotos > 0 ? `Фото клиентов — в ${withPhotos} отзывах. ` : ''}Читайте больше отзывов и оставляйте свои.
-      </p>
-      <div class="rv-foot-actions">
-        <a
-          class="btn btn-outline"
-          href="https://2gis.ru/chelyabinsk/search/ВФД%20Владимирская%20фабрика%20дверей%20Братьев%20Кашириных%20131Б"
-          target="_blank"
-          rel="noopener"
-        >
-          2ГИС
-        </a>
-        <a
-          class="btn btn-outline"
-          href="https://yandex.ru/maps/?text=ВФД%20Владимирская%20фабрика%20дверей%20Челябинск%20Братьев%20Кашириных%20131Б"
-          target="_blank"
-          rel="noopener"
-        >
-          Яндекс Карты
-        </a>
-        {headingTag !== 'h1' && (
-          <a href="/reviews/" class="btn btn-primary">Все отзывы на сайте</a>
-        )}
+    <!-- Полный текст длинного отзыва — один диалог на секцию -->
+    <dialog class="rv-dialog" data-rv-dialog aria-labelledby="rv-dialog-name">
+      <p class="rv-dlg-text" data-rv-dlg-text></p>
+      <div class="rv-by rv-dlg-by">
+        <p class="rv-name" id="rv-dialog-name" data-rv-dlg-name></p>
+        <p class="rv-src" data-rv-dlg-src></p>
       </div>
-    </div>
-
-    <!-- Диалог фото — один на секцию; открывается из карточки -->
-    <dialog class="rv-dialog" data-rv-dialog aria-label="Фото от клиента">
-      <div class="rv-dlg-bar">
-        <span class="rv-dlg-cap" data-rv-cap></span>
-        <button type="button" class="rv-dlg-btn" data-rv-close>Закрыть</button>
-      </div>
-      <figure class="rv-dlg-fig">
-        <img data-rv-img alt="" />
-      </figure>
-      <div class="rv-dlg-nav">
-        <button type="button" class="rv-dlg-btn" data-rv-prev>Назад</button>
-        <button type="button" class="rv-dlg-btn" data-rv-next>Далее</button>
-      </div>
+      <button type="button" class="btn btn-outline rv-dlg-close" data-rv-close>Закрыть</button>
     </dialog>
 
   </div>
 </section>
 
 <script>
-  import { initRail } from '../../lib/rail'
-
   document.querySelectorAll<HTMLElement>('[data-rv-section]').forEach((section) => {
     const dlg = section.querySelector<HTMLDialogElement>('[data-rv-dialog]')
-    const img = section.querySelector<HTMLImageElement>('[data-rv-img]')
-    const cap = section.querySelector<HTMLElement>('[data-rv-cap]')
-    const prev = section.querySelector<HTMLButtonElement>('[data-rv-prev]')
-    const next = section.querySelector<HTMLButtonElement>('[data-rv-next]')
+    const text = section.querySelector<HTMLElement>('[data-rv-dlg-text]')
+    const name = section.querySelector<HTMLElement>('[data-rv-dlg-name]')
+    const src = section.querySelector<HTMLElement>('[data-rv-dlg-src]')
     const close = section.querySelector<HTMLButtonElement>('[data-rv-close]')
-    if (!dlg || !img || !cap || !prev || !next || !close) return
+    if (!dlg || !text || !name || !src || !close) return
 
-    initRail(section)
-
-    let shots: HTMLButtonElement[] = []
-    let idx = 0
-
-    const show = (n: number) => {
-      if (!shots.length) return
-      idx = (n + shots.length) % shots.length
-      const b = shots[idx]!
-      img.src = b.dataset.full ?? ''
-      img.alt = b.dataset.alt ?? ''
-      cap.textContent = shots.length > 1 ? `${idx + 1} из ${shots.length}` : ''
-      prev.hidden = next.hidden = shots.length < 2
-    }
-
-    section.querySelectorAll<HTMLButtonElement>('[data-rv-photo]').forEach((btn) => {
+    /* С JS длинные тексты обрезаются по строкам (стиль [data-rv-clamp]),
+       а кнопка «Читать полностью» становится видна */
+    section.dataset.rvClamp = ''
+    section.querySelectorAll<HTMLButtonElement>('[data-rv-more]').forEach((btn) => {
+      btn.hidden = false
       btn.addEventListener('click', () => {
-        const group = btn.closest('[data-rv-photos]')
-        shots = [...(group?.querySelectorAll<HTMLButtonElement>('[data-rv-photo]') ?? [btn])]
-        show(shots.indexOf(btn))
+        const card = btn.closest('[data-rv-card]')
+        text.textContent = card?.querySelector('[data-rv-text]')?.textContent?.trim() ?? ''
+        name.textContent = card?.querySelector('[data-rv-name]')?.textContent?.trim() ?? ''
+        src.textContent = card instanceof HTMLElement ? card.dataset.rvMeta ?? '' : ''
         dlg.showModal()
       })
     })
 
-    prev.addEventListener('click', () => show(idx - 1))
-    next.addEventListener('click', () => show(idx + 1))
     close.addEventListener('click', () => dlg.close())
-    /* Клик по затемнённому фону — закрыть: target у самого <dialog> только вне
-       его содержимого, так что клик по кнопкам и фото сюда не попадает */
+    /* Клик по затемнению вокруг окна — закрыть */
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close() })
-    dlg.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') show(idx - 1)
-      if (e.key === 'ArrowRight') show(idx + 1)
-    })
-    dlg.addEventListener('close', () => { img.removeAttribute('src') })
   })
 </script>
 
 <style>
-  /* Лента уходит до края экрана на телефоне и планшете, на десктопе — с обеих
-     сторон (как «Фотоотчёты»); секция обрезает переполнение по себе */
-  .rv-section { overflow-x: clip; }
-
-  .rv-arrows { display: flex; gap: 0.5rem; }
-  .rv-arrows[hidden] { display: none; }
-  .rv-arrow {
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 0;
-    border-radius: 999px;
-    background: #fff;
-    box-shadow: inset 0 0 0 1.5px var(--color-border);
-    color: var(--color-fg);
-    font-size: 1rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: box-shadow var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
-  }
-  .rv-arrow:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--color-fg); }
-  .rv-arrow:disabled { opacity: 0.35; cursor: default; }
-  .rv-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-
-  /* ── Лента ── */
+  /* Колонки ленты .rail (global.css) */
   .rv-rail {
-    --gutter: clamp(1rem, 4vw, 2rem);
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 84%;
-    gap: 1rem;
-    margin: 0 calc(-1 * var(--gutter));
-    padding: 0 var(--gutter) 0.25rem;
-    list-style: none;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--gutter);
-    scrollbar-width: none;
-    /* Карточки — по своему содержимому: длинный отзыв не растягивает короткие
-       до пустых плашек */
-    align-items: start;
-  }
-  .rv-rail::-webkit-scrollbar { display: none; }
-  @media (width >= 40rem) {
-    .rv-rail { grid-auto-columns: 20rem; gap: 1.25rem; }
-  }
-  @media (width >= 64rem) {
-    .rv-rail {
-      --bleed: calc(max(0px, (100vw - 80rem) / 2) + 2rem);
-      grid-auto-columns: 24rem;
-      gap: 1.5rem;
-      margin-inline: calc(-1 * var(--bleed));
-      padding-inline: var(--bleed);
-      scroll-padding-inline: var(--bleed);
-    }
-  }
-  @media (width >= 1920px) {
-    .rv-rail { --bleed: calc((100vw - 96rem) / 2 + 2rem); }
+    --rail-col: 84%;
+    --rail-col-md: 20rem;
+    --rail-col-lg: 22rem;
   }
 
-  /* ── Карточка: светлая плашка, текст крупнее обычного для карточек —
-     отзыв читается как текст, а не как подпись ── */
+  /* ── Карточка: светлая плашка во всю высоту ряда; автор прижат к низу ── */
   .rv-card {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    min-width: 0;
-    padding: clamp(1.25rem, 2.4vw, 1.75rem);
+    gap: 1.5rem;
+    height: 100%;
+    padding: clamp(1.25rem, 2.2vw, 1.75rem);
     border-radius: 1.5rem;
     background: #f4f4f5;  /* zinc-100 */
-    scroll-snap-align: start;
-  }
-  @media (width >= 40rem) {
-    .rv-card { border-radius: 1.75rem; }
   }
 
-  .rv-who {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  .rv-name {
+  .rv-text {
     margin: 0;
-    font-size: var(--text-step-2);
-    font-weight: 600;
-    line-height: 1.3;
-    color: var(--color-ink);
-  }
-  .rv-src {
-    margin: 0;
-    font-size: var(--text-step-0);
-    line-height: 1.4;
-    color: #52525b;  /* zinc-600 — на zinc-100 ≥ 6:1 */
-  }
-  .rv-sep { margin: 0 0.4em; color: #a1a1aa; }
-
-  .rv-body p {
-    margin: 0;
-    font-size: var(--text-step-1);
-    line-height: 1.65;
-    color: #3f3f46;  /* zinc-700 */
+    color: #27272a;  /* zinc-800 */
     text-wrap: pretty;
   }
+  /* Короткий отзыв — крупная цитата: заполняет карточку, а не тонет в ней */
+  .rv-text--s {
+    font-size: var(--text-step-4);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+  }
+  .rv-text--m,
+  .rv-text--l {
+    font-size: var(--text-step-2);
+    line-height: 1.6;
+  }
+  /* Длинный — обрезка по строкам, только когда есть JS и кнопка */
+  [data-rv-clamp] .rv-text--l {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 7;
+    overflow: hidden;
+  }
 
-  /* Сворачивание: summary — видимое начало, раскрытие — остаток текста */
-  .rv-more summary {
-    display: block;
-    list-style: none;
-    cursor: pointer;
-  }
-  .rv-more summary::-webkit-details-marker { display: none; }
-  .rv-more summary:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 4px;
-    border-radius: 4px;
-  }
-  .rv-more p { margin-top: 0.75rem; }
-  .rv-expand {
+  .rv-more {
+    align-self: flex-start;
+    margin-top: -0.75rem;  /* ближе к тексту, чем gap карточки */
+    padding: 0.25rem 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: var(--text-step-1);
     font-weight: 600;
     color: var(--color-ink);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
-    white-space: nowrap;
-  }
-  .rv-more[open] .rv-ell,
-  .rv-more[open] .rv-expand { display: none; }
-
-  /* ── Фото клиента: горизонтальная прокрутка внутри карточки ── */
-  .rv-photos {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    margin: 0 -0.25rem;
-    padding: 0 0.25rem;
-  }
-  .rv-photos::-webkit-scrollbar { display: none; }
-  .rv-photo {
-    flex: 0 0 84%;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-    padding: 0;
-    border: 0;
-    border-radius: 1rem;
-    background: #e4e4e7;  /* zinc-200 — место под фото, пока грузится */
-    scroll-snap-align: start;
-    cursor: zoom-in;
-  }
-  .rv-photos--one .rv-photo { flex-basis: 100%; }
-  .rv-photo img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  .rv-photo:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
-
-  .rv-hidden { display: none; }
-
-  /* ── Подвал: площадки и ссылка «Все отзывы» ── */
-  .rv-foot {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: clamp(2rem, 4vw, 2.75rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid #e4e4e7;  /* zinc-200 */
-  }
-  @media (width >= 64rem) {
-    .rv-foot {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-  .rv-foot-text {
-    margin: 0;
-    font-size: var(--text-step-1);
-    color: #52525b;  /* zinc-600 */
-  }
-  .rv-foot-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  @media (width < 30rem) {
-    .rv-foot-actions .btn { flex: 1 1 auto; }
-  }
-
-  /* ── Диалог фото ── */
-  .rv-dialog {
-    width: 100vw;
-    height: 100dvh;
-    max-width: none;
-    max-height: none;
-    margin: 0;
-    padding: 1rem;
-    border: 0;
-    background: transparent;
-    color: #fff;
-  }
-  .rv-dialog::backdrop { background: rgb(9 9 11 / 0.92); }
-  .rv-dialog[open] {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: 0.75rem;
-  }
-  .rv-dlg-bar,
-  .rv-dlg-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-  .rv-dlg-cap { font-size: var(--text-step-1); color: rgb(255 255 255 / 0.7); }
-  .rv-dlg-fig {
-    margin: 0;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .rv-dlg-fig img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 0.75rem;
-  }
-  .rv-dlg-btn {
-    padding: 0.625rem 1.125rem;
-    border: 0;
-    border-radius: 999px;
-    background: rgb(255 255 255 / 0.12);
-    color: #fff;
-    font-size: var(--text-step-1);
-    font-weight: 600;
     cursor: pointer;
   }
-  .rv-dlg-btn:hover { background: rgb(255 255 255 / 0.22); }
-  .rv-dlg-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-  .rv-dlg-nav { justify-content: center; }
+  .rv-more:hover { color: #0f766e; }  /* teal-700 */
+  .rv-more:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 2px; }
+
+  /* Автор — внизу карточки, под тонкой линией; gap карточки держит
+     минимальный отступ от текста, auto прижимает к низу */
+  .rv-card .rv-by {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #e4e4e7;  /* zinc-200 */
+  }
+  .rv-name {
+    margin: 0;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-ink);
+  }
+  .rv-src {
+    margin: 0.125rem 0 0;
+    font-size: var(--text-step-0);
+    line-height: 1.4;
+    color: #52525b;  /* zinc-600 — на zinc-100 ≥ 6:1 */
+  }
+  .rv-sep { margin: 0 0.4em; color: #a1a1aa; }
+  .rv-hidden { display: none; }
+
+  /* ── Диалог «Читать полностью» ── */
+  .rv-dialog {
+    width: min(36rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+    border: 0;
+    border-radius: 1.5rem;
+    background: #fff;
+    color: var(--color-ink);
+    overflow-y: auto;
+  }
+  .rv-dialog::backdrop { background: rgb(9 9 11 / 0.6); }
+  .rv-dlg-text {
+    margin: 0;
+    font-size: var(--text-step-2);
+    line-height: 1.65;
+    color: #27272a;
+    white-space: pre-line;
+  }
+  .rv-dlg-by {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e4e4e7;
+  }
+  .rv-dlg-close {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: var(--text-step-1);
+  }
 </style>

@@ -30,7 +30,7 @@ const aggregateRatingSchema = {
 
 <BaseLayout
   title="Отзывы клиентов — салон дверей ВФД в Челябинске"
-  description={`Реальные отзывы клиентов салона ВФД на Братьев Кашириных в Челябинске — ${reviewCount} отзывов с Яндекс Карт и 2ГИС, с фото и датами.`}
+  description={`Реальные отзывы клиентов салона ВФД на Братьев Кашириных в Челябинске — ${reviewCount} отзывов с Яндекс Карт и 2ГИС, с датами.`}
   structuredData={[breadcrumbSchema, aggregateRatingSchema]}
 >
   <div class="section pb-0!">
@@ -45,5 +45,5 @@ const aggregateRatingSchema = {
     </div>
   </div>
 
-  <Reviews headingTag="h1" eagerFirst={true} />
+  <Reviews headingTag="h1" />
 </BaseLayout>

@@ -358,6 +358,54 @@ astro-island:has(> .section) + .section,
 }
 
 
+/* ── Горизонтальная лента карточек (scroll-snap) — «Фотоотчёты», «Отзывы».
+   Стрелки и скрипт — components/ui/RailControls.astro + lib/rail.ts.
+   Секции — класс .rail-scope и data-rail-scope, ленте — .rail и data-rail.
+   Ширину колонки задаёт блок: --rail-col (телефон), --rail-col-md, --rail-col-lg.
+   На телефоне и планшете лента уходит за поля контейнера до края экрана,
+   на десктопе — до краёв экрана с обеих сторон; первая карточка и привязка
+   прокрутки — по полю контейнера. ── */
+.rail-scope { overflow-x: clip; }  /* вылет ленты не даёт странице скролл вбок */
+.rail {
+  --gutter: clamp(1rem, 4vw, 2rem);  /* = padding-inline у .container */
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--rail-col, 80%);
+  gap: 1rem;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 0 var(--gutter) 0.25rem;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+.rail > * {
+  min-width: 0;
+  scroll-snap-align: start;
+}
+@media (width >= 40rem) {
+  .rail { grid-auto-columns: var(--rail-col-md, 42%); gap: 1.25rem; }
+}
+@media (width >= 64rem) {
+  .rail {
+    /* Поле контейнера от края экрана: (экран − max-width) / 2 + padding
+       .container. Не через %: в scroll-padding процент считается от ширины
+       самой ленты, а не контейнера, и привязка съезжала. */
+    --bleed: calc(max(0px, (100vw - 80rem) / 2) + 2rem);
+    grid-auto-columns: var(--rail-col-lg, min(21.5rem, 26vw));
+    gap: 1.5rem;
+    margin-inline: calc(-1 * var(--bleed));
+    padding-inline: var(--bleed);
+    scroll-padding-inline: var(--bleed);
+  }
+}
+@media (width >= 1920px) {
+  .rail { --bleed: calc((100vw - 96rem) / 2 + 2rem); }  /* .container 96rem */
+}
+
 /* ── Buttons ── */
 .btn {
   display: inline-flex;

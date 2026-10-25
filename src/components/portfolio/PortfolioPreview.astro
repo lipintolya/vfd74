@@ -10,11 +10,13 @@
  * со ссылкой на всё портфолио. Лид собирается из данных: число работ
  * и дата последнего монтажа.
  *
- * Без JS лента листается сама (нативный горизонтальный скролл); скрипт
- * только оживляет стрелки и гасит их на краях. Фото — превью 640/1080
- * (scripts/gen-portfolio-thumbs.mjs), lazy.
+ * Лента, стрелки и последняя карточка — общие с «Отзывами»: .rail
+ * (global.css), RailControls, RailEndCard. Без JS лента листается сама.
+ * Фото — превью 640/1080 (scripts/gen-portfolio-thumbs.mjs), lazy.
  */
 import SectionHeader from '../home/SectionHeader.astro'
+import RailControls from '../ui/RailControls.astro'
+import RailEndCard from '../ui/RailEndCard.astro'
 import { PORTFOLIO_WORKS, CATEGORY_LABELS } from '../../data/portfolio-works'
 import { pluralRu } from '../../lib/product-text'
 import { typograph } from '../../lib/typograph'
@@ -42,31 +44,23 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
 ---
 
 {preview.length > 0 && (
-  <section class="section bg-white pr-section" aria-labelledby="portfolio-preview-heading" data-rail-scope>
+  <section class="section bg-white rail-scope" aria-labelledby="portfolio-preview-heading" data-rail-scope>
     <div class="container">
 
       <SectionHeader id="portfolio-preview-heading" title="Фотоотчёты с объектов" lead={lead}>
         <Fragment slot="actions">
-          <div class="pr-arrows" data-rail-arrows hidden>
-            <button type="button" class="pr-arrow" data-rail-prev aria-label="Предыдущие работы" disabled>
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            </button>
-            <button type="button" class="pr-arrow" data-rail-next aria-label="Следующие работы">
-              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            </button>
-          </div>
-          <a href="/portfolio/" class="btn btn-outline pr-all">
-            Все работы
-            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
+          <RailControls
+            prevLabel="Предыдущие работы"
+            nextLabel="Следующие работы"
+            allHref="/portfolio/"
+            allLabel="Все работы"
+          />
         </Fragment>
       </SectionHeader>
 
-      <ul class="pr-rail" role="list" data-rail aria-label="Последние работы">
+      <ul class="rail pr-rail" role="list" data-rail aria-label="Последние работы">
         {preview.map((work) => (
-          <li class="pr-item">
+          <li>
             <a href={`/portfolio/${work.id}/`} class="pr-card">
               <span class="pr-photo">
                 <img
@@ -88,17 +82,13 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
           </li>
         ))}
 
-        <li class="pr-item">
-          <a href="/portfolio/" class="pr-card pr-card--all">
-            <span class="pr-all-num">{total}</span>
-            <span class="pr-all-text">{totalWord} в&nbsp;портфолио — двери, перегородки, входные группы</span>
-            <span class="pr-all-link">
-              Смотреть все
-              <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </span>
-          </a>
+        <li>
+          <RailEndCard
+            value={total}
+            text={`${totalWord} в портфолио — двери, перегородки, входные группы`}
+            href="/portfolio/"
+            cta="Смотреть все"
+          />
         </li>
       </ul>
 
@@ -106,60 +96,13 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
   </section>
 )}
 
-<script>
-  import { initRail } from '../../lib/rail'
-  document.querySelectorAll<HTMLElement>('[data-rail-scope]').forEach(initRail)
-</script>
-
 <style>
-  /* Лента уходит за правый край контейнера до края экрана — секция
-     обрезает её по себе, чтобы страница не прокручивалась вбок */
-  .pr-section { overflow-x: clip; }
-
-  /* ── Лента: горизонтальный скролл с привязкой к карточкам. На телефоне
-     и планшете выходит за поля контейнера до края экрана (карточка
-     «выглядывает»), первая карточка выровнена по полю контейнера. ── */
+  /* Колонки ленты .rail (global.css): на телефоне — карточка и край
+     следующей, на десктопе — три с небольшим запасом */
   .pr-rail {
-    --gutter: clamp(1rem, 4vw, 2rem);  /* = padding-inline у .container */
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 78%;
-    gap: 1rem;
-    margin: 0 calc(-1 * var(--gutter));
-    padding: 0 var(--gutter) 0.25rem;
-    list-style: none;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--gutter);
-    scrollbar-width: none;
-  }
-  .pr-rail::-webkit-scrollbar { display: none; }
-  @media (width >= 40rem) {
-    .pr-rail { grid-auto-columns: 42%; gap: 1.25rem; }
-  }
-  /* Десктоп: лента до краёв экрана с обеих сторон (пролистанные карточки
-     уходят под край, а не обрезаются по полю), но первая и последняя
-     карточки и привязка прокрутки — по полям контейнера */
-  @media (width >= 64rem) {
-    .pr-rail {
-      /* Поле контейнера от края экрана: (экран − max-width) / 2 + padding
-         .container. Не через %: в scroll-padding процент считается от
-         ширины самой ленты, а не контейнера, и привязка съезжала. */
-      --bleed: calc(max(0px, (100vw - 80rem) / 2) + 2rem);
-      grid-auto-columns: min(21.5rem, 26vw);
-      gap: 1.5rem;
-      margin-inline: calc(-1 * var(--bleed));
-      padding-inline: var(--bleed);
-      scroll-padding-inline: var(--bleed);
-    }
-  }
-  @media (width >= 1920px) {
-    .pr-rail { --bleed: calc((100vw - 96rem) / 2 + 2rem); }  /* .container 96rem */
-  }
-  .pr-item {
-    scroll-snap-align: start;
-    min-width: 0;
+    --rail-col: 78%;
+    --rail-col-md: 42%;
+    --rail-col-lg: min(21.5rem, 26vw);
   }
 
   /* ── Карточка работы ── */
@@ -210,73 +153,15 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
   }
   .pr-dot { margin: 0 0.4em; color: #a1a1aa; }
 
-  /* ── Последняя карточка — все работы ── */
-  .pr-card--all {
-    justify-content: flex-end;
-    aspect-ratio: 4 / 5;
-    height: auto;
-    padding: clamp(1.25rem, 2.2vw, 1.75rem);
-    border-radius: 1.5rem;
-    background: var(--color-graphite);
-    color: #fff;
-  }
-  .pr-all-num {
-    font-family: var(--font-display);
-    font-size: clamp(3.5rem, 7vw, 5rem);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-  }
-  .pr-all-text {
-    margin-top: 0.5rem;
-    max-width: 16rem;
-    font-size: var(--text-step-2);
-    line-height: 1.4;
-    color: rgb(255 255 255 / 0.75);
-  }
-  .pr-all-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin-top: 1.5rem;
-    font-size: var(--text-step-1);
-    font-weight: 600;
-  }
-
   .pr-card:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 4px;
     border-radius: 1.5rem;
   }
 
-  /* ── Шапка: стрелки и «Все работы» ── */
-  .pr-arrows { display: flex; gap: 0.5rem; }
-  .pr-arrows[hidden] { display: none; }
-  .pr-arrow {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: #fff;
-    box-shadow: inset 0 0 0 1.5px var(--color-border);
-    color: var(--color-fg);
-    cursor: pointer;
-    transition: box-shadow var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
-  }
-  .pr-arrow svg { width: 1rem; height: 1rem; }
-  .pr-arrow:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--color-fg); }
-  .pr-arrow:disabled { opacity: 0.35; cursor: default; }
-  .pr-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  .pr-all { padding: 0.75rem 1.25rem; font-size: var(--text-step-1); }
-
   @media (hover: hover) {
     .pr-card:hover .pr-photo img { transform: scale(1.03); }
     .pr-card:hover .pr-title { color: #0f766e; }  /* teal-700 */
-    .pr-card--all:hover .btn-arrow-icon { transform: translateX(3px); }
   }
   @media (prefers-reduced-motion: reduce) {
     .pr-photo img, .pr-title { transition: none; }

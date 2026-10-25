@@ -13,6 +13,10 @@
  *   [data-rail-next]     кнопка «вперёд»
  */
 export function initRail(scope: HTMLElement): void {
+  /* Повторный вызов на той же секции навесил бы обработчики дважды —
+     стрелка листала бы на две страницы */
+  if (scope.dataset.railReady != null) return
+  scope.dataset.railReady = ''
   const rail = scope.querySelector<HTMLElement>('[data-rail]')
   const arrows = scope.querySelector<HTMLElement>('[data-rail-arrows]')
   const prev = scope.querySelector<HTMLButtonElement>('[data-rail-prev]')
