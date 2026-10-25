@@ -1,6 +1,8 @@
 /**
- * Генерирует public/renders/portfolio/{work.id}.webp — облегчённые превью
- * обложек портфолио (первое фото каждой работы из src/data/portfolio-works.ts).
+ * Генерирует public/renders/portfolio/{work.id}.webp (1080w) и
+ * {work.id}-640.webp — облегчённые превью обложек портфолио (первое фото
+ * каждой работы из src/data/portfolio-works.ts). 640w — для ленты
+ * «Фотоотчёты с объектов» на главной (карточка ~300 CSS-px).
  *
  * Зачем: оригиналы — прямые фото с телефона (works_prod/*, invisible/ourworks/*),
  * обычно ~1920×1920 и 800КБ–1МБ каждое. PortfolioGrid.vue и PortfolioPreview.astro
@@ -25,6 +27,7 @@ const DATA_FILE = new URL('../src/data/portfolio-works.ts', import.meta.url)
 const OUT = new URL('../public/renders/portfolio/', import.meta.url)
 const CDN_OW = '/media/invisible/ourworks/'
 const WIDTH = 1080
+const WIDTH_SMALL = 640
 const QUALITY = 76
 const CONCURRENCY = 6
 
@@ -48,6 +51,8 @@ async function processOne({ id, cover }) {
 
   const thumb = await sharp(buf).resize({ width: WIDTH, withoutEnlargement: true }).webp({ quality: QUALITY }).toBuffer()
   await writeFile(new URL(`${id}.webp`, OUT), thumb)
+  const small = await sharp(buf).resize({ width: WIDTH_SMALL, withoutEnlargement: true }).webp({ quality: QUALITY }).toBuffer()
+  await writeFile(new URL(`${id}-640.webp`, OUT), small)
 
   const before = buf.length
   const after = thumb.length

@@ -418,7 +418,7 @@ astro-island:has(> .section) + .section,
   height: 1.125rem;
 }
 
-/* Pill-кнопка с заливкой teal при hover — для светлого фона (Features CTA, PortfolioPreview) */
+/* Pill-кнопка с заливкой teal при hover — для светлого фона */
 .btn-teal-fill {
   background: var(--color-surface);
   color: var(--color-fg);

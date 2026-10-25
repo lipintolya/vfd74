@@ -1,71 +1,314 @@
 ---
+/**
+ * «Фотоотчёты с объектов» на главной — лента последних работ портфолио.
+ *
+ * Горизонтальная лента с прокруткой по карточкам (scroll-snap): крупное
+ * фото, под ним название и место — категория и ЖК/посёлок (реальные
+ * адреса — главное доверие к живым фото). На телефоне — свайп, следующая
+ * карточка выглядывает из-за края; на десктопе — стрелки в шапке
+ * и прокрутка тачпадом. Последняя карточка — графитовая «N фотоотчётов»
+ * со ссылкой на всё портфолио. Лид собирается из данных: число работ
+ * и дата последнего монтажа.
+ *
+ * Без JS лента листается сама (нативный горизонтальный скролл); скрипт
+ * только оживляет стрелки и гасит их на краях. Фото — превью 640/1080
+ * (scripts/gen-portfolio-thumbs.mjs), lazy.
+ */
+import SectionHeader from '../home/SectionHeader.astro'
 import { PORTFOLIO_WORKS, CATEGORY_LABELS } from '../../data/portfolio-works'
+import { pluralRu } from '../../lib/product-text'
+import { typograph } from '../../lib/typograph'
 
-const preview = [...PORTFOLIO_WORKS]
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  .slice(0, 4)
+const RAIL_SIZE = 8
 
+const byDate = [...PORTFOLIO_WORKS].sort((a, b) => b.date.localeCompare(a.date))
+const preview = byDate.slice(0, RAIL_SIZE)
 const total = PORTFOLIO_WORKS.length
-const totalWord = total === 1 ? 'фотоотчёт' : total < 5 ? 'фотоотчёта' : 'фотоотчётов'
+const totalWord = pluralRu(total, ['фотоотчёт', 'фотоотчёта', 'фотоотчётов'])
+const objectsWord = pluralRu(total, ['объект', 'объекта', 'объектов'])
+
+const latest = byDate[0]
+const latestLabel = latest
+  ? new Date(latest.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' })
+  : null
+
+/* Место одной короткой строкой: город/область и так понятны, из
+   «ЖК НИКС Сити, Университетская набережная» — только ЖК */
+const place = (location: string) =>
+  location.replace(/^Челябинск(ая область)?,\s*/, '').split(',')[0]!.trim()
+
+const lead = `${total} ${objectsWord} по Челябинску и области — живые фото с монтажей, не рендеры.`
+  + (latestLabel ? ` Последний — ${latestLabel}.` : '')
 ---
 
 {preview.length > 0 && (
-  <section class="section" aria-labelledby="portfolio-preview-heading">
+  <section class="section bg-white pr-section" aria-labelledby="portfolio-preview-heading">
     <div class="container">
 
-      <!-- Единая рамка-модуль — та же визуальная весовая категория, что у
-           соседних секций (Скрытые двери, Рефлекс): иначе плитка
-           из мелких превью терялась на фоне их крупных карточек с ценами
-           и CTA. Сама архивная сетка (фото без затемнения, подпись под
-           кадром) — как на /portfolio/, чтобы переход по «Все работы» не
-           обрывался сменой стилистики. -->
-      <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-8">
-        <header class="flex flex-col gap-4 mb-6 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 id="portfolio-preview-heading" class="t-h2">
-              Фотоотчёты с объектов
-            </h2>
-            <p class="mt-2 text-base text-slate-600">
-              Реальные объекты наших клиентов по Челябинску и области · {total} {totalWord} в портфолио
-            </p>
+      <SectionHeader id="portfolio-preview-heading" title="Фотоотчёты с объектов" lead={lead}>
+        <Fragment slot="actions">
+          <div class="pr-arrows" data-rail-arrows hidden>
+            <button type="button" class="pr-arrow" data-rail-prev aria-label="Предыдущие работы" disabled>
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H3M7 4 3 8l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
+            <button type="button" class="pr-arrow" data-rail-next aria-label="Следующие работы">
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </button>
           </div>
-          <a href="/portfolio/" class="btn btn-primary shrink-0">
+          <a href="/portfolio/" class="btn btn-outline pr-all">
             Все работы
             <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
-        </header>
+        </Fragment>
+      </SectionHeader>
 
-        <ul class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 sm:gap-x-5 sm:gap-y-8" role="list">
-          {preview.map((work, i) => (
-            <li>
-              <a href={`/portfolio/${work.id}/`} class="group block min-w-0">
-                <span class="relative block aspect-3/4 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm transition-shadow duration-200 group-hover:shadow-md">
-                  <img
-                    src={`/renders/portfolio/${work.id}.webp`}
-                    alt={work.title}
-                    loading="lazy"
-                    decoding="async"
-                    class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                  />
-                </span>
-                <span class="mt-3 block">
-                  <span class="block line-clamp-2 text-sm font-semibold leading-snug text-slate-900 transition-colors duration-150 group-hover:text-teal-700">
-                    {work.title}
-                  </span>
-                  <span class="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs font-medium text-slate-400">
-                    <span>{CATEGORY_LABELS[work.category]}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{work.label}</span>
-                  </span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul class="pr-rail" role="list" data-rail aria-label="Последние работы">
+        {preview.map((work) => (
+          <li class="pr-item">
+            <a href={`/portfolio/${work.id}/`} class="pr-card">
+              <span class="pr-photo">
+                <img
+                  src={`/renders/portfolio/${work.id}-640.webp`}
+                  srcset={`/renders/portfolio/${work.id}-640.webp 640w, /renders/portfolio/${work.id}.webp 1080w`}
+                  sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 42vw, 78vw"
+                  alt={work.title}
+                  width="640"
+                  height="800"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </span>
+              <span class="pr-title">{typograph(work.title)}</span>
+              <span class="pr-meta">
+                {CATEGORY_LABELS[work.category]}<span class="pr-dot" aria-hidden="true">·</span>{place(work.location)}
+              </span>
+            </a>
+          </li>
+        ))}
+
+        <li class="pr-item">
+          <a href="/portfolio/" class="pr-card pr-card--all">
+            <span class="pr-all-num">{total}</span>
+            <span class="pr-all-text">{totalWord} в&nbsp;портфолио — двери, перегородки, входные группы</span>
+            <span class="pr-all-link">
+              Смотреть все
+              <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        </li>
+      </ul>
 
     </div>
   </section>
 )}
+
+<script>
+  /* Стрелки ленты: прокрутка на ширину видимой части (кратно карточке —
+     дальше доводит scroll-snap), на краях кнопка гаснет. Показываются только
+     там, где есть мышь (hover) — на тач-экранах лента листается пальцем. */
+  document.querySelectorAll<HTMLElement>('[data-rail]').forEach((rail) => {
+    const section = rail.closest('section')
+    const arrows = section?.querySelector<HTMLElement>('[data-rail-arrows]')
+    const prev = section?.querySelector<HTMLButtonElement>('[data-rail-prev]')
+    const next = section?.querySelector<HTMLButtonElement>('[data-rail-next]')
+    if (!arrows || !prev || !next) return
+    if (!matchMedia('(hover: hover)').matches) return
+    arrows.hidden = false
+
+    const step = () => {
+      const item = rail.querySelector<HTMLElement>('li')
+      const gap = parseFloat(getComputedStyle(rail).columnGap) || 0
+      const card = item ? item.offsetWidth + gap : rail.clientWidth
+      return Math.max(card, Math.floor(rail.clientWidth / card) * card)
+    }
+    const update = () => {
+      const max = rail.scrollWidth - rail.clientWidth - 2
+      prev.disabled = rail.scrollLeft <= 2
+      next.disabled = rail.scrollLeft >= max
+    }
+    const smooth = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+
+    prev.addEventListener('click', () => rail.scrollBy({ left: -step(), behavior: smooth }))
+    next.addEventListener('click', () => rail.scrollBy({ left: step(), behavior: smooth }))
+    rail.addEventListener('scroll', update, { passive: true })
+    new ResizeObserver(update).observe(rail)
+    update()
+  })
+</script>
+
+<style>
+  /* Лента уходит за правый край контейнера до края экрана — секция
+     обрезает её по себе, чтобы страница не прокручивалась вбок */
+  .pr-section { overflow-x: clip; }
+
+  /* ── Лента: горизонтальный скролл с привязкой к карточкам. На телефоне
+     и планшете выходит за поля контейнера до края экрана (карточка
+     «выглядывает»), первая карточка выровнена по полю контейнера. ── */
+  .pr-rail {
+    --gutter: clamp(1rem, 4vw, 2rem);  /* = padding-inline у .container */
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    gap: 1rem;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 0 var(--gutter) 0.25rem;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .pr-rail::-webkit-scrollbar { display: none; }
+  @media (width >= 40rem) {
+    .pr-rail { grid-auto-columns: 42%; gap: 1.25rem; }
+  }
+  /* Десктоп: лента до краёв экрана с обеих сторон (пролистанные карточки
+     уходят под край, а не обрезаются по полю), но первая и последняя
+     карточки и привязка прокрутки — по полям контейнера */
+  @media (width >= 64rem) {
+    .pr-rail {
+      /* Поле контейнера от края экрана: (экран − max-width) / 2 + padding
+         .container. Не через %: в scroll-padding процент считается от
+         ширины самой ленты, а не контейнера, и привязка съезжала. */
+      --bleed: calc(max(0px, (100vw - 80rem) / 2) + 2rem);
+      grid-auto-columns: min(21.5rem, 26vw);
+      gap: 1.5rem;
+      margin-inline: calc(-1 * var(--bleed));
+      padding-inline: var(--bleed);
+      scroll-padding-inline: var(--bleed);
+    }
+  }
+  @media (width >= 1920px) {
+    .pr-rail { --bleed: calc((100vw - 96rem) / 2 + 2rem); }  /* .container 96rem */
+  }
+  .pr-item {
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  /* ── Карточка работы ── */
+  .pr-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+  .pr-photo {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    border-radius: 1.25rem;
+    background: #f4f4f5;  /* zinc-100 — место под кадр, пока он грузится */
+  }
+  @media (width >= 40rem) {
+    .pr-photo { border-radius: 1.5rem; }
+  }
+  .pr-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 700ms var(--ease-out);
+  }
+  .pr-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin-top: 1rem;
+    font-size: var(--text-step-2);
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .pr-meta {
+    overflow: hidden;
+    margin-top: 0.375rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: var(--text-step-1);
+    color: #71717a;  /* zinc-500 */
+  }
+  .pr-dot { margin: 0 0.4em; color: #a1a1aa; }
+
+  /* ── Последняя карточка — все работы ── */
+  .pr-card--all {
+    justify-content: flex-end;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    padding: clamp(1.25rem, 2.2vw, 1.75rem);
+    border-radius: 1.5rem;
+    background: var(--color-graphite);
+    color: #fff;
+  }
+  .pr-all-num {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 7vw, 5rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .pr-all-text {
+    margin-top: 0.5rem;
+    max-width: 16rem;
+    font-size: var(--text-step-2);
+    line-height: 1.4;
+    color: rgb(255 255 255 / 0.75);
+  }
+  .pr-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 1.5rem;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+  }
+
+  .pr-card:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 1.5rem;
+  }
+
+  /* ── Шапка: стрелки и «Все работы» ── */
+  .pr-arrows { display: flex; gap: 0.5rem; }
+  .pr-arrows[hidden] { display: none; }
+  .pr-arrow {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--color-border);
+    color: var(--color-fg);
+    cursor: pointer;
+    transition: box-shadow var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+  .pr-arrow svg { width: 1rem; height: 1rem; }
+  .pr-arrow:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--color-fg); }
+  .pr-arrow:disabled { opacity: 0.35; cursor: default; }
+  .pr-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .pr-all { padding: 0.75rem 1.25rem; font-size: var(--text-step-1); }
+
+  @media (hover: hover) {
+    .pr-card:hover .pr-photo img { transform: scale(1.03); }
+    .pr-card:hover .pr-title { color: #0f766e; }  /* teal-700 */
+    .pr-card--all:hover .btn-arrow-icon { transform: translateX(3px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pr-photo img, .pr-title { transition: none; }
+    .pr-card:hover .pr-photo img { transform: none; }
+  }
+</style>

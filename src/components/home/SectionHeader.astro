@@ -1,8 +1,11 @@
 ---
 /**
- * Шапка секции главной: заголовок H2 слева, одна фраза-лид справа (на
+ * Шапка секции главной: заголовок H2 слева, справа — одна фраза-лид (на
  * телефоне — под заголовком). Один вид у «Официального салона ВФД»,
  * «Каталога» и т. д.; «Как мы работаем» — тот же расклад на тёмной полосе.
+ *
+ * Слот `actions` (кнопки, стрелки ленты): тогда лид встаёт под заголовок
+ * слева, а справа — действия.
  * Тексты проходят через typograph(): без висящих предлогов.
  */
 import { typograph } from '../../lib/typograph'
@@ -14,11 +17,22 @@ interface Props {
   lead?: string
 }
 const { id, title, lead } = Astro.props
+const hasActions = Astro.slots.has('actions')
 ---
 
-<header class="sh">
-  <h2 id={id} class="t-h2 sh-title">{typograph(title)}</h2>
-  {lead && <p class="t-lead sh-lead">{typograph(lead)}</p>}
+<header class:list={['sh', { 'sh--actions': hasActions }]}>
+  {hasActions ? (
+    <div class="sh-main">
+      <h2 id={id} class="t-h2 sh-title">{typograph(title)}</h2>
+      {lead && <p class="t-lead sh-lead">{typograph(lead)}</p>}
+    </div>
+  ) : (
+    <>
+      <h2 id={id} class="t-h2 sh-title">{typograph(title)}</h2>
+      {lead && <p class="t-lead sh-lead">{typograph(lead)}</p>}
+    </>
+  )}
+  {hasActions && <div class="sh-actions"><slot name="actions" /></div>}
 </header>
 
 <style>
@@ -42,6 +56,26 @@ const { id, title, lead } = Astro.props
     text-wrap: pretty;
   }
   @media (width >= 64rem) {
-    .sh-lead { justify-self: end; }
+    .sh:not(.sh--actions) .sh-lead { justify-self: end; }
+  }
+
+  /* С действиями: заголовок и лид слева столбиком, действия справа */
+  .sh--actions .sh-main {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .sh--actions .sh-lead { max-width: 36rem; }
+  .sh-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  @media (width >= 48rem) {
+    .sh--actions {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 2rem;
+    }
   }
 </style>
