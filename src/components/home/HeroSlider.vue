@@ -26,9 +26,7 @@ const slides: Slide[] = [
        именно он должен нести ключевые запросы. "ВФД Челябинск" — самый частый
        брендовый запрос (по нему в органике выше нас страница самой фабрики,
        не салона — см. обсуждение), поэтому фраза идёт слитно в начале H1,
-       а не разбита "ВФД на Кашириных ... в Челябинске" как раньше. Штрих-промо
-       ушёл на 2-й слайд (крутится через 9с и доступен по точкам навигации),
-       сам по себе он никуда не делся. */
+       а не разбита "ВФД на Кашириных ... в Челябинске" как раньше. */
     id: 1,
     image: HERO_COVER_IMAGE,
     /* Дверь на рендере у левого края: при центральном кропе на узком
@@ -41,40 +39,11 @@ const slides: Slide[] = [
     ctaHref: '/catalog/',
   },
   {
-    /* Сезонное промо — начался сезон входных дверей для частных домов,
-       второй слайд (сразу после H1) для максимальной видимости. */
-    id: 6,
-    image: '/renders/hero/comforttermo-promo.webp',
-    srcset: '/renders/hero/comforttermo-promo-640.webp 640w, /renders/hero/comforttermo-promo-960.webp 960w, /renders/hero/comforttermo-promo.webp 1122w',
-    title: 'Входные двери с терморазрывом',
-    description: '«Комфорт Термо» для частного дома: полотно 110 мм, короб с терморазрывом 150 мм, 3 контура уплотнения — от 42 660 ₽',
-    cta: 'Смотреть дверь',
-    ctaHref: '/vhodnye-dveri/#comforttermo',
-  },
-  {
-    id: 5,
-    image: '/media/Main_page/left_bento/strix_render.webp',
-    srcset: '/renders/hero/strix-render-640.webp 640w, /renders/hero/strix-render-960.webp 960w, /media/Main_page/left_bento/strix_render.webp 1254w',
-    title: 'Премиум дизайн по доступной цене',
-    description: 'Новинка «Штрих» из серии Урбан: алюминиевая кромка с графичным акцентом, покрытие Эмалекс — от 14 300 ₽ за полотно',
-    cta: 'Смотреть модель',
-    ctaHref: '/models/shtrih-2a-urban-78543d/',
-  },
-  {
     id: 2,
     image: '/media/Main_page_perfomance-covers/innova_render.webp',
     srcset: '/renders/hero/innova-render-640.webp 640w, /renders/hero/innova-render-960.webp 960w, /media/Main_page_perfomance-covers/innova_render.webp 1448w',
     title: 'Серия «Иннова» уже в салоне',
     description: 'Новинка в покрытии ПЭТ — не оставляет отпечатков пальцев',
-    cta: 'Смотреть каталог',
-    ctaHref: '/catalog/',
-  },
-  {
-    id: 3,
-    image: '/media/covers/linea-1.webp',
-    srcset: '/renders/hero/linea-1-640.webp 640w, /renders/hero/linea-1-960.webp 960w, /media/covers/linea-1.webp 1536w',
-    title: 'Серия «Линеа» уже в салоне',
-    description: 'Светостойкая эмаль с фрезерованными элементами и алюминиевым декором',
     cta: 'Смотреть каталог',
     ctaHref: '/catalog/',
   },

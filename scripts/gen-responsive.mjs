@@ -30,11 +30,8 @@ const PUBLIC = new URL('../public/', import.meta.url)
 const S = [640, 960]
 
 const JOBS = [
-  // HeroSlider.vue, слайды 2–6
-  { src: '/renders/hero/comforttermo-promo.webp',                 out: '/renders/hero/comforttermo-promo', widths: S },
-  { src: '/media/Main_page/left_bento/strix_render.webp',         out: '/renders/hero/strix-render',       widths: S },
+  // HeroSlider.vue, слайды 2–4 (Иннова, Урбан)
   { src: '/media/Main_page_perfomance-covers/innova_render.webp', out: '/renders/hero/innova-render',      widths: S },
-  { src: '/media/covers/linea-1.webp',                            out: '/renders/hero/linea-1',            widths: S },
   { src: '/media/Main_page/left_bento/render_urban2.webp',        out: '/renders/hero/urban2-render',      widths: S },
 
   // Промо-слайдеры главной: исходник — готовые 1300w из /renders/home/
