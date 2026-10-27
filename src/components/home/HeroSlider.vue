@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
+import HeroTile, { type Tile } from './HeroTile.vue'
+
+const props = defineProps<{
+  /** Год основания (contacts-data → activity.founded) — крупно на плитке «О компании» */
+  founded: number
+}>()
 
 const SLIDER_INTERVAL_MS = 9000
 const SWIPE_THRESHOLD    = 50
@@ -58,6 +64,45 @@ const slides: Slide[] = [
   },
 ]
 
+/* Три плитки справа — один язык с плитками «Каталога» ниже (HeroTile.vue):
+   фото на всю площадь или графит, название, одна фраза, ссылка текстом. */
+const tiles: Tile[] = [
+  {
+    id: 'partitions',
+    href: '/partitions/',
+    title: 'Алюминиевые перегородки и системы открывания',
+    fact: 'Изготовление до 45 рабочих дней',
+    cta: 'Узнать больше',
+    img: {
+      src: '/renders/hero/partitions-tg1-960.webp',
+      srcset: '/renders/hero/partitions-tg1-640.webp 640w, /renders/hero/partitions-tg1-960.webp 960w',
+      sizes: '(max-width: 1023px) 100vw, 40vw',
+      width: 960, height: 1197,
+    },
+  },
+  {
+    id: 'portfolio',
+    href: '/portfolio/',
+    title: 'Фотоотчёты с объектов',
+    fact: 'Живые фото с монтажей',
+    cta: 'Смотреть',
+    img: {
+      src: '/renders/hero/portfolio-cover-960.webp',
+      srcset: '/renders/hero/portfolio-cover-640.webp 640w, /renders/hero/portfolio-cover-960.webp 960w',
+      sizes: '(max-width: 1023px) 50vw, 20vw',
+      width: 960, height: 1440,
+    },
+  },
+  {
+    id: 'about',
+    href: '/about/',
+    title: 'Полный цикл: от замера до монтажа',
+    fact: 'Работаем в Челябинске',
+    cta: 'Подробнее',
+    big: `с ${props.founded}`,
+  },
+]
+
 /* ── Slider state ── */
 const activeIndex     = ref(0)
 const touchStartX     = ref(0)
@@ -66,6 +111,11 @@ const isPaused        = ref(false)
 const autoplayEnabled = ref(true)
 
 const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0])
+
+/* Пока слайды листаются сами, смену текста скринридеру не зачитываем —
+   иначе он перебивает чтение страницы каждые 9 секунд. После паузы или
+   ручного управления — polite. */
+const liveMode = computed(() => (autoplayEnabled.value && !isPaused.value ? 'off' : 'polite'))
 
 /* Картинки слайдов лежат в DOM все сразу (кросс-фейд по opacity), поэтому
    loading="lazy" их не откладывает: они «в зоне видимости» и браузер тянет
@@ -135,7 +185,7 @@ onUnmounted(stop)
 
         <!-- ══ HERO SLIDER ══ -->
         <div
-          class="lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 sm:aspect-3/4 md:aspect-16/11 lg:aspect-auto lg:h-auto"
+          class="hero-main lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 sm:aspect-3/4 md:aspect-16/11 lg:aspect-auto lg:h-auto"
           role="region"
           aria-label="Слайдер акций и новинок"
           aria-roledescription="carousel"
@@ -169,47 +219,41 @@ onUnmounted(stop)
             />
           </div>
 
-          <!-- Overlay — z-10, т.к. активный слайд в .hero-slide-active получил
+          <!-- Затемнение — z-10, т.к. активный слайд в .hero-slide-active получил
                z-index:1 для кросс-фейда и без явного z-index здесь оказывался
-               бы поверх затемнения ── -->
-          <div class="absolute inset-0 z-10 bg-linear-to-t from-black/55 via-black/20 to-black/5" aria-hidden="true" />
-
-          <!-- Slide counter -->
-          <div class="absolute top-5 left-5 sm:top-8 sm:left-8 z-10 flex items-center gap-2 text-white/70 text-sm tabular-nums">
-            <span class="text-white">{{ String(activeIndex + 1).padStart(2, '0') }}</span>
-            <span class="w-5 h-px bg-white/40" aria-hidden="true" />
-            <span>{{ String(slides.length).padStart(2, '0') }}</span>
-          </div>
+               бы поверх затемнения. Плотное снизу, где текст, и прозрачное
+               сверху, чтобы кадр не тускнел целиком. -->
+          <div class="hero-scrim absolute inset-0 z-10" aria-hidden="true" />
 
           <!-- Content -->
           <div class="relative z-10 flex h-full items-end">
             <Transition name="hero-content" mode="out-in">
-              <div :key="currentSlide.id" class="hero-content-text p-5 sm:p-8 lg:p-10 max-w-2xl text-white pb-14 sm:pb-16" aria-live="polite" aria-atomic="true">
-                <h1 class="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-medium mb-3 sm:mb-4 leading-tight">
+              <div :key="currentSlide.id" class="hero-content-text p-5 pb-15 sm:p-8 sm:pb-18 lg:p-10 lg:pb-20 max-w-2xl text-white" :aria-live="liveMode" aria-atomic="true">
+                <h1 class="hero-title text-step-5 font-medium mb-3 sm:mb-4">
                   {{ currentSlide.title }}
                 </h1>
-                <p class="text-sm sm:text-base text-white/85 mb-5 sm:mb-6 leading-relaxed max-w-lg">
+                <p class="text-step-1 sm:text-step-2 text-white/85 mb-6 sm:mb-7 leading-relaxed max-w-lg">
                   {{ currentSlide.description }}
                 </p>
                 <a
                   v-if="currentSlide.cta && currentSlide.ctaHref"
                   :href="currentSlide.ctaHref"
-                  class="group/link inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-5 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px"
+                  class="hero-cta"
                 >
                   {{ currentSlide.cta }}
-                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
-                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
+                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </a>
               </div>
             </Transition>
           </div>
 
-          <!-- Dots -->
+          <!-- Dots — слева, под кнопкой, по той же линии, что и текст
+               (-ml-0.5 компенсирует отступ широкой активной точки внутри
+               области нажатия 1.5rem) -->
           <div
-            class="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex gap-2"
+            class="absolute bottom-5 left-5 sm:bottom-8 sm:left-8 lg:bottom-10 lg:left-10 -ml-0.5 z-20 flex"
             role="tablist"
             aria-label="Навигация слайдера"
           >
@@ -239,104 +283,16 @@ onUnmounted(stop)
         </div>
 
         <!-- ══ RIGHT BENTO ══ -->
-        <div class="lg:col-span-5 grid grid-rows-2 gap-4 sm:gap-5 lg:gap-6">
+        <!-- Строки равной высоты только на десктопе: на планшете плитки идут
+             своей высотой, иначе под широкой образуется пустота -->
+        <div class="lg:col-span-5 grid lg:grid-rows-2 gap-4 sm:gap-5 lg:gap-6">
 
-          <!-- Перегородки -->
-          <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-16/10 sm:aspect-2/1 lg:aspect-auto lg:h-full">
-            <img
-              src="/renders/hero/partitions-tg1-960.webp"
-              srcset="/renders/hero/partitions-tg1-640.webp 640w, /renders/hero/partitions-tg1-960.webp 960w"
-              sizes="(max-width: 1023px) 100vw, 40vw"
-              width="960"
-              height="1197"
-              alt=""
-              loading="lazy"
-              decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-center"
-              aria-hidden="true"
-            />
-            <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/35 to-black/5" aria-hidden="true" />
-            <div class="relative z-10 h-full p-5 sm:p-6 flex flex-col justify-end text-white">
-              <h3 class="text-lg sm:text-xl font-medium mb-2 leading-snug">
-                Алюминиевые перегородки и системы открывания
-              </h3>
-              <p class="text-sm text-white/80 mb-4">
-                Изготовление в течение 45 дней после оформления заказа
-              </p>
-              <a href="/partitions/" class="group/link inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px">
-                Узнать больше
-                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
-                  <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Bottom row -->
+          <HeroTile :tile="tiles[0]!" wide />
           <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
-
-            <!-- Портфолио — тёмная карточка с фото рендера (та же схема
-                 фото+градиент, что у «Перегородок» выше), а не инструмент
-                 на сером фоне: инструмент выбивался из ряда «интерьер /
-                 текст на графите» и не читался как часть бренда. Локальные
-                 640w/960w срезы через gen-hero-bento.mjs — оригинал с
-                 Yandex Cloud 1024×1536/117KB кратно крупнее реального
-                 размера показа карточки. -->
-            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full">
-              <img
-                src="/renders/hero/portfolio-cover-960.webp"
-                srcset="/renders/hero/portfolio-cover-640.webp 640w, /renders/hero/portfolio-cover-960.webp 960w"
-                sizes="(max-width: 1023px) 50vw, 20vw"
-                width="960"
-                height="1440"
-                alt=""
-                loading="lazy"
-                decoding="async"
-                class="absolute inset-0 w-full h-full object-cover object-center"
-                aria-hidden="true"
-              />
-              <div class="absolute inset-0 bg-linear-to-t from-black/75 via-black/40 to-black/10" aria-hidden="true" />
-              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-end text-white">
-                <div class="min-h-18 sm:min-h-21">
-                  <h4 class="font-medium text-sm sm:text-base leading-snug mb-1 line-clamp-2">Фотоотчёты с объектов</h4>
-                  <p class="text-sm text-white/75 line-clamp-2">
-                    <span class="sm:hidden">Живые фото с объектов</span>
-                    <span class="hidden sm:inline">Живые фото с монтажей — помогут определиться с выбором</span>
-                  </p>
-                </div>
-                <a href="/portfolio/" class="group/link mt-4 inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px">
-                  Смотреть
-                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
-                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-
-            <!-- О компании — плоская графит-карточка, тот же тон, что у
-                 остальных тёмных плашек по сайту (см. --color-graphite). -->
-            <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 lg:aspect-auto lg:h-full bg-graphite">
-              <div class="relative z-10 h-full p-4 sm:p-6 flex flex-col justify-end text-white">
-                <div class="min-h-18 sm:min-h-21">
-                  <h4 class="font-medium text-sm sm:text-base mb-1 leading-snug line-clamp-2">Полный цикл: от замера до монтажа</h4>
-                  <p class="text-sm text-white/75 line-clamp-2">Работаем в Челябинске с 2014 года</p>
-                </div>
-                <a href="/about/" class="group/link mt-4 inline-flex w-fit shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-white py-1.5 pl-4 pr-1.5 text-sm font-semibold text-ink shadow-[0_2px_8px_rgba(15,23,42,0.2)] transition-transform duration-200 ease-out hover:-translate-y-px">
-                  Подробнее
-                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900/5 transition-[transform,background-color] duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:bg-teal-500 group-hover/link:text-white">
-                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-
+            <HeroTile :tile="tiles[1]!" />
+            <HeroTile :tile="tiles[2]!" />
           </div>
+
         </div>
 
       </div>
@@ -347,17 +303,55 @@ onUnmounted(stop)
 <style scoped>
 /* ════ SLIDER OPTIMIZATION ════ */
 /* Container optimization for LCP */
-.lg\:col-span-7 {
+.hero-main {
   content-visibility: auto;
   contain-intrinsic-size: auto 37.5rem;
 }
 
-/* Подпись/заголовок/описание держатся на градиент-оверлее для контраста,
-   но на светлых участках фото (например, светлая дверь в кадре) этого
-   недостаточно — лёгкая тень подстраховывает читаемость независимо
-   от того, что именно на фото под текстом у конкретного слайда. */
-.hero-content-text {
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+/* Затемнение: плотное снизу, где текст и точки, к верху сходит на нет.
+   Равномерная вуаль (было) тускнила весь кадр и всё равно не держала
+   белый текст на светлых деталях — штора, рейки, дверь. */
+.hero-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.78) 0%,
+    rgb(0 0 0 / 0.55) 28%,
+    rgb(0 0 0 / 0.18) 58%,
+    rgb(0 0 0 / 0) 80%
+  );
+}
+
+.hero-title {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Кнопка на фото: белая пилюля, стрелка без «кружка» */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-ink);
+  font-size: var(--text-step-1);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    transform        var(--duration-base) var(--ease-out);
+}
+.hero-cta:hover {
+  background: #f4f4f5;  /* zinc-100 */
+  transform: translateY(-1px);
+}
+.hero-cta:hover .btn-arrow-icon { transform: translateX(2px); }
+.hero-cta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
 /* Кросс-фейд фона — все слайды в стеке, активный получает opacity:1 */
@@ -389,7 +383,8 @@ onUnmounted(stop)
 @media (prefers-reduced-motion: reduce) {
   .hero-slide,
   .hero-content-enter-active,
-  .hero-content-leave-active {
+  .hero-content-leave-active,
+  .hero-cta {
     transition: none;
     animation: none;
   }
