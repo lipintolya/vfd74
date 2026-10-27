@@ -1,105 +1,270 @@
 ---
+/**
+ * «Полезные статьи» на главной — четыре свежие опубликованные статьи.
+ *
+ * Тёмная полоса во всю ширину (ритм между белыми лентами «Фотоотчётов»,
+ * «Акций» и FAQ), шапка — общий SectionHeader. Карточки открытые, без рамок
+ * и кнопок: фото, дата, заголовок; вся карточка — одна ссылка.
+ *
+ * Раскладка: самая свежая статья — крупно (фото, заголовок, описание),
+ * остальные — списком строк «фото слева, текст справа». На десктопе крупная
+ * слева, список справа, нижние края колонок выровнены; на телефоне и
+ * планшете — крупная сверху, список под ней. Ленты со свайпом здесь нет:
+ * это текст, а не витрина, а третья лента подряд с прокруткой утомляет.
+ *
+ * Картинки: у крупной — srcset 480–1600w, у строк — 480w из
+ * scripts/gen-article-images.mjs; все lazy, под экраном.
+ */
+import SectionHeader from './SectionHeader.astro'
 import { getPublishedArticles, newestFirst } from '../../lib/articles'
 import { articleCoverImg } from '../../lib/article-images'
+import { typograph } from '../../lib/typograph'
 
-const articles = newestFirst(await getPublishedArticles()).slice(0, 3)
+const SHOWN = 4
 
-const getSlug = (id: string) => id.split('/')[0]!.replace(/\.mdoc$/, '')
+const articles = newestFirst(await getPublishedArticles()).slice(0, SHOWN)
+const [lead, ...rest] = articles
 
-const dateStr = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+const href = (id: string) => `/articles/${id.split('/')[0]!.replace(/\.mdoc$/, '')}/`
+const dateStr = (d: Date) =>
+  d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 ---
 
-{articles.length > 0 && (
-  /* padding-top у смежных .section обычно зануляется (см. global.css —
-     полагаемся на padding-bottom предыдущей секции), но здесь это давало
-     резкий обрыв: белая секция выше кончается вплотную к чёрному фону,
-     без миллиметра воздуха — на глаз читалось как «обрезано». Единственная
-     секция на главной со сплошным bg-graphite (не карточкой на белом
-     фоне), поэтому явно возвращаем свой отступ поверх общего правила. */
-  <section class="section bg-graphite pt-[clamp(2.5rem,4vw,3.5rem)]!" aria-labelledby="articles-heading">
+{lead && (
+  <section class="section la-band bg-graphite" aria-labelledby="articles-heading">
     <div class="container">
 
-      <!-- Мобайл-фёрст: заголовок и «Все статьи» в одну строку только от sm, на
-           мобильном кнопка уходит под текст на всю ширину. -->
-      <header class="mb-10 flex flex-col gap-6 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
-        <div class="max-w-2xl">
-          <h2 id="articles-heading" class="t-h2 text-white">
-            Полезные статьи о дверях, фурнитуре и дизайне
-          </h2>
-          <p class="mt-4 text-base leading-relaxed text-slate-400 md:text-lg">
-            Советы по выбору, покрытиям и монтажу от специалистов ВФД на Кашириных
-          </p>
-        </div>
+      <SectionHeader
+        id="articles-heading"
+        title="Полезные статьи о дверях, фурнитуре и дизайне"
+        lead="Советы по выбору, покрытиям и монтажу от специалистов ВФД на Кашириных"
+        dark
+      >
+        <Fragment slot="actions">
+          <a href="/articles/" class="btn btn-outline la-all la-all--head">
+            Все статьи
+            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </Fragment>
+      </SectionHeader>
 
-        <a
-          href="/articles/"
-          class="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-teal-400"
-        >
-          Все статьи
-          <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div class="la-grid">
+
+        <a href={href(lead.id)} class="la-card la-feature">
+          <span class="la-photo">
+            {lead.data.coverImage && (
+              <img
+                {...articleCoverImg(lead.data.coverImage, 'wide')}
+                sizes="(min-width: 64rem) 52vw, 100vw"
+                width="800"
+                height="450"
+                alt={lead.data.coverImageAlt ?? ''}
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+          </span>
+          <time class="la-date" datetime={lead.data.publishDate.toISOString()}>{dateStr(lead.data.publishDate)}</time>
+          <span class="la-title">{typograph(lead.data.title)}</span>
+          <span class="la-desc">{typograph(lead.data.description)}</span>
         </a>
-      </header>
 
-      <!-- Плитки на всю ширину контейнера, друг под другом; внутри каждой —
-           горизонтальный сплит (текст слева, фото справа) от sm, на мобильном
-           фото сверху текста, во всю ширину. -->
-      <ul class="flex flex-col gap-4 sm:gap-6" role="list">
-        {articles.map((article) => {
-          const slug = getSlug(article.id)
-          return (
-            <li>
-              <a
-                href={`/articles/${slug}/`}
-                class="group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-graphite-card shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] transition-colors duration-200 hover:border-white/20 hover:bg-[#28272C] focus-visible:outline-2 focus-visible:outline-teal-400 focus-visible:outline-offset-2 sm:flex-row sm:items-center sm:gap-8 sm:p-6 lg:gap-12 lg:p-10"
-              >
-                <div class="flex flex-1 flex-col p-6 sm:p-0">
-                  <time
-                    datetime={article.data.publishDate.toISOString()}
-                    class="mb-3 block text-sm tabular-nums text-slate-400"
-                  >
-                    {dateStr(article.data.publishDate)}
-                  </time>
-
-                  <h3 class="mb-3 text-2xl font-medium leading-tight tracking-tight text-white transition-colors duration-200 line-clamp-2 sm:text-3xl group-hover:text-teal-400">
-                    {article.data.title}
-                  </h3>
-
-                  <p class="mb-6 max-w-lg text-sm leading-relaxed text-slate-400 line-clamp-2 sm:text-base">
-                    {article.data.description}
-                  </p>
-
-                  <span class="inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition-colors group-hover:bg-teal-400" aria-hidden="true">
-                    Читать статью
-                    <svg viewBox="0 0 16 16" fill="none" class="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+        {rest.length > 0 && (
+          <ul class="la-list" role="list">
+            {rest.map((a) => (
+              <li>
+                <a href={href(a.id)} class="la-card la-row">
+                  <span class="la-photo">
+                    {a.data.coverImage && (
+                      <img
+                        {...articleCoverImg(a.data.coverImage, 'card')}
+                        sizes="(min-width: 64rem) 200px, (min-width: 40rem) 30vw, 36vw"
+                        width="800"
+                        height="450"
+                        alt={a.data.coverImageAlt ?? ''}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
                   </span>
-                </div>
+                  <span class="la-text">
+                    <time class="la-date" datetime={a.data.publishDate.toISOString()}>{dateStr(a.data.publishDate)}</time>
+                    <span class="la-title">{typograph(a.data.title)}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
 
-                <div class="relative aspect-video w-full shrink-0 overflow-hidden bg-slate-800 sm:w-2/5 sm:rounded-2xl lg:w-1/3">
-                  {article.data.coverImage ? (
-                    <img
-                      {...articleCoverImg(article.data.coverImage, 'card')}
-                      sizes="(min-width: 1024px) 400px, (min-width: 640px) 40vw, 100vw"
-                      width="800"
-                      height="450"
-                      alt={article.data.coverImageAlt ?? ''}
-                      loading="lazy"
-                      decoding="async"
-                      class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
-                    />
-                  ) : (
-                    <div class="absolute inset-0 bg-linear-to-br from-slate-700 to-slate-900" />
-                  )}
-                </div>
-              </a>
-            </li>
-          )
-        })}
-      </ul>
+      </div>
+
+      <!-- В шапке «Все статьи» видна от md; на телефоне шапка осталась
+           далеко вверху, а ссылка нужна там, где закончился список. -->
+      <a href="/articles/" class="btn btn-outline la-all la-all--foot">
+        Все статьи
+        <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
 
     </div>
   </section>
 )}
+
+<style>
+  /* Полоса: свои отступы (общее правило зануляет padding-top у .section
+     после .section), как у «Как мы работаем». Стили без слоя перебивают
+     @layer components. */
+  .la-band { padding-block: clamp(3.5rem, 8vw, 6.5rem); }
+
+  /* ── «Все статьи» на тёмном: контурная кнопка с белой рамкой ── */
+  .la-all {
+    padding: 0.75rem 1.25rem;
+    font-size: var(--text-step-1);
+    color: #fff;
+    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.28);
+  }
+  .la-all:hover {
+    color: var(--color-accent);
+    box-shadow: inset 0 0 0 1.5px var(--color-accent);
+  }
+  .la-all:hover .btn-arrow-icon { transform: translateX(2px); }
+  .la-all--head { display: none; }
+  .la-all--foot { display: flex; margin-top: 2rem; padding-block: 0.9rem; }
+  @media (width >= 48rem) {
+    .la-all--head { display: inline-flex; }
+    .la-all--foot { display: none; }
+  }
+
+  /* ── Раскладка ── */
+  .la-grid {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (width >= 64rem) {
+    .la-grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: clamp(2.5rem, 4vw, 4rem);
+    }
+  }
+
+  /* ── Карточка-ссылка (общее) ── */
+  .la-card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  .la-card:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 6px;
+    border-radius: 1rem;
+  }
+  .la-photo {
+    display: block;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: var(--color-graphite-card);  /* место под кадр, пока он грузится */
+  }
+  .la-photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 700ms var(--ease-out);
+  }
+  .la-date {
+    display: block;
+    font-size: var(--text-step-0);
+    font-variant-numeric: tabular-nums;
+    color: rgb(255 255 255 / 0.5);
+  }
+  .la-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: #fff;
+    text-wrap: balance;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  @media (hover: hover) {
+    .la-card:hover .la-photo img { transform: scale(1.03); }
+    .la-card:hover .la-title { color: var(--color-accent); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .la-photo img, .la-title { transition: none; }
+    .la-card:hover .la-photo img { transform: none; }
+  }
+
+  /* ── Крупная статья ── */
+  .la-feature .la-photo { aspect-ratio: 16 / 10; }
+  @media (width >= 40rem) {
+    .la-feature .la-photo { border-radius: 1.5rem; }
+  }
+  .la-feature .la-date { margin-top: 1.25rem; }
+  .la-feature .la-title {
+    margin-top: 0.5rem;
+    font-size: var(--text-step-4);
+    line-height: 1.2;
+    -webkit-line-clamp: 3;
+  }
+  .la-desc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    max-width: 40rem;
+    margin-top: 0.75rem;
+    font-size: var(--text-step-1);
+    line-height: 1.6;
+    color: rgb(255 255 255 / 0.6);
+  }
+
+  /* ── Список: строка «фото слева, текст справа» ── */
+  .la-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .la-list > li {
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .la-row {
+    display: grid;
+    grid-template-columns: minmax(0, 36%) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  .la-row .la-photo {
+    aspect-ratio: 4 / 3;
+    border-radius: 1rem;
+  }
+  .la-row .la-title {
+    margin-top: 0.375rem;
+    font-size: var(--text-step-2);
+    line-height: 1.35;
+    -webkit-line-clamp: 4;
+  }
+  @media (width >= 40rem) {
+    .la-list { gap: 1.5rem; }
+    .la-list > li { padding-top: 1.5rem; }
+    .la-row { grid-template-columns: minmax(0, 30%) minmax(0, 1fr); gap: 1.5rem; }
+    .la-row .la-title { font-size: var(--text-step-3); line-height: 1.3; -webkit-line-clamp: 3; }
+  }
+  /* Десктоп: список в правой колонке, первая строка вровень с верхом фото
+     крупной статьи, последняя — с низом её текста */
+  @media (width >= 64rem) {
+    .la-list { justify-content: space-between; gap: 0; }
+    .la-list > li:first-child { padding-top: 0; border-top: 0; }
+    .la-row { grid-template-columns: minmax(0, 40%) minmax(0, 1fr); gap: 1.25rem; }
+    .la-row .la-title { font-size: var(--text-step-2); line-height: 1.35; -webkit-line-clamp: 5; }
+  }
+</style>

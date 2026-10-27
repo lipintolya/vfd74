@@ -7,6 +7,7 @@
  * Слот `actions` (кнопки, стрелки ленты): тогда лид встаёт под заголовок
  * слева, а справа — действия.
  * Тексты проходят через typograph(): без висящих предлогов.
+ * dark — шапка на тёмной полосе (белый заголовок, приглушённый лид).
  */
 import { typograph } from '../../lib/typograph'
 
@@ -17,13 +18,14 @@ interface Props {
   lead?: string
   /** h1 — только когда секция на странице единственная главная (/reviews/) */
   tag?:  'h1' | 'h2'
+  dark?: boolean
 }
-const { id, title, lead, tag = 'h2' } = Astro.props
+const { id, title, lead, tag = 'h2', dark = false } = Astro.props
 const Heading = tag
 const hasActions = Astro.slots.has('actions')
 ---
 
-<header class:list={['sh', { 'sh--actions': hasActions }]}>
+<header class:list={['sh', { 'sh--actions': hasActions, 'sh--dark': dark }]}>
   {hasActions ? (
     <div class="sh-main">
       <Heading id={id} class={tag === 'h1' ? 't-h1 sh-title' : 't-h2 sh-title'}>{typograph(title)}</Heading>
@@ -61,6 +63,9 @@ const hasActions = Astro.slots.has('actions')
   @media (width >= 64rem) {
     .sh:not(.sh--actions) .sh-lead { justify-self: end; }
   }
+
+  .sh--dark .sh-title { color: #fff; }
+  .sh--dark .sh-lead { color: rgb(255 255 255 / 0.6); }
 
   /* С действиями: заголовок и лид слева столбиком, действия справа */
   .sh--actions .sh-main {

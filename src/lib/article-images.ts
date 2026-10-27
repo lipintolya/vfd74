@@ -17,9 +17,16 @@ const toAttrs = (original: string, variants: ImageVariant[] | undefined): ImgAtt
     ? { src: variants[variants.length - 1]!.src, srcset: variants.map(v => `${v.src} ${v.w}w`).join(', ') }
     : { src: original }
 
-/** Обложка: card — кроп 16:9 для карточек, hero — шапка статьи. */
-export const articleCoverImg = (cover: string, kind: 'card' | 'hero'): ImgAttrs =>
-  toAttrs(cover, ARTICLE_COVER_PREVIEWS[cover]?.[kind])
+/** Обложка: card — кроп 16:9 для карточек, hero — шапка статьи,
+    wide — крупная карточка (главная): обе лесенки в одном srcset, чтобы
+    телефон брал 800w, а широкий экран — 960w/1600w. */
+export const articleCoverImg = (cover: string, kind: 'card' | 'hero' | 'wide'): ImgAttrs => {
+  const set = ARTICLE_COVER_PREVIEWS[cover]
+  return toAttrs(
+    cover,
+    kind === 'wide' ? set && [...set.card, ...set.hero].sort((a, b) => a.w - b.w) : set?.[kind],
+  )
+}
 
 /** Фото из текста статьи ({% figure %}, {% photo %}, {% card %}). */
 export const articleImg = (url: string): ImgAttrs =>
