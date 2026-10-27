@@ -1,20 +1,25 @@
 ---
 /**
- * «Фотоотчёты с объектов» на главной — лента последних работ портфолио.
+ * «Фотоотчёты с объектов» на главной — последние работы портфолио.
  *
- * Горизонтальная лента с прокруткой по карточкам (scroll-snap): крупное
- * фото, под ним название и место — категория и ЖК/посёлок (реальные
- * адреса — главное доверие к живым фото). На телефоне — свайп, следующая
- * карточка выглядывает из-за края; на десктопе — стрелки в шапке
- * и прокрутка тачпадом. Последняя карточка — графитовая «N фотоотчётов»
- * со ссылкой на всё портфолио. Лид собирается из данных: число работ
- * и дата последнего монтажа.
+ * Композиция отличается от соседних «Отзывов» и «Акций» (там шапка сверху
+ * и ряд одинаковых карточек): на широком десктопе (от 80rem) слева колонка
+ * с заголовком, лидом, кнопкой и крупным числом работ, справа — три фото.
+ * Число внизу колонки вровень с подписями — вместо графитовой полосы под
+ * рядом, которая повторяла «Отзывы». Остальные работы — по кнопке
+ * «Все работы». От 64rem до 80rem колонка отняла бы у фото слишком много
+ * места — там шапка сверху и три фото в ряд.
  *
- * Лента, стрелки и последняя карточка — общие с «Отзывами»: .rail
- * (global.css), RailControls, RailEndCard. Без JS лента листается сама.
- * Фото — превью 640/1080 (scripts/gen-portfolio-thumbs.mjs), lazy.
+ * На телефоне и планшете — как у остальных лент: шапка сверху, лента из
+ * шести работ со свайпом (следующая карточка выглядывает из-за края),
+ * стрелки для мыши и последняя графитовая карточка «N фотоотчётов».
+ *
+ * Под фото — название и место: категория и ЖК/посёлок (реальные адреса —
+ * главное доверие к живым фото). Лента, стрелки и последняя карточка —
+ * общие с «Отзывами»: .rail (global.css), RailControls, RailEndCard. Без JS
+ * лента листается сама. Фото — превью 640/1080
+ * (scripts/gen-portfolio-thumbs.mjs), lazy.
  */
-import SectionHeader from '../home/SectionHeader.astro'
 import RailControls from '../ui/RailControls.astro'
 import RailEndCard from '../ui/RailEndCard.astro'
 import { PORTFOLIO_WORKS, CATEGORY_LABELS } from '../../data/portfolio-works'
@@ -22,6 +27,8 @@ import { pluralRu } from '../../lib/product-text'
 import { typograph } from '../../lib/typograph'
 
 const RAIL_SIZE = 6
+/* Сколько работ в ряду на десктопе (остальные скрыты, см. .pr-off) */
+const DESKTOP_SIZE = 3
 
 const byDate = [...PORTFOLIO_WORKS].sort((a, b) => b.date.localeCompare(a.date))
 const preview = byDate.slice(0, RAIL_SIZE)
@@ -29,44 +36,45 @@ const total = PORTFOLIO_WORKS.length
 const totalWord = pluralRu(total, ['фотоотчёт', 'фотоотчёта', 'фотоотчётов'])
 const objectsWord = pluralRu(total, ['объект', 'объекта', 'объектов'])
 
-const latest = byDate[0]
-const latestLabel = latest
-  ? new Date(latest.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', timeZone: 'UTC' })
-  : null
-
 /* Место одной короткой строкой: город/область и так понятны, из
-   «ЖК НИКС Сити, Университетская набережная» — только ЖК */
+   «ЖК НИКС Сити, Университетская набережная» — только ЖК, из
+   «посёлок Развязка (Чурилово)» — без уточнения в скобках */
 const place = (location: string) =>
-  location.replace(/^Челябинск(ая область)?,\s*/, '').split(',')[0]!.trim()
+  location.replace(/^Челябинск(ая область)?,\s*/, '').split(',')[0]!.replace(/\s*\([^)]*\)/, '').trim()
 
-const lead = `${total} ${objectsWord} по Челябинску и области — живые фото с монтажей, не рендеры.`
-  + (latestLabel ? ` Последний — ${latestLabel}.` : '')
+const lead = 'Живые фото с монтажей по Челябинску и области, не рендеры.'
 ---
 
 {preview.length > 0 && (
   <section class="section bg-white rail-scope" aria-labelledby="portfolio-preview-heading" data-rail-scope>
-    <div class="container">
+    <div class="container pp">
 
-      <SectionHeader id="portfolio-preview-heading" title="Фотоотчёты с объектов" lead={lead}>
-        <Fragment slot="actions">
+      <header class="pp-head">
+        <h2 id="portfolio-preview-heading" class="t-h2 pp-title">Фотоотчёты с объектов</h2>
+        <p class="t-lead pp-lead">{typograph(lead)}</p>
+        <div class="pp-actions">
           <RailControls
             prevLabel="Предыдущие работы"
             nextLabel="Следующие работы"
             allHref="/portfolio/"
             allLabel="Все работы"
           />
-        </Fragment>
-      </SectionHeader>
+        </div>
+        <p class="pp-count">
+          <span class="pp-num">{total}</span>
+          <span class="pp-count-text">{objectsWord} в портфолио: двери, перегородки, входные группы</span>
+        </p>
+      </header>
 
       <ul class="rail pr-rail" role="list" data-rail aria-label="Последние работы">
-        {preview.map((work) => (
-          <li>
+        {preview.map((work, i) => (
+          <li class:list={{ 'pr-off': i >= DESKTOP_SIZE }}>
             <a href={`/portfolio/${work.id}/`} class="pr-card">
               <span class="pr-photo">
                 <img
                   src={`/renders/portfolio/${work.id}-640.webp`}
                   srcset={`/renders/portfolio/${work.id}-640.webp 640w, /renders/portfolio/${work.id}.webp 1080w`}
-                  sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 42vw, 78vw"
+                  sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 78vw"
                   alt={work.title}
                   width="640"
                   height="800"
@@ -82,7 +90,7 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
           </li>
         ))}
 
-        <li class="rail-end">
+        <li class="rail-end pr-end">
           <RailEndCard
             value={total}
             text={`${totalWord} в портфолио — двери, перегородки, входные группы`}
@@ -98,16 +106,96 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
 )}
 
 <style>
+  /* ── Шапка ──
+     Телефон/планшет: заголовок, лид, действия столбиком над лентой.
+     Стили без слоя перебивают .t-h2/.t-lead из @layer components. */
+  .pp-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .pp-title { margin: 0; text-wrap: balance; }
+  .pp-lead {
+    margin: 0;
+    max-width: 30rem;
+    color: #475569;  /* slate-600, как в SectionHeader */
+    text-wrap: pretty;
+  }
+  .pp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .pp-count { display: none; }
+  @media (width >= 48rem) {
+    .pp-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 2rem;
+      align-items: end;
+    }
+    .pp-lead { grid-column: 1; }
+    .pp-actions { grid-column: 2; grid-row: 1 / span 2; }
+  }
+
+  /* ── От 64rem лента — сетка из трёх работ без плашки «N фотоотчётов»
+     (остальные работы — по кнопке «Все работы» в шапке) ── */
+  @media (width >= 64rem) {
+    .pr-end, .pr-off { display: none; }
+  }
+
+  /* ── Широкий десктоп: слева колонка с текстом, справа три фото.
+     Уже 80rem колонка отнимает у фото слишком много места (заголовки
+     обрезаются), там шапка остаётся сверху. ── */
+  @media (width >= 80rem) {
+    .pp {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      column-gap: clamp(2rem, 4vw, 3.5rem);
+    }
+    .pp-head {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0;
+    }
+    .pp-actions { margin-top: 0.5rem; }
+    /* Число вровень с низом подписей: ряд фото задаёт высоту колонки */
+    .pp-count {
+      display: block;
+      margin: auto 0 0;
+      padding-top: 2rem;
+    }
+    .pp-num {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 7vw, 5rem);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+      color: var(--color-ink);
+    }
+    .pp-count-text {
+      display: block;
+      max-width: 15rem;
+      margin-top: 0.5rem;
+      font-size: var(--text-step-1);
+      line-height: 1.45;
+      color: #64748b;  /* slate-500 */
+    }
+  }
+
   /* Колонки ленты .rail (global.css): на телефоне — карточка и край
-     следующей, на десктопе — три с небольшим запасом */
+     следующей, на десктопе — три в ряд */
   .pr-rail {
     --rail-col: 78%;
     --rail-col-md: 42%;
     --rail-cols-lg: 3;
-  }
-  /* На десктопе — три в ряд, квадратные фото, чтобы сетка не была слишком высокой */
-  @media (width >= 64rem) {
-    .pr-photo { aspect-ratio: 1 / 1; }
+    align-self: start;
   }
 
   /* ── Карточка работы ── */
@@ -148,9 +236,13 @@ const lead = `${total} ${objectsWord} по Челябинску и област�
     color: var(--color-ink);
     transition: color var(--duration-base) var(--ease-out);
   }
+  @media (width >= 64rem) {
+    .pr-title { -webkit-line-clamp: 3; }
+  }
   .pr-meta {
     overflow: hidden;
-    margin-top: 0.375rem;
+    margin-top: auto;
+    padding-top: 0.375rem;
     white-space: nowrap;
     text-overflow: ellipsis;
     font-size: var(--text-step-1);
