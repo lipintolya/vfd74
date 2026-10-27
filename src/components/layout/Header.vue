@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { companyLegalInfo } from '../../lib/contacts-data'
+import {
+  NAV_LINKS, SOCIAL_NETWORKS, FOCUS,
+  isCurrentSection, isCurrentPage, navLinkClass,
+  type NavLink,
+} from '../../lib/header-nav'
 
 /* ============================================================
    Constants
@@ -8,27 +13,6 @@ import { companyLegalInfo } from '../../lib/contacts-data'
 const headerEl = ref<HTMLElement | null>(null)
 
 const LOGO_URL = '/svg/logo.svg'
-
-const SOCIAL_NETWORKS = [
-  {
-    name: 'VK',
-    label: 'ВКонтакте',
-    url: 'https://vk.com/vfddoors74',
-    icon: '/icons/b_vk_logo.webp',
-  },
-  {
-    name: 'Telegram',
-    label: 'Telegram',
-    url: 'https://t.me/vfddoors74',
-    icon: '/icons/b_tg_logo.webp',
-  },
-  {
-    name: 'MAX',
-    label: 'Max',
-    url: 'https://max.ru/id452402308842_biz',
-    icon: '/icons/b_max_logo.webp',
-  },
-] as const
 
 const CONTACTS = {
   phones:  companyLegalInfo.contacts.phone,
@@ -41,27 +25,6 @@ const CONTACTS = {
   email:   companyLegalInfo.contacts.email,
 }
 
-const NAV_LINKS = [
-  { href: '/',            label: 'Главная' },
-  { href: '/catalog/',    label: 'Каталог' },
-  { href: '/partitions/', label: 'Перегородки' },
-  { href: '/designers/',  label: 'Дизайнерам' },
-  { href: '/about/',      label: 'О нас' },
-  { href: '/contacts/',   label: 'Контакты' },
-] as const
-
-const CATALOG_DROPDOWN = [
-  { href: '/catalog/',               label: 'Все двери',      desc: 'Межкомнатные' },
-  { href: '/catalog/skrytye-dveri/', label: 'Скрытые двери', desc: 'Скрытый монтаж' },
-  { href: '/vhodnye-dveri/',         label: 'Входные двери', desc: 'С монтажом' },
-  { href: '/catalog/decor/',         label: 'Декор',         desc: 'Плинтус, фрамуги, рейки' },
-] as const
-
-const ABOUT_DROPDOWN = [
-  { href: '/about/',     label: 'О салоне',   desc: 'Адрес, реквизиты, руководство' },
-  { href: '/o-fabrike/', label: 'О фабрике',  desc: 'Производитель дверей ВФД' },
-] as const
-
 const WORK_SCHEDULE = {
   weekday: { open: 10, close: 20 }, // Пн-Пт: 10:00-20:00
   weekend: { open: 10, close: 18 }, // Сб-Вс: 10:00-18:00
@@ -73,27 +36,31 @@ const WORK_SCHEDULE = {
 const scrolled     = ref(false)
 const mobileOpen   = ref(false)
 const contactsOpen = ref(false)
-const catalogOpen  = ref(false)
-let   catalogTimer: ReturnType<typeof setTimeout> | null = null
-const aboutOpen    = ref(false)
-let   aboutTimer: ReturnType<typeof setTimeout> | null = null
-const logoLoaded   = ref(false)
+/* Какое выпадающее меню открыто (href пункта) — одно на всю навигацию */
+const openMenu     = ref<string | null>(null)
+let   menuTimer: ReturnType<typeof setTimeout> | null = null
 const logoError    = ref(false)
 
 const now          = ref(new Date())
-const currentPath  = ref('/')
+/* Шапка — client:only, window есть уже при создании: берём путь сразу, а не
+   в onMounted, иначе первый кадр показывал «Главная» активной на любой
+   странице и тут же переключал. */
+const currentPath  = ref(window.location.pathname)
 
 const contactsBtnRef   = ref<HTMLButtonElement | null>(null)
 const contactsPanelRef = ref<HTMLDivElement | null>(null)
 const mobileMenuRef    = ref<HTMLDivElement | null>(null)
 const burgerBtnRef     = ref<HTMLButtonElement | null>(null)
+const menuCloseRef     = ref<HTMLButtonElement | null>(null)
 
 let timerId: ReturnType<typeof setInterval> | null = null
 
 /* ============================================================
    Active link
    ============================================================ */
-const isActive = (href: string) => currentPath.value === href
+const isCurrent = (link: NavLink) => isCurrentSection(link, currentPath.value)
+const isPage    = (link: NavLink) => isCurrentPage(link, currentPath.value)
+const navClass  = (link: NavLink) => navLinkClass(link, currentPath.value)
 
 /* ============================================================
    Work-hours logic
@@ -164,7 +131,20 @@ const onKeydown = (e: KeyboardEvent) => {
   if (e.key !== 'Escape') return
   // Закрываем только верхний слой
   if (contactsOpen.value) { closeContacts(); return }
-  if (mobileOpen.value)   { closeMobileMenu() }
+  if (mobileOpen.value)   { closeMobileMenu(true); return }
+  if (openMenu.value)     { hideMenuNow() }
+}
+
+/* Фокус не уходит из открытого мобильного меню: Tab с последнего элемента —
+   на первый и обратно */
+const onMobileMenuKeydown = (e: KeyboardEvent) => {
+  if (e.key !== 'Tab' || !mobileMenuRef.value) return
+  const items = mobileMenuRef.value.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')
+  const first = items[0]
+  const last  = items[items.length - 1]
+  if (!first || !last) return
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
 }
 
 const onClickOutside = (e: MouseEvent) => {
@@ -185,15 +165,35 @@ const onClickOutside = (e: MouseEvent) => {
   ) closeMobileMenu()
 }
 
-const openMobileMenu   = () => { mobileOpen.value = true;  document.body.style.overflow = 'hidden' }
-const closeMobileMenu  = () => { mobileOpen.value = false; document.body.style.overflow = '' }
-const toggleMobileMenu = () => mobileOpen.value ? closeMobileMenu() : openMobileMenu()
+const openMobileMenu = async () => {
+  mobileOpen.value = true
+  document.body.style.overflow = 'hidden'
+  await nextTick()
+  menuCloseRef.value?.focus()
+}
+/* returnFocus — только при закрытии с клавиатуры (Esc, крестик); после
+   перехода по ссылке страница всё равно перезагрузится */
+const closeMobileMenu = (returnFocus = false) => {
+  mobileOpen.value = false
+  document.body.style.overflow = ''
+  if (returnFocus) burgerBtnRef.value?.focus()
+}
+const toggleMobileMenu = () => mobileOpen.value ? closeMobileMenu(true) : openMobileMenu()
 
-const openCatalog  = () => { if (catalogTimer !== null) clearTimeout(catalogTimer); catalogOpen.value = true }
-const closeCatalog = () => { catalogTimer = setTimeout(() => { catalogOpen.value = false }, 150) }
-
-const openAbout  = () => { if (aboutTimer !== null) clearTimeout(aboutTimer); aboutOpen.value = true }
-const closeAbout = () => { aboutTimer = setTimeout(() => { aboutOpen.value = false }, 150) }
+/* Выпадающие меню: мышь — с задержкой закрытия 150 мс (чтобы курсор
+   доезжал до панели), фокус — сразу, Esc — закрывает */
+const showMenu = (href: string) => {
+  if (menuTimer !== null) clearTimeout(menuTimer)
+  openMenu.value = href
+}
+const hideMenu = () => {
+  if (menuTimer !== null) clearTimeout(menuTimer)
+  menuTimer = setTimeout(() => { openMenu.value = null }, 150)
+}
+const hideMenuNow = () => {
+  if (menuTimer !== null) clearTimeout(menuTimer)
+  openMenu.value = null
+}
 
 const openContacts = async () => {
   contactsOpen.value = true
@@ -211,17 +211,10 @@ const closeContacts = (returnFocus = true) => {
 }
 const toggleContacts = () => contactsOpen.value ? closeContacts() : openContacts()
 
-// Используем первый телефон — optional chaining страхует от пустого массива
-const callPrimary = () => {
-  const phone = CONTACTS.phones[0]
-  if (phone) window.location.href = `tel:${phone.raw}`
-}
-
 /* ============================================================
    Lifecycle
    ============================================================ */
 onMounted(() => {
-  currentPath.value = window.location.pathname
   setHeaderVar()
   nextTick(setHeaderVar)
   window.addEventListener('scroll',  onScroll,       { passive: true })
@@ -238,8 +231,7 @@ onUnmounted(() => {
   document.removeEventListener('click', onClickOutside, { capture: true })
   document.body.style.overflow = ''
   if (timerId !== null) clearInterval(timerId)
-  if (catalogTimer !== null) clearTimeout(catalogTimer)
-  if (aboutTimer !== null) clearTimeout(aboutTimer)
+  if (menuTimer !== null) clearTimeout(menuTimer)
 })
 </script>
 
@@ -255,188 +247,127 @@ onUnmounted(() => {
   >
     <div class="container">
 
-      <!-- ── Pill bar ── -->
+      <!-- ── Pill bar ──
+           Высота фиксирована (--header-bar в global.css), а не складывается из
+           паддингов и содержимого: тот же размер задаёт заглушка до загрузки
+           шапки (HeaderFallback) и отступ <main> — иначе страница сдвигалась
+           на 10px, когда --header-height пересчитывался.
+           Сетка: на xl — три колонки с равными боковыми, поэтому навигация
+           стоит ровно по центру, а не там, где остаётся место между логотипом
+           и кнопками разной ширины. -->
       <div
-        class="flex items-center justify-between rounded-full border px-5 py-3 transition-all duration-300"
+        class="grid h-(--header-bar) grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 rounded-full border px-5
+               transition-[background-color,box-shadow] duration-300
+               xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
         :class="scrolled
           ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.10)]'
           : 'bg-white/88 backdrop-blur-sm border-gray-200'"
       >
 
         <!-- Logo -->
-        <a href="/" class="flex items-center gap-3 shrink-0 group" aria-label="ВФД на Кашириных — главная">
-          <div class="relative w-9 h-9 flex items-center justify-center">
-            <div
-              v-if="!logoLoaded && !logoError"
-              class="absolute inset-0 bg-gray-200 rounded-lg animate-pulse"
-              aria-hidden="true"
-            />
-            <img
-              v-if="!logoError"
-              :src="LOGO_URL"
-              alt=""
-              class="h-9 w-auto object-contain transition-opacity duration-300"
-              :class="logoLoaded ? 'opacity-100' : 'opacity-0'"
-              width="36"
-              height="36"
-              loading="eager"
-              decoding="async"
-              @load="logoLoaded = true"
-              @error="logoError = true"
-            />
-            <!-- Fallback если картинка не загрузилась -->
-            <div
-              v-if="logoError"
-              class="w-9 h-9 rounded-lg bg-linear-to-br from-gray-700 to-gray-900
-                     text-white flex items-center justify-center text-xs font-semibold"
-              aria-hidden="true"
-            >
-              ВФД
-            </div>
-          </div>
+        <a
+          href="/"
+          class="group flex w-fit items-center gap-3 rounded-full"
+          :class="FOCUS"
+          aria-label="ВФД на Кашириных — главная"
+        >
+          <img
+            v-if="!logoError"
+            :src="LOGO_URL"
+            alt=""
+            class="h-9 w-auto shrink-0 object-contain"
+            width="36"
+            height="36"
+            decoding="async"
+            @error="logoError = true"
+          />
+          <!-- Запасной вариант, если файл логотипа не загрузился -->
           <span
-            class="hidden sm:block overflow-hidden whitespace-nowrap text-sm font-semibold tracking-wide
-                   transition-colors duration-300 ease-in-out
-                   group-hover:text-teal-600"
+            v-else
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-gray-700 to-gray-900 text-xs font-semibold text-white"
+            aria-hidden="true"
+          >ВФД</span>
+          <span
+            class="hidden whitespace-nowrap text-sm font-semibold tracking-wide transition-colors duration-300 ease-in-out sm:block group-hover:text-teal-600"
           >
             ДВЕРИ НА КАШИРИНЫХ
           </span>
         </a>
 
         <!-- Desktop nav -->
-        <nav class="hidden xl:flex gap-7 text-sm" aria-label="Основная навигация">
+        <nav class="hidden items-center gap-1 xl:flex" aria-label="Основная навигация">
           <template v-for="link in NAV_LINKS" :key="link.href">
 
-            <!-- Обычная ссылка — та же приподнятая подложка на hover, что
-                 у пунктов дропдаунов ниже: голый color-transition терялся
-                 на фоне остального сайта, где hover почти everywhere несёт
-                 фон, а не только смену цвета текста. -->
+            <!-- Пункт с выпадающим меню -->
+            <div
+              v-if="link.menu"
+              class="relative"
+              @mouseenter="showMenu(link.href)"
+              @mouseleave="hideMenu"
+              @focusin="showMenu(link.href)"
+              @focusout="hideMenu"
+            >
+              <a
+                :href="link.href"
+                class="group/nav"
+                :class="navClass(link)"
+                :aria-current="isPage(link) ? 'page' : undefined"
+                :aria-expanded="openMenu === link.href"
+              >
+                {{ link.label }}
+                <svg
+                  class="h-3.5 w-3.5 transition-transform duration-200 group-hover/nav:translate-y-px"
+                  :class="{ 'rotate-180': openMenu === link.href }"
+                  viewBox="0 0 24 24" fill="none"
+                  aria-hidden="true"
+                >
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </a>
+
+              <!-- Обёртка с pt вместо margin: между пунктом и панелью нет
+                   «мёртвой» полосы, курсор не теряет hover на пути к ссылкам -->
+              <Transition name="fade-slide">
+                <div
+                  v-if="openMenu === link.href"
+                  class="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3"
+                >
+                  <div
+                    class="w-60 rounded-2xl border border-gray-100 bg-white p-1.5 shadow-lg shadow-black/5"
+                    :aria-label="link.menuLabel"
+                  >
+                    <a
+                      v-for="item in link.menu"
+                      :key="item.href"
+                      :href="item.href"
+                      class="flex flex-col rounded-xl px-3.5 py-2.5 text-left transition-colors duration-150 hover:bg-gray-50"
+                      :class="FOCUS"
+                      @click="hideMenuNow"
+                    >
+                      <span class="text-sm font-semibold text-gray-900">{{ item.label }}</span>
+                      <span class="mt-0.5 text-xs text-gray-500">{{ item.desc }}</span>
+                    </a>
+                  </div>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- Обычный пункт -->
             <a
-              v-if="link.href !== '/catalog/' && link.href !== '/about/'"
-              :href="link.href"
-              class="-mx-2.5 -my-1.5 rounded-lg px-2.5 py-1.5 transition-colors duration-200"
-              :class="isActive(link.href)
-                ? 'text-gray-900 font-semibold'
-                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
-              :aria-current="isActive(link.href) ? 'page' : undefined"
-            >{{ link.label }}</a>
-
-            <!-- Каталог с дропдауном -->
-            <div
-              v-else-if="link.href === '/catalog/'"
-              class="relative"
-              @mouseenter="openCatalog"
-              @mouseleave="closeCatalog"
-              @focusin="openCatalog"
-              @focusout="closeCatalog"
-            >
-              <a
-                :href="link.href"
-                class="group/nav flex items-center gap-0.5 -mx-2.5 -my-1.5 rounded-lg px-2.5 py-1.5 transition-colors duration-200"
-                :class="currentPath.startsWith('/catalog')
-                  ? 'text-gray-900 font-semibold'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
-                :aria-current="isActive(link.href) ? 'page' : undefined"
-                :aria-haspopup="true"
-                :aria-expanded="catalogOpen"
-              >
-                {{ link.label }}
-                <svg
-                  class="w-3.5 h-3.5 transition-transform duration-200 group-hover/nav:translate-y-px"
-                  :class="{ 'rotate-180': catalogOpen }"
-                  viewBox="0 0 24 24" fill="none"
-                  aria-hidden="true"
-                >
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </a>
-
-              <Transition name="fade-slide">
-                <div
-                  v-if="catalogOpen"
-                  class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 rounded-2xl
-                         bg-white border border-gray-100 shadow-lg shadow-black/5 p-1.5 z-50"
-                  role="menu"
-                  aria-label="Категории каталога"
-                >
-                  <a
-                    v-for="item in CATALOG_DROPDOWN"
-                    :key="item.href"
-                    :href="item.href"
-                    class="flex flex-col px-3.5 py-2.5 rounded-xl hover:bg-gray-50
-                           transition-colors duration-150 text-left"
-                    role="menuitem"
-                    @click="catalogOpen = false"
-                  >
-                    <span class="text-sm font-semibold text-gray-900">{{ item.label }}</span>
-                    <span class="text-xs text-gray-400 mt-0.5">{{ item.desc }}</span>
-                  </a>
-                </div>
-              </Transition>
-            </div>
-
-            <!-- О нас с дропдауном (О салоне / О фабрике) -->
-            <div
               v-else
-              class="relative"
-              @mouseenter="openAbout"
-              @mouseleave="closeAbout"
-              @focusin="openAbout"
-              @focusout="closeAbout"
-            >
-              <a
-                :href="link.href"
-                class="group/nav flex items-center gap-0.5 -mx-2.5 -my-1.5 rounded-lg px-2.5 py-1.5 transition-colors duration-200"
-                :class="currentPath.startsWith('/about') || currentPath.startsWith('/o-fabrike')
-                  ? 'text-gray-900 font-semibold'
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'"
-                :aria-current="isActive(link.href) ? 'page' : undefined"
-                :aria-haspopup="true"
-                :aria-expanded="aboutOpen"
-              >
-                {{ link.label }}
-                <svg
-                  class="w-3.5 h-3.5 transition-transform duration-200 group-hover/nav:translate-y-px"
-                  :class="{ 'rotate-180': aboutOpen }"
-                  viewBox="0 0 24 24" fill="none"
-                  aria-hidden="true"
-                >
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </a>
-
-              <Transition name="fade-slide">
-                <div
-                  v-if="aboutOpen"
-                  class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 rounded-2xl
-                         bg-white border border-gray-100 shadow-lg shadow-black/5 p-1.5 z-50"
-                  role="menu"
-                  aria-label="О компании"
-                >
-                  <a
-                    v-for="item in ABOUT_DROPDOWN"
-                    :key="item.href"
-                    :href="item.href"
-                    class="flex flex-col px-3.5 py-2.5 rounded-xl hover:bg-gray-50
-                           transition-colors duration-150 text-left"
-                    role="menuitem"
-                    @click="aboutOpen = false"
-                  >
-                    <span class="text-sm font-semibold text-gray-900">{{ item.label }}</span>
-                    <span class="text-xs text-gray-400 mt-0.5">{{ item.desc }}</span>
-                  </a>
-                </div>
-              </Transition>
-            </div>
+              :href="link.href"
+              :class="navClass(link)"
+              :aria-current="isPage(link) ? 'page' : undefined"
+            >{{ link.label }}</a>
 
           </template>
         </nav>
 
         <!-- Actions -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center justify-self-end">
 
           <!-- Desktop actions -->
-          <div class="hidden xl:flex items-center gap-3">
+          <div class="hidden items-center gap-1 xl:flex">
             <a
               v-for="s in SOCIAL_NETWORKS"
               :key="s.name"
@@ -445,16 +376,17 @@ onUnmounted(() => {
               rel="noopener noreferrer"
               :aria-label="`${s.label} (открывается в новой вкладке)`"
               class="flex h-9 w-9 items-center justify-center rounded-full transition-[background-color,transform] duration-200 hover:scale-105 hover:bg-gray-50"
+              :class="FOCUS"
             >
-              <img :src="s.icon" :alt="s.label" class="w-7 h-7" width="28" height="28" loading="eager" fetchpriority="high" />
+              <img :src="s.icon" alt="" class="h-7 w-7" width="28" height="28" />
             </a>
 
             <!-- Contacts dropdown -->
-            <div class="relative">
+            <div class="relative ml-2">
               <button
                 ref="contactsBtnRef"
                 type="button"
-                class="btn btn-primary"
+                class="btn btn-primary h-10 px-5 text-sm"
                 aria-haspopup="dialog"
                 :aria-expanded="contactsOpen"
                 aria-controls="contacts-panel"
@@ -474,43 +406,40 @@ onUnmounted(() => {
                   role="dialog"
                   aria-label="Контактная информация"
                   aria-modal="false"
-                  class="absolute top-full right-0 mt-2.5 w-80 rounded-3xl
-                         bg-white/95 backdrop-blur-xl ring-1 ring-black/5
-                         shadow-[0_24px_60px_-16px_rgba(15,23,42,0.22)] p-1.5 z-50"
+                  class="absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl bg-white/95 p-1.5 ring-1 ring-black/5 backdrop-blur-xl
+                         shadow-[0_24px_60px_-16px_rgba(15,23,42,0.22)]"
                 >
-                  <div class="rounded-[1.25rem] bg-white p-5 space-y-4 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                  <div class="space-y-4 rounded-[1.25rem] bg-white p-5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
 
                     <div>
-                      <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-[0.14em] mb-2">Телефоны</p>
+                      <p class="mb-2 text-sm font-semibold text-gray-500">Телефоны</p>
                       <div class="flex flex-col gap-1">
                         <a
                           v-for="p in CONTACTS.phones"
                           :key="p.raw"
                           :href="`tel:${p.raw}`"
-                          class="group flex items-center gap-3 rounded-xl px-2 py-2 -mx-2
-                                 font-semibold text-gray-800 hover:bg-teal-50/70 hover:text-teal-700
-                                 transition-colors duration-200"
+                          class="group -mx-2 flex items-center gap-3 rounded-xl px-2 py-2 font-semibold text-gray-800
+                                 transition-colors duration-200 hover:bg-teal-50/70 hover:text-teal-700"
+                          :class="FOCUS"
                         >
-                          <img src="/icons/phone-call.webp" alt="" class="w-8 h-8 shrink-0" loading="eager" fetchpriority="high" />
+                          <img src="/icons/phone-call.webp" alt="" class="h-8 w-8 shrink-0" width="32" height="32" />
                           {{ p.label }}
                         </a>
                       </div>
                     </div>
 
-                    <!-- Раньше это были две узкие колонки (grid-cols-2) —
-                         пятистрочный адрес с "вход со стороны" и часы работы
-                         в одну склеенную через «·» строку рвались неровно на
-                         такой ширине. Вертикальный стек читается спокойнее. -->
+                    <!-- Вертикальный стек: пятистрочный адрес с «вход со стороны»
+                         и часы работы в две колонки рвались неровно. -->
                     <div class="flex flex-col gap-2.5">
                       <div class="rounded-xl bg-gray-50 p-3.5">
-                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Адрес</p>
-                        <p class="text-gray-800 leading-snug text-step-0">{{ CONTACTS.address }}</p>
-                        <p class="text-gray-500 leading-snug text-xs mt-0.5">{{ CONTACTS.entrance }}</p>
+                        <p class="mb-1.5 text-sm font-semibold text-gray-500">Адрес</p>
+                        <p class="text-step-0 leading-snug text-gray-800">{{ CONTACTS.address }}</p>
+                        <p class="mt-0.5 text-xs leading-snug text-gray-500">{{ CONTACTS.entrance }}</p>
                       </div>
                       <div class="rounded-xl bg-gray-50 p-3.5">
-                        <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-widest mb-1.5">Часы работы</p>
-                        <p class="text-gray-800 leading-snug text-step-0">{{ CONTACTS.worktimeWeekdays }}</p>
-                        <p class="text-gray-500 leading-snug text-xs mt-0.5">{{ CONTACTS.worktimeWeekend }}</p>
+                        <p class="mb-1.5 text-sm font-semibold text-gray-500">Часы работы</p>
+                        <p class="text-step-0 leading-snug text-gray-800">{{ CONTACTS.worktimeWeekdays }}</p>
+                        <p class="mt-0.5 text-xs leading-snug text-gray-500">{{ CONTACTS.worktimeWeekend }}</p>
                         <p
                           class="mt-3 border-t border-gray-200/80 pt-2.5 text-sm leading-snug"
                           aria-live="polite"
@@ -523,10 +452,11 @@ onUnmounted(() => {
                     </div>
 
                     <div>
-                      <p class="text-[0.6875rem] font-semibold text-gray-400 uppercase tracking-[0.14em] mb-1.5">Email</p>
+                      <p class="mb-1.5 text-sm font-semibold text-gray-500">Почта</p>
                       <a
                         :href="`mailto:${CONTACTS.email}`"
-                        class="font-medium text-gray-700 underline decoration-gray-300 underline-offset-4 hover:text-teal-600 hover:decoration-teal-400 transition-colors duration-200"
+                        class="font-medium text-gray-700 underline decoration-gray-300 underline-offset-4 transition-colors duration-200 hover:text-teal-600 hover:decoration-teal-400"
+                        :class="FOCUS"
                       >
                         {{ CONTACTS.email }}
                       </a>
@@ -534,20 +464,13 @@ onUnmounted(() => {
 
                     <a
                       href="/contacts/"
-                      class="group flex items-center justify-between gap-3 rounded-full bg-ink pl-5 pr-1.5 py-1.5
-                             font-semibold text-white transition-colors duration-200 hover:bg-gray-800"
+                      class="btn btn-primary w-full py-3 text-sm"
                       @click="closeContacts(false)"
                     >
                       Перейти к контактам
-                      <span
-                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15
-                               transition-transform duration-200 group-hover:translate-x-0.5"
-                        aria-hidden="true"
-                      >
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none">
-                          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </span>
+                      <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
                     </a>
 
                   </div>
@@ -557,7 +480,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Mobile: socials + burger -->
-          <div class="xl:hidden flex items-center gap-2.5 ml-auto">
+          <div class="flex items-center gap-1 xl:hidden">
             <a
               v-for="s in SOCIAL_NETWORKS"
               :key="s.name"
@@ -565,16 +488,17 @@ onUnmounted(() => {
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`${s.label} (открывается в новой вкладке)`"
+              class="flex h-10 w-10 items-center justify-center rounded-full"
+              :class="FOCUS"
             >
-              <img :src="s.icon" :alt="s.label" class="w-7 h-7" width="28" height="28" loading="eager" fetchpriority="high" />
+              <img :src="s.icon" alt="" class="h-7 w-7" width="28" height="28" />
             </a>
 
             <button
               ref="burgerBtnRef"
               type="button"
-              class="burger-btn w-10 h-10 flex items-center justify-center rounded-xl
-                     hover:bg-gray-100 transition-colors shrink-0"
-              :class="{ 'is-open': mobileOpen }"
+              class="burger-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors hover:bg-gray-100"
+              :class="[{ 'is-open': mobileOpen }, FOCUS]"
               :aria-expanded="mobileOpen"
               :aria-label="mobileOpen ? 'Закрыть меню' : 'Открыть меню'"
               aria-controls="mobile-menu"
@@ -598,7 +522,7 @@ onUnmounted(() => {
     </div><!-- /container -->
 
     <!-- ── Mobile menu — полноэкранная тёмная панель (не плавающая карточка):
-         своя шапка (метка города + закрыть), звонок и соцсети сверху,
+         своя шапка (город + закрыть), звонок и соцсети сверху,
          прокручиваемая навигация в середине, номер телефона закреплён внизу.
          Teleport на body: внутри <header z-50> собственный z-index панели
          (10000) сравнивался бы только относительно других детей header —
@@ -622,46 +546,42 @@ onUnmounted(() => {
         role="dialog"
         aria-label="Мобильное меню"
         aria-modal="true"
-        class="xl:hidden fixed inset-0 z-10000 flex flex-col bg-zinc-900"
+        class="fixed inset-0 z-10000 flex flex-col bg-zinc-900 xl:hidden"
         :style="{
           top:           '-100px',
           paddingTop:    'calc(env(safe-area-inset-top, 0px) + 100px)',
           paddingLeft:   'env(safe-area-inset-left)',
           paddingRight:  'env(safe-area-inset-right)',
         }"
+        @keydown="onMobileMenuKeydown"
       >
         <!-- Верхняя строка: город + адрес + закрыть -->
-        <div class="flex items-start justify-between px-5 pt-4 pb-6 shrink-0">
+        <div class="flex shrink-0 items-start justify-between px-5 pb-6 pt-4">
           <span class="flex flex-col gap-0.5">
-            <span class="flex items-center gap-1.5 text-sm font-medium text-white/70">
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21Z"/>
-                <circle cx="12" cy="9.5" r="2.25" stroke-linecap="round"/>
-              </svg>
-              Челябинск
-            </span>
-            <span class="pl-5.5 text-xs text-white/40">ул. Братьев Кашириных, 131Б</span>
+            <span class="text-sm font-medium text-white/70">Челябинск</span>
+            <span class="text-xs text-white/40">ул. Братьев Кашириных, 131Б</span>
           </span>
           <button
+            ref="menuCloseRef"
             type="button"
-            class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-white"
             aria-label="Закрыть меню"
-            @click="closeMobileMenu"
+            @click="closeMobileMenu(true)"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
           </button>
         </div>
 
         <!-- Звонок + соцсети -->
-        <div class="flex items-center gap-2.5 px-5 pb-4 shrink-0">
+        <div class="flex shrink-0 items-center gap-2.5 px-5 pb-4">
           <a
             :href="`tel:${CONTACTS.phones[0]?.raw}`"
-            class="flex-1 flex items-center justify-center gap-2 rounded-full bg-white text-ink font-semibold text-sm py-3 transition-opacity active:opacity-80"
-            @click="closeMobileMenu"
+            class="flex flex-1 items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-ink transition-opacity active:opacity-80"
+            @click="closeMobileMenu()"
           >
-            <img src="/icons/phone-call.webp" alt="" class="w-5 h-5" width="20" height="20" loading="eager" fetchpriority="high" />
+            <img src="/icons/phone-call.webp" alt="" class="h-5 w-5" width="20" height="20" />
             Позвонить
           </a>
           <a
@@ -671,9 +591,9 @@ onUnmounted(() => {
             target="_blank"
             rel="noopener noreferrer"
             :aria-label="`${s.label} (открывается в новой вкладке)`"
-            class="w-11 h-11 shrink-0 flex items-center justify-center rounded-full bg-white transition-opacity active:opacity-80"
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white transition-opacity active:opacity-80"
           >
-            <img :src="s.icon" :alt="s.label" class="w-5 h-5" width="20" height="20" loading="eager" fetchpriority="high" />
+            <img :src="s.icon" alt="" class="h-5 w-5" width="20" height="20" />
           </a>
         </div>
 
@@ -685,81 +605,61 @@ onUnmounted(() => {
              дочерние ссылки, стрелка-«обещание перехода» была бы обманчива. -->
         <nav class="flex-1 overflow-y-auto px-5" aria-label="Мобильная навигация">
           <ul class="border-t border-white/10" role="list">
-            <li v-for="link in NAV_LINKS" :key="link.href" class="nav-item border-b border-white/10" :class="{ 'nav-item--active': isActive(link.href) }">
+            <li
+              v-for="link in NAV_LINKS"
+              :key="link.href"
+              class="nav-item border-b border-white/10"
+              :class="{ 'nav-item--active': isCurrent(link) }"
+            >
               <a
                 :href="link.href"
-                class="flex items-center justify-between py-4 pl-3 -ml-3 text-base font-semibold transition-colors"
-                :class="isActive(link.href) ? 'text-white' : 'text-white/85 hover:text-white'"
-                :aria-current="isActive(link.href) ? 'page' : undefined"
-                @click="closeMobileMenu"
+                class="-ml-3 flex items-center justify-between py-4 pl-3 text-base font-semibold transition-colors"
+                :class="isCurrent(link) ? 'text-white' : 'text-white/85 hover:text-white'"
+                :aria-current="isPage(link) ? 'page' : undefined"
+                @click="closeMobileMenu()"
               >
                 {{ link.label }}
                 <svg
-                  v-if="link.href !== '/catalog/' && link.href !== '/about/'"
-                  class="w-4 h-4 shrink-0 text-white/30"
+                  v-if="!link.menu"
+                  class="h-4 w-4 shrink-0 text-white/30"
                   fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"
                 >
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/>
                 </svg>
               </a>
-              <!-- Подразделы каталога -->
-              <ul v-if="link.href === '/catalog/'" class="mb-3 -mt-1 space-y-0.5" role="list">
-                <li v-for="item in CATALOG_DROPDOWN" :key="item.href">
+              <!-- Подразделы (каталог, «О нас») -->
+              <ul v-if="link.menu" class="-mt-1 mb-3 space-y-0.5" role="list">
+                <li v-for="item in link.menu" :key="item.href">
                   <a
                     :href="item.href"
                     class="block rounded-xl px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:bg-white/5 hover:text-white/90"
-                    @click="closeMobileMenu"
-                  >{{ item.label }}</a>
-                </li>
-              </ul>
-              <!-- Подразделы «О нас» -->
-              <ul v-if="link.href === '/about/'" class="mb-3 -mt-1 space-y-0.5" role="list">
-                <li v-for="item in ABOUT_DROPDOWN" :key="item.href">
-                  <a
-                    :href="item.href"
-                    class="block rounded-xl px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:bg-white/5 hover:text-white/90"
-                    @click="closeMobileMenu"
+                    @click="closeMobileMenu()"
                   >{{ item.label }}</a>
                 </li>
               </ul>
             </li>
           </ul>
 
-          <!-- Статус салона + график. Та же поверхность и круглая иконка,
-               что у кнопок телефонов внизу — единый язык карточек меню. -->
+          <!-- Статус салона + график -->
           <div
-            class="mt-4 mb-5 rounded-xl bg-white/[0.06] px-4 py-3.5 text-sm leading-snug"
+            class="mb-5 mt-4 rounded-xl bg-white/[0.06] px-4 py-3.5 text-sm leading-snug"
             aria-live="polite"
             aria-atomic="true"
           >
-            <div class="flex items-center gap-3">
-              <span
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-                :class="isOpen ? 'bg-teal-400/15 text-teal-300' : 'bg-white/10 text-white'"
-                aria-hidden="true"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
-              </span>
-              <div class="min-w-0">
-                <p class="font-semibold" :class="isOpen ? 'text-teal-300' : 'text-white'">{{ statusTitle }}</p>
-                <p class="text-white/55">{{ statusDetail }}</p>
-              </div>
-            </div>
-            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-0.5 border-t border-white/10 pt-2.5 text-xs text-white/45 tabular-nums">
+            <p class="font-semibold" :class="isOpen ? 'text-teal-300' : 'text-white'">{{ statusTitle }}</p>
+            <p class="text-white/55">{{ statusDetail }}</p>
+            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-0.5 border-t border-white/10 pt-2.5 text-xs tabular-nums text-white/45">
               <span>{{ CONTACTS.worktimeWeekdays }}</span>
               <span>{{ CONTACTS.worktimeWeekend }}</span>
             </p>
           </div>
         </nav>
 
-        <!-- Телефоны — закреплены внизу. Каждый номер — отдельная
-             кнопка звонка: подпись + иконка трубки, чтобы было видно,
-             что это действие, а не просто текст. -->
+        <!-- Телефоны — закреплены внизу. Каждый номер — отдельная строка-
+             ссылка со словом «Позвонить», чтобы было видно, что это действие,
+             а не просто текст. -->
         <div
-          class="shrink-0 border-t border-white/10 bg-zinc-900 px-5 pt-3 flex flex-col gap-2"
+          class="flex shrink-0 flex-col gap-2 border-t border-white/10 bg-zinc-900 px-5 pt-3"
           :style="{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }"
         >
           <a
@@ -768,17 +668,13 @@ onUnmounted(() => {
             :href="`tel:${p.raw}`"
             :aria-label="`Позвонить: ${p.label}`"
             class="flex items-center justify-between gap-3 rounded-xl bg-white/[0.06] px-4 py-2.5 transition-colors active:bg-white/[0.12]"
-            @click="closeMobileMenu"
+            @click="closeMobileMenu()"
           >
             <span class="min-w-0">
-              <span class="block text-base font-semibold text-white tabular-nums">{{ p.label }}</span>
+              <span class="block text-base font-semibold tabular-nums text-white">{{ p.label }}</span>
               <span class="block text-xs text-white/45">{{ p.title }}</span>
             </span>
-            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </span>
+            <span class="shrink-0 text-sm font-semibold text-white/70" aria-hidden="true">Позвонить</span>
           </a>
         </div>
       </div>

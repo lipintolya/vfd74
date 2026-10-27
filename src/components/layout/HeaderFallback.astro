@@ -1,0 +1,90 @@
+---
+/**
+ * Статичная заглушка шапки — показывается в HTML, пока Vue-шапка
+ * (client:only, см. BaseLayout) не загрузилась. Без неё первые кадры были
+ * без шапки вообще, а потом она «выпрыгивала»; у посетителей без JS шапки
+ * не было совсем.
+ *
+ * Размеры, сетка и классы те же, что у Header.vue (высота — --header-bar,
+ * пункты — navLinkClass из lib/header-nav): заменяется без сдвига. Без
+ * выпадающих меню и попапа контактов: «Связаться» ведёт на /contacts/,
+ * бургер на телефоне — только вид (меню появится вместе со скриптом; пока
+ * все разделы есть ссылками в блоке «Разделы сайта» внизу страницы).
+ */
+import { NAV_LINKS, SOCIAL_NETWORKS, FOCUS, isCurrentPage, navLinkClass } from '../../lib/header-nav'
+
+const path = Astro.url.pathname
+---
+
+<header
+  class="fixed inset-x-0 z-50"
+  style="top: calc(env(safe-area-inset-top, 0px) + 1rem); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);"
+>
+  <div class="container">
+    <div
+      class="grid h-(--header-bar) grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 rounded-full border border-gray-200 bg-white/88 px-5 backdrop-blur-sm xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
+    >
+      <a href="/" class:list={['group flex w-fit items-center gap-3 rounded-full', FOCUS]} aria-label="ВФД на Кашириных — главная">
+        <img src="/svg/logo.svg" alt="" class="h-9 w-auto shrink-0 object-contain" width="36" height="36" decoding="async" />
+        <span class="hidden whitespace-nowrap text-sm font-semibold tracking-wide sm:block">ДВЕРИ НА КАШИРИНЫХ</span>
+      </a>
+
+      <nav class="hidden items-center gap-1 xl:flex" aria-label="Основная навигация">
+        {NAV_LINKS.map((link) => (
+          <a
+            href={link.href}
+            class={navLinkClass(link, path)}
+            aria-current={isCurrentPage(link, path) ? 'page' : undefined}
+          >
+            {link.label}
+            {link.menu && (
+              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            )}
+          </a>
+        ))}
+      </nav>
+
+      <div class="flex items-center justify-self-end">
+        <div class="hidden items-center gap-1 xl:flex">
+          {SOCIAL_NETWORKS.map((s) => (
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${s.label} (открывается в новой вкладке)`}
+              class:list={['flex h-9 w-9 items-center justify-center rounded-full', FOCUS]}
+            >
+              <img src={s.icon} alt="" class="h-7 w-7" width="28" height="28" />
+            </a>
+          ))}
+          <a href="/contacts/" class="btn btn-primary ml-2 h-10 px-5 text-sm">Связаться</a>
+        </div>
+
+        <div class="flex items-center gap-1 xl:hidden">
+          {SOCIAL_NETWORKS.map((s) => (
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${s.label} (открывается в новой вкладке)`}
+              class:list={['flex h-10 w-10 items-center justify-center rounded-full', FOCUS]}
+            >
+              <img src={s.icon} alt="" class="h-7 w-7" width="28" height="28" />
+            </a>
+          ))}
+          <!-- Место под бургер той же ширины, что у живого: логотип и значки
+               не сдвигаются, когда он появится -->
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center" aria-hidden="true">
+            <span class="relative block h-[0.8125rem] w-[1.125rem]">
+              <span class="absolute left-0 top-0 h-0.5 w-full rounded-[1px] bg-current"></span>
+              <span class="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 rounded-[1px] bg-current"></span>
+              <span class="absolute left-0 top-full h-0.5 w-full -translate-y-full rounded-[1px] bg-current"></span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

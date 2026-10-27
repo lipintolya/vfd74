@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 import Header from '../components/layout/Header.vue'
+import HeaderFallback from '../components/layout/HeaderFallback.astro'
 import Footer from '../components/layout/Footer.vue'
 import { absolutizeAssets } from '../lib/media-path.mjs'
 import YandexMetrika from '../components/analytics/YandexMetrika.astro'
@@ -138,13 +139,24 @@ const structuredDataJson = structuredData
 
   <body class="min-h-screen flex flex-col">
 
-    <!-- Header: только клиент, без hydration mismatch -->
-    <Header client:only="vue" />
+    <!-- Ссылка «к содержимому» для клавиатуры и скринридеров: видна только
+         при фокусе, первый Tab на странице -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-full focus:bg-white focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-ink focus:shadow-lg"
+    >Перейти к содержимому</a>
+
+    <!-- Header: только клиент, без hydration mismatch. До загрузки скрипта —
+         статичная заглушка тех же размеров (HeaderFallback), чтобы шапка не
+         «выпрыгивала» и была у посетителей без JS. -->
+    <Header client:only="vue">
+      <HeaderFallback slot="fallback" />
+    </Header>
 
     <main
       id="main-content"
       class="flex-1 relative overflow-x-hidden"
-      style="padding-top: var(--header-height, 88px)"
+      style="padding-top: var(--header-height)"
     >
       <slot />
     </main>

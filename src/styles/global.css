@@ -160,8 +160,13 @@
   --shadow-card:  0 2px 12px rgba(0,0,0,.07);
   --shadow-hover: 0 8px 28px rgba(0,0,0,.12);
 
-  /* Layout */
-  --header-height: 88px;
+  /* Layout: плавающая шапка-пилюля — высота фиксирована (Header.vue и
+     HeaderFallback.astro берут --header-bar), поэтому --header-height
+     известен ещё до загрузки шапки и отступ <main> не пересчитывается
+     (был 88px при реальных ~78: страница прыгала на 10px). Скрипт шапки
+     потом выставляет то же значение уже в пикселях. */
+  --header-bar: 3.75rem;
+  --header-height: calc(env(safe-area-inset-top, 0px) + 1rem + var(--header-bar));
 
   /* Motion */
   --ease-out:      cubic-bezier(0.4,0,0.2,1);
@@ -341,8 +346,12 @@ h4.font-medium, h5.font-medium, h6.font-medium {
    Vue-острова (client:load/visible/idle) рендерят обёртку <astro-island>
    вокруг своей .section, поэтому реальные DOM-соседи чаще не два <section>
    напрямую, а `astro-island` и `section` (в любом порядке) — эти случаи
-   перекрыты через :has() отдельно от прямого .section + .section. */
+   перекрыты через :has() отдельно от прямого .section + .section.
+   Инлайн-<script> компонента (Reviews, Novelties…) Astro оставляет в HTML
+   сразу после </section> — между секциями он ломал соседство, и отступ
+   удваивался (112px вместо 56), поэтому `.section + script + .section`. */
 .section + .section,
+.section + script + .section,
 astro-island:has(> .section) + .section,
 .section + astro-island:has(> .section) > .section {
   padding-top: 0;
