@@ -83,7 +83,7 @@ const NAV_BASE =
 
 /** Классы пункта десктопной навигации */
 export const navLinkClass = (link: NavLink, path: string): string =>
-  `${NAV_BASE} ${isCurrentSection(link, path) ? 'bg-teal-50 text-teal-700 hover:bg-teal-100' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`
+  `${NAV_BASE} ${isCurrentSection(link, path) ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`
 
 /** Подпись «ДВЕРИ НА КАШИРИНЫХ» рядом с логотипом: шрифт заголовков сайта
     (Rubik), как у H1–H3, а не шрифт текста — подпись читается частью бренда,
