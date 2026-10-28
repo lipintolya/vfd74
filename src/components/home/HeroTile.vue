@@ -96,8 +96,9 @@ defineProps<{ tile: Tile; wide?: boolean }>()
 @media (width >= 40rem) {
   .hb-body { padding: 1.5rem; }
 }
-/* Графитовая: крупная подпись сверху, текст снизу */
-.hb-tile--plain .hb-body { justify-content: space-between; }
+/* Графитовая: крупная подпись прямо над текстом, а не у верхнего края —
+   на высокой плитке между ними оставался пустой провал */
+.hb-tile--plain .hb-body { gap: 1.25rem; }
 
 .hb-big {
   margin: 0;
