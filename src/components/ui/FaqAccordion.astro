@@ -6,7 +6,8 @@
  *
  * Раскладка зависит от ширины самого блока (container query), а не экрана:
  * в широком контейнере — слева заголовок и необязательный слот `aside`
- * (прижат к низу колонки — на главной туда ставится «Остались вопросы?»),
+ * (сразу под заголовком — на главной туда ставится «Остались вопросы?»;
+ * прижатый к низу колонки он отрывался от заголовка пустым провалом),
  * справа список; в узкой колонке (статья, планшет, телефон) — столбиком,
  * `aside` после списка. Строка вопроса на тысячу пикселей с шевроном на
  * другом краю (было) взгляду не за что зацепиться.
@@ -60,15 +61,16 @@ const hasAside = Astro.slots.has('aside')
     .faq {
       display: grid;
       grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-      grid-template-rows: auto 1fr;
+      grid-template-rows: auto auto 1fr;
       grid-template-areas:
         'head list'
-        'aside list';
+        'aside list'
+        '. list';
       column-gap: clamp(2.5rem, 5vw, 5rem);
     }
     .faq-h2 { grid-area: head; margin: 0; }
     .faq-list { grid-area: list; }
-    .faq-aside { grid-area: aside; align-self: end; margin-top: 2rem; }
+    .faq-aside { grid-area: aside; align-self: start; margin-top: 2rem; }
   }
 
   /* ── Список ── */
