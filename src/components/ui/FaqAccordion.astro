@@ -5,15 +5,11 @@
  * лендингов и статей.
  *
  * Раскладка зависит от ширины самого блока (container query), а не экрана.
- * В узкой колонке (статья, планшет, телефон) — столбиком, слот `aside` после
- * списка. В широком:
- *  - без `aside` — слева заголовок (липкий: едет за прокруткой вдоль списка,
- *    пустая колонка под ним не «висит»), справа список;
- *  - с `aside` (на главной — «Остались вопросы?») — заголовок сверху, под ним
- *    список слева и панель справа на всю высоту списка: колонка с одним
- *    заголовком и пустотой под ним (было) выглядела недоделанной.
- * Строка вопроса на тысячу пикселей с шевроном на другом краю тоже не годилась —
- * взгляду не за что зацепиться.
+ * Со слотом `aside` (на главной — «Остались вопросы?») — всегда столбиком:
+ * заголовок, список во всю ширину контейнера, под ним панель. Без `aside`
+ * в широком контейнере — слева заголовок (липкий: едет за прокруткой вдоль
+ * списка, пустая колонка под ним не «висит»), справа список; в узкой колонке
+ * (статья, планшет, телефон) — столбиком.
  *
  * Открытие плавное там, где браузер умеет ::details-content и
  * interpolate-size (Chrome 131+); в остальных — мгновенное, как раньше.
@@ -57,11 +53,11 @@ const hasAside = Astro.slots.has('aside')
      поэтому сетка .faq вложена в обёртку */
   .faq-wrap { container: faq / inline-size; }
   .faq-h2 { margin: 0 0 1.5rem; text-wrap: balance; }
-  .faq-aside { margin-top: 2.5rem; }
+  .faq-aside { margin-top: 2rem; }
 
-  /* ── Широкий блок ── */
+  /* ── Широкий блок без панели: заголовок слева, список справа ── */
   @container faq (min-width: 62rem) {
-    .faq {
+    .faq:not(.faq--aside) {
       display: grid;
       grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
       grid-template-areas: 'head list';
@@ -69,26 +65,13 @@ const hasAside = Astro.slots.has('aside')
       column-gap: clamp(2.5rem, 5vw, 5rem);
     }
     /* Липкий заголовок: прилипает под плавающей шапкой */
-    .faq-h2 {
+    .faq:not(.faq--aside) .faq-h2 {
       grid-area: head;
       margin: 0;
       position: sticky;
       top: calc(var(--header-height) + 1.5rem);
     }
-    .faq-list { grid-area: list; }
-
-    /* С панелью: заголовок сверху, список слева, панель справа на всю высоту */
-    .faq--aside {
-      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
-      grid-template-areas:
-        'head head'
-        'list aside';
-      align-items: stretch;
-      column-gap: clamp(2rem, 4vw, 3.5rem);
-      row-gap: 2rem;
-    }
-    .faq--aside .faq-h2 { position: static; }
-    .faq-aside { grid-area: aside; display: grid; margin-top: 0; }
+    .faq:not(.faq--aside) .faq-list { grid-area: list; }
   }
 
   /* ── Список ── */

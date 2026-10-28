@@ -5,12 +5,12 @@
  * contacts-data, ссылки те же, что ловит YandexMetrika (tel:, t.me, vk.com,
  * max.ru → цели phone_click, telegram_click, vk_click, max_click).
  *
- * Рядом со списком вопросов панель стоит на всю его высоту: сверху вопрос,
- * в середине номер телефона крупно (с компьютера по tel: не позвонить —
- * номер нужен на виду) и часы, снизу кнопки; главное действие — Telegram,
- * белой кнопкой. Раскладка зависит от ширины панели: узкая — столбиком;
- * средняя (планшет) — кнопки строкой; широкая — текст и телефон слева,
- * кнопки справа.
+ * Раскладка зависит от ширины самой панели. Широкая (контейнер страницы) —
+ * одна невысокая строка из трёх частей: вопрос, телефон с часами, кнопки.
+ * Средняя (планшет) — части столбиком, кнопки в одну строку слева. Узкая
+ * (телефон) — столбиком, Telegram тянется, значки рядом. Главное действие —
+ * Telegram, белой кнопкой; номер крупно, потому что с компьютера по tel: не
+ * позвонить и номер нужен на виду.
  */
 import { companyLegalInfo } from '../../lib/contacts-data'
 
@@ -51,13 +51,11 @@ const max = social('MAX')
 
 <style>
   /* Контейнер для @container — стили самого контейнера им не меняются,
-     поэтому панель .ask вложена в обёртку. Обёртка — grid: панель
-     растягивается на высоту, которую ей даёт соседний список. */
-  .ask-wrap { container: ask / inline-size; display: grid; }
+     поэтому панель .ask вложена в обёртку */
+  .ask-wrap { container: ask / inline-size; }
   .ask {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     gap: 1.5rem;
     padding: 1.5rem;
     border-radius: 1.5rem;
@@ -74,12 +72,13 @@ const max = social('MAX')
   }
   .ask-lead {
     margin: 0.5rem 0 0;
-    font-size: var(--text-step-1);
+    font-size: var(--text-step-2);
     line-height: 1.5;
-    color: rgb(255 255 255 / 0.65);
+    color: rgb(255 255 255 / 0.7);
   }
 
-  /* Телефон крупно, как цифры в других блоках главной */
+  /* Телефон крупно, как цифры в других блоках главной; часы — двумя
+     строками под ним, светлее, чем раньше (серый на графите не читался) */
   .ask-phone {
     display: block;
     font-family: var(--font-display);
@@ -103,18 +102,20 @@ const max = social('MAX')
   }
   .ask-hours {
     display: grid;
-    gap: 0.125rem;
+    gap: 0.25rem;
     margin: 0.75rem 0 0;
-    font-size: var(--text-step-1);
-    line-height: 1.45;
+    font-size: var(--text-step-2);
+    line-height: 1.4;
     font-variant-numeric: tabular-nums;
-    color: rgb(255 255 255 / 0.65);
+    color: rgb(255 255 255 / 0.85);
   }
+  .ask-hours span { display: block; }
 
-  /* Кнопки: Telegram тянется, значки — по 2.875rem */
+  /* Кнопки: Telegram тянется, значки справа от него */
   .ask-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
     gap: 0.5rem;
   }
   .ask-btn {
@@ -123,7 +124,7 @@ const max = social('MAX')
     justify-content: center;
     gap: 0.5rem;
     min-height: 2.875rem;
-    padding: 0.5rem 1.25rem;
+    padding: 0.5rem 1.5rem;
     border-radius: 999px;
     font-size: var(--text-step-1);
     font-weight: 600;
@@ -153,22 +154,28 @@ const max = social('MAX')
     }
   }
 
-  /* Широкая панель (планшет и шире, FAQ столбиком): текст и телефон слева,
-     кнопки справа */
+  /* Средняя панель (планшет): кнопки в строку слева, Telegram не растянут */
+  @container ask (min-width: 32rem) {
+    .ask-actions {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  /* Широкая панель: одна строка из трёх частей, средняя отделена линией */
   @container ask (min-width: 56rem) {
     .ask {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-areas:
-        'text actions'
-        'info actions';
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
       align-items: center;
-      gap: 1.5rem 2.5rem;
-      padding: 2.5rem 3rem;
+      gap: 2rem 3rem;
+      padding: 2rem 2.5rem;
     }
-    .ask-text    { grid-area: text; }
-    .ask-info    { grid-area: info; }
-    .ask-actions { grid-area: actions; display: flex; }
+    .ask-info {
+      padding-left: 3rem;
+      border-left: 1px solid rgb(255 255 255 / 0.12);
+    }
+    .ask-actions { flex-wrap: nowrap; }
   }
   @media (prefers-reduced-motion: reduce) {
     .ask-btn, .ask-phone { transition: none; }
