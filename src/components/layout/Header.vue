@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { companyLegalInfo } from '../../lib/contacts-data'
 import {
-  NAV_LINKS, MOBILE_MENU, SOCIAL_NETWORKS, FOCUS,
+  NAV_LINKS, MOBILE_MENU, SOCIAL_NETWORKS, FOCUS, BRAND_TEXT,
   isCurrentSection, isCurrentPage, isCurrentItem, navLinkClass,
   type NavLink,
 } from '../../lib/header-nav'
@@ -82,6 +82,12 @@ const isOpen = computed(() => {
   const s = schedule.value
   return h >= s.open && h < s.close
 })
+
+/* Подложка и цвет статуса: открыто — зелёный градиент, закрыто — красный */
+const statusSurface = computed(() =>
+  isOpen.value ? 'bg-linear-to-br from-green-100 to-zinc-100' : 'bg-linear-to-br from-red-100 to-zinc-100',
+)
+const statusInk = computed(() => (isOpen.value ? 'text-green-800' : 'text-red-800'))
 
 const pad2 = (h: number) => `${String(h).padStart(2, '0')}:00`
 
@@ -264,7 +270,7 @@ onUnmounted(() => {
                transition-[background-color,box-shadow] duration-300
                xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
         :class="scrolled
-          ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.10)]'
+          ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-lg shadow-black/10'
           : 'bg-white/88 backdrop-blur-sm border-gray-200'"
       >
 
@@ -292,7 +298,8 @@ onUnmounted(() => {
             aria-hidden="true"
           >ВФД</span>
           <span
-            class="hidden whitespace-nowrap text-sm font-semibold tracking-wide transition-colors duration-300 ease-in-out sm:block group-hover:text-teal-600"
+            class="hidden transition-colors duration-300 ease-in-out sm:block group-hover:text-teal-600"
+            :class="BRAND_TEXT"
           >
             ДВЕРИ НА КАШИРИНЫХ
           </span>
@@ -411,9 +418,9 @@ onUnmounted(() => {
                   aria-label="Контактная информация"
                   aria-modal="false"
                   class="absolute right-0 top-full z-50 mt-3 w-80 rounded-3xl bg-white/95 p-1.5 ring-1 ring-black/5 backdrop-blur-xl
-                         shadow-[0_24px_60px_-16px_rgba(15,23,42,0.22)]"
+                         shadow-2xl shadow-black/10"
                 >
-                  <div class="space-y-4 rounded-[1.25rem] bg-white p-5 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                  <div class="space-y-4 rounded-2xl bg-white p-5 text-sm">
 
                     <div>
                       <p class="mb-2 text-sm font-semibold text-gray-500">Телефоны</p>
@@ -440,17 +447,17 @@ onUnmounted(() => {
                         <p class="text-step-0 leading-snug text-gray-800">{{ CONTACTS.address }}</p>
                         <p class="mt-0.5 text-xs leading-snug text-gray-500">{{ CONTACTS.entrance }}</p>
                       </div>
-                      <div class="rounded-xl bg-gray-50 p-3.5">
+                      <div class="rounded-xl p-3.5" :class="statusSurface">
                         <p class="mb-1.5 text-sm font-semibold text-gray-500">Часы работы</p>
                         <p class="text-step-0 leading-snug text-gray-800">{{ CONTACTS.worktimeWeekdays }}</p>
                         <p class="mt-0.5 text-xs leading-snug text-gray-500">{{ CONTACTS.worktimeWeekend }}</p>
                         <p
-                          class="mt-3 border-t border-gray-200/80 pt-2.5 text-sm leading-snug"
+                          class="mt-3 border-t border-black/5 pt-2.5 text-sm leading-snug"
                           aria-live="polite"
                           aria-atomic="true"
                         >
-                          <span class="font-semibold" :class="isOpen ? 'text-teal-700' : 'text-gray-900'">{{ statusTitle }}</span>
-                          <span class="block text-gray-500">{{ statusDetail }}</span>
+                          <span class="font-semibold" :class="statusInk">{{ statusTitle }}</span>
+                          <span class="block text-gray-600">{{ statusDetail }}</span>
                         </p>
                       </div>
                     </div>
@@ -559,27 +566,32 @@ onUnmounted(() => {
         }"
         @keydown="onMobileMenuKeydown"
       >
-        <!-- Шапка меню: бренд (ссылка на главную) и закрыть -->
-        <div class="flex shrink-0 items-center justify-between gap-4 border-b border-gray-200 px-5 py-3">
-          <a href="/" class="flex min-w-0 items-center gap-3 rounded-full" :class="FOCUS" @click="closeMobileMenu()">
-            <img src="/svg/logo.svg" alt="" class="h-11 w-auto shrink-0 object-contain" width="44" height="44" decoding="async" />
-            <span class="min-w-0">
-              <span class="block truncate text-[0.9375rem] font-semibold tracking-wide text-ink">ДВЕРИ НА КАШИРИНЫХ</span>
-              <span class="block truncate text-sm text-gray-500">Фирменный салон ВФД</span>
-            </span>
-          </a>
-          <button
-            ref="menuCloseRef"
-            type="button"
-            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-opacity active:opacity-80"
-            :class="FOCUS"
-            aria-label="Закрыть меню"
-            @click="closeMobileMenu(true)"
-          >
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
+        <!-- Шапка меню — на том же месте и с теми же отступами, что плавающая
+             шапка под ней (mt-4, высота --header-bar, border и px-5 как у
+             пилюли): логотип и крестик встают ровно туда, где были логотип и
+             бургер, поэтому при открытии ничего не «прыгает». Затухание без
+             масштаба — масштаб сам по себе сдвигал все элементы. -->
+        <div class="shrink-0 border-b border-gray-200">
+          <div class="container">
+            <div class="mt-4 flex h-(--header-bar) items-center justify-between gap-6 border border-transparent px-5">
+              <a href="/" class="flex min-w-0 items-center gap-3 rounded-full" :class="FOCUS" @click="closeMobileMenu()">
+                <img src="/svg/logo.svg" alt="" class="h-9 w-auto shrink-0 object-contain" width="36" height="36" decoding="async" />
+                <span class="truncate" :class="BRAND_TEXT">ДВЕРИ НА КАШИРИНЫХ</span>
+              </a>
+              <button
+                ref="menuCloseRef"
+                type="button"
+                class="flex size-10 shrink-0 items-center justify-center rounded-full bg-fg text-white transition-opacity active:opacity-80"
+                :class="FOCUS"
+                aria-label="Закрыть меню"
+                @click="closeMobileMenu(true)"
+              >
+                <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Прокручиваемая середина. overscroll-contain: прокрутка меню не
@@ -587,13 +599,13 @@ onUnmounted(() => {
              у body). -->
         <div class="flex-1 touch-manipulation space-y-6 overflow-y-auto overscroll-contain px-5 py-5">
 
-          <!-- Статус и адрес. Статус — словами и цветом, без индикатора-точки -->
-          <div class="rounded-2xl bg-zinc-100 p-5">
+          <!-- Статус и адрес: открыто — зелёный градиент, закрыто — красный -->
+          <div class="rounded-2xl p-5" :class="statusSurface">
             <p class="text-base leading-snug" aria-live="polite" aria-atomic="true">
-              <span class="font-semibold" :class="isOpen ? 'text-teal-700' : 'text-ink'">{{ statusTitle }}</span>
-              <span class="ml-2 text-gray-600">{{ statusDetail }}</span>
+              <span class="font-semibold" :class="statusInk">{{ statusTitle }}</span>
+              <span class="ml-2 text-gray-700">{{ statusDetail }}</span>
             </p>
-            <div class="mt-4 flex items-end justify-between gap-4 border-t border-black/[0.07] pt-4">
+            <div class="mt-4 flex items-end justify-between gap-4 border-t border-black/5 pt-4">
               <div class="min-w-0 text-sm leading-relaxed">
                 <p class="font-medium text-ink">{{ CONTACTS.street }}</p>
                 <p class="text-gray-500">{{ CONTACTS.worktimeWeekdays }}</p>
@@ -603,12 +615,12 @@ onUnmounted(() => {
                 :href="CONTACTS.route"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink shadow-[0_0_0_1px_rgba(0,0,0,0.06)] transition-opacity active:opacity-80"
+                class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink ring-1 ring-black/5 transition-opacity active:opacity-80"
                 :class="FOCUS"
                 aria-label="Маршрут в Яндекс Картах (открывается в новой вкладке)"
               >
                 Маршрут
-                <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <svg class="size-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M5 11l6-6M6 5h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </a>
@@ -624,19 +636,19 @@ onUnmounted(() => {
                 <li
                   v-for="item in group.items"
                   :key="item.href"
-                  class="relative before:absolute before:left-5 before:right-0 before:top-0 before:h-px before:bg-black/[0.07] first:before:hidden"
+                  class="relative before:absolute before:left-5 before:right-0 before:top-0 before:h-px before:bg-black/5 first:before:hidden"
                 >
                   <a
                     :href="item.href"
-                    class="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors active:bg-black/[0.04]"
+                    class="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors active:bg-black/5"
                     :aria-current="item.href === currentPath ? 'page' : undefined"
                     @click="closeMobileMenu()"
                   >
                     <span class="min-w-0">
-                      <span class="block text-[1.0625rem] font-medium leading-snug" :class="isItemCurrent(item) ? 'text-teal-700' : 'text-ink'">{{ item.label }}</span>
+                      <span class="block text-step-2 font-medium leading-snug" :class="isItemCurrent(item) ? 'text-teal-700' : 'text-ink'">{{ item.label }}</span>
                       <span class="block text-sm leading-snug text-gray-500">{{ item.desc }}</span>
                     </span>
-                    <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="size-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/>
                     </svg>
                   </a>
@@ -650,16 +662,16 @@ onUnmounted(() => {
                 <li
                   v-for="p in CONTACTS.phones"
                   :key="p.raw"
-                  class="relative before:absolute before:left-5 before:right-0 before:top-0 before:h-px before:bg-black/[0.07] first:before:hidden"
+                  class="relative before:absolute before:left-5 before:right-0 before:top-0 before:h-px before:bg-black/5 first:before:hidden"
                 >
                   <a
                     :href="`tel:${p.raw}`"
                     :aria-label="`Позвонить: ${p.label}`"
-                    class="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors active:bg-black/[0.04]"
+                    class="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors active:bg-black/5"
                     @click="closeMobileMenu()"
                   >
                     <span class="min-w-0">
-                      <span class="block text-[1.0625rem] font-medium tabular-nums leading-snug text-ink">{{ p.label }}</span>
+                      <span class="block text-step-2 font-medium tabular-nums leading-snug text-ink">{{ p.label }}</span>
                       <span class="block text-sm leading-snug text-gray-500">{{ p.title }}</span>
                     </span>
                     <span class="shrink-0 text-sm font-semibold text-gray-500" aria-hidden="true">Позвонить</span>
@@ -670,17 +682,16 @@ onUnmounted(() => {
           </nav>
         </div>
 
-        <!-- Закреплено внизу: главное действие и мессенджеры. Значки — те же
-             чёрные круглые, что в шапке: готовая круглая картинка, без
-             второй подложки. -->
+        <!-- Закреплено внизу: главное действие и мессенджеры. Кнопка — общий
+             .btn-primary (цвет --color-fg), значки — те же чёрные круглые, что
+             в шапке: готовая круглая картинка, без второй подложки. -->
         <div
           class="flex shrink-0 touch-manipulation items-center gap-3 border-t border-gray-200 bg-white px-5 pt-3"
           :style="{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }"
         >
           <a
             :href="`tel:${CONTACTS.phones[0]?.raw}`"
-            class="flex h-[3.25rem] flex-1 items-center justify-center rounded-full bg-ink text-base font-semibold text-white transition-opacity active:opacity-80"
-            :class="FOCUS"
+            class="btn btn-primary h-11 flex-1 text-base active:opacity-80"
             @click="closeMobileMenu()"
           >
             Позвонить
@@ -692,10 +703,10 @@ onUnmounted(() => {
             target="_blank"
             rel="noopener noreferrer"
             :aria-label="`${s.label} (открывается в новой вкладке)`"
-            class="block h-[3.25rem] w-[3.25rem] shrink-0 rounded-full transition-opacity active:opacity-80"
+            class="block size-11 shrink-0 rounded-full transition-opacity active:opacity-80"
             :class="FOCUS"
           >
-            <img :src="s.icon" alt="" class="h-full w-full" width="52" height="52" />
+            <img :src="s.icon" alt="" class="size-full" width="44" height="44" />
           </a>
         </div>
       </div>

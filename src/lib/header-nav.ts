@@ -85,5 +85,11 @@ const NAV_BASE =
 export const navLinkClass = (link: NavLink, path: string): string =>
   `${NAV_BASE} ${isCurrentSection(link, path) ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'}`
 
+/** Подпись «ДВЕРИ НА КАШИРИНЫХ» рядом с логотипом: шрифт заголовков сайта
+    (Rubik), как у H1–H3, а не шрифт текста — подпись читается частью бренда,
+    а не строкой интерфейса */
+export const BRAND_TEXT =
+  'font-(family-name:--font-display) text-sm font-medium uppercase tracking-wide whitespace-nowrap'
+
 /** Кольцо фокуса — одно на все ссылки и кнопки шапки */
 export const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500'
