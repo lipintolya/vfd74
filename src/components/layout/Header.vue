@@ -285,7 +285,7 @@ onUnmounted(() => {
             v-if="!logoError"
             :src="LOGO_URL"
             alt=""
-            class="h-11 w-auto shrink-0 object-contain xl:h-9"
+            class="h-9.5 w-auto shrink-0 object-contain xl:h-9"
             width="36"
             height="36"
             decoding="async"
@@ -294,7 +294,7 @@ onUnmounted(() => {
           <!-- Запасной вариант, если файл логотипа не загрузился -->
           <span
             v-else
-            class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-linear-to-br xl:size-9 from-gray-700 to-gray-900 text-xs font-semibold text-white"
+            class="flex size-9.5 shrink-0 items-center justify-center rounded-lg bg-linear-to-br xl:size-9 from-gray-700 to-gray-900 text-xs font-semibold text-white"
             aria-hidden="true"
           >ВФД</span>
           <span
@@ -575,7 +575,7 @@ onUnmounted(() => {
           <div class="container">
             <div class="mt-4 flex h-(--header-bar) items-center justify-between gap-6 border border-transparent px-5">
               <a href="/" class="flex min-w-0 items-center gap-3 rounded-full" :class="FOCUS" @click="closeMobileMenu()">
-                <img src="/svg/logo.svg" alt="" class="h-11 w-auto shrink-0 object-contain xl:h-9" width="36" height="36" decoding="async" />
+                <img src="/svg/logo.svg" alt="" class="h-9.5 w-auto shrink-0 object-contain xl:h-9" width="36" height="36" decoding="async" />
                 <span class="truncate" :class="BRAND_TEXT">ДВЕРИ НА КАШИРИНЫХ</span>
               </a>
               <button
