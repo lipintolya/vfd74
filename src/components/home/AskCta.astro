@@ -1,19 +1,22 @@
 ---
 /**
- * «Остались вопросы?» — графитовая плашка с каналами связи под FAQ на
- * главной (слот `aside` у FaqAccordion). Телефон и мессенджеры — из
+ * «Остались вопросы?» — графитовая панель с каналами связи под FAQ на
+ * главной (слот `aside` у FaqAccordion). Телефон, часы и мессенджеры — из
  * contacts-data, ссылки те же, что ловит YandexMetrika (tel:, t.me, vk.com,
  * max.ru → цели phone_click, telegram_click, vk_click, max_click).
  *
- * Раскладка зависит от ширины плашки: в узкой (колонка рядом со списком,
- * телефон) — текст, под ним кнопки столбиком; в средней (планшет) — кнопки
- * строкой под текстом; в широкой — текст слева, кнопки справа. Главное действие — Telegram, белой кнопкой;
- * телефон выписан цифрами: с компьютера по tel: не позвонить, номер нужен
- * на виду.
+ * Рядом со списком вопросов панель стоит на всю его высоту: сверху вопрос,
+ * в середине номер телефона крупно (с компьютера по tel: не позвонить —
+ * номер нужен на виду) и часы, снизу кнопки; главное действие — Telegram,
+ * белой кнопкой. Раскладка зависит от ширины панели: узкая — столбиком;
+ * средняя (планшет) — кнопки строкой; широкая — текст и телефон слева,
+ * кнопки справа.
  */
 import { companyLegalInfo } from '../../lib/contacts-data'
 
-const main = companyLegalInfo.contacts.phone[0]!
+const { contacts, workingHours } = companyLegalInfo
+const main = contacts.phone[0]!
+const hours = [workingHours.weekdays.label, `Сб–Вс: ${workingHours.saturday.opens}–${workingHours.saturday.closes}`]
 const social = (name: string) => companyLegalInfo.socialMedia.find((s) => s.name === name)!
 const telegram = social('Telegram')
 const vk = social('VK')
@@ -27,9 +30,15 @@ const max = social('MAX')
     <p class="ask-lead">Поможем с выбором и проконсультируем.</p>
   </div>
 
+  <div class="ask-info">
+    <a href={`tel:${main.raw}`} class="ask-phone">{main.label}</a>
+    <p class="ask-hours">
+      {hours.map((h) => <span>{h}</span>)}
+    </p>
+  </div>
+
   <div class="ask-actions">
     <a href={telegram.url} target="_blank" rel="noopener" class="ask-btn ask-btn--main">Написать в Telegram</a>
-    <a href={`tel:${main.raw}`} class="ask-btn ask-btn--ghost ask-tel">{main.label}</a>
     <a href={vk.url} target="_blank" rel="noopener" class="ask-btn ask-btn--ghost ask-ic" aria-label="Написать в VK">
       <img src="/icons/w_vk.webp" alt="" width="18" height="18" loading="lazy" decoding="async" />
     </a>
@@ -42,10 +51,13 @@ const max = social('MAX')
 
 <style>
   /* Контейнер для @container — стили самого контейнера им не меняются,
-     поэтому плашка .ask вложена в обёртку */
-  .ask-wrap { container: ask / inline-size; }
+     поэтому панель .ask вложена в обёртку. Обёртка — grid: панель
+     растягивается на высоту, которую ей даёт соседний список. */
+  .ask-wrap { container: ask / inline-size; display: grid; }
   .ask {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     gap: 1.5rem;
     padding: 1.5rem;
     border-radius: 1.5rem;
@@ -67,14 +79,44 @@ const max = social('MAX')
     color: rgb(255 255 255 / 0.65);
   }
 
-  /* Узкая плашка: Telegram на всю ширину, ниже телефон и два значка */
+  /* Телефон крупно, как цифры в других блоках главной */
+  .ask-phone {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-step-4);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .ask-phone:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 4px;
+    border-radius: 0.25rem;
+  }
+  @media (hover: hover) {
+    .ask-phone:hover { color: var(--color-accent); }
+  }
+  .ask-hours {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0.75rem 0 0;
+    font-size: var(--text-step-1);
+    line-height: 1.45;
+    font-variant-numeric: tabular-nums;
+    color: rgb(255 255 255 / 0.65);
+  }
+
+  /* Кнопки: Telegram тянется, значки — по 2.875rem */
   .ask-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: 0.5rem;
   }
-  .ask-btn--main { grid-column: 1 / -1; }
-
   .ask-btn {
     display: inline-flex;
     align-items: center;
@@ -111,21 +153,25 @@ const max = social('MAX')
     }
   }
 
-  /* Средняя плашка (планшет): кнопки в строку под текстом, Telegram — не на всю ширину */
-  @container ask (min-width: 32rem) {
-    .ask-actions { display: flex; flex-wrap: wrap; }
-  }
-  /* Широкая плашка: текст слева, кнопки справа в строку */
+  /* Широкая панель (планшет и шире, FAQ столбиком): текст и телефон слева,
+     кнопки справа */
   @container ask (min-width: 56rem) {
     .ask {
+      display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'text actions'
+        'info actions';
       align-items: center;
       gap: 1.5rem 2.5rem;
       padding: 2.5rem 3rem;
     }
+    .ask-text    { grid-area: text; }
+    .ask-info    { grid-area: info; }
+    .ask-actions { grid-area: actions; display: flex; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .ask-btn { transition: none; }
+    .ask-btn, .ask-phone { transition: none; }
     .ask-btn--main:hover { transform: none; }
   }
 </style>

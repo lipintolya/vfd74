@@ -4,13 +4,16 @@
  * ответы в HTML для FAQPage-разметки страницы). Общий для главной, каталога,
  * лендингов и статей.
  *
- * Раскладка зависит от ширины самого блока (container query), а не экрана:
- * в широком контейнере — слева заголовок и необязательный слот `aside`
- * (сразу под заголовком — на главной туда ставится «Остались вопросы?»;
- * прижатый к низу колонки он отрывался от заголовка пустым провалом),
- * справа список; в узкой колонке (статья, планшет, телефон) — столбиком,
- * `aside` после списка. Строка вопроса на тысячу пикселей с шевроном на
- * другом краю (было) взгляду не за что зацепиться.
+ * Раскладка зависит от ширины самого блока (container query), а не экрана.
+ * В узкой колонке (статья, планшет, телефон) — столбиком, слот `aside` после
+ * списка. В широком:
+ *  - без `aside` — слева заголовок (липкий: едет за прокруткой вдоль списка,
+ *    пустая колонка под ним не «висит»), справа список;
+ *  - с `aside` (на главной — «Остались вопросы?») — заголовок сверху, под ним
+ *    список слева и панель справа на всю высоту списка: колонка с одним
+ *    заголовком и пустотой под ним (было) выглядела недоделанной.
+ * Строка вопроса на тысячу пикселей с шевроном на другом краю тоже не годилась —
+ * взгляду не за что зацепиться.
  *
  * Открытие плавное там, где браузер умеет ::details-content и
  * interpolate-size (Chrome 131+); в остальных — мгновенное, как раньше.
@@ -30,7 +33,7 @@ const hasAside = Astro.slots.has('aside')
 ---
 
 <div class="faq-wrap">
-<div class="faq">
+<div class="faq" class:list={{ 'faq--aside': hasAside }}>
   <h2 class="t-h2 faq-h2">{title}</h2>
 
   <div class="faq-list">
@@ -56,21 +59,36 @@ const hasAside = Astro.slots.has('aside')
   .faq-h2 { margin: 0 0 1.5rem; text-wrap: balance; }
   .faq-aside { margin-top: 2.5rem; }
 
-  /* ── Широкий блок: заголовок слева, список справа ── */
+  /* ── Широкий блок ── */
   @container faq (min-width: 62rem) {
     .faq {
       display: grid;
       grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-      grid-template-rows: auto auto 1fr;
-      grid-template-areas:
-        'head list'
-        'aside list'
-        '. list';
+      grid-template-areas: 'head list';
+      align-items: start;
       column-gap: clamp(2.5rem, 5vw, 5rem);
     }
-    .faq-h2 { grid-area: head; margin: 0; }
+    /* Липкий заголовок: прилипает под плавающей шапкой */
+    .faq-h2 {
+      grid-area: head;
+      margin: 0;
+      position: sticky;
+      top: calc(var(--header-height) + 1.5rem);
+    }
     .faq-list { grid-area: list; }
-    .faq-aside { grid-area: aside; align-self: start; margin-top: 2rem; }
+
+    /* С панелью: заголовок сверху, список слева, панель справа на всю высоту */
+    .faq--aside {
+      grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+      grid-template-areas:
+        'head head'
+        'list aside';
+      align-items: stretch;
+      column-gap: clamp(2rem, 4vw, 3.5rem);
+      row-gap: 2rem;
+    }
+    .faq--aside .faq-h2 { position: static; }
+    .faq-aside { grid-area: aside; display: grid; margin-top: 0; }
   }
 
   /* ── Список ── */
