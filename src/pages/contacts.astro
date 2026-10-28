@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import QuoteCta from '../components/ui/QuoteCta.astro'
-import ContactsSection from '../components/contacts/ContactsSection.vue'
+import ContactsSection from '../components/contacts/ContactsSection.astro'
 import { companyLegalInfo } from '../lib/contacts-data'
 
 const title = 'Контакты салона дверей ВФД в Челябинске — адрес, телефон, часы работы'
@@ -95,7 +95,7 @@ const structuredData = [localBusinessSchema, faqSchema]
     </div>
   </div>
 
-  <ContactsSection client:visible />
+  <ContactsSection />
 
   <section class="section pt-0">
     <div class="container">
