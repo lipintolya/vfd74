@@ -285,7 +285,7 @@ onUnmounted(() => {
             v-if="!logoError"
             :src="LOGO_URL"
             alt=""
-            class="h-9 w-auto shrink-0 object-contain"
+            class="h-11 w-auto shrink-0 object-contain xl:h-9"
             width="36"
             height="36"
             decoding="async"
@@ -294,7 +294,7 @@ onUnmounted(() => {
           <!-- Запасной вариант, если файл логотипа не загрузился -->
           <span
             v-else
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-gray-700 to-gray-900 text-xs font-semibold text-white"
+            class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-linear-to-br xl:size-9 from-gray-700 to-gray-900 text-xs font-semibold text-white"
             aria-hidden="true"
           >ВФД</span>
           <span
@@ -491,7 +491,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Mobile: socials + burger -->
-          <div class="flex items-center gap-1 xl:hidden">
+          <div class="flex items-center gap-1.5 xl:hidden">
             <a
               v-for="s in SOCIAL_NETWORKS"
               :key="s.name"
@@ -499,16 +499,16 @@ onUnmounted(() => {
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`${s.label} (открывается в новой вкладке)`"
-              class="flex h-10 w-10 items-center justify-center rounded-full"
+              class="flex size-11 items-center justify-center rounded-full"
               :class="FOCUS"
             >
-              <img :src="s.icon" alt="" class="h-7 w-7" width="28" height="28" />
+              <img :src="s.icon" alt="" class="size-8" width="32" height="32" />
             </a>
 
             <button
               ref="burgerBtnRef"
               type="button"
-              class="burger-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors hover:bg-gray-100"
+              class="burger-btn flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors hover:bg-gray-100"
               :class="[{ 'is-open': mobileOpen }, FOCUS]"
               :aria-expanded="mobileOpen"
               :aria-label="mobileOpen ? 'Закрыть меню' : 'Открыть меню'"
@@ -575,13 +575,13 @@ onUnmounted(() => {
           <div class="container">
             <div class="mt-4 flex h-(--header-bar) items-center justify-between gap-6 border border-transparent px-5">
               <a href="/" class="flex min-w-0 items-center gap-3 rounded-full" :class="FOCUS" @click="closeMobileMenu()">
-                <img src="/svg/logo.svg" alt="" class="h-9 w-auto shrink-0 object-contain" width="36" height="36" decoding="async" />
+                <img src="/svg/logo.svg" alt="" class="h-11 w-auto shrink-0 object-contain xl:h-9" width="36" height="36" decoding="async" />
                 <span class="truncate" :class="BRAND_TEXT">ДВЕРИ НА КАШИРИНЫХ</span>
               </a>
               <button
                 ref="menuCloseRef"
                 type="button"
-                class="flex size-10 shrink-0 items-center justify-center rounded-full bg-fg text-white transition-opacity active:opacity-80"
+                class="flex size-11 shrink-0 items-center justify-center rounded-full bg-fg text-white transition-opacity active:opacity-80"
                 :class="FOCUS"
                 aria-label="Закрыть меню"
                 @click="closeMobileMenu(true)"
@@ -721,8 +721,8 @@ onUnmounted(() => {
 .burger-icon {
   position: relative;
   display: block;
-  width: 1.125rem;
-  height: 0.8125rem;
+  width: 1.375rem;
+  height: 1rem;
 }
 .burger-icon__line {
   position: absolute;

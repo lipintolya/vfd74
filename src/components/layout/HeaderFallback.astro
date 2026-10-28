@@ -25,7 +25,7 @@ const path = Astro.url.pathname
       class="grid h-(--header-bar) grid-cols-[minmax(0,1fr)_auto] items-center gap-x-6 rounded-full border border-gray-200 bg-white/88 px-5 backdrop-blur-sm xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]"
     >
       <a href="/" class:list={['group flex w-fit items-center gap-3 rounded-full', FOCUS]} aria-label="ВФД на Кашириных — главная">
-        <img src="/svg/logo.svg" alt="" class="h-9 w-auto shrink-0 object-contain" width="36" height="36" decoding="async" />
+        <img src="/svg/logo.svg" alt="" class="h-11 w-auto shrink-0 object-contain xl:h-9" width="36" height="36" decoding="async" />
         <span class:list={['hidden sm:block', BRAND_TEXT]}>ДВЕРИ НА КАШИРИНЫХ</span>
       </a>
 
@@ -62,22 +62,22 @@ const path = Astro.url.pathname
           <a href="/contacts/" class="btn btn-primary ml-2 h-10 px-5 text-sm">Связаться</a>
         </div>
 
-        <div class="flex items-center gap-1 xl:hidden">
+        <div class="flex items-center gap-1.5 xl:hidden">
           {SOCIAL_NETWORKS.map((s) => (
             <a
               href={s.url}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${s.label} (открывается в новой вкладке)`}
-              class:list={['flex h-10 w-10 items-center justify-center rounded-full', FOCUS]}
+              class:list={['flex size-11 items-center justify-center rounded-full', FOCUS]}
             >
-              <img src={s.icon} alt="" class="h-7 w-7" width="28" height="28" />
+              <img src={s.icon} alt="" class="size-8" width="32" height="32" />
             </a>
           ))}
           <!-- Место под бургер той же ширины, что у живого: логотип и значки
                не сдвигаются, когда он появится -->
-          <span class="flex h-10 w-10 shrink-0 items-center justify-center" aria-hidden="true">
-            <span class="relative block h-3.25 w-4.5">
+          <span class="flex size-11 shrink-0 items-center justify-center" aria-hidden="true">
+            <span class="relative block h-4 w-5.5">
               <span class="absolute left-0 top-0 h-0.5 w-full rounded-full bg-current"></span>
               <span class="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 rounded-full bg-current"></span>
               <span class="absolute left-0 top-full h-0.5 w-full -translate-y-full rounded-full bg-current"></span>
