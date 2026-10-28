@@ -1,79 +1,156 @@
 ---
+/**
+ * «Наверх» — плавающая кнопка справа внизу. Появляется, когда пролистан
+ * экран; кольцо вокруг стрелки показывает, сколько страницы пройдено (на
+ * длинных страницах заодно ориентир). Светлая матовая подложка с тенью и
+ * рамкой видна и на белом, и на графитовых блоках; при наведении мышью
+ * инвертируется в --color-fg.
+ *
+ * Спрятанная кнопка недоступна и для клавиатуры (visibility, а не только
+ * opacity). Отступы учитывают чёлку и жесты iOS (safe-area). Баннер
+ * cookie на узком экране перекрывал бы кнопку — скрипт поднимает её над ним.
+ */
 ---
-<button
-  id="btt-btn"
-  aria-label="Наверх — прокрутить страницу в начало"
-  title="Наверх"
->
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2"
-          stroke-linecap="round" stroke-linejoin="round"/>
+
+<button type="button" id="btt-btn" class="btt" aria-label="Наверх — прокрутить страницу в начало" title="Наверх">
+  <!-- Кольцо прогресса: pathLength=1 — длина штриха в долях круга, сдвиг
+       считается напрямую из доли прокрутки (--p) -->
+  <svg class="btt-ring" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+    <circle class="btt-track" cx="24" cy="24" r="22" pathLength="1" />
+    <circle class="btt-bar" cx="24" cy="24" r="22" pathLength="1" />
+  </svg>
+  <svg class="btt-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
   </svg>
 </button>
 
 <style>
-  @keyframes btt-pulse {
-    0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 0 0 0 rgba(20,184,166,0.28); }
-    50%       { box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 0 0 7px rgba(20,184,166,0); }
-  }
-
-  #btt-btn {
+  .btt {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, #f0fdfa 0%, #fff 60%);
-    border: 1px solid #99f6e4;
-    color: #0d9488;
-    cursor: pointer;
+    z-index: 48;
+    right: calc(1.25rem + env(safe-area-inset-right, 0px));
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px) + var(--btt-lift, 0px));
     display: grid;
     place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.92);
+    -webkit-backdrop-filter: blur(0.5rem);
+    backdrop-filter: blur(0.5rem);
+    box-shadow: 0 0 0 1px rgb(15 23 42 / 0.08), 0 0.5rem 1.5rem rgb(15 23 42 / 0.16);
+    color: var(--color-fg);
+    cursor: pointer;
+    touch-action: manipulation;
+    /* спрятана: невидима, не кликабельна и не берёт фокус */
+    visibility: hidden;
     opacity: 0;
-    transform: translateY(10px) scale(0.9);
-    pointer-events: none;
-    transition: opacity 220ms ease, transform 220ms ease,
-                background 150ms ease, border-color 150ms ease;
-    z-index: 48;
+    translate: 0 0.75rem;
+    scale: 0.9;
+    transition:
+      opacity 220ms var(--ease-out),
+      translate 220ms var(--ease-out),
+      scale 220ms var(--ease-out),
+      bottom 250ms var(--ease-out),
+      background-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out),
+      visibility 0s linear 220ms;
   }
-  #btt-btn svg { width: 1.125rem; height: 1.125rem; }
-
-  #btt-btn.btt-visible {
+  .btt[data-visible] {
+    visibility: visible;
     opacity: 1;
-    transform: none;
-    pointer-events: auto;
-    animation: btt-pulse 2.4s ease-in-out infinite;
+    translate: 0 0;
+    scale: 1;
+    transition-delay: 0s;
   }
-  #btt-btn:hover {
-    background: linear-gradient(135deg, #ccfbf1 0%, #f0fdfa 100%);
-    border-color: #2dd4bf;
-    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.22);
-    animation: none;
-  }
-  #btt-btn:active { transform: scale(0.94); animation: none; }
 
-  @media (max-width: 640px) {
-    #btt-btn { bottom: 1.25rem; right: 1rem; }
+  .btt-ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    rotate: -90deg;  /* прогресс идёт от верха по часовой */
+  }
+  .btt-ring circle { stroke-width: 2.5; }
+  .btt-track { stroke: rgb(15 23 42 / 0.1); }
+  .btt-bar {
+    stroke: var(--color-accent);
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--p, 0));
+    transition: stroke-dashoffset 120ms linear, stroke var(--duration-base) var(--ease-out);
+  }
+  .btt-arrow {
+    position: relative;
+    width: 1.125rem;
+    height: 1.125rem;
+    transition: translate var(--duration-base) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .btt:hover { background: var(--color-fg); color: #fff; }
+    .btt:hover .btt-track { stroke: rgb(255 255 255 / 0.2); }
+    .btt:hover .btt-bar { stroke: #2dd4bf; }  /* teal-400 на тёмном */
+    .btt:hover .btt-arrow { translate: 0 -0.125rem; }
+  }
+  .btt:active { scale: 0.94; }
+  .btt:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #btt-btn.btt-visible { animation: none; }
+    .btt,
+    .btt-bar,
+    .btt-arrow { transition: none; }
   }
 </style>
 
 <script>
-  ;(function () {
-    var btn = document.getElementById('btt-btn')
-    if (!btn) return
+  const btn = document.getElementById('btt-btn') as HTMLButtonElement | null
 
-    function onScroll() {
-      btn.classList.toggle('btt-visible', window.scrollY > 400)
+  if (btn) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)')
+    let ticking = false
+
+    /* Видимость и доля прокрутки — раз в кадр, не на каждое событие */
+    const update = () => {
+      ticking = false
+      const y = window.scrollY
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      btn.toggleAttribute('data-visible', y > window.innerHeight)
+      btn.style.setProperty('--p', max > 0 ? Math.min(1, y / max).toFixed(3) : '0')
+    }
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(update)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    update()
 
-    btn.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduce.matches ? 'auto' : 'smooth' })
     })
-  })()
+
+    /* Баннер согласия с cookie (BaseLayout) стоит внизу по центру и на узком
+       экране накрывает кнопку: пока он виден и пересекается с ней по ширине,
+       поднимаем кнопку над ним */
+    const banner = document.getElementById('cookie-banner')
+    if (banner) {
+      const avoid = () => {
+        const shown = getComputedStyle(banner).display !== 'none'
+        const b = banner.getBoundingClientRect()
+        const r = btn.getBoundingClientRect()
+        const overlapsX = shown && b.right > r.left - 8
+        btn.style.setProperty('--btt-lift', overlapsX ? `${Math.ceil(b.height + 12)}px` : '0px')
+      }
+      new MutationObserver(avoid).observe(banner, { attributes: true, attributeFilter: ['style'] })
+      window.addEventListener('resize', avoid, { passive: true })
+      avoid()
+    }
+  }
 </script>
