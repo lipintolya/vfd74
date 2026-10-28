@@ -54,7 +54,6 @@ const contactsBtnRef   = ref<HTMLButtonElement | null>(null)
 const contactsPanelRef = ref<HTMLDivElement | null>(null)
 const mobileMenuRef    = ref<HTMLDivElement | null>(null)
 const burgerBtnRef     = ref<HTMLButtonElement | null>(null)
-const menuCloseRef     = ref<HTMLButtonElement | null>(null)
 
 let timerId: ReturnType<typeof setInterval> | null = null
 
@@ -179,10 +178,15 @@ const openMobileMenu = async () => {
   mobileOpen.value = true
   document.body.style.overflow = 'hidden'
   await nextTick()
-  menuCloseRef.value?.focus()
+  /* Фокус — на саму панель, а не на крестик: на крестике iOS Safari рисовал
+     кольцо фокуса даже после касания пальцем. С панели Tab уходит на первый
+     пункт, ловушка фокуса (onMobileMenuKeydown) работает как раньше. */
+  mobileMenuRef.value?.focus({ preventScroll: true })
 }
-/* returnFocus — только при закрытии с клавиатуры (Esc, крестик); после
-   перехода по ссылке страница всё равно перезагрузится */
+/* returnFocus — только при закрытии с клавиатуры (Esc, Enter на крестике);
+   после касания или клика фокус не возвращаем: программный фокус на бургере
+   рисовал бы кольцо, как раньше на крестике. После перехода по ссылке страница
+   всё равно перезагрузится. */
 const closeMobileMenu = (returnFocus = false) => {
   mobileOpen.value = false
   document.body.style.overflow = ''
@@ -557,7 +561,8 @@ onUnmounted(() => {
         role="dialog"
         aria-label="Мобильное меню"
         aria-modal="true"
-        class="fixed inset-0 z-10000 flex touch-manipulation flex-col bg-white xl:hidden"
+        tabindex="-1"
+        class="fixed inset-0 z-10000 flex touch-manipulation flex-col bg-white outline-none xl:hidden"
         :style="{
           top:           '-100px',
           paddingTop:    'calc(env(safe-area-inset-top, 0px) + 100px)',
@@ -579,12 +584,11 @@ onUnmounted(() => {
                 <span class="truncate" :class="BRAND_TEXT">ДВЕРИ НА КАШИРИНЫХ</span>
               </a>
               <button
-                ref="menuCloseRef"
                 type="button"
                 class="flex size-11 shrink-0 items-center justify-center rounded-full bg-fg text-white transition-opacity active:opacity-80"
                 :class="FOCUS"
                 aria-label="Закрыть меню"
-                @click="closeMobileMenu(true)"
+                @click="closeMobileMenu($event.detail === 0)"
               >
                 <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>

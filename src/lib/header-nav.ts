@@ -91,5 +91,10 @@ export const navLinkClass = (link: NavLink, path: string): string =>
 export const BRAND_TEXT =
   'font-(family-name:--font-display) text-sm font-medium uppercase tracking-wide whitespace-nowrap'
 
-/** Кольцо фокуса — одно на все ссылки и кнопки шапки */
-export const FOCUS = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500'
+/** Кольцо фокуса — одно на все ссылки и кнопки шапки. Только при фокусе с
+    клавиатуры (focus-visible); серую вспышку касания iOS убираем — у кнопок
+    есть своё нажатое состояние, а вспышка выглядела как обводка вокруг бургера
+    и крестика при быстрых нажатиях. */
+export const FOCUS =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 ' +
+  '[-webkit-tap-highlight-color:transparent]'
