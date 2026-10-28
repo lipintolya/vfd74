@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { companyLegalInfo, getFormattedHours } from '../../lib/contacts-data'
 import { paymentMethods } from '../about/about-data'
+import SalonMap from '../ui/SalonMap.vue'
 
 /* Все контакты — из contacts-data.ts (единый источник для футера, шапки,
    /about/ и структурированных данных), а не хардкодом: раньше номера, часы
@@ -14,7 +15,9 @@ const req      = companyLegalInfo.requisites
 const TG  = 'https://t.me/vfddoors74'
 const VK  = 'https://vk.com/vfddoors74'
 const MAX = 'https://max.ru/id452402308842_biz'
-const ROUTE = 'https://yandex.ru/maps/-/CPTwZPi-'
+const ROUTE = address.routeUrl
+/* Улица и дом без «г. Челябинск,» — вторая строка карточки на карте */
+const street = address.legal.replace(/^г\.\s*[^,]+,\s*/, '')
 
 /* Сб и Вс сейчас по одному графику — одна строка «Сб–Вс», без дубля времени. */
 const [weekdays, saturday, sunday] = getFormattedHours()
@@ -118,25 +121,14 @@ const hours = saturday!.time === sunday!.time
             <a :href="ROUTE" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Построить маршрут</a>
           </div>
 
-          <div class="relative min-h-72 flex-1 bg-slate-100">
-            <img
-              src="/salon-map-light.svg"
-              alt="Карта: салон ВФД на ул. Братьев Кашириных, 131Б, рядом перекрёсток с ул. Чичерина"
-              width="1000"
-              height="720"
-              loading="lazy"
-              decoding="async"
-              class="absolute inset-0 h-full w-full object-cover"
-            />
-            <span class="pointer-events-none absolute bottom-2 right-3 text-[0.6875rem] text-slate-500">© участники OpenStreetMap</span>
-            <a
-              :href="ROUTE"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="absolute inset-0"
-              aria-label="Открыть карту с расположением салона в Яндекс Картах (открывается в новой вкладке)"
-            />
-          </div>
+          <SalonMap
+            variant="light"
+            :href="ROUTE"
+            label="Открыть карту с расположением салона в Яндекс Картах (открывается в новой вкладке)"
+            title="ВФД на Кашириных"
+            :subtitle="street"
+            class="min-h-80 flex-1"
+          />
         </div>
       </div>
 

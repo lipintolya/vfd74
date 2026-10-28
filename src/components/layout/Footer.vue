@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, useTemplateRef } from 'vue'
 import { companyLegalInfo } from '../../lib/contacts-data'
+import SalonMap from '../ui/SalonMap.vue'
 
 /* ============================================================
    Data
@@ -36,11 +37,11 @@ const CONTACTS = {
   address: companyLegalInfo.address.legal,
 }
 
-/* Собственная тёмная карта окрестностей салона (src/lib/salon-map.ts,
-   данные OpenStreetMap): один лёгкий SVG вместо iframe Яндекс Карт и
-   скриншота — футер общий для всех ~400 страниц, файл кешируется. */
-const MAP_PREVIEW_IMAGE = '/salon-map-dark.svg'
-const MAP_LINK = 'https://yandex.ru/maps/-/CPTwZPi-'
+/* Собственная тёмная карта окрестностей салона — компонент SalonMap
+   (геометрия OpenStreetMap из src/lib/salon-map.ts: один кешируемый SVG
+   вместо iframe Яндекс Карт; метка и карточка — живой HTML поверх). */
+const MAP_STREET = companyLegalInfo.address.legal.replace(/^г\.\s*[^,]+,\s*/, '')
+const MAP_LINK = companyLegalInfo.address.routeUrl
 
 /* ============================================================
    Legal modal
@@ -351,26 +352,14 @@ onUnmounted(() => {
               </svg>
             </a>
           </div>
-          <div class="relative h-48 sm:h-56 rounded-xl overflow-hidden border border-white/10 bg-white/5">
-            <img
-              :src="MAP_PREVIEW_IMAGE"
-              alt=""
-              width="1000"
-              height="360"
-              loading="lazy"
-              decoding="async"
-              class="absolute inset-0 w-full h-full object-cover"
-              aria-hidden="true"
-            />
-            <span class="absolute right-2 bottom-1.5 text-[0.625rem] text-white/40 pointer-events-none">© участники OpenStreetMap</span>
-            <a
-              :href="MAP_LINK"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="absolute inset-0"
-              aria-label="Открыть карту с расположением салона на Яндекс Картах (открывается в новой вкладке)"
-            />
-          </div>
+          <SalonMap
+            variant="dark"
+            :href="MAP_LINK"
+            label="Открыть карту с расположением салона на Яндекс Картах (открывается в новой вкладке)"
+            title="ВФД на Кашириных"
+            :subtitle="MAP_STREET"
+            class="h-56 rounded-xl border border-white/10 sm:h-64"
+          />
         </div>
 
         <!-- Дисклеймер оферты — вынесен из-под клика по «Правовая информация»

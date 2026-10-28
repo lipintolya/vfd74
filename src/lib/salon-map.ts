@@ -6,13 +6,16 @@
  * Отдаётся как отдельные SVG-файлы (src/pages/salon-map-*.svg.ts), а не
  * inline: футер есть на всех ~400 страницах, картинка кешируется браузером
  * один раз. В <img> не видны CSS-переменные и веб-шрифты, поэтому цвета
- * подставляются при сборке, шрифт — системный.
+ * подставляются при сборке, шрифт — системный (им набраны только подписи улиц).
  *
- * Варианты: dark — футер (графит, метка бирюзовая), light — страница
- * контактов (светлая, здание салона выделено, карточка с адресом).
+ * В файле — только геометрия и подписи улиц. Метка салона (с пульсом),
+ * карточка с названием и плашки ориентиров — живой HTML поверх, в
+ * components/ui/SalonMap.vue: шрифты сайта, появление и пульс по скроллу.
+ * Здесь они лишь резервируют место, чтобы подписи улиц их не закрывали.
+ *
+ * Варианты: dark — футер (графит), light — страница контактов (светлая).
  */
 import map from '../data/visit-map.json'
-import { companyLegalInfo } from './contacts-data'
 
 export type SalonMapVariant = 'light' | 'dark'
 
@@ -39,7 +42,6 @@ export function salonMapSvg(variant: SalonMapVariant): string {
   const { width: W, height: H, layers: L } = map
   const cx = W / 2
   const cy = H / 2
-  const street = companyLegalInfo.address.legal.replace(/^г\.\s*[^,]+,\s*/, '')
 
   /* Тёмная карта — широкая полоса вокруг метки (футер ~3:1): подписи вне
      полосы или торчащие за её край не рисуем — иначе их обрезало бы. */
@@ -52,23 +54,17 @@ export function salonMapSvg(variant: SalonMapVariant): string {
     return x - hx > 15 && x + hx < W - 15 && y - hy > bandTop + 6 && y + hy < bandTop + bandH - 6
   }
 
-  // Ориентиры (Лента Гипер): плашка под зданием, чтобы не закрывать улицу рядом
+  // Плашки ориентиров (Лента Гипер) рисует SalonMap.vue — здесь только занимаем место
   type Box = [number, number, number, number]
   const taken: Box[] = []
-  const landmarks = map.landmarks
-    .map((m) => {
-      const w = m.text.length * 13 + 30
-      const x = (m.x / 100) * W
-      const y = (m.bottom / 100) * H + 24
-      taken.push([x - w / 2, y - 19, x + w / 2, y + 19])
-      return { m, x, y, w }
-    })
-    .filter(({ y }) => y > bandTop + 20 && y < bandTop + bandH - 20)
-    .map(({ m, x, y, w }) =>
-      `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><rect x="${-w / 2}" y="-19" width="${w}" height="38" rx="10" fill="${C.card}" stroke="${C.cardStroke}" stroke-width="1.5"/><text y="1" font-family="${FONT}" font-size="19" font-weight="700" fill="${C.ink}" text-anchor="middle" dominant-baseline="middle">${esc(m.text)}</text></g>`)
-    .join('')
+  for (const m of map.landmarks) {
+    const w = m.text.length * 13 + 30
+    const x = (m.x / 100) * W
+    const y = (m.bottom / 100) * H + 24
+    taken.push([x - w / 2, y - 19, x + w / 2, y + 19])
+  }
   // Подпись салона тоже занимает место
-  taken.push(variant === 'light' ? [cx + 24, cy - 104, cx + 342, cy - 28] : [cx + 21, cy - 40, cx + 270, cy])
+  taken.push(variant === 'light' ? [cx + 24, cy - 110, cx + 342, cy - 20] : [cx + 21, cy - 80, cx + 300, cy])
 
   // На каждую улицу в JSON несколько мест для подписи — берём первое, что целиком в кадре и ничего не закрывает
   const clear = (x: number, y: number, text: string, angle: number) => {
@@ -90,21 +86,7 @@ export function salonMapSvg(variant: SalonMapVariant): string {
     })
     .join('')
 
-  // Подпись салона: в светлой версии — карточка с адресом, в тёмной — просто текст
-  const pin = variant === 'light'
-    ? `<g transform="translate(${cx + 24} ${cy - 104})">
-<rect width="318" height="76" rx="14" fill="${C.card}" stroke="${C.cardStroke}" stroke-width="1.5"/>
-<text x="18" y="32" font-family="${FONT}" font-size="25" font-weight="700" fill="${C.ink}">ВФД на Кашириных</text>
-<text x="18" y="58" font-family="${FONT}" font-size="18" font-weight="500" fill="${C.label}">${esc(street)}</text>
-</g>`
-    : `<text x="${cx + 24}" y="${cy - 20}" font-family="${FONT}" font-size="27" font-weight="700" fill="${C.ink}" stroke="${C.halo}" stroke-width="6" paint-order="stroke">ВФД на Кашириных</text>`
-
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 ${bandTop} ${W} ${bandH}" width="${W}" height="${bandH}">
-<style>
-.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-out 3 both}
-@keyframes pulse{0%{transform:scale(.4);opacity:.55}100%{transform:scale(1.6);opacity:0}}
-@media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:0}}
-</style>
 <rect y="${bandTop}" width="${W}" height="${bandH}" fill="${C.bg}"/>
 <g fill="none" stroke-linecap="round" stroke-linejoin="round">
 <path d="${L.green}" fill="${C.green}"/>
@@ -120,9 +102,5 @@ export function salonMapSvg(variant: SalonMapVariant): string {
 <path d="${L.salon}" fill="${C.salon}" stroke="${C.salon}" stroke-width="4"/>
 </g>
 <g font-family="${FONT}" font-size="19" font-weight="600" fill="${C.label}" text-anchor="middle" dominant-baseline="middle" stroke="${C.halo}" stroke-width="4" paint-order="stroke">${labels}</g>
-${landmarks}
-<circle class="pulse" cx="${cx}" cy="${cy}" r="26" fill="${C.signal}"/>
-<circle cx="${cx}" cy="${cy}" r="10" fill="${C.signal}" stroke="${variant === 'light' ? '#ffffff' : C.bg}" stroke-width="4"/>
-${pin}
 </svg>`
 }
