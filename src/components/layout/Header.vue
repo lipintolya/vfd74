@@ -2,8 +2,8 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { companyLegalInfo } from '../../lib/contacts-data'
 import {
-  NAV_LINKS, SOCIAL_NETWORKS, FOCUS,
-  isCurrentSection, isCurrentPage, navLinkClass,
+  NAV_LINKS, MOBILE_MENU, SOCIAL_NETWORKS, FOCUS,
+  isCurrentSection, isCurrentPage, isCurrentItem, navLinkClass,
   type NavLink,
 } from '../../lib/header-nav'
 
@@ -18,6 +18,9 @@ const CONTACTS = {
   phones:  companyLegalInfo.contacts.phone,
   address: companyLegalInfo.address.legal,
   entrance: companyLegalInfo.address.entrance,
+  route:   companyLegalInfo.address.routeUrl,
+  /** Улица и дом без «г. Челябинск,» — в меню город уже понятен, строка не рвётся на три */
+  street:  companyLegalInfo.address.legal.replace(/^г\.\s*Челябинск,\s*/, ''),
   /** Будни/выходные — отдельные строки, а не одна склеенная через «·»:
       на узкой карточке попапа она переносилась посередине слова, неровно. */
   worktimeWeekdays: companyLegalInfo.workingHours.weekdays.label,
@@ -61,6 +64,7 @@ let timerId: ReturnType<typeof setInterval> | null = null
 const isCurrent = (link: NavLink) => isCurrentSection(link, currentPath.value)
 const isPage    = (link: NavLink) => isCurrentPage(link, currentPath.value)
 const navClass  = (link: NavLink) => navLinkClass(link, currentPath.value)
+const isItemCurrent = (item: { href: string; label: string; desc: string }) => isCurrentItem(item, currentPath.value)
 
 /* ============================================================
    Work-hours logic
@@ -546,7 +550,7 @@ onUnmounted(() => {
         role="dialog"
         aria-label="Мобильное меню"
         aria-modal="true"
-        class="fixed inset-0 z-10000 flex flex-col bg-zinc-900 xl:hidden"
+        class="fixed inset-0 z-10000 flex touch-manipulation flex-col bg-white xl:hidden"
         :style="{
           top:           '-100px',
           paddingTop:    'calc(env(safe-area-inset-top, 0px) + 100px)',
@@ -555,16 +559,20 @@ onUnmounted(() => {
         }"
         @keydown="onMobileMenuKeydown"
       >
-        <!-- Верхняя строка: город + адрес + закрыть -->
-        <div class="flex shrink-0 items-start justify-between px-5 pb-6 pt-4">
-          <span class="flex flex-col gap-0.5">
-            <span class="text-sm font-medium text-white/70">Челябинск</span>
-            <span class="text-xs text-white/40">ул. Братьев Кашириных, 131Б</span>
-          </span>
+        <!-- Шапка меню: бренд (ссылка на главную) и закрыть -->
+        <div class="flex shrink-0 items-center justify-between gap-4 border-b border-gray-200 px-5 py-3">
+          <a href="/" class="flex min-w-0 items-center gap-3 rounded-full" :class="FOCUS" @click="closeMobileMenu()">
+            <img src="/svg/logo.svg" alt="" class="h-11 w-auto shrink-0 object-contain" width="44" height="44" decoding="async" />
+            <span class="min-w-0">
+              <span class="block truncate text-[0.9375rem] font-semibold tracking-wide text-ink">ДВЕРИ НА КАШИРИНЫХ</span>
+              <span class="block truncate text-sm text-gray-500">Фирменный салон ВФД</span>
+            </span>
+          </a>
           <button
             ref="menuCloseRef"
             type="button"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-white"
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-opacity active:opacity-80"
+            :class="FOCUS"
             aria-label="Закрыть меню"
             @click="closeMobileMenu(true)"
           >
@@ -574,14 +582,107 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <!-- Звонок + соцсети -->
-        <div class="flex shrink-0 items-center gap-2.5 px-5 pb-4">
+        <!-- Прокручиваемая середина. overscroll-contain: прокрутка меню не
+             тянет за собой страницу под ним (iOS игнорирует overflow:hidden
+             у body). -->
+        <div class="flex-1 touch-manipulation space-y-6 overflow-y-auto overscroll-contain px-5 py-5">
+
+          <!-- Статус и адрес. Статус — словами и цветом, без индикатора-точки -->
+          <div class="rounded-2xl bg-zinc-100 p-5">
+            <p class="text-base leading-snug" aria-live="polite" aria-atomic="true">
+              <span class="font-semibold" :class="isOpen ? 'text-teal-700' : 'text-ink'">{{ statusTitle }}</span>
+              <span class="ml-2 text-gray-600">{{ statusDetail }}</span>
+            </p>
+            <div class="mt-4 flex items-end justify-between gap-4 border-t border-black/[0.07] pt-4">
+              <div class="min-w-0 text-sm leading-relaxed">
+                <p class="font-medium text-ink">{{ CONTACTS.street }}</p>
+                <p class="text-gray-500">{{ CONTACTS.worktimeWeekdays }}</p>
+                <p class="text-gray-500">{{ CONTACTS.worktimeWeekend }}</p>
+              </div>
+              <a
+                :href="CONTACTS.route"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-5 py-3 text-sm font-semibold text-ink shadow-[0_0_0_1px_rgba(0,0,0,0.06)] transition-opacity active:opacity-80"
+                :class="FOCUS"
+                aria-label="Маршрут в Яндекс Картах (открывается в новой вкладке)"
+              >
+                Маршрут
+                <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M5 11l6-6M6 5h5v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Разделы: подпись группы и серая плашка с рядами «название,
+               пояснение, шеврон». Разделитель — от текста до края плашки. -->
+          <nav class="space-y-6" aria-label="Мобильная навигация">
+            <section v-for="group in MOBILE_MENU" :key="group.label">
+              <h2 class="mb-2 px-1 text-sm font-semibold text-gray-500">{{ group.label }}</h2>
+              <ul class="overflow-hidden rounded-2xl bg-zinc-100" role="list">
+                <li
+                  v-for="item in group.items"
+                  :key="item.href"
+                  class="relative before:absolute before:left-5 before:right-0 before:top-0 before:h-px before:bg-black/[0.07] first:before:hidden"
+                >
+                  <a
+                    :href="item.href"
+                    class="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors active:bg-black/[0.04]"
+                    :aria-current="item.href === currentPath ? 'page' : undefined"
+                    @click="closeMobileMenu()"
+                  >
+                    <span class="min-w-0">
+                      <span class="block text-[1.0625rem] font-medium leading-snug" :class="isItemCurrent(item) ? 'text-teal-700' : 'text-ink'">{{ item.label }}</span>
+                      <span class="block text-sm leading-snug text-gray-500">{{ item.desc }}</span>
+                    </span>
+                    <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/>
+                    </svg>
+                  </a>
+                </li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 class="mb-2 px-1 text-sm font-semibold text-gray-500">Телефоны</h2>
+              <ul class="overflow-hidden rounded-2xl bg-zinc-100" role="list">
+                <li
+                  v-for="p in CONTACTS.phones"
+                  :key="p.raw"
+                  class="relative before:absolute before:left-5 before:right-0 before:top-0 before:h-px before:bg-black/[0.07] first:before:hidden"
+                >
+                  <a
+                    :href="`tel:${p.raw}`"
+                    :aria-label="`Позвонить: ${p.label}`"
+                    class="flex items-center justify-between gap-4 px-5 py-3.5 transition-colors active:bg-black/[0.04]"
+                    @click="closeMobileMenu()"
+                  >
+                    <span class="min-w-0">
+                      <span class="block text-[1.0625rem] font-medium tabular-nums leading-snug text-ink">{{ p.label }}</span>
+                      <span class="block text-sm leading-snug text-gray-500">{{ p.title }}</span>
+                    </span>
+                    <span class="shrink-0 text-sm font-semibold text-gray-500" aria-hidden="true">Позвонить</span>
+                  </a>
+                </li>
+              </ul>
+            </section>
+          </nav>
+        </div>
+
+        <!-- Закреплено внизу: главное действие и мессенджеры. Значки — те же
+             чёрные круглые, что в шапке: готовая круглая картинка, без
+             второй подложки. -->
+        <div
+          class="flex shrink-0 touch-manipulation items-center gap-3 border-t border-gray-200 bg-white px-5 pt-3"
+          :style="{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }"
+        >
           <a
             :href="`tel:${CONTACTS.phones[0]?.raw}`"
-            class="flex flex-1 items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-ink transition-opacity active:opacity-80"
+            class="flex h-[3.25rem] flex-1 items-center justify-center rounded-full bg-ink text-base font-semibold text-white transition-opacity active:opacity-80"
+            :class="FOCUS"
             @click="closeMobileMenu()"
           >
-            <img src="/icons/phone-call.webp" alt="" class="h-5 w-5" width="20" height="20" />
             Позвонить
           </a>
           <a
@@ -591,90 +692,10 @@ onUnmounted(() => {
             target="_blank"
             rel="noopener noreferrer"
             :aria-label="`${s.label} (открывается в новой вкладке)`"
-            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white transition-opacity active:opacity-80"
+            class="block h-[3.25rem] w-[3.25rem] shrink-0 rounded-full transition-opacity active:opacity-80"
+            :class="FOCUS"
           >
-            <img :src="s.icon" alt="" class="h-5 w-5" width="20" height="20" />
-          </a>
-        </div>
-
-        <!-- Навигация — прокручиваемая середина. Активный пункт получает
-             акцентную полоску слева (не только смену цвета текста — на
-             белом-по-серому разница слишком тонкая для беглого взгляда).
-             Стрелка вправо — только у пунктов с реальным переходом (без
-             подменю); у «Каталог»/«О нас» её нет — там ниже сразу видны
-             дочерние ссылки, стрелка-«обещание перехода» была бы обманчива. -->
-        <nav class="flex-1 overflow-y-auto px-5" aria-label="Мобильная навигация">
-          <ul class="border-t border-white/10" role="list">
-            <li
-              v-for="link in NAV_LINKS"
-              :key="link.href"
-              class="nav-item border-b border-white/10"
-              :class="{ 'nav-item--active': isCurrent(link) }"
-            >
-              <a
-                :href="link.href"
-                class="-ml-3 flex items-center justify-between py-4 pl-3 text-base font-semibold transition-colors"
-                :class="isCurrent(link) ? 'text-white' : 'text-white/85 hover:text-white'"
-                :aria-current="isPage(link) ? 'page' : undefined"
-                @click="closeMobileMenu()"
-              >
-                {{ link.label }}
-                <svg
-                  v-if="!link.menu"
-                  class="h-4 w-4 shrink-0 text-white/30"
-                  fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/>
-                </svg>
-              </a>
-              <!-- Подразделы (каталог, «О нас») -->
-              <ul v-if="link.menu" class="-mt-1 mb-3 space-y-0.5" role="list">
-                <li v-for="item in link.menu" :key="item.href">
-                  <a
-                    :href="item.href"
-                    class="block rounded-xl px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:bg-white/5 hover:text-white/90"
-                    @click="closeMobileMenu()"
-                  >{{ item.label }}</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-
-          <!-- Статус салона + график -->
-          <div
-            class="mb-5 mt-4 rounded-xl bg-white/[0.06] px-4 py-3.5 text-sm leading-snug"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <p class="font-semibold" :class="isOpen ? 'text-teal-300' : 'text-white'">{{ statusTitle }}</p>
-            <p class="text-white/55">{{ statusDetail }}</p>
-            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-0.5 border-t border-white/10 pt-2.5 text-xs tabular-nums text-white/45">
-              <span>{{ CONTACTS.worktimeWeekdays }}</span>
-              <span>{{ CONTACTS.worktimeWeekend }}</span>
-            </p>
-          </div>
-        </nav>
-
-        <!-- Телефоны — закреплены внизу. Каждый номер — отдельная строка-
-             ссылка со словом «Позвонить», чтобы было видно, что это действие,
-             а не просто текст. -->
-        <div
-          class="flex shrink-0 flex-col gap-2 border-t border-white/10 bg-zinc-900 px-5 pt-3"
-          :style="{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }"
-        >
-          <a
-            v-for="p in CONTACTS.phones"
-            :key="p.raw"
-            :href="`tel:${p.raw}`"
-            :aria-label="`Позвонить: ${p.label}`"
-            class="flex items-center justify-between gap-3 rounded-xl bg-white/[0.06] px-4 py-2.5 transition-colors active:bg-white/[0.12]"
-            @click="closeMobileMenu()"
-          >
-            <span class="min-w-0">
-              <span class="block text-base font-semibold tabular-nums text-white">{{ p.label }}</span>
-              <span class="block text-xs text-white/45">{{ p.title }}</span>
-            </span>
-            <span class="shrink-0 text-sm font-semibold text-white/70" aria-hidden="true">Позвонить</span>
+            <img :src="s.icon" alt="" class="h-full w-full" width="52" height="52" />
           </a>
         </div>
       </div>

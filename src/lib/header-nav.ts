@@ -38,6 +38,32 @@ export const NAV_LINKS: readonly NavLink[] = [
   { href: '/contacts/',   label: 'Контакты',    match: ['/contacts'] },
 ]
 
+export interface MenuGroup { label: string; items: readonly MenuItem[] }
+
+/** Мобильное меню: те же разделы, что в шапке, но сгруппированы под
+    подписями (каждый пункт — название и пояснение). «Главная» нет: на неё
+    ведёт логотип в шапке меню. */
+export const MOBILE_MENU: readonly MenuGroup[] = [
+  { label: 'Каталог', items: CATALOG_DROPDOWN },
+  {
+    label: 'Перегородки',
+    items: [{ href: '/partitions/', label: 'Алюминиевые перегородки', desc: 'Изготовление до 45 рабочих дней' }],
+  },
+  {
+    label: 'Компания',
+    items: [
+      { href: '/designers/', label: 'Дизайнерам', desc: 'Партнёрская программа' },
+      ...ABOUT_DROPDOWN,
+      { href: '/contacts/',  label: 'Контакты',   desc: 'Адрес, часы и как добраться' },
+    ],
+  },
+]
+
+/** Пункт мобильного меню — текущая страница; «Все двери» — только сам каталог,
+    остальные — и вложенные страницы */
+export const isCurrentItem = (item: MenuItem, path: string): boolean =>
+  item.href === '/catalog/' ? path === item.href : path.startsWith(item.href)
+
 export const SOCIAL_NETWORKS = [
   { name: 'VK',       label: 'ВКонтакте', url: 'https://vk.com/vfddoors74',          icon: '/icons/b_vk_logo.webp' },
   { name: 'Telegram', label: 'Telegram',  url: 'https://t.me/vfddoors74',            icon: '/icons/b_tg_logo.webp' },

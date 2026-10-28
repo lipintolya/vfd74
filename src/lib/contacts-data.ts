@@ -13,6 +13,8 @@ export const companyLegalInfo = {
     legal: 'г. Челябинск, ул. Братьев Кашириных, 131Б',
     postal: 'г. Челябинск, ул. Братьев Кашириных, 131Б',
     entrance: 'Вход со стороны ул. Чичерина',
+    /** Короткая ссылка на карточку салона в Яндекс Картах (цель Метрики route_click) */
+    routeUrl: 'https://yandex.ru/maps/-/CPTwZPi-',
     coordinates: { lat: 55.172868, lng: 61.306572 },
   },
 
