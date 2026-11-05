@@ -18,7 +18,7 @@ defineEmits<{
   flex-direction: column;
   align-items: flex-start;
   padding: clamp(2rem, 5vw, 3.5rem);
-  background: #e4e4e7;
+  background: #d8d8db;
 }
 .ce__title { margin: 0; }
 .ce__text { margin: 0.5rem 0 0; max-width: 28rem; color: #52525b; }

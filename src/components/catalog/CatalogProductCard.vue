@@ -187,11 +187,11 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
   position: relative;
   aspect-ratio: 2 / 3;
   /* Прямые углы и подложка темнее белого фона — решение владельца (05.11.2026) */
-  background: #e4e4e7;  /* zinc-200 */
+  background: #d8d8db;
   overflow: hidden;
   transition: background-color 200ms var(--ease-out);
 }
-.pc:hover .pc__media { background: #dcdce0; }
+.pc:hover .pc__media { background: #cfcfd3; }
 .pc__media img {
   position: absolute;
   inset: 2.25rem 0.75rem 0.75rem;
@@ -209,9 +209,9 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1;
-  color: #52525b;  /* zinc-600 — «Под заказ»: справка, не сигнал; на zinc-200 ≥ 4.5:1 */
+  color: #52525b;  /* zinc-600 — «Под заказ»: справка, не сигнал; на подложке ≥ 4.5:1 */
 }
-.pc__status[data-status='stock'] { color: #115e59; }  /* teal-800: на zinc-200 ≥ 4.5:1 */
+.pc__status[data-status='stock'] { color: #115e59; }  /* teal-800: на подложке ≥ 4.5:1 */
 .pc__status[data-status='new'] { color: var(--color-fg); }
 
 /* Кружки цветов — над растянутой ссылкой */
