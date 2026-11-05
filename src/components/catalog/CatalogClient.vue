@@ -237,8 +237,35 @@ const onKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && sheetOpen.value) sheetOpen.value = false
 }
 onMounted(() => window.addEventListener('keydown', onKeydown))
+
+/* Плашка «порядок / фильтры» на телефоне и планшете прилипает под шапкой.
+   Тень — только в прилипшем состоянии, как у шапки при прокрутке: на своём
+   месте над сеткой плашка лежит на белом и тень ей ни к чему. Плашка —
+   первый элемент .cat__results, поэтому «прилипла» = верх выдачи ушёл выше
+   линии прилипания. На десктопе плашка не липкая: top = auto → NaN → нет. */
+const barRef = ref<HTMLElement | null>(null)
+const barStuck = ref(false)
+let barFrame = 0
+const checkBarStuck = () => {
+  barFrame = 0
+  const bar = barRef.value
+  const results = resultsRef.value
+  if (!bar || !results) return
+  const stickyTop = parseFloat(getComputedStyle(bar).top)
+  barStuck.value = Number.isFinite(stickyTop) && results.getBoundingClientRect().top < stickyTop - 1
+}
+const onBarViewportChange = () => { if (!barFrame) barFrame = requestAnimationFrame(checkBarStuck) }
+onMounted(() => {
+  window.addEventListener('scroll', onBarViewportChange, { passive: true })
+  window.addEventListener('resize', onBarViewportChange)
+  checkBarStuck()
+})
+
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeydown)
+  window.removeEventListener('scroll', onBarViewportChange)
+  window.removeEventListener('resize', onBarViewportChange)
+  if (barFrame) cancelAnimationFrame(barFrame)
   if (sheetOpen.value) document.body.style.overflow = ''
 })
 
@@ -314,7 +341,7 @@ onMounted(() => { isMounted.value = true })
       </aside>
 
       <div ref="resultsRef" class="cat__results">
-        <div class="cat__bar">
+        <div ref="barRef" class="cat__bar" :class="{ 'is-stuck': barStuck }">
           <label class="cat__sort">
             <span class="sr-only">Порядок</span>
             <select v-model="sortBy" class="cat__select">
@@ -332,6 +359,10 @@ onMounted(() => { isMounted.value = true })
             <svg v-else viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5.5h14M5.5 10h9M8 14.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
           </button>
         </div>
+        <!-- На телефоне «найдено» — под плашкой и не прилипает: в плашке
+             одна строка, как в шапке. Видна одна из двух строк (другая
+             display:none и в дерево доступности не попадает). -->
+        <p class="cat__found cat__found--below" aria-live="polite">Найдено {{ filteredCards.length }} {{ modelsWord(filteredCards.length) }}</p>
 
         <ul v-if="chips.length" class="cat__chips" role="list" aria-label="Выбранные фильтры">
           <li v-for="chip in chips" :key="`${chip.key}-${chip.value}`">
@@ -550,6 +581,7 @@ onMounted(() => { isMounted.value = true })
   border-bottom: 1px solid #e4e4e7;
 }
 .cat__found { margin: 0; font-size: 0.9375rem; color: #71717a; font-variant-numeric: tabular-nums; }
+.cat__found--below { display: none; }
 .cat__sort { position: relative; display: inline-flex; align-items: center; font-size: 0.9375rem; font-weight: 600; color: var(--color-ink); }
 .cat__select {
   min-height: 2.75rem;
@@ -637,24 +669,34 @@ onMounted(() => { isMounted.value = true })
 .cat__range { margin: 0; font-size: 0.875rem; color: #a1a1aa; font-variant-numeric: tabular-nums; }
 
 /* Телефон и планшет: колонки фильтров нет — строка «порядок / фильтры»
-   прилипает под шапкой, «найдено» — под ней */
+   прилипает под шапкой второй «таблеткой» в её стиле: та же ширина
+   (обе в .container), тот же отступ текста от края (px-5 шапки), та же
+   рамка, белый 95% и размытие. Зазор 0,5rem под шапкой — плашка не
+   упирается в неё и не попадает под её тень. «Найдено» — строкой ниже. */
 @media (max-width: 63.9375rem) {
   .cat__bar {
     position: sticky;
-    top: var(--header-height);
+    top: calc(var(--header-height) + 0.5rem);
     z-index: 5;
-    flex-wrap: wrap;
-    gap: 0 1rem;
-    margin-inline: calc(-1 * var(--cat-pad));
-    padding: 0.25rem var(--cat-pad) 0.5rem;
-    background: #fff;
+    gap: 1rem;
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.95);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: box-shadow 300ms var(--ease-out);
   }
+  /* Тень шапки в прокрутке (shadow-lg shadow-black/10) */
+  .cat__bar.is-stuck { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+  .cat__bar .cat__found { display: none; }
+  .cat__found--below { display: block; margin-top: 0.625rem; font-size: 0.8125rem; }
   .cat__filters-btn { display: inline-flex; }
-  .cat__found { order: 3; width: 100%; font-size: 0.8125rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cc__card, .cc__media, .cc__media img, .cat__chip, .seg__btn { transition: none; }
+  .cc__card, .cc__media, .cc__media img, .cat__chip, .seg__btn, .cat__bar { transition: none; }
   .cc__card:hover .cc__media img { transform: none; }
 }
 </style>
