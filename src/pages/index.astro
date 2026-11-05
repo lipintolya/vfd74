@@ -22,11 +22,18 @@ import HowWeWork from '../components/home/HowWeWork.astro'
 import { howToSchema } from '../data/how-it-works'
 import { getHomePromos } from '../lib/home-promos'
 import { companyLegalInfo } from '../lib/contacts-data'
+import { rub } from '../data/services'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
 /* Новинки и скрытые двери из наличия — данные и живые цены в lib/home-promos.ts */
 const { novelties, inStock, interiorMinPrice } = await getHomePromos()
+
+/* Главная — посадочная под «двери Челябинск», «купить двери в Челябинске»:
+   эти слова — в начале <title>, бренд «ВФД» — там же (брендовый запрос
+   «вфд челябинск» держит H1). Цена — живая, минимальная за полотно. */
+const homeTitle = 'Двери в Челябинске — купить в салоне ВФД, цены и наличие'
+const homeDescription = `Купить межкомнатные и входные двери в Челябинске в салоне ВФД на Братьев Кашириных, 131Б${interiorMinPrice ? `: межкомнатные от ${rub(interiorMinPrice)} за полотно` : ''}, модели в наличии на складе и под заказ. Бесплатный замер при заказе, монтаж своей бригадой.`
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -100,8 +107,8 @@ const localBusinessSchema = {
 ---
 
 <BaseLayout
-  title="ВФД Челябинск — салон Владимирской фабрики дверей, каталог и цены"
-  description="ВФД Челябинск — фирменный салон на Братьев Кашириных, 131Б: входные и межкомнатные двери, алюминиевые перегородки. Каталог и цены, бесплатный замер межкомнатных дверей при заказе, установка."
+  title={homeTitle}
+  description={homeDescription}
   structuredData={[faqSchema, localBusinessSchema, howToSchema]}
   preloadImage={HERO_COVER_IMAGE}
   preloadImageSrcset={HERO_COVER_IMAGE_SRCSET}

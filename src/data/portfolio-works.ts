@@ -95,6 +95,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     coating:     'Эмалекс белый',
     features:    ['Покрытие Эмалекс «Белый»', 'Вертикальные линии с тёмными вставками', 'Монтаж собственной бригадой'],
     tags:        ['Квартира', 'Межкомнатные', 'Эмалекс', 'Минимализм'],
+    relatedLink: { href: '/models/emaleks-33-lakobel-chernyi-steklo-emalex-modern/', label: 'Эмалекс 33 с чёрными вставками в каталоге' },
     images: [
       '/media/works_prod/30.10.26/emalex-e33-1.webp',
       '/media/works_prod/30.10.26/emalex-e33-2.webp',

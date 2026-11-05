@@ -56,6 +56,7 @@ export const SITE_LINK_GROUPS: SiteLinkGroup[] = [
     title: 'Каталог',
     links: [
       { href: '/catalog/',        label: 'Межкомнатные двери' },
+      { href: '/catalog/v-nalichii/', label: 'Двери в наличии' },
       { href: '/catalog/series/', label: 'Все серии дверей' },
       { href: '/vhodnye-dveri/',  label: 'Входные двери' },
       { href: '/partitions/',     label: 'Алюминиевые перегородки' },

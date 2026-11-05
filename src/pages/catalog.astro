@@ -30,9 +30,11 @@ import { SECRET_MIN_BLADE_PRICE } from '../data/skrytye-dveri-products'
 import { rub } from '../data/services'
 import { pluralRu } from '../lib/plural'
 import { typograph } from '../lib/typograph'
+import { inStockCards } from '../lib/in-stock'
 
 const { cards, error } = await getCatalogCards()
 const seriesCardsData = getSeriesCardsData(cards)
+const inStockCount = inStockCards(cards).length
 
 const prices = cards.map((c) => c.price).filter((p): p is number => p != null)
 const minPrice = prices.length ? Math.min(...prices) : null
@@ -134,7 +136,7 @@ const catalogFaq = [
   },
   {
     q: 'Есть ли двери в наличии в Челябинске?',
-    a: 'Да, часть популярных моделей держим на складе в Челябинске — их можно забрать без ожидания производства. Наличие конкретной модели и цвета уточняйте у менеджера, актуальные складские акции публикуем на главной странице.',
+    a: `Да, ${inStockCount} ${pluralRu(inStockCount, ['модель', 'модели', 'моделей'])} лежат на складе в Челябинске — доставка 3–5 рабочих дней, без ожидания фабрики. Список — в разделе «Двери в наличии» (меню «Каталог»), в каталоге такие двери отмечены плашкой «В наличии». Остаток нужного цвета уточните у менеджера.`,
   },
   {
     q: 'Вы делаете замер и установку?',

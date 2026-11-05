@@ -19,6 +19,7 @@ export interface NavLink {
 
 export const CATALOG_DROPDOWN: readonly MenuItem[] = [
   { href: '/catalog/',               label: 'Все двери',      desc: 'Межкомнатные' },
+  { href: '/catalog/v-nalichii/',     label: 'В наличии',     desc: 'Со склада, 3–5 дней' },
   { href: '/catalog/skrytye-dveri/', label: 'Скрытые двери', desc: 'Скрытый монтаж' },
   { href: '/vhodnye-dveri/',         label: 'Входные двери', desc: 'С монтажом' },
   { href: '/catalog/decor/',         label: 'Декор',         desc: 'Плинтус, фрамуги, рейки' },

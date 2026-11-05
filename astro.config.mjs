@@ -187,6 +187,10 @@ export default defineConfig({
         if (/\/catalog\/series(\/.+)?\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }
         }
+        // «Двери в наличии» — посадочная под «двери из наличия», наравне с каталогом.
+        if (/\/catalog\/v-nalichii\/?$/.test(u)) {
+          return { ...item, changefreq: 'weekly', priority: 0.8 }
+        }
         if (/\/catalog\/dveri-[^/]+\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }
         }

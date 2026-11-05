@@ -2,4 +2,13 @@ User-agent: *
 Allow: /
 Disallow: /privacy
 
+# Яндекс: метки рекламы и фильтры каталога не создают новых страниц —
+# робот склеивает такие адреса с адресом без параметров (у страниц и так
+# canonical без параметров, Clean-param экономит обход).
+User-agent: Yandex
+Allow: /
+Disallow: /privacy
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&ysclid&gclid&fbclid&_openstat&from&etext
+Clean-param: coating&series&color&price&glass /catalog/
+
 Sitemap: https://vfd74.ru/sitemap-index.xml

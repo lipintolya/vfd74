@@ -1,0 +1,191 @@
+---
+/**
+ * /catalog/v-nalichii/ — «Двери в наличии в Челябинске».
+ *
+ * Посадочная под запросы «двери в наличии», «двери из наличия Челябинск».
+ * Карточки — те же, что в каталоге (цены из Supabase, как на страницах моделей
+ * и в фиде), отобраны по складу: IN_STOCK_OVERRIDE в lib/made-to-order.ts,
+ * подборка — lib/in-stock.ts. Сменился склад — правится только тот список,
+ * страница, плашки «В наличии» и пикер цвета обновятся сами.
+ *
+ * Статичный файл — приоритетнее роута catalog/[slug].astro.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
+import SectionHeader from '../../components/home/SectionHeader.astro'
+import CatalogClient from '../../components/catalog/CatalogClient.vue'
+import PhotoTiles, { type PhotoTile } from '../../components/ui/PhotoTiles.astro'
+import FaqAccordion from '../../components/ui/FaqAccordion.astro'
+import { getCatalogCards } from '../../lib/catalog-data'
+import { sortCards } from '../../lib/catalog-filter'
+import { inStockCards } from '../../lib/in-stock'
+import { companyLegalInfo } from '../../lib/contacts-data'
+import { ENTRANCE_DOOR_MODELS, minPriceOf } from '../../data/entrance-doors'
+import { SECRET_MIN_BLADE_PRICE } from '../../data/skrytye-dveri-products'
+import { rub } from '../../data/services'
+import { pluralRu } from '../../lib/plural'
+
+const { cards: allCards, error } = await getCatalogCards()
+const cards = inStockCards(allCards)
+if (!error && cards.length < 10) {
+  /* Список склада разошёлся с каталогом (сменились id моделей в Supabase) —
+     страница «в наличии» с парой карточек хуже, чем упавшая сборка. */
+  throw new Error(`[в наличии] всего ${cards.length} карточек — проверь IN_STOCK_OVERRIDE в lib/made-to-order.ts`)
+}
+
+const prices = cards.map((c) => c.price).filter((p): p is number => p != null)
+const minPrice = prices.length ? Math.min(...prices) : null
+const modelsCount = `${cards.length} ${pluralRu(cards.length, ['модель', 'модели', 'моделей'])}`
+const coatingNames = [...new Set(cards.map((c) => c.coating).filter((n) => n && n !== '—'))]
+
+const uniqueBy = <T,>(items: T[], key: (item: T) => string) => [...new Map(items.map((i) => [key(i), i])).values()]
+const allSeries = uniqueBy(cards.filter((c) => c.seriesSlug), (c) => c.seriesSlug).map((c) => ({ label: c.series, value: c.seriesSlug }))
+const allCoatings = uniqueBy(cards.filter((c) => c.coatingSlug), (c) => c.coatingSlug).map((c) => ({ label: c.coating, value: c.coatingSlug }))
+
+const phone = companyLegalInfo.contacts.phone[0]!.label
+const hours = companyLegalInfo.workingHours.shortDisplay
+
+const title = 'Двери в наличии в Челябинске — межкомнатные со склада | ВФД'
+const h1 = 'Двери в наличии в Челябинске'
+const lead = minPrice
+  ? `${modelsCount} межкомнатных дверей на складе в Челябинске, от ${rub(minPrice)} за полотно. Доставка 3–5 рабочих дней — без ожидания фабрики.`
+  : `${modelsCount} межкомнатных дверей на складе в Челябинске. Доставка 3–5 рабочих дней — без ожидания фабрики.`
+const description = `Межкомнатные двери в наличии на складе в Челябинске: ${modelsCount}${minPrice ? ` от ${rub(minPrice)} за полотно` : ''}, доставка 3–5 рабочих дней. ${coatingNames.join(', ')} — салон ВФД на Братьев Кашириных.`
+
+const faq = [
+  {
+    q: 'Сколько ждать дверь из наличия?',
+    a: 'Модели со склада в Челябинске доставляем за 3–5 рабочих дней. Модели под заказ — 6–8 недель: это срок изготовления и доставки с фабрики.',
+  },
+  {
+    q: 'Наличие на сайте точное?',
+    a: `Список обновляем по складу салона, но остатки меняются каждый день. Перед заказом уточните нужную модель и цвет у менеджера: ${phone}.`,
+  },
+  {
+    q: 'Какая цена указана — за полотно или за комплект?',
+    a: 'Крупно — цена полотна, строкой ниже — комплект с коробом и наличниками. Полную сумму с доборами и фурнитурой покажет калькулятор на странице модели, точную смету под ваши проёмы — после замера.',
+  },
+  {
+    q: 'Нужной модели нет в наличии — что делать?',
+    a: 'Любую модель каталога можно заказать: изготовление и доставка с фабрики — 6–8 недель. Замер межкомнатных дверей по Челябинску при заказе бесплатный.',
+  },
+  {
+    q: 'Где посмотреть двери вживую?',
+    a: `В салоне ВФД на ул. Братьев Кашириных, 131Б — образцы дверей и всех покрытий. Работаем ${hours}.`,
+  },
+]
+
+/* ── Другие разделы: скрытые двери из наличия, весь каталог, входные ── */
+const entranceMinPrice = Math.min(...ENTRANCE_DOOR_MODELS.map(minPriceOf))
+const otherSections: PhotoTile[] = [
+  {
+    title: 'Скрытые двери «Секрет»',
+    fact:  `из наличия, от ${rub(SECRET_MIN_BLADE_PRICE)} за полотно`,
+    href:  '/catalog/skrytye-dveri/',
+    img: {
+      src:    '/renders/home/secret-cover-960.webp',
+      srcset: '/renders/home/secret-cover-640.webp 640w, /renders/home/secret-cover-960.webp 960w',
+      alt:    'Скрытая дверь в цвет бордовой стены гостиной',
+      width: 960, height: 540,
+    },
+  },
+  {
+    title: 'Все межкомнатные двери',
+    fact:  `${allCards.length} ${pluralRu(allCards.length, ['модель', 'модели', 'моделей'])}, в том числе под заказ`,
+    href:  '/catalog/',
+    img: {
+      src:    '/renders/home/cat-interior-960.webp',
+      srcset: '/renders/home/cat-interior-640.webp 640w, /renders/home/cat-interior-960.webp 960w',
+      alt:    'Белая межкомнатная дверь в светлом интерьере',
+      width: 960, height: 960,
+    },
+  },
+  {
+    title: 'Входные двери',
+    fact:  `от ${rub(entranceMinPrice)} с накладкой изнутри`,
+    href:  '/vhodnye-dveri/',
+    img: {
+      src:    '/renders/home/cat-entrance-960.webp',
+      srcset: '/renders/home/cat-entrance-640.webp 640w, /renders/home/cat-entrance-960.webp 960w',
+      alt:    'Стальная входная дверь «Оптима» в тёмно-сером цвете',
+      width: 960, height: 1200,
+    },
+  },
+]
+
+/* ── Для поисковиков ── */
+const canonicalUrl = Astro.site ? new URL('/catalog/v-nalichii/', Astro.site).href : undefined
+const ordered = sortCards(cards, 'popular')
+const structuredData = canonicalUrl ? [
+  /* BreadcrumbList в JSON-LD отдаёт сам Breadcrumbs.astro — здесь не дублируем. */
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: h1,
+    description,
+    url: canonicalUrl,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: ordered.length,
+      itemListElement: ordered.map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: new URL(`/models/${c.slug}/`, Astro.site).href,
+        name: `${c.name}, ${c.colorName}`,
+      })),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+] : undefined
+---
+
+<BaseLayout title={title} description={description} canonical={canonicalUrl} structuredData={structuredData}>
+  {error && (
+    <div class="container pt-8">
+      <div class="rounded-2xl bg-red-50 border border-red-100 px-5 py-4 text-red-700 text-sm">
+        Ошибка загрузки каталога: {error}
+      </div>
+    </div>
+  )}
+
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Главная', href: '/' }, { label: 'Каталог', href: '/catalog/' }, { label: 'Двери в наличии' }]} />
+    </div>
+  </div>
+
+  <section class="section bg-white" aria-labelledby="ct-title">
+    <div class="container">
+      <SectionHeader id="ct-title" tag="h1" title={h1} lead={lead} />
+
+      <CatalogClient
+        client:idle
+        cards={cards}
+        series={allSeries}
+        coatings={allCoatings}
+        hideTitle
+      />
+    </div>
+  </section>
+
+  <section class="section bg-white" aria-labelledby="sections-title">
+    <div class="container">
+      <SectionHeader id="sections-title" title="Другие разделы" />
+      <PhotoTiles items={otherSections} />
+    </div>
+  </section>
+
+  <section class="section bg-white">
+    <div class="container">
+      <FaqAccordion items={faq} />
+    </div>
+  </section>
+</BaseLayout>
