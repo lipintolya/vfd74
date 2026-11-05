@@ -24,7 +24,7 @@ There is no test runner or linter configured in this repo. `tsconfig.json` exten
 
 ## Deployment — never run automatically
 
-Deploys go out via `git push production main` to a `post-receive` hook on a Beget VPS (see `deploy/post-receive`, `deploy/setup-server.sh`): it checks out `main`, runs `npm ci && npm run build`, then `rsync`'s `dist/` to the nginx web root. **Do not push to the `production` remote or run `npm run deploy` unless the user explicitly asks in that turn.** Default to local build/preview only.
+Deploys go out via `git push production main` to a `post-receive` hook on a VPS (HostingRussia, Moscow; moved off Beget after its Nov 2026 outage — `deploy/setup-server.sh` rebuilds a server from scratch on any Ubuntu 24.04 VPS, DNS lives at reg.ru): it checks out `main`, runs `npm ci && npm run build`, then `rsync`'s `dist/` to the nginx web root. **Do not push to the `production` remote or run `npm run deploy` unless the user explicitly asks in that turn.** Default to local build/preview only.
 
 ## Server (nginx)
 
