@@ -5,8 +5,8 @@
  * название, покрытие и цена. Вся карточка — ссылка на модель (растянутая
  * ссылка у названия); кружки цветов лежат выше неё и переключают фото и цену.
  *
- * Статус — цветная плашка в углу фото: «Новинка» терракотой, «В наличии»
- * бирюзой, «Под заказ» графитом (src/lib/made-to-order.ts).
+ * Статус — цветная плашка в углу фото: «Новинка» красной, «В наличии»
+ * зелёной, «Под заказ» графитовой (src/lib/made-to-order.ts).
  */
 import { computed, ref, watch } from 'vue'
 import { calcKitPrice } from '../../data/accessories'
@@ -202,9 +202,8 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
 }
 
 /* Статус — плашка в углу фото, прямые углы как у подложки. Белый текст на
-   цвете держит контраст ≥ 4.5:1. «Новинка» — тёплый акцент, «В наличии» —
-   фирменная бирюза, «Под заказ» — графит: нейтрально, но плашкой (белая на
-   серой подложке читалась как вырез в фото). */
+   цвете держит контраст ≥ 4.5:1. Палитра (решение владельца, 05.11.2026):
+   «Новинка» — красный, «В наличии» — зелёный, «Под заказ» — графит. */
 .pc__status {
   position: absolute;
   top: 0;
@@ -218,8 +217,8 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
   background: var(--color-fg);  /* графит — «Под заказ» */
   color: #fff;
 }
-.pc__status[data-status='new'] { background: #c2410c; color: #fff; }    /* orange-700 */
-.pc__status[data-status='stock'] { background: #0f766e; color: #fff; }  /* teal-700 */
+.pc__status[data-status='new'] { background: #dc2626; color: #fff; }    /* red-600 */
+.pc__status[data-status='stock'] { background: #15803d; color: #fff; }  /* green-700 */
 
 /* Кружки цветов — над растянутой ссылкой */
 .pc__colors {
