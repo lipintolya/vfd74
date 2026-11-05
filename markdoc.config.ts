@@ -86,12 +86,13 @@ export default defineMarkdocConfig({
 
     // Цены «от» на скрытые двери / уличные входные двери с терморазрывом
     // прямо из данных страниц (не устаревают) —
-    // {% linePrices of="hidden" /%} или {% linePrices of="thermo" /%}
+    // {% linePrices of="hidden" /%}, {% linePrices of="thermo" /%},
+    // {% linePrices of="hinges" /%} — петли из калькулятора (src/data/hardware.ts)
     linePrices: {
       render: component('./src/components/articles/LinePrices.astro'),
       selfClosing: true,
       attributes: {
-        of: { type: String, required: true, matches: ['hidden', 'thermo'] },
+        of: { type: String, required: true, matches: ['hidden', 'thermo', 'hinges'] },
       },
     },
 

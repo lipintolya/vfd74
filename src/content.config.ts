@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content'
 import { glob } from 'astro/loaders'
+import { fillPriceTokens } from './lib/price-tokens'
 
 const articles = defineCollection({
   loader: glob({ pattern: '*.mdoc', base: './src/content/articles' }),
@@ -7,12 +8,13 @@ const articles = defineCollection({
     title: z.string(),
     /** Короткий <title> (до ~60 знаков, без бренда); H1 остаётся полным `title`. */
     seoTitle: z.string().optional(),
-    description: z.string(),
+    /** Можно писать живые цены токенами: {hingeHidden} и т.п. — src/lib/price-tokens.ts */
+    description: z.string().transform(fillPriceTokens),
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     coverImage: z.string().optional(),
     coverImageAlt: z.string().optional(),
-    faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
+    faq: z.array(z.object({ q: z.string(), a: z.string().transform(fillPriceTokens) })).optional(),
     /** Слаги серий каталога (src/data/door-categories.ts / catalog/series/<slug>),
         к которым статья тематически относится — используется на моделях/
         SEO-лендингах этой серии для блока "Статья по теме": перелинковка

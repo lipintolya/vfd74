@@ -2,7 +2,9 @@
 /**
  * {% linePrices of="hidden" /%} — цены «от» на скрытые двери ВФД;
  * {% linePrices of="thermo" /%} — цены «от» на уличные входные двери с
- * терморазрывом.
+ * терморазрывом;
+ * {% linePrices of="hinges" /%} — внешние и скрытые петли Morelli из
+ * калькулятора стоимости (src/data/hardware.ts), цены точные, без «от».
  *
  * Берёт цифры из тех же модулей, что и страницы /catalog/skrytye-dveri/ и
  * /vhodnye-dveri/ (с учётом действующей акции), поэтому в статье цены не
@@ -15,16 +17,18 @@ import {
   INSTALL_FROM_PRICE,
 } from '../../data/skrytye-dveri-products'
 import { ENTRANCE_DOOR_MODELS, minPriceOf } from '../../data/entrance-doors'
+import { HINGE_PRICE, HINGE_QTY } from '../../data/hardware'
 
 interface Props {
-  of: 'hidden' | 'thermo'
+  of: 'hidden' | 'thermo' | 'hinges'
 }
 
 interface Row {
   name:   string
   href:   string
   note:   string
-  prices: { label: string; value: number }[]
+  /** exact — точная цена, без «от» */
+  prices: { label: string; value: number; exact?: boolean }[]
 }
 
 const { of } = Astro.props
@@ -64,6 +68,26 @@ if (of === 'hidden') {
     },
   ]
   note = `Цены «от» — для самой доступной кромки и стороны открывания; они берутся со страницы скрытых дверей и обновляются вместе с ней. Комплект включает полотно и скрытый короб со скрытыми петлями. Ручка, стопор и завёртка WC — отдельно. Монтаж нашей бригадой — от ${fmt(INSTALL_FROM_PRICE)} за дверь, оплачивается отдельно.`
+} else if (of === 'hinges') {
+  rows = [
+    {
+      name: 'Внешние (накладные) петли Morelli', href: '/catalog/',
+      note: 'На 4 подшипниках, ставятся на любую стандартную коробку',
+      prices: [
+        { label: 'Штука', value: HINGE_PRICE.standard, exact: true },
+        { label: `На дверь (${HINGE_QTY} шт.)`, value: HINGE_PRICE.standard * HINGE_QTY, exact: true },
+      ],
+    },
+    {
+      name: 'Скрытые петли Morelli HH24', href: '/catalog/',
+      note: 'Нужна коробка с запилом под петлю — её цена зависит от серии',
+      prices: [
+        { label: 'Штука', value: HINGE_PRICE.hidden, exact: true },
+        { label: `На дверь (${HINGE_QTY} шт.)`, value: HINGE_PRICE.hidden * HINGE_QTY, exact: true },
+      ],
+    },
+  ]
+  note = 'Цены — из калькулятора стоимости на страницах моделей и обновляются вместе с ним. Там же видна доплата за коробку с запилом под скрытые петли для выбранной серии.'
 } else {
   rows = ENTRANCE_DOOR_MODELS
     .filter(m => m.purpose === 'house')
@@ -91,7 +115,7 @@ if (of === 'hidden') {
             <span class="lprices__prices">
               {r.prices.map(p => (
                 <span class="lprices__price">
-                  <span class="lprices__label">{p.label}</span> от {fmt(p.value)}
+                  <span class="lprices__label">{p.label}</span> {p.exact ? '' : 'от '}{fmt(p.value)}
                 </span>
               ))}
             </span>
