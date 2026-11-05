@@ -219,7 +219,7 @@ onUnmounted(() => {
                   </select>
                   <span class="calc-row__price">{{ doborItem?.price ? fmt(doborItem.price * DOBOR_QTY) : 'уточняется' }}</span>
                 </label>
-                <p class="calc-hint">Короб — 32 мм. Если стена глубже — добор компенсирует разницу, выбирайте по факту глубины проёма.</p>
+                <p class="calc-hint">Короб — 80 мм в глубину. Если стена глубже — добор компенсирует разницу, выбирайте по факту глубины проёма.</p>
               </div>
 
               <div class="calc-divider" />
