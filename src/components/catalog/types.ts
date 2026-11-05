@@ -1,3 +1,5 @@
+import type { ColorFamilySlug } from '../../data/color-families'
+
 export interface CatalogCardItem {
   id: string
   slug: string
@@ -23,7 +25,10 @@ export interface CatalogCardItem {
       существует, хотя на деле просто нет фото. Такие цвета НЕ участвуют в
       фильтре каталога (см. colorNames/allColors) — иначе фильтр по ним давал
       бы пустую выдачу. */
-  colorSwatches: { name: string; hex: string; price: number | null; photo: string; available: boolean; noThumb?: true }[]
+  colorSwatches: { name: string; hex: string; price: number | null; photo: string; available: boolean; noThumb?: true; family: ColorFamilySlug }[]
+  /** Группы цветов модели (src/data/color-families.ts) — по ним фильтр «Цвет».
+      Только цвета с фото: фильтр «белые» не ведёт к модели, где белый лишь на словах. */
+  colorFamilies: ColorFamilySlug[]
   photo: string
   /** Нет эскизов фото обложки (gen-model-thumbs) — карточка берёт оригинал. */
   noThumb?: true

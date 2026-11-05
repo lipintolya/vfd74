@@ -5,16 +5,22 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="grid min-h-96 place-items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-[clamp(3rem,8vw,5.5rem)] text-center" role="status">
-    <div class="grid h-16 w-16 place-items-center rounded-full bg-teal-50 text-teal-600" aria-hidden="true">
-      <svg class="h-7.5 w-7.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M6 7v13h12V7M9 7V5a3 3 0 0 1 6 0v2" />
-      </svg>
-    </div>
-    <h2 class="mb-1.5 mt-4 text-[1.35rem] font-medium text-ink">Ничего не найдено</h2>
-    <p class="mb-5 max-w-100 text-sm leading-relaxed text-slate-500">Попробуйте изменить поисковый запрос или убрать часть фильтров.</p>
-    <button type="button" class="btn btn-primary" @click="$emit('reset')">
-      Сбросить фильтры
-    </button>
+  <div class="ce" role="status">
+    <p class="t-h3 ce__title">Таких моделей нет</p>
+    <p class="t-body ce__text">Уберите часть фильтров — или позвоните в салон: подберём похожую дверь.</p>
+    <button type="button" class="btn btn-primary ce__btn" @click="$emit('reset')">Сбросить фильтры</button>
   </div>
 </template>
+
+<style scoped>
+.ce {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(2rem, 5vw, 3.5rem);
+  background: #e4e4e7;
+}
+.ce__title { margin: 0; }
+.ce__text { margin: 0.5rem 0 0; max-width: 28rem; color: #52525b; }
+.ce__btn { margin-top: 1.5rem; }
+</style>

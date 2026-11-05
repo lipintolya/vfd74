@@ -22,6 +22,7 @@ const trimCaption = (trim: string | null | undefined): string => {
 }
 import { withInStockFirst } from './made-to-order'
 import type { CatalogCardItem } from '../components/catalog/types'
+import { colorFamily, type ColorFamilySlug } from '../data/color-families'
 
 const normalizeHexColor = (value: string | null | undefined) => {
   const normalized = (value ?? '')
@@ -96,6 +97,7 @@ export async function getCatalogCards(): Promise<{
         photo:     row.photo_url,
         available: true,
         ...(thumbMissing(row.photo_url) ? { noThumb: true as const } : {}),
+        family:    colorFamily(color.name, normalizeHexColor(color.hex_preview)),
       })
     }
     colorSwatchesByModel.set(model.id, swatches)
@@ -138,7 +140,8 @@ export async function getCatalogCards(): Promise<{
       colorHex:    cover?.hex  ?? normalizeHexColor(color.hex_preview),
       trim:        trimCaption(model.trim),
       colorNames:  colorsByModel.get(model.id) ?? [color.name],
-      colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url) }],
+      colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url), family: colorFamily(color.name, normalizeHexColor(color.hex_preview)) }],
+      colorFamilies: [...new Set<ColorFamilySlug>((swatches ?? []).map(s => s.family))],
       photo:       cover?.photo ?? row.photo_url ?? '',
       ...(thumbMissing(cover?.photo ?? row.photo_url) ? { noThumb: true as const } : {}),
       price:       cover?.price ?? adjustPrice(seriesSlug, row.price_rrp ?? null),
@@ -154,6 +157,11 @@ export async function getCatalogCards(): Promise<{
   for (const card of cards) {
     card.slug = slugMap.get(card.id)!
   }
+
+  /* Цвет, не попавший ни в одну группу, фильтр «Цвет» покажет как «Другие» —
+     значит, в color-families.ts не хватает слова */
+  const ungrouped = [...new Set(cards.flatMap(c => c.colorSwatches.filter(s => s.family === 'other').map(s => s.name)))]
+  if (ungrouped.length) console.warn(`[colors] без группы (src/data/color-families.ts): ${ungrouped.join(', ')}`)
 
   return { cards, error: error?.message ?? null }
 }

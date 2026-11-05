@@ -13,6 +13,9 @@
 import type { ModelEntry } from './model-entries'
 import { describeTrim, lowerFirst } from './trim-labels'
 import { getSeriesSpec } from '../data/series-descriptions'
+import { pluralRu } from './plural'
+/** Склонение по числу — в lib/plural.ts (без зависимостей, его берут и клиентские острова) */
+export { pluralRu }
 
 export const DOOR_TYPE = 'Межкомнатная дверь'
 export const BRAND     = 'ВФД'
@@ -89,14 +92,6 @@ export function productName(m: NamingInput, opts: { withBrand?: boolean } = {}):
   const trim     = describeTrim(m.model.trim)?.phrase ?? ''
   const head     = [DOOR_TYPE, opts.withBrand ? BRAND : '', headline].filter(Boolean).join(' ')
   return [head, coating, trim].filter(Boolean).join(', ')
-}
-
-/** Склонение по числу: pluralRu(3, ['модель', 'модели', 'моделей']) → «модели». */
-export function pluralRu(n: number, [one, few, many]: [string, string, string]): string {
-  const mod10 = n % 10, mod100 = n % 100
-  if (mod10 === 1 && mod100 !== 11) return one
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few
-  return many
 }
 
 const formatRub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`

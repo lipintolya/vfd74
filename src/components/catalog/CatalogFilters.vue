@@ -1,178 +1,205 @@
 <script setup lang="ts">
-import { ref, watch, onUnmounted } from 'vue'
-import type { CatalogFilterOption } from './types'
+/**
+ * Фильтры каталога — списки с галочками: цена, серия, цвет, остекление.
+ * Внутри группы можно отметить несколько вариантов («белые» и «серые»),
+ * группы складываются. Цвет — словами, по группам (src/data/color-families.ts):
+ * названия цветов в базе привязаны к покрытию («Эмалекс белый», «Эмаль
+ * белая»), и фильтр по точному названию находил лишь часть белых дверей.
+ * Варианты, при которых ничего не найдётся, не показываются — их отбирает
+ * CatalogClient. Один компонент — в колонке на компьютере и в шторке на телефоне.
+ */
+import { computed, ref, useId } from 'vue'
 
-defineProps<{
-  series: CatalogFilterOption[]
-  coatings: CatalogFilterOption[]
-  colors: CatalogFilterOption[]
-  totalCount: number
-  filteredCount: number
-  hasActiveFilters: boolean
-}>()
-
-const activeSeries = defineModel<string>('activeSeries', { required: true })
-const activeCoating = defineModel<string>('activeCoating', { required: true })
-const activeColor = defineModel<string>('activeColor', { required: true })
-const glassOnly = defineModel<boolean>('glassOnly', { required: true })
-const searchQuery = defineModel<string>('searchQuery', { required: true })
-
-const emit = defineEmits<{
-  reset: []
-}>()
-
-/* Поиск — единственное поле с debounce: печатать посимвольно и сразу
-   перефильтровывать сетку на каждую букву дёргано. Остальные фильтры
-   (серия/покрытие/цвет/теги) применяются мгновенно по клику — раньше был
-   общий черновик + кнопка «Применить» на все поля разом, из-за которой
-   клик по фильтру не менял сетку, пока не нажмёшь ещё раз — на клиентской
-   фильтрации без роутинга это лишний шаг, а не защита от лишних запросов. */
-const searchDraft = ref(searchQuery.value)
-let debounceTimer: ReturnType<typeof setTimeout> | null = null
-watch(searchDraft, (value) => {
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = setTimeout(() => { searchQuery.value = value.trim() }, 300)
-})
-watch(searchQuery, (value) => {
-  if (value !== searchDraft.value) searchDraft.value = value
-})
-onUnmounted(() => { if (debounceTimer) clearTimeout(debounceTimer) })
-
-const openSections = ref({
-  series: true,
-  coating: false,
-  color: false,
-  tags: true,
-})
-
-type SectionName = keyof typeof openSections.value
-
-const toggleSection = (name: SectionName) => {
-  openSections.value[name] = !openSections.value[name]
+export interface FilterOption {
+  value: string
+  label: string
+  /** Образец цвета рядом с подписью */
+  color?: string
 }
 
-const resetAll = () => {
-  /* Отменяем незавершённый debounce поиска — иначе после сброса фильтров
-     кликом «Сбросить» старое напечатанное значение (ещё не улетевшее в
-     searchQuery из-за 300ms задержки) молча возвращалось бы через таймер,
-     который уже тикал на момент клика. */
-  if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null }
-  searchDraft.value = ''
-  emit('reset')
+/* Варианты — *Options; выбранное — v-model с теми же именами без суффикса */
+const props = defineProps<{
+  priceOptions: FilterOption[]
+  seriesOptions: FilterOption[]
+  colorGroups: { title: string; items: FilterOption[] }[]
+  glassOptions: FilterOption[]
+}>()
+
+const prices = defineModel<string[]>('prices', { required: true })
+const series = defineModel<string[]>('series', { required: true })
+const colors = defineModel<string[]>('colors', { required: true })
+const glass = defineModel<string[]>('glass', { required: true })
+
+const uid = useId()
+
+const models = { prices, series, colors, glass }
+type ModelKey = keyof typeof models
+const toggle = (key: ModelKey, value: string) => {
+  const model = models[key]
+  model.value = model.value.includes(value) ? model.value.filter((v) => v !== value) : [...model.value, value]
 }
+
+/* Группы раскрыты; заголовок группы сворачивает её */
+const collapsed = ref<Record<string, boolean>>({})
+const flip = (key: string) => { collapsed.value[key] = !collapsed.value[key] }
+
+/* Серий около двадцати — первые шесть, остальные по кнопке. Отмеченная
+   серия видна всегда, даже если она дальше в списке. */
+const SERIES_VISIBLE = 6
+const seriesExpanded = ref(false)
+const visibleSeries = computed(() => {
+  if (seriesExpanded.value || props.seriesOptions.length <= SERIES_VISIBLE + 1) return props.seriesOptions
+  return props.seriesOptions.filter((s, i) => i < SERIES_VISIBLE || series.value.includes(s.value))
+})
+const hiddenSeriesCount = computed(() => props.seriesOptions.length - visibleSeries.value.length)
+
+const groups = computed(() => [
+  { key: 'prices' as const, title: 'Цена за полотно', show: props.priceOptions.length > 0 },
+  { key: 'series' as const, title: 'Серия', show: props.seriesOptions.length > 1 },
+  { key: 'colors' as const, title: 'Цвет', show: props.colorGroups.length > 0 },
+  { key: 'glass' as const,  title: 'Остекление', show: props.glassOptions.length > 1 },
+].filter((g) => g.show))
 </script>
 
 <template>
-  <aside class="@container rounded-2xl bg-slate-50 p-5" aria-label="Фильтры каталога">
-    <div class="flex items-center justify-between gap-4 border-b border-slate-200 pb-4">
-      <h2 class="m-0 text-lg font-medium text-ink">Фильтры</h2>
-      <button v-if="hasActiveFilters" type="button" class="text-xs font-semibold text-teal-600 hover:text-teal-700" @click="resetAll">Сбросить</button>
-    </div>
-
-    <label class="mt-4 mb-2.5 block">
-      <span class="sr-only">Поиск по каталогу</span>
-      <input
-        v-model="searchDraft"
-        type="search"
-        inputmode="search"
-        autocomplete="off"
-        placeholder="Поиск"
-        class="min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-step-0 text-ink placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/15"
-      />
-    </label>
-
-    <div class="border-b border-slate-200">
-      <button type="button" class="flex w-full items-center justify-between py-3.5 text-step-1 font-medium text-ink" @click="toggleSection('series')">
-        <span>Серия</span>
-        <svg class="h-4 w-4 text-slate-400 transition-transform" :class="{ 'rotate-180': openSections.series }" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-      <div v-if="openSections.series" class="mb-3.5 grid max-h-56 gap-1 overflow-y-auto">
+  <div class="cf">
+    <section v-for="g in groups" :key="g.key" class="cf__group">
+      <h3 class="cf__heading">
         <button
           type="button"
-          class="rounded-lg px-2.5 py-3 text-left text-step-0 text-slate-600 transition hover:bg-slate-100"
-          :class="activeSeries === '' ? 'bg-teal-50 text-teal-700' : ''"
-          @click="activeSeries = ''"
+          class="cf__head"
+          :aria-expanded="!collapsed[g.key]"
+          :aria-controls="`${uid}-${g.key}`"
+          @click="flip(g.key)"
         >
-          Все серии
+          {{ g.title }}
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 10 4-4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </button>
-        <button
-          v-for="item in series"
-          :key="item.value"
-          type="button"
-          class="rounded-lg px-2.5 py-3 text-left text-step-0 text-slate-600 transition hover:bg-slate-100"
-          :class="activeSeries === item.value ? 'bg-teal-50 text-teal-700' : ''"
-          @click="activeSeries = activeSeries === item.value ? '' : item.value"
-        >
-          {{ item.label }}
-        </button>
-      </div>
-    </div>
+      </h3>
 
-    <div class="border-b border-slate-200">
-      <button type="button" class="flex w-full items-center justify-between py-3.5 text-step-1 font-medium text-ink" @click="toggleSection('coating')">
-        <span>Покрытие</span>
-        <svg class="h-4 w-4 text-slate-400 transition-transform" :class="{ 'rotate-180': openSections.coating }" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-      <div v-if="openSections.coating" class="mb-3.5 grid max-h-56 gap-1 overflow-y-auto">
-        <button
-          v-for="item in coatings"
-          :key="item.value"
-          type="button"
-          class="rounded-lg px-2.5 py-3 text-left text-step-0 text-slate-600 transition hover:bg-slate-100"
-          :class="activeCoating === item.value ? 'bg-teal-50 text-teal-700' : ''"
-          @click="activeCoating = activeCoating === item.value ? '' : item.value"
-        >
-          {{ item.label }}
-        </button>
-      </div>
-    </div>
+      <div v-show="!collapsed[g.key]" :id="`${uid}-${g.key}`" class="cf__body">
+        <template v-if="g.key === 'colors'">
+          <div v-for="cg in colorGroups" :key="cg.title" class="cf__sub">
+            <p v-if="colorGroups.length > 1" class="cf__subtitle">{{ cg.title }}</p>
+            <label v-for="o in cg.items" :key="o.value" class="cf__row">
+              <input type="checkbox" class="cf__input" :checked="colors.includes(o.value)" @change="toggle('colors', o.value)" />
+              <span class="cf__box" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+              <span v-if="o.color" class="cf__sample" :style="{ backgroundColor: o.color }" aria-hidden="true" />
+              <span class="cf__text">{{ o.label }}</span>
+            </label>
+          </div>
+        </template>
 
-    <div class="border-b border-slate-200">
-      <button type="button" class="flex w-full items-center justify-between py-3.5 text-step-1 font-medium text-ink" @click="toggleSection('color')">
-        <span>Цвет</span>
-        <svg class="h-4 w-4 text-slate-400 transition-transform" :class="{ 'rotate-180': openSections.color }" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-      <div v-if="openSections.color" class="mb-3.5 grid max-h-56 gap-1 overflow-y-auto">
-        <button
-          v-for="item in colors"
-          :key="item.value"
-          type="button"
-          class="flex items-center gap-2 rounded-lg px-2.5 py-3 text-left text-step-0 text-slate-600 transition hover:bg-slate-100"
-          :class="activeColor === item.value ? 'bg-teal-50 text-teal-700' : ''"
-          @click="activeColor = activeColor === item.value ? '' : item.value"
-        >
-          <span class="h-3.5 w-3.5 shrink-0 rounded-full border border-black/10" :style="{ backgroundColor: item.color }"></span>
-          {{ item.label }}
-        </button>
+        <template v-else>
+          <label
+            v-for="o in (g.key === 'series' ? visibleSeries : g.key === 'prices' ? priceOptions : glassOptions)"
+            :key="o.value"
+            class="cf__row"
+          >
+            <input type="checkbox" class="cf__input" :checked="models[g.key].value.includes(o.value)" @change="toggle(g.key, o.value)" />
+            <span class="cf__box" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="m3.5 8.5 3 3 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+            <span class="cf__text">{{ o.label }}</span>
+          </label>
+          <button
+            v-if="g.key === 'series' && (hiddenSeriesCount > 0 || seriesExpanded)"
+            type="button"
+            class="cf__more"
+            :aria-expanded="seriesExpanded"
+            @click="seriesExpanded = !seriesExpanded"
+          >
+            {{ seriesExpanded ? 'Свернуть' : `Показать ещё ${hiddenSeriesCount}` }}
+          </button>
+        </template>
       </div>
-    </div>
-
-    <div class="border-b border-slate-200">
-      <button type="button" class="flex w-full items-center justify-between py-3.5 text-step-1 font-medium text-ink" @click="toggleSection('tags')">
-        <span>Теги</span>
-        <svg class="h-4 w-4 text-slate-400 transition-transform" :class="{ 'rotate-180': openSections.tags }" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-      <div v-if="openSections.tags" class="mb-3.5">
-        <label class="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-slate-600">
-          <input v-model="glassOnly" type="checkbox" class="h-4 w-4 accent-teal-600" />
-          <span>Со стеклом</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="flex items-center justify-between gap-3 pt-3.5 text-step-0 text-slate-500">
-      <div class="inline-flex items-center gap-1">
-        <strong class="font-medium text-ink">{{ filteredCount }}</strong>
-        <span>из {{ totalCount }}</span>
-      </div>
-    </div>
-  </aside>
+    </section>
+  </div>
 </template>
+
+<style scoped>
+.cf { display: flex; flex-direction: column; }
+
+/* Группы под тонкими линейками */
+.cf__group { border-top: 1px solid #e4e4e7; }
+.cf__group:first-child { border-top: 0; }
+.cf__heading { margin: 0; }
+.cf__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--text-step-1);
+  font-weight: 600;
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.cf__head svg { flex: none; width: 1rem; height: 1rem; color: #a1a1aa; transition: transform 200ms var(--ease-out); }
+.cf__head[aria-expanded='false'] svg { transform: rotate(180deg); }
+.cf__body { padding-bottom: 1rem; }
+
+.cf__sub + .cf__sub { margin-top: 0.75rem; }
+.cf__subtitle { margin: 0.25rem 0; font-size: 0.8125rem; font-weight: 600; color: #71717a; }
+
+/* Строка-галочка: настоящий checkbox (клавиатура, читалки) спрятан,
+   рисуется квадрат рядом */
+.cf__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.25rem;
+  font-size: 0.9375rem;
+  line-height: 1.3;
+  color: #52525b;
+  cursor: pointer;
+  transition: color 150ms var(--ease-out);
+}
+.cf__row:hover { color: var(--color-ink); }
+.cf__input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.cf__box {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid #a1a1aa;
+  background: #fff;
+  color: transparent;
+  transition: background-color 150ms var(--ease-out), border-color 150ms var(--ease-out);
+}
+.cf__box svg { width: 0.875rem; height: 0.875rem; }
+.cf__row:hover .cf__box { border-color: var(--color-fg); }
+.cf__input:checked + .cf__box { border-color: var(--color-fg); background: var(--color-fg); color: #fff; }
+.cf__input:checked ~ .cf__text { color: var(--color-ink); font-weight: 500; }
+.cf__input:focus-visible + .cf__box { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.cf__sample {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid rgb(0 0 0 / 0.16);
+  border-radius: 50%;
+}
+
+.cf__more {
+  margin-top: 0.25rem;
+  padding: 0.375rem 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f766e;
+  cursor: pointer;
+}
+.cf__more:hover { color: #115e59; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cf__head svg, .cf__row, .cf__box { transition: none; }
+}
+</style>
