@@ -6,7 +6,7 @@
  * ссылка у названия); кружки цветов лежат выше неё и переключают фото и цену.
  *
  * Статус — цветная плашка в углу фото: «Новинка» терракотой, «В наличии»
- * бирюзой, «Под заказ» белой (src/lib/made-to-order.ts).
+ * бирюзой, «Под заказ» графитом (src/lib/made-to-order.ts).
  */
 import { computed, ref, watch } from 'vue'
 import { calcKitPrice } from '../../data/accessories'
@@ -203,7 +203,8 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
 
 /* Статус — плашка в углу фото, прямые углы как у подложки. Белый текст на
    цвете держит контраст ≥ 4.5:1. «Новинка» — тёплый акцент, «В наличии» —
-   фирменная бирюза, «Под заказ» — белая и тихая: справка, не сигнал. */
+   фирменная бирюза, «Под заказ» — графит: нейтрально, но плашкой (белая на
+   серой подложке читалась как вырез в фото). */
 .pc__status {
   position: absolute;
   top: 0;
@@ -214,8 +215,8 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
   line-height: 1.15;
   letter-spacing: 0.005em;
   white-space: nowrap;
-  background: #fff;
-  color: #3f3f46;  /* zinc-700 */
+  background: var(--color-fg);  /* графит — «Под заказ» */
+  color: #fff;
 }
 .pc__status[data-status='new'] { background: #c2410c; color: #fff; }    /* orange-700 */
 .pc__status[data-status='stock'] { background: #0f766e; color: #fff; }  /* teal-700 */
