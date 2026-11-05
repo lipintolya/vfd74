@@ -1,0 +1,32 @@
+# /etc/fail2ban/jail.d/vfd74.local — баны для nginx vfd74.ru.
+# Банятся только 80/443: SSH (и git push production) бан по сайту не задевает.
+# sshd-jail включён пакетом Ubuntu (defaults-debian.conf), здесь не трогаем.
+# Повторный бан того же адреса — вдвое дольше (bantime.increment), до недели.
+
+[nginx-limit-req]
+# Отказы limit_req (429) из error.log — см. nginx/vfd74-security.conf.
+# 20 отказов за минуту = клиент давно вышел за всплеск в 50 страниц / 300
+# запросов; браузер человека до такого не доходит. Бан короткий: за одним
+# мобильным IP бывают сотни людей.
+enabled  = true
+backend  = auto
+port     = http,https
+logpath  = /var/log/nginx/error.log
+findtime = 1m
+maxretry = 20
+bantime  = 10m
+bantime.increment = true
+bantime.maxtime   = 1w
+
+[vfd74-probe]
+# Сканеры: 3 запроса с ответом 444 за 10 минут — бан на сутки.
+enabled  = true
+backend  = auto
+filter   = vfd74-probe
+port     = http,https
+logpath  = /var/log/nginx/access.log
+findtime = 10m
+maxretry = 3
+bantime  = 1d
+bantime.increment = true
+bantime.maxtime   = 1w

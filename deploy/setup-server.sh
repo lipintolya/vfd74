@@ -77,6 +77,7 @@ fi
 
 echo "==> nginx"
 install -m 644 "$SCRIPT_DIR/nginx/vfd74-perf.conf" /etc/nginx/conf.d/vfd74-perf.conf
+install -m 644 "$SCRIPT_DIR/nginx/vfd74-security.conf" /etc/nginx/conf.d/vfd74-security.conf
 rm -f /etc/nginx/sites-enabled/default
 SITE="/etc/nginx/sites-available/$DOMAIN"
 CERT="/etc/letsencrypt/live/$DOMAIN/fullchain.pem"
@@ -116,6 +117,12 @@ if [ -f "$CERT" ]; then
   ln -sf "$SITE" "/etc/nginx/sites-enabled/$DOMAIN"
   nginx -t && systemctl reload nginx
 fi
+
+echo "==> fail2ban для nginx (лимиты, сканеры)"
+install -m 644 "$SCRIPT_DIR/fail2ban/filter.d/vfd74-probe.conf" /etc/fail2ban/filter.d/vfd74-probe.conf
+install -m 644 "$SCRIPT_DIR/fail2ban/jail.d/vfd74.local" /etc/fail2ban/jail.d/vfd74.local
+touch /var/log/nginx/access.log /var/log/nginx/error.log   # jail не стартует без файла лога
+fail2ban-client -t >/dev/null && systemctl reload fail2ban
 
 echo
 echo "Готово. Сайт: $WEB_ROOT, деплой: git push production main"
