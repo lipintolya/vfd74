@@ -203,9 +203,19 @@ html {
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
+/* clip, а не hidden: hidden делает body (и main) контейнером прокрутки,
+   и position: sticky привязывался к нему, а не к окну — не липли фильтры
+   каталога, заголовок FaqAccordion, фото серии и работы портфолио.
+   clip режет вылет так же, но прокрутки не заводит; hidden — запасной для
+   браузеров без clip (Safari < 16). */
 body {
   background-color: var(--color-bg);
   overflow-x: hidden;
+  overflow-x: clip;
+}
+#main-content {
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Шрифтовая пара — заголовки на Rubik (display), весь
