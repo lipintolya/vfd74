@@ -21,6 +21,7 @@ import RelatedLinks from '../components/ui/RelatedLinks.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
 import { getCatalogCards, getSeriesCardsData } from '../lib/catalog-data'
 import { sortCards, coatingRank } from '../lib/catalog-filter'
+import { popularRank } from '../lib/popular-series'
 import { getSeriesSpec, coatingGroupCopy } from '../data/series-descriptions'
 import { DOOR_CATEGORIES } from '../data/door-categories'
 import { COLOR_LINKS, STYLE_LINKS } from '../lib/site-links'
@@ -44,7 +45,10 @@ const LANDING_BY_COATING = new Map(DOOR_CATEGORIES.map((c) => [c.coatingSlug, c]
 const coatingGroups = [...new Map(seriesCardsData.map((s) => [s.coatingSlug, s.coatingName])).entries()]
   .sort(([a, an], [b, bn]) => coatingRank(a) - coatingRank(b) || an.localeCompare(bn, 'ru'))
   .map(([slug, name]) => {
-    const series = seriesCardsData.filter((s) => s.coatingSlug === slug)
+    /* Серии — в порядке каталога: ведущие (Урбан, Эмалексы) первыми, дальше по цене */
+    const series = seriesCardsData
+      .filter((s) => s.coatingSlug === slug)
+      .sort((a, b) => popularRank(a.slug) - popularRank(b.slug) || (a.minPrice ?? Infinity) - (b.minPrice ?? Infinity))
     /* Текст покрытия общий для его серий; нет полного — короткий из характеристик */
     const spec = getSeriesSpec(series[0]!.slug, slug)
     const copy = coatingGroupCopy[slug]
@@ -58,7 +62,15 @@ const coatingGroups = [...new Map(seriesCardsData.map((s) => [s.coatingSlug, s.c
       /* Первое предложение — полный текст на странице покрытия */
       description: firstSentence(copy?.description ?? [spec.coating, spec.material].filter(Boolean).join(' ')),
       minPrice: seriesPrices.length ? Math.min(...seriesPrices) : null,
-      cover: series.find((s) => s.cover)?.cover ?? '',
+      /* Карточка покрытия над каталогом — обложка первой серии по алфавиту
+         базы, как и раньше; фото в «О покрытиях» — ведущей серии, и если она
+         совпадает с карточкой, следующей: одно фото дважды на странице ни к чему */
+      cover: seriesCardsData.find((s) => s.coatingSlug === slug && s.cover)?.cover ?? '',
+      feature: (() => {
+        const first = seriesCardsData.find((s) => s.coatingSlug === slug && s.cover)?.cover
+        const pick = series.find((s) => s.cover && s.cover !== first) ?? series.find((s) => s.cover)
+        return pick ? { src: pick.cover, alt: `Межкомнатная дверь серии ${pick.name} в интерьере` } : null
+      })(),
       link: landing
         ? { href: `/catalog/${landing.slug}/`, label: `Все двери ${name}` }
         : { href: `/catalog/?coating=${slug}`, label: `Все двери ${name}` },
@@ -240,10 +252,16 @@ const lead = minPrice
       <ul class="co-list" role="list">
         {coatingGroups.map((g) => (
           <li class="co" id={`coating-${g.slug}`}>
+            {g.feature && (
+              <div class="co__media">
+                <img src={g.feature.src} alt={g.feature.alt} width="900" height="900" loading="lazy" decoding="async" />
+              </div>
+            )}
             <div class="co__text">
               <h3 class="t-h3 co__name">{g.name}</h3>
               <p class="co__facts">
-                {g.series.length} {pluralRu(g.series.length, ['серия', 'серии', 'серий'])}{g.minPrice && <>, от&nbsp;{rub(g.minPrice)} за&nbsp;полотно</>}
+                {g.minPrice && <><span class="co__price">от&nbsp;{rub(g.minPrice)}</span> за&nbsp;полотно · </>}
+                {g.series.length}&nbsp;{pluralRu(g.series.length, ['серия', 'серии', 'серий'])}
               </p>
               {g.tagline && <p class="co__tagline">{typograph(g.tagline)}</p>}
               {g.description && <p class="co__desc">{typograph(g.description)}</p>}
@@ -254,12 +272,19 @@ const lead = minPrice
                 </svg>
               </a>
             </div>
-            <ul class="co__series" role="list" aria-label={`Серии: ${g.name}`}>
+            <ul class="co__series" role="list" aria-label={`Серии покрытия ${g.name}`}>
               {g.series.map((s) => (
                 <li>
                   <a href={`/catalog/series/${s.slug}/`} class="co__serie">
-                    <span class="co__serie-name">{s.name}</span>
+                    {s.thumb && <img class="co__thumb" src={s.thumb} alt="" width="160" height="200" loading="lazy" decoding="async" />}
+                    <span class="co__serie-main">
+                      <span class="co__serie-name">{s.name}</span>
+                      <span class="co__serie-count">{s.modelCount}&nbsp;{pluralRu(s.modelCount, ['модель', 'модели', 'моделей'])}</span>
+                    </span>
                     {s.minPrice && <span class="co__serie-price">от&nbsp;{rub(s.minPrice)}</span>}
+                    <svg class="co__serie-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                   </a>
                 </li>
               ))}
@@ -289,38 +314,60 @@ const lead = minPrice
   .co-band { padding-block: clamp(3rem, 6vw, 5rem); }
   .co-all { min-height: 2.75rem; padding-inline: 1.25rem; font-size: var(--text-step-0); }
 
-  /* ── Покрытия: строки под линейками — текст слева, серии справа ── */
+  /* ── Покрытия: строки под линейками. Компьютер — три колонки: фото
+     ведущей серии, текст покрытия, серии с превью. Телефон и планшет —
+     текст и серии, без крупного фото (покрытия с фото уже над каталогом). ── */
   .co-list { margin: 0; padding: 0; list-style: none; }
   .co {
     display: grid;
-    gap: 1.5rem 2rem;
+    gap: 1.75rem 2rem;
     padding-block: clamp(2rem, 4vw, 3rem);
     border-top: 1px solid #e2e8f0;
     scroll-margin-top: calc(var(--header-height) + 1rem);
   }
   .co:last-child { padding-bottom: 0; }
+  .co__media { display: none; }
   @media (width >= 64rem) {
-    .co { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-    .co__text { grid-column: 1 / span 7; }
-    .co__series { grid-column: 9 / span 4; }
+    .co { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+    .co__media {
+      display: block;
+      grid-column: 1 / span 3;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background: #e4e4e7;
+    }
+    .co__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .co__text { grid-column: 4 / span 4; }
+    .co__series { grid-column: 8 / span 5; }
   }
+
   .co__name { margin: 0; }
   .co__facts {
-    margin: 0.375rem 0 0;
+    margin: 0.625rem 0 0;
     font-size: var(--text-step-1);
+    line-height: 1.4;
     color: #64748b;
     font-variant-numeric: tabular-nums;
   }
+  /* Цена «от» — крупно, тёмным: это главная цифра строки */
+  .co__price {
+    font-size: var(--text-step-3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
   .co__tagline {
-    margin: 1.25rem 0 0;
+    margin: 1.5rem 0 0;
     font-size: var(--text-step-1);
     font-weight: 600;
     line-height: 1.45;
     color: var(--color-ink);
+    text-wrap: balance;
   }
   .co__desc {
     margin: 0.375rem 0 0;
-    max-width: 40rem;
+    max-width: 34rem;
     font-size: var(--text-step-1);
     line-height: 1.6;
     color: #475569;
@@ -331,41 +378,62 @@ const lead = minPrice
     align-items: center;
     gap: 0.375rem;
     min-height: 2.75rem;
-    margin-top: 0.75rem;
+    margin-top: 1rem;
     font-size: var(--text-step-1);
     font-weight: 600;
     color: #0f766e;
     text-decoration: none;
   }
   .co__link:hover { color: #115e59; }
-
-  /* Список серий начинается вровень с названием покрытия */
-  .co__series { margin: -0.875rem 0 0; padding: 0; list-style: none; align-self: start; }
-  @media (width < 64rem) {
-    .co__series { margin-top: 0; border-top: 1px solid #e2e8f0; }
+  @media (hover: hover) {
+    .co__link:hover .btn-arrow-icon { transform: translateX(3px); }
   }
+
+  /* Серии: превью, название и число моделей, цена «от» справа */
+  .co__series { margin: 0; padding: 0; list-style: none; border-top: 1px solid #e2e8f0; }
   .co__serie {
-    display: flex;
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto 1rem;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    min-height: 3.25rem;
+    gap: 1rem;
+    padding: 0.625rem 0.75rem 0.625rem 0;
     border-bottom: 1px solid #e2e8f0;
     color: var(--color-ink);
     text-decoration: none;
-    transition: color 180ms var(--ease-out);
+    transition: background-color 180ms var(--ease-out), padding 180ms var(--ease-out);
   }
-  .co__serie-name { font-size: var(--text-step-1); font-weight: 600; }
+  .co__thumb {
+    display: block;
+    width: 2.75rem;
+    height: 3.4375rem;
+    object-fit: cover;
+    background: #e4e4e7;
+  }
+  .co__serie-main { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+  .co__serie-name { font-size: var(--text-step-1); font-weight: 600; line-height: 1.3; }
+  .co__serie-count { font-size: var(--text-step-0); color: #64748b; font-variant-numeric: tabular-nums; }
   .co__serie-price {
-    font-size: var(--text-step-0);
-    color: #64748b;
+    font-size: var(--text-step-1);
+    font-weight: 600;
+    color: var(--color-ink);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
-  .co__serie:hover { color: #0f766e; }
-  .co__serie:hover .co__serie-price { color: #0f766e; }
+  .co__serie-arrow {
+    width: 1rem;
+    height: 1rem;
+    color: #94a3b8;
+    transition: transform 180ms var(--ease-out), color 180ms var(--ease-out);
+  }
+  /* Наведение: строка подсвечивается белым и чуть сдвигается, стрелка уходит вправо */
+  @media (hover: hover) {
+    .co__serie:hover { background: #fff; padding-left: 0.75rem; }
+    .co__serie:hover .co__serie-name { color: #0f766e; }
+    .co__serie:hover .co__serie-arrow { color: #0f766e; transform: translateX(3px); }
+  }
+  .co__serie:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
   @media (prefers-reduced-motion: reduce) {
-    .co__serie { transition: none; }
+    .co__serie, .co__serie-arrow { transition: none; }
   }
 </style>
