@@ -200,6 +200,10 @@ html {
   color: var(--color-fg);
   background-color: #030712; /* цвет футера — виден при overscroll вниз */
   -webkit-font-smoothing: antialiased;
+  /* Серый прямоугольник iOS при касании: на карточке товара ссылка растянута
+     на всю карточку, и вспышка ложилась поверх неё. Отклик на нажатие дают
+     hover-стили (Safari показывает их при касании), как в шапке. */
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
@@ -595,6 +599,26 @@ astro-island:has(> .section) + .section,
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
+}
+
+/* После касания или клика рамки фокуса нет нигде на сайте. Safari на
+   iPhone рисует :focus-visible и после тапа, если фокус поставил скрипт:
+   шторка фильтров фокусирует крестик, а закрываясь — кнопку «Фильтры»;
+   так же меню, «Контакты», окна в подвале, отзывы. Фокус для клавиатуры
+   и читалок экрана при этом остаётся, просто без рамки; первое нажатие
+   Tab, стрелок и т.п. возвращает рамки (data-input — скрипт в BaseLayout).
+   Рамки на сайте рисуются только outline: на самом элементе, его ::after,
+   соседе (галочки фильтров), потомке (карточки покрытий) и родителе через
+   :has (сортировка, плитки) — все формы ниже. Других outline в дизайне
+   нет (выбранный цвет, карточка покрытия — box-shadow), поэтому
+   !important ничего лишнего не гасит. */
+html[data-input='pointer'] :focus-visible,
+html[data-input='pointer'] :focus-visible::before,
+html[data-input='pointer'] :focus-visible::after,
+html[data-input='pointer'] :focus-visible ~ *,
+html[data-input='pointer'] :focus-visible *,
+html[data-input='pointer'] :has(:focus-visible) {
+  outline: none !important;
 }
 
 /* ── Dropdown / panel animation ── */
