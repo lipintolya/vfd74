@@ -5,6 +5,7 @@
  */
 import type { CatalogCardItem, CatalogSort } from '../components/catalog/types'
 import { rub } from '../data/services'
+import { popularRank } from './popular-series'
 import { COLOR_FAMILIES, type ColorFamilySlug } from '../data/color-families'
 
 /** Порядок покрытий: карточки над каталогом, фильтр, «О покрытиях и сериях».
@@ -111,12 +112,11 @@ export function filterParamsString(f: CatalogFilterState): string {
 const byPriceAsc = (a: CatalogCardItem, b: CatalogCardItem) => (a.price ?? Infinity) - (b.price ?? Infinity)
 const byPriceDesc = (a: CatalogCardItem, b: CatalogCardItem) => (b.price ?? -Infinity) - (a.price ?? -Infinity)
 
-/** «Популярные» — серии из popular-series.ts (есть на складе или в работе)
-    вперёд, внутри — по цене: чистая сортировка по цене открывала каталог
-    дешёвым Протачем под заказ. */
+/** «Популярные» — порядок серий из popular-series.ts (Урбан, Эмалексы,
+    остальные популярные, прочие), внутри серии — по цене. */
 export function sortCards(cards: readonly CatalogCardItem[], sort: CatalogSort): CatalogCardItem[] {
   const list = [...cards]
-  if (sort === 'popular') return list.sort((a, b) => Number(b.isPopular) - Number(a.isPopular) || byPriceAsc(a, b))
+  if (sort === 'popular') return list.sort((a, b) => popularRank(a.seriesSlug) - popularRank(b.seriesSlug) || byPriceAsc(a, b))
   if (sort === 'price_asc') return list.sort(byPriceAsc)
   if (sort === 'price_desc') return list.sort(byPriceDesc)
   return list.sort((a, b) => a.name.localeCompare(b.name, 'ru'))
