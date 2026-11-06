@@ -399,33 +399,43 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
 // Ключ — series.slug из Supabase. Карточка, страница модели и калькулятор
 // берут погонаж через accessoriesFor() / calcKitPrice(…, seriesSlug).
 // ─────────────────────────────────────────────────────────────────────────────
+/* Прайс фабрики на погонаж Экошпона «Атум Про / Элегант Древесный / Урбан»
+   (vfd-74.ru/Ekoshpon, 06.11.2026) — одинаковый у этих серий. */
+const ECO_FACTORY_ITEMS: Accessory[] = [
+  { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`, category: 'kit', unit: 'комплект', price: 3_850 },
+  {
+    name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 700,
+    image:  '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+    scheme: '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+  },
+  {
+    name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 420,
+    image:  '/media/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+    scheme: '/media/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+  },
+  {
+    name: 'Добор ДПТ№2 100х10х2070', category: 'dobor', unit: 'шт', price: 490,
+    image:  '/media/pogonaz/emalex/dobor_t_2130h100h10.webp',
+    scheme: '/media/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+    mediaAspect: '3.4 / 1',
+  },
+  { name: 'Добор ДПТ№2 150х10х2070',           category: 'dobor', unit: 'шт', price: 630 },
+  { name: 'Добор ДПТ№2 200х10х2070',           category: 'dobor', unit: 'шт', price: 750 },
+  { name: 'Соединитель для доборов 35х4х2100', category: 'dobor', unit: 'шт', price: 50 },
+]
+
 export const SERIES_ACCESSORIES: Record<string, { kitPrice: number; items: Accessory[] }> = {
-  // Прайс фабрики «Атум Про / Элегант Древесный», vfd-74.ru/Ekoshpon, 06.11.2026
   'elegant-drevesnyy': {
     kitPrice: 3_850,
     items: [
-      { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`, category: 'kit', unit: 'комплект', price: 3_850 },
-      {
-        name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 700,
-        image:  '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
-        scheme: '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
-      },
-      {
-        name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 420,
-        image:  '/media/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
-        scheme: '/media/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
-      },
-      {
-        name: 'Добор ДПТ№2 100х10х2070', category: 'dobor', unit: 'шт', price: 490,
-        image:  '/media/pogonaz/emalex/dobor_t_2130h100h10.webp',
-        scheme: '/media/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
-        mediaAspect: '3.4 / 1',
-      },
-      { name: 'Добор ДПТ№2 150х10х2070',           category: 'dobor',      unit: 'шт', price: 630 },
-      { name: 'Добор ДПТ№2 200х10х2070',           category: 'dobor',      unit: 'шт', price: 750 },
-      { name: 'Соединитель для доборов 35х4х2100', category: 'dobor',      unit: 'шт', price: 50 },
-      { name: 'Притворная планка 30х10х2100',      category: 'decorative', unit: 'шт', price: 310 },
+      ...ECO_FACTORY_ITEMS,
+      { name: 'Притворная планка 30х10х2100', category: 'decorative', unit: 'шт', price: 310 },
     ],
+  },
+  // У Урбана притворной планки в прайсе нет
+  'urban-loft': {
+    kitPrice: 3_850,
+    items: ECO_FACTORY_ITEMS,
   },
 }
 

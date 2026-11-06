@@ -53,6 +53,8 @@ const WOOD_LIGHT_FROM = 0.55
 
 export function colorFamily(name: string, hex?: string | null): ColorFamilySlug {
   const n = name.toLowerCase()
+  /* «Бетон светлый / тёмный» (Урбан Лофт) — однотонные серые по тону */
+  if (n.includes('бетон')) return hexLightness(hex) >= 0.5 ? 'grey' : 'graphite'
   if (WOOD_WORDS.some((w) => n.includes(w))) return hexLightness(hex) >= WOOD_LIGHT_FROM ? 'wood-light' : 'wood-dark'
   return RULES.find(([, words]) => words.some((w) => n.includes(w)))?.[0] ?? 'other'
 }

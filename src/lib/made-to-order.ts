@@ -11,6 +11,7 @@ export const MADE_TO_ORDER_SERIES: ReadonlySet<string> = new Set([
   'smart',
   'urban-drevesnyy',
   'elegant-drevesnyy',
+  'urban-loft',
   'tehno',
 ])
 
@@ -85,6 +86,9 @@ export const IN_STOCK_OVERRIDE: ReadonlySet<string> = new Set([
   // Элегант Древесный — «СКЛАД» на витрине фабрики vfd-74.ru/Ekoshpon, 06.11.2026
   '14381cbe-25ab-4df1-97ea-c0030da4db10:Дуб красный', // Элегант 2, дуб красный
   '14381cbe-25ab-4df1-97ea-c0030da4db10:Дуб арктический', // Элегант 2, дуб арктический
+  // Урбан Лофт — «СКЛАД» там же
+  'c4c95fa8-de1b-446b-83da-f4bf8d730b59:Бетон светлый', // Урбан 1 бетон светлый, кромка чёрная
+  '161466bf-6494-45cc-87e2-aca7b8ec9b62:Бетон тёмный', // Урбан 2ГР бетон тёмный, кромка чёрная
 ])
 
 /** Конкретная модель+цвет из IN_STOCK_OVERRIDE — есть на складе: плашка
