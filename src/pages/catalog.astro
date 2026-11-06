@@ -44,7 +44,14 @@ const modelsCount = `${cards.length} ${pluralRu(cards.length, ['модель', '
 const firstSentence = (text: string) => text.match(/^.+?[.!?](?=\s|$)/)?.[0] ?? text
 const LANDING_BY_COATING = new Map(DOOR_CATEGORIES.map((c) => [c.coatingSlug, c]))
 
-const coatingGroups = [...new Map(seriesCardsData.map((s) => [s.coatingSlug, s.coatingName])).entries()]
+/* Покрытие «Финиш-грунт» в каталоге — это скрытые двери «Секрет»: на плитке
+   и в «О покрытиях» так и называем, ссылка — на их страницу. В фактах модели
+   покрытие остаётся «Финиш-грунт». */
+const COATING_DISPLAY: Record<string, { name: string; link: { href: string; label: string } }> = {
+  'finish-grunt': { name: 'Скрытые двери', link: { href: '/catalog/skrytye-dveri/', label: 'Все скрытые двери' } },
+}
+
+const coatingGroups = [...new Map(seriesCardsData.map((s) => [s.coatingSlug, COATING_DISPLAY[s.coatingSlug]?.name ?? s.coatingName])).entries()]
   .sort(([a, an], [b, bn]) => coatingRank(a) - coatingRank(b) || an.localeCompare(bn, 'ru'))
   .map(([slug, name]) => {
     /* Серии — в порядке каталога: ведущие (Урбан, Эмалексы) первыми, дальше по цене */
@@ -73,16 +80,16 @@ const coatingGroups = [...new Map(seriesCardsData.map((s) => [s.coatingSlug, s.c
         const pick = series.find((s) => s.cover && s.cover !== first) ?? series.find((s) => s.cover)
         return pick ? { src: pick.cover, alt: `Межкомнатная дверь серии ${pick.name} в интерьере` } : null
       })(),
-      link: landing
+      link: COATING_DISPLAY[slug]?.link ?? (landing
         ? { href: `/catalog/${landing.slug}/`, label: `Все двери ${name}` }
-        : { href: `/catalog/?coating=${slug}`, label: `Все двери ${name}` },
+        : { href: `/catalog/?coating=${slug}`, label: `Все двери ${name}` }),
     }
   })
 
 /* ── Варианты фильтров ── */
 const uniqueBy = <T,>(items: T[], key: (item: T) => string) => [...new Map(items.map((i) => [key(i), i])).values()]
 const allSeries = uniqueBy(cards.filter((c) => c.seriesSlug), (c) => c.seriesSlug).map((c) => ({ label: c.series, value: c.seriesSlug }))
-const allCoatings = uniqueBy(cards.filter((c) => c.coatingSlug), (c) => c.coatingSlug).map((c) => ({ label: c.coating, value: c.coatingSlug }))
+const allCoatings = uniqueBy(cards.filter((c) => c.coatingSlug), (c) => c.coatingSlug).map((c) => ({ label: COATING_DISPLAY[c.coatingSlug]?.name ?? c.coating, value: c.coatingSlug }))
 /* Карточки покрытий над каталогом: фото серии в интерьере и цена «от» */
 const coatingCards = coatingGroups.map((g) => ({ value: g.slug, label: g.name, cover: g.cover, minPrice: g.minPrice }))
 

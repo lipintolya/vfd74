@@ -477,7 +477,10 @@ innova: {
     material:    '',
     edge:        'Алюминиевая кромка 4×4 мм.',
     thickness:   '',
-    heroImage:   '/media/invisible/invisible_cover.webp',
+    /* Шапка — кадр с тёмной зоной под текст (как у /catalog/skrytye-dveri/),
+       плитки и карточки серии — фото двух дверей во весь кадр */
+    heroImage:    '/media/invisible/invisible_cover.webp',
+    previewImage: '/media/invisible/secret.webp',
   },
 
   // ── ПРОТАЧ ───────────────────────────────────────────────────────────────

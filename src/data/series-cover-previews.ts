@@ -33,6 +33,8 @@ export const SERIES_COVER_PREVIEWS: Record<string, string> = {
     '/renders/series/pet-urban_pet-900.webp',
   '/media/catalog/urban_wood/urban_z/urban_cover_wood.webp':
     '/renders/series/urban_z-urban_cover_wood-900.webp',
+  '/media/invisible/secret.webp':
+    '/renders/series/invisible-secret-900.webp',
   '/media/Smart/next/render/next_render.webp':
     '/renders/series/render-next_render-900.webp',
   '/media/cover_first_section/protouch/smart.webp':
@@ -74,6 +76,8 @@ export const SERIES_COVER_THUMBS: Record<string, string> = {
     '/renders/series/pet-urban_pet-thumb.webp',
   '/media/catalog/urban_wood/urban_z/urban_cover_wood.webp':
     '/renders/series/urban_z-urban_cover_wood-thumb.webp',
+  '/media/invisible/secret.webp':
+    '/renders/series/invisible-secret-thumb.webp',
   '/media/Smart/next/render/next_render.webp':
     '/renders/series/render-next_render-thumb.webp',
   '/media/cover_first_section/protouch/smart.webp':
