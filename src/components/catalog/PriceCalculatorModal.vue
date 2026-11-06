@@ -54,7 +54,11 @@ const wcChecked         = ref(false)
    наличника для покрытия; добор — по подстроке размера в имени
    (формат "…ШИРИНАх10хВЫСОТА" одинаковый во всех покрытиях).
    ============================================================ */
-const accessories = computed(() => accessoriesFor(props.coatingSlug, props.seriesSlug))
+const accessories = computed(() => accessoriesFor(props.coatingSlug, props.seriesSlug, props.colorName))
+
+/* Цена за штуку: у части позиций фабрика даёт цену за «компл. 2,5 шт» (pack) */
+const unitPrice = (a: { price: number | null; pack?: number } | null) =>
+  a?.price != null ? a.price / (a.pack ?? 1) : null
 
 const boxItem = computed(() => accessories.value.find(a => a.category === 'box') ?? null)
 const nalichnikItem = computed(() => accessories.value.find(a => a.category === 'nalichnik') ?? null)
@@ -71,14 +75,17 @@ interface Line { label: string; total: number }
 
 const lines = computed<Line[]>(() => {
   const result: Line[] = []
-  if (boxChecked.value && boxItem.value?.price != null) {
-    result.push({ label: `Короб (${BOX_QTY} шт)`, total: boxItem.value.price * BOX_QTY })
+  const box = unitPrice(boxItem.value)
+  const nal = unitPrice(nalichnikItem.value)
+  const dob = unitPrice(doborItem.value)
+  if (boxChecked.value && box != null) {
+    result.push({ label: `Короб (${BOX_QTY} шт)`, total: box * BOX_QTY })
   }
-  if (nalichnikChecked.value && nalichnikItem.value?.price != null) {
-    result.push({ label: `Наличники с обеих сторон (${NALICHNIK_QTY} шт)`, total: nalichnikItem.value.price * NALICHNIK_QTY })
+  if (nalichnikChecked.value && nal != null) {
+    result.push({ label: `Наличники с обеих сторон (${NALICHNIK_QTY} шт)`, total: nal * NALICHNIK_QTY })
   }
-  if (doborChecked.value && doborItem.value?.price != null) {
-    result.push({ label: `Добор ${doborDepth.value} мм (${DOBOR_QTY} шт)`, total: doborItem.value.price * DOBOR_QTY })
+  if (doborChecked.value && dob != null) {
+    result.push({ label: `Добор ${doborDepth.value} мм (${DOBOR_QTY} шт)`, total: dob * DOBOR_QTY })
   }
   result.push({ label: `${HINGE_LABEL[hingeType.value]} (${HINGE_QTY} шт)`, total: HINGE_PRICE[hingeType.value] * HINGE_QTY })
   if (lockChecked.value) {
@@ -199,7 +206,7 @@ onUnmounted(() => {
                   <input type="checkbox" v-model="boxChecked" :disabled="!boxItem?.price" />
                   Короб
                 </span>
-                <span class="calc-row__price">{{ boxItem?.price ? fmt(boxItem.price * BOX_QTY) : 'уточняется' }}</span>
+                <span class="calc-row__price">{{ boxItem?.price ? fmt(unitPrice(boxItem)! * BOX_QTY) : 'уточняется' }}</span>
               </label>
 
               <label class="calc-row">
@@ -207,7 +214,7 @@ onUnmounted(() => {
                   <input type="checkbox" v-model="nalichnikChecked" :disabled="!nalichnikItem?.price" />
                   Наличники с обеих сторон
                 </span>
-                <span class="calc-row__price">{{ nalichnikItem?.price ? fmt(nalichnikItem.price * NALICHNIK_QTY) : 'уточняется' }}</span>
+                <span class="calc-row__price">{{ nalichnikItem?.price ? fmt(unitPrice(nalichnikItem)! * NALICHNIK_QTY) : 'уточняется' }}</span>
               </label>
 
               <div>
@@ -219,7 +226,7 @@ onUnmounted(() => {
                   <select v-if="doborChecked" v-model.number="doborDepth" class="calc-select" aria-label="Глубина добора">
                     <option v-for="d in DOBOR_DEPTHS" :key="d" :value="d">{{ d }} мм</option>
                   </select>
-                  <span class="calc-row__price">{{ doborItem?.price ? fmt(doborItem.price * DOBOR_QTY) : 'уточняется' }}</span>
+                  <span class="calc-row__price">{{ doborItem?.price ? fmt(unitPrice(doborItem)! * DOBOR_QTY) : 'уточняется' }}</span>
                 </label>
                 <p class="calc-hint">Короб — 80 мм в глубину. Если стена глубже — добор компенсирует разницу, выбирайте по факту глубины проёма.</p>
               </div>

@@ -69,6 +69,10 @@ export interface Accessory {
   /** Пропорция блока фото/схемы ('ширина / высота') — по фото изделия.
       Не указана → '2 / 1'. Картинки вписываются без обрезки (contain). */
   mediaAspect?: string
+  /** Сколько штук в цене, если фабрика даёт цену за упаковку («компл. 2,5 шт»
+      → 2.5). Калькулятор делит на это число, чтобы получить цену за штуку:
+      иначе комплект 2,5 шт умножался на 3 короба как одна штука. */
+  pack?:    number
 }
 
 export type CoatingSlug = 'pet' | 'emal' | 'emalex' | 'protach' | 'ekoshpon'
@@ -84,7 +88,7 @@ export const BASE_KIT_PRICE: Record<CoatingSlug, number> = {
   emal:     6_384,
   emalex:   5_145,
   protach:  3_840,
-  ekoshpon: 5_150,
+  ekoshpon: 5_400,
 }
 export const BASE_KIT_DESCRIPTION = 'дверной короб 2,5 шт, наличники с обеих сторон 5 шт'
 
@@ -111,10 +115,11 @@ export const COLOR_SURCHARGE: Record<string, number> = {
 }
 
 /** Цена комплекта (коробка + наличники) для конкретного цвета двери.
-    seriesSlug — для серий со своим прайсом погонажа (SERIES_ACCESSORIES ниже):
-    у них комплект свой, не по покрытию. */
+    Порядок: свой прайс цвета (COLOR_ACCESSORIES) → серии (SERIES_ACCESSORIES,
+    нужен seriesSlug) → общий по покрытию. */
 export function calcKitPrice(coatingSlug: string, colorName: string, seriesSlug?: string): number {
-  const base = (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.kitPrice)
+  const base = COLOR_ACCESSORIES[colorName]?.kitPrice
+    || (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.kitPrice)
     || (BASE_KIT_PRICE[coatingSlug as CoatingSlug] ?? 0)
   const surcharge = COLOR_SURCHARGE[colorName] ?? 0
   return Math.ceil(base * (1 + surcharge))
@@ -370,25 +375,87 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
     { name: 'Добор ДПТ200№2 200х10х2070',                                category: 'dobor',      unit: 'шт',       price: 780 },
   ],
 
-  // ── Экошпон (Урбан Древесный) — исходные цены даны за компл. 2,5 шт,
-  // не пересчитывались на 1 шт (риск ошибки округления), это отражено в name.
+  // ── Экошпон (Урбан Древесный, цвета Шервуд и Пекан) — прайс фабрики
+  // «Урбан: Древесный и Форест», vfd-ural.ru/Ekoshpon, 06.11.2026.
+  // У цвета «Пекан золотой» свой прайс — COLOR_ACCESSORIES ниже.
   ekoshpon: [
-    { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`,                        category: 'kit',        unit: 'комплект', price: BASE_KIT_PRICE.ekoshpon },
+    { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`, category: 'kit', unit: 'комплект', price: BASE_KIT_PRICE.ekoshpon },
 
-    { name: 'Коробка КБТ№43П 80х32х2100 (компл. 2,5 шт)',                          category: 'box',        unit: 'комплект', price: 2_510 },
-    { name: 'Комплект коробки КБКМ№02/41 75х38х2100 компланарный (компл. 2,5 шт)', category: 'box',        unit: 'комплект', price: 3_890 },
+    {
+      name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 960,
+      image:  '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+      scheme: '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+    },
+    { name: 'Коробка КБТ№43П 80х32х2100 (компл. 2,5 шт)',                          category: 'box', unit: 'комплект', price: 2_400, pack: 2.5 },
+    // «80х32» у 46П — так в прайсе фабрики
+    { name: 'Коробка КБТ№46П 80х32х2100 (компл. 2,5 шт)',                          category: 'box', unit: 'комплект', price: 2_755, pack: 2.5 },
+    { name: 'Комплект коробки КБКМ№02/41 75х38х2100 компланарный (компл. 2,5 шт)', category: 'box', unit: 'комплект', price: 2_875, pack: 2.5 },
 
-    { name: 'Наличник НТ№22 70х8х2140 (компл. 2,5 шт)',                            category: 'nalichnik',  unit: 'комплект', price: 1_320 },
-    { name: 'Комплект наличника КН№01 90х10х2140 компланарный (компл. 2,5 шт)',    category: 'nalichnik',  unit: 'комплект', price: 2_210 },
+    {
+      name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 600,
+      image:  '/media/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+      scheme: '/media/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+    },
+    { name: 'Комплект наличника КН№01 90х10х2140 компланарный (компл. 2,5 шт)', category: 'nalichnik', unit: 'комплект', price: 1_720, pack: 2.5 },
 
-    { name: 'Комплект компланарного погонажа реверс (ЗПСП 2 шт, AGB 2.0), кор. 2,5 шт + нал. 2,5 шт, под заказ', category: 'decorative', unit: 'комплект', price: 7_020 },
+    { name: 'Комплект компланарного погонажа реверс (ЗПСП№1, HH-24, 2 шт), кор. 2,5 шт + нал. 2,5 шт, под заказ', category: 'decorative', unit: 'комплект', price: 5_275 },
 
-    { name: 'Добор ДПТ№2 100х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 1_970 },
-    { name: 'Добор ДПТ№2 150х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 2_570 },
-    { name: 'Добор ДПТ№2 200х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 3_030 },
-    { name: 'Добор ДПТ№2 300х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 5_160 },
-    { name: 'Соединитель для доборов 35х4х2100',        category: 'dobor', unit: 'шт',       price: 50 },
+    {
+      name: 'Добор ДПТ№2 100х10х2070', category: 'dobor', unit: 'шт', price: 745,
+      image:  '/media/pogonaz/emalex/dobor_t_2130h100h10.webp',
+      scheme: '/media/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+      mediaAspect: '3.4 / 1',
+    },
+    { name: 'Добор ДПТ№2 150х10х2070',           category: 'dobor', unit: 'шт', price: 985 },
+    { name: 'Добор ДПТ№2 200х10х2070',           category: 'dobor', unit: 'шт', price: 1_165 },
+    { name: 'Добор ДПТ№2 300х10х2070',           category: 'dobor', unit: 'шт', price: 1_960 },
+    { name: 'Соединитель для доборов 35х4х2100', category: 'dobor', unit: 'шт', price: 50 },
   ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Цвета со своим прайсом погонажа внутри серии. «Пекан золотой» (Урбан
+// Древесный) фабрика считает отдельной колонкой: короб и наличник только
+// комплектами по 2,5 шт, комплект погонажа 5 325 ₽ (у остальных цветов
+// серии — 5 400 ₽). Ключ — colors.name из Supabase. Прайс vfd-ural.ru/Ekoshpon,
+// 06.11.2026.
+// ─────────────────────────────────────────────────────────────────────────────
+export const COLOR_ACCESSORIES: Record<string, { kitPrice: number; items: Accessory[] }> = {
+  'Пекан золотой': {
+    kitPrice: 5_325,
+    items: [
+      { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`, category: 'kit', unit: 'комплект', price: 5_325 },
+
+      {
+        name: 'Коробка КБТ№43П 80х32х2100 (компл. 2,5 шт)', category: 'box', unit: 'комплект', price: 2_595, pack: 2.5,
+        image:  '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+        scheme: '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+      },
+      { name: 'Коробка КБТ№46П 80х32х2100 (компл. 2,5 шт)',                          category: 'box', unit: 'комплект', price: 2_985, pack: 2.5 },
+      { name: 'Комплект коробки КБКМ№02/41 75х38х2100 компланарный (компл. 2,5 шт)', category: 'box', unit: 'комплект', price: 4_035, pack: 2.5 },
+
+      {
+        name: 'Наличник НТ№22 70х8х2140 (компл. 2,5 шт)', category: 'nalichnik', unit: 'комплект', price: 1_365, pack: 2.5,
+        image:  '/media/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+        scheme: '/media/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+      },
+      { name: 'Наличник НТ№25 100х8х2200 (компл. 2,5 шт)',                          category: 'nalichnik', unit: 'комплект', price: 1_770, pack: 2.5 },
+      { name: 'Комплект наличника КН№01 90х10х2140 компланарный (компл. 2,5 шт)', category: 'nalichnik', unit: 'комплект', price: 2_290, pack: 2.5 },
+
+      { name: 'Комплект компланарного погонажа реверс (ЗПСП№1, HH-24, 2 шт), кор. 2,5 шт + нал. 2,5 шт, под заказ', category: 'decorative', unit: 'комплект', price: 7_270 },
+
+      {
+        name: 'Добор ДПТ№2 100х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 2_035, pack: 2.5,
+        image:  '/media/pogonaz/emalex/dobor_t_2130h100h10.webp',
+        scheme: '/media/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+        mediaAspect: '3.4 / 1',
+      },
+      { name: 'Добор ДПТ№2 150х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 2_665, pack: 2.5 },
+      { name: 'Добор ДПТ№2 200х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 3_145, pack: 2.5 },
+      { name: 'Добор ДПТ№2 300х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 5_325, pack: 2.5 },
+      { name: 'Соединитель для доборов 35х4х2100',       category: 'dobor', unit: 'шт',       price: 50 },
+    ],
+  },
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -439,9 +506,11 @@ export const SERIES_ACCESSORIES: Record<string, { kitPrice: number; items: Acces
   },
 }
 
-/** Погонаж для модели: свой прайс серии, иначе — общий по покрытию. */
-export function accessoriesFor(coatingSlug: string, seriesSlug?: string): Accessory[] {
-  return (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.items)
+/** Погонаж для модели: свой прайс цвета → серии → общий по покрытию
+    (тот же порядок, что у calcKitPrice). */
+export function accessoriesFor(coatingSlug: string, seriesSlug?: string, colorName?: string): Accessory[] {
+  return (colorName && COLOR_ACCESSORIES[colorName]?.items)
+    || (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.items)
     || accessoriesByCoating[coatingSlug as CoatingSlug]
     || []
 }

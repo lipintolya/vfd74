@@ -37,7 +37,9 @@ const entry = Astro.props as ModelEntry
 const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug, extraColors } = entry
 
 const spec        = getSeriesSpec(seriesSlug, coatingSlug)
-const accessories = accessoriesFor(coatingSlug, seriesSlug)
+/* Цвет — для моделей, у которых погонаж зависит от цвета (COLOR_ACCESSORIES,
+   «Пекан золотой»): берём первый, у таких моделей он единственный. */
+const accessories = accessoriesFor(coatingSlug, seriesSlug, colors[0]?.name)
 const hasPlinth   = accessories.some(item => item.category === 'plinth')
 
 /* Статья по теме — перелинковка каталог → блог (раньше была только в одну
