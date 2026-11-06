@@ -2,9 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
-import QuoteCta from '../components/ui/QuoteCta.astro'
 import ContactsSection from '../components/contacts/ContactsSection.astro'
 import { companyLegalInfo } from '../lib/contacts-data'
+import { FACADE_IMAGE } from '../lib/facade-image'
 
 const title = 'Контакты салона дверей ВФД в Челябинске — адрес, телефон, часы работы'
 const description =
@@ -14,7 +14,7 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Салон ВФД (Владимирская фабрика дверей)',
-  image: 'https://vfd74.ru/logo-schema.png',
+  image: ['https://vfd74.ru/logo-schema.png', '/media/about_page/vfd_out.webp'],
   description: companyLegalInfo.activity.description,
   telephone: companyLegalInfo.contacts.phone.map((p) => p.raw),
   email: companyLegalInfo.contacts.email,
@@ -88,7 +88,15 @@ const faqSchema = {
 const structuredData = [localBusinessSchema, faqSchema]
 ---
 
-<BaseLayout title={title} description={description} structuredData={structuredData}>
+<BaseLayout
+  title={title}
+  description={description}
+  structuredData={structuredData}
+  ogImage="/media/about_page/vfd_out.webp"
+  preloadImage={FACADE_IMAGE.src}
+  preloadImageSrcset={FACADE_IMAGE.srcset}
+  preloadImageSizes={FACADE_IMAGE.sizes}
+>
   <div class="breadcrumb-bar">
     <div class="container">
       <Breadcrumbs items={breadcrumbItems} />
@@ -96,20 +104,6 @@ const structuredData = [localBusinessSchema, faqSchema]
   </div>
 
   <ContactsSection />
-
-  <section class="section pt-0">
-    <div class="container">
-      <QuoteCta
-        image="/media/Main_page/left_bento/cover_doors.webp"
-        title="Готовы выбрать двери или перегородки?"
-        description="Приходите в салон, звоните или пишите в Telegram — поможем подобрать модель и рассчитаем стоимость с монтажом"
-        primaryHref="https://t.me/vfddoors74"
-        primaryLabel="Написать в Telegram"
-        secondaryHref="/catalog/"
-        secondaryLabel="Смотреть каталог"
-      />
-    </div>
-  </section>
 
   <section class="section pt-0">
     <div class="container">
