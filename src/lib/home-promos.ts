@@ -79,7 +79,9 @@ export interface HeroData {
   minPrice: number | null
   /** «На фото» у первого слайда: модель с рендера гостиной */
   coverModel: { label: string; href: string } | null
-  /** Факт на плитке «Скрытые двери»: цена «от» и акция, если идёт */
+  /** Факт на плитке «Скрытые двери»: цена КОМПЛЕКТА с коробом — полотно
+      без короба скрытой дверью не поставить, «от» за одно полотно вводило бы
+      в заблуждение */
   secretFact: string
 }
 
@@ -174,9 +176,7 @@ export async function getHomePromos(): Promise<{
     coverModel: coverCard
       ? { label: `${coverCard.name}, ${coverCard.colorName.toLowerCase()}`, href: `/models/${coverCard.slug}/` }
       : null,
-    secretFact: SECRET_ROW_PROMO
-      ? `от ${rub(SECRET_MIN_BLADE_PRICE)} по акции`
-      : `от ${rub(SECRET_MIN_BLADE_PRICE)} за полотно`,
+    secretFact: `С коробом от ${rub(SECRET_MIN_KIT_PRICE)}${SECRET_MIN_DISCOUNTED ? ' по акции' : ''}`,
   }
 
   return {

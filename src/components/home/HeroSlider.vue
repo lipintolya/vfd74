@@ -3,8 +3,6 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
 import HeroTile, { type Tile } from './HeroTile.vue'
 import type { HeroData } from '../../lib/home-promos'
-import { companyLegalInfo } from '../../lib/contacts-data'
-import { salonStatus } from '../../lib/salon-hours'
 import { pluralRu } from '../../lib/plural'
 
 /**
@@ -14,8 +12,8 @@ import { pluralRu } from '../../lib/plural'
  * цифры каталога), за ним листаются фото; у каждого кадра подпись «На фото»
  * со ссылкой на модель. Раньше H1 менялся вместе со слайдом — заголовок
  * страницы не должен зависеть от того, какой кадр сейчас показан.
- * Справа — то, что спрашивают следующим: что есть на складе, скрытые двери
- * по акции, где салон и открыт ли он сейчас.
+ * Справа — две плитки: что есть на складе и скрытые двери (цена комплекта
+ * с коробом, не полотна).
  */
 const props = defineProps<{
   hero: HeroData
@@ -75,17 +73,9 @@ const facts = [
   { value: '12 мес.', label: 'гарантия на монтаж' },
 ]
 
-const street = companyLegalInfo.address.legal.replace(/^г\.\s*[^,]+,\s*/, '')
-
-/* Статус салона — только на клиенте и по времени Челябинска (lib/salon-hours):
-   в статичном HTML нейтральное «Без выходных», после загрузки — «Открыто
-   до 20:00» / «Откроемся в 10:00». Пересчёт раз в минуту. */
-const status = ref({ time: 'с 10:00', label: 'Без выходных' })
-let statusTimer: ReturnType<typeof setInterval> | null = null
-
 /* Плитки справа — один язык с плитками «Каталога» ниже (HeroTile.vue):
    фото на всю площадь или графит, название, одна фраза, ссылка текстом. */
-const tiles = computed<Tile[]>(() => [
+const tiles: Tile[] = [
   {
     id: 'in-stock',
     href: '/catalog/v-nalichii/',
@@ -108,19 +98,11 @@ const tiles = computed<Tile[]>(() => [
     img: {
       src: '/renders/hero/secret-two-doors-960.webp',
       srcset: '/renders/hero/secret-two-doors-640.webp 640w, /renders/hero/secret-two-doors-960.webp 960w',
-      sizes: '(max-width: 1023px) 50vw, 20vw',
+      sizes: '(max-width: 1023px) 100vw, 40vw',
       width: 960, height: 1158,
     },
   },
-  {
-    id: 'salon',
-    href: '/contacts/',
-    title: status.value.label,
-    fact: `Салон на ${street}`,
-    cta: 'Как добраться',
-    big: status.value.time,
-  },
-])
+]
 
 /* ── Slider state ── */
 const activeIndex     = ref(0)
@@ -184,10 +166,6 @@ const onKeyDown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
-  const tick = () => { status.value = salonStatus() }
-  tick()
-  statusTimer = setInterval(tick, 60_000)
-
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   autoplayEnabled.value = !prefersReduced
   if (!prefersReduced) start()
@@ -198,7 +176,7 @@ onMounted(() => {
   if (document.readyState === 'complete') warmNext()
   else window.addEventListener('load', warmNext, { once: true })
 })
-onUnmounted(() => { stop(); if (statusTimer) clearInterval(statusTimer) })
+onUnmounted(stop)
 </script>
 
 <template>
@@ -322,10 +300,7 @@ onUnmounted(() => { stop(); if (statusTimer) clearInterval(statusTimer) })
         <div class="lg:col-span-5 grid lg:grid-rows-2 gap-4 sm:gap-5 lg:gap-6">
 
           <HeroTile :tile="tiles[0]!" wide />
-          <div class="grid grid-cols-2 gap-4 sm:gap-5 lg:gap-6">
-            <HeroTile :tile="tiles[1]!" />
-            <HeroTile :tile="tiles[2]!" />
-          </div>
+          <HeroTile :tile="tiles[1]!" wide />
 
         </div>
 
