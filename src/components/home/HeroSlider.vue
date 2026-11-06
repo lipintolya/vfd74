@@ -8,10 +8,11 @@ import { pluralRu } from '../../lib/plural'
 /**
  * Первый экран главной.
  *
- * Слева — постоянный текст (H1 под «двери в Челябинске», лид, кнопка, три
- * цифры каталога), за ним листаются фото; у каждого кадра подпись «На фото»
- * со ссылкой на модель. Раньше H1 менялся вместе со слайдом — заголовок
- * страницы не должен зависеть от того, какой кадр сейчас показан.
+ * Слева — фото листаются, H1 постоянный («двери в Челябинске» — главный
+ * запрос страницы, заголовок не должен зависеть от кадра). Под ним текст и
+ * ссылка того, что на фото: у каждого кадра своя модель или серия. Внизу —
+ * три подписанных отрезка вместо точек: видно, что дальше, и можно
+ * переключить самому.
  * Справа — две плитки: что есть на складе и скрытые двери (цена комплекта
  * с коробом, не полотна).
  */
@@ -19,62 +20,57 @@ const props = defineProps<{
   hero: HeroData
 }>()
 
-const SLIDER_INTERVAL_MS = 9000
+/* Кадр держится 12 с — текст успевают дочитать (раньше 9 с) */
+const SLIDER_INTERVAL_MS = 12_000
 const SWIPE_THRESHOLD    = 50
 
 interface Slide {
-  id:          number
-  image:       string
+  id:     number
+  image:  string
   /** srcset с ресайзами (public/renders/hero, scripts/gen-responsive.mjs);
       оригинал — самый широкий кандидат. У первого слайда свой набор. */
-  srcset?:     string
-  /** «На фото: …» — подпись кадра со ссылкой на модель/серию */
-  photoOf?:    { label: string; href: string } | null
-  /** object-position картинки, если главный объект не в центре кадра
-      (по умолчанию — center). */
+  srcset?: string
+  /** object-position картинки, если главный объект не в центре кадра */
   imagePosition?: string
+  /** Подпись отрезка навигации — коротко, что на кадре */
+  nav:    string
+  /** Текст под H1 — про то, что на фото. Факты — из series-descriptions.ts */
+  lead:   string
+  /** Ссылка на модель или серию с кадра */
+  link:   { label: string; href: string } | null
 }
 
 const slides: Slide[] = [
   {
-    /* Первый слайд — единственный <h1> на главной (см. шаблон ниже), поэтому
-       именно он должен нести ключевые запросы. "ВФД Челябинск" — самый частый
-       брендовый запрос (по нему в органике выше нас страница самой фабрики,
-       не салона — см. обсуждение), поэтому фраза идёт слитно в начале H1,
-       а не разбита "ВФД на Кашириных ... в Челябинске" как раньше. */
     id: 1,
     image: HERO_COVER_IMAGE,
-    /* Скрытая дверь на рендере у правого края (~79% ширины): при
-       центральном кропе на узком экране (телефон, DPR 3 берёт полный
-       оригинал из srcset) она уходила бы из кадра — держим кадр на ней. */
+    /* Дверь на рендере у правого края (~79% ширины) — на узком экране
+       при центральном кропе ушла бы из кадра */
     imagePosition: '80% center',
-    photoOf: props.hero.coverModel,
+    nav:  'Урбан ЗТ',
+    lead: 'Двери, которые подчёркивают пространство: фактура дерева, чистые линии и тонкая кромка. Подберём модель под ваш интерьер.',
+    link: props.hero.coverModel,
   },
   {
     id: 2,
     image: '/media/Main_page_perfomance-covers/innova_render.webp',
     srcset: '/renders/hero/innova-render-640.webp 640w, /renders/hero/innova-render-960.webp 960w, /media/Main_page_perfomance-covers/innova_render.webp 1448w',
-    photoOf: { label: 'серия Иннова, покрытие ПЭТ', href: '/catalog/series/innova/' },
+    nav:  'Иннова',
+    lead: 'Иннова в покрытии ПЭТ: мягкая на ощупь поверхность не собирает отпечатки, а полотно 39 мм из массива сосны и МДФ хорошо глушит звук.',
+    link: { label: 'Серия Иннова', href: '/catalog/series/innova/' },
   },
   {
-    id: 4,
+    id: 3,
     image: '/media/Main_page/left_bento/render_urban2.webp',
     srcset: '/renders/hero/urban2-render-640.webp 640w, /renders/hero/urban2-render-960.webp 960w, /media/Main_page/left_bento/render_urban2.webp 1254w',
-    photoOf: { label: 'Урбан 2ГР, Эмалекс', href: '/models/urban-2gr-urban-a2d505/' },
+    nav:  'Урбан 2ГР',
+    lead: 'Урбан — строгая геометрия и алюминиевая кромка. Покрытие Эмалекс выглядит как эмаль и не боится царапин.',
+    link: { label: 'Урбан 2ГР', href: '/models/urban-2gr-urban-a2d505/' },
   },
-]
-
-const rub = (n: number) => `${n.toLocaleString('ru-RU')}\u00a0₽`
-
-/* Цифры под лидом — то, что отличает салон: ассортимент, цена входа, склад */
-const facts = [
-  { value: String(props.hero.models), label: `${pluralRu(props.hero.models, ['модель', 'модели', 'моделей'])} в каталоге` },
-  ...(props.hero.minPrice ? [{ value: `от ${rub(props.hero.minPrice)}`, label: 'за полотно' }] : []),
-  { value: '12 мес.', label: 'гарантия на монтаж' },
 ]
 
 /* Плитки справа — один язык с плитками «Каталога» ниже (HeroTile.vue):
-   фото на всю площадь или графит, название, одна фраза, ссылка текстом. */
+   фото на всю площадь, название, одна фраза, ссылка текстом. */
 const tiles: Tile[] = [
   {
     id: 'in-stock',
@@ -110,19 +106,20 @@ const touchStartX     = ref(0)
 const touchStartY     = ref(0)
 const isPaused        = ref(false)
 const autoplayEnabled = ref(true)
+/* Номер «прогона» таймера: ключ полоски прогресса — при каждом перезапуске
+   таймера анимация начинается заново и идёт ровно в такт смене кадра */
+const cycle           = ref(0)
 
-const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0])
+const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0]!)
 
 /* Пока слайды листаются сами, смену текста скринридеру не зачитываем —
-   иначе он перебивает чтение страницы каждые 9 секунд. После паузы или
+   иначе он перебивает чтение страницы каждые 12 секунд. После паузы или
    ручного управления — polite. */
 const liveMode = computed(() => (autoplayEnabled.value && !isPaused.value ? 'off' : 'polite'))
 
 /* Картинки слайдов лежат в DOM все сразу (кросс-фейд по opacity), поэтому
-   loading="lazy" их не откладывает: они «в зоне видимости» и браузер тянет
-   все пять сразу после LCP (~500 КБ на телефоне, мимо глаз пользователя).
-   Загружаем слайд только когда он активен или станет следующим/предыдущим —
-   пока src не задан, <img> запроса не делает. */
+   loading="lazy" их не откладывает. Загружаем слайд, только когда он активен
+   или станет следующим/предыдущим — пока src не задан, <img> запроса не делает. */
 const loaded = ref<boolean[]>(slides.map((_, i) => i === 0))
 const ensureLoaded = (i: number) => {
   const n = slides.length
@@ -132,12 +129,20 @@ watch(activeIndex, i => { ensureLoaded(i); ensureLoaded(i + 1); ensureLoaded(i -
 
 let timer: ReturnType<typeof setInterval> | null = null
 
+const stop  = () => { if (timer !== null) { clearInterval(timer); timer = null } }
+const start = () => {
+  stop()
+  if (!autoplayEnabled.value) return
+  cycle.value++
+  timer = setInterval(() => {
+    activeIndex.value = (activeIndex.value + 1) % slides.length
+    cycle.value++
+  }, SLIDER_INTERVAL_MS)
+}
 const next  = () => { activeIndex.value = (activeIndex.value + 1) % slides.length }
 const prev  = () => { activeIndex.value = (activeIndex.value - 1 + slides.length) % slides.length }
-const stop  = () => { if (timer !== null) { clearInterval(timer); timer = null } }
-const start = () => { stop(); timer = setInterval(next, SLIDER_INTERVAL_MS) }
 
-const goTo = (i: number) => { activeIndex.value = i; start() }
+const goTo = (i: number) => { activeIndex.value = i; if (!isPaused.value) start() }
 
 const onMouseEnter = () => { isPaused.value = true;  stop() }
 const onMouseLeave = () => { isPaused.value = false; start() }
@@ -168,10 +173,10 @@ const onKeyDown = (e: KeyboardEvent) => {
 onMounted(() => {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   autoplayEnabled.value = !prefersReduced
-  if (!prefersReduced) start()
+  start()
 
   /* Следующий слайд подгружаем заранее, когда страница уже дорисована и
-     канал свободен, — к первой смене (через 9 с) он будет готов. */
+     канал свободен, — к первой смене он будет готов. */
   const warmNext = () => setTimeout(() => ensureLoaded(1), 1500)
   if (document.readyState === 'complete') warmNext()
   else window.addEventListener('load', warmNext, { once: true })
@@ -186,7 +191,7 @@ onUnmounted(stop)
 
         <!-- ══ HERO SLIDER ══ -->
         <div
-          class="hero-main lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl min-h-[36rem] sm:min-h-[38rem] md:min-h-0 md:aspect-16/11 lg:aspect-auto lg:h-auto"
+          class="hero-main lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl min-h-[34rem] sm:min-h-[36rem] md:min-h-0 md:aspect-16/11 lg:aspect-auto lg:h-auto"
           role="region"
           aria-label="Двери в Челябинске — салон ВФД"
           aria-roledescription="carousel"
@@ -197,11 +202,7 @@ onUnmounted(stop)
           @mouseleave="onMouseLeave"
           @keydown="onKeyDown"
         >
-          <!-- Backgrounds — все слайды смонтированы всегда, активный переключается
-               прозрачностью. Раньше 1-й слайд жил на v-if (жёсткое размонтирование
-               без анимации), остальные — на v-show (display toggle, transition на
-               opacity не срабатывал, т.к. opacity не менялся). Из-за этого переход
-               был рваным. Теперь у всех один и тот же кросс-фейд. -->
+          <!-- Фон: все кадры в стеке, активный — opacity:1 (кросс-фейд) -->
           <div class="absolute inset-0">
             <img
               v-for="(slide, i) in slides"
@@ -220,88 +221,72 @@ onUnmounted(stop)
             />
           </div>
 
-          <!-- Затемнение — z-10, т.к. активный слайд в .hero-slide-active получил
-               z-index:1 для кросс-фейда и без явного z-index здесь оказывался
-               бы поверх затемнения. Плотное снизу, где текст, и прозрачное
-               сверху, чтобы кадр не тускнел целиком. -->
+          <!-- Затемнение: плотное снизу, где текст -->
           <div class="hero-scrim absolute inset-0 z-10" aria-hidden="true" />
 
-          <!-- Content — постоянный: H1 страницы не меняется вместе с кадром -->
-          <div class="relative z-10 flex h-full items-end">
-            <div class="hero-content-text p-5 pb-16 sm:p-8 sm:pb-20 lg:p-10 lg:pb-22 max-w-2xl text-white">
-              <h1 class="hero-title text-step-5 font-medium mb-3 sm:mb-4">
-                Межкомнатные и входные двери в&nbsp;Челябинске
-              </h1>
-              <p class="hero-lead text-step-1 sm:text-step-2 text-white/85 mb-6 sm:mb-7 leading-relaxed max-w-lg">
-                Фирменный салон Владимирской фабрики дверей на&nbsp;Братьев Кашириных,&nbsp;131Б: замер, доставка и&nbsp;установка своей бригадой.
-              </p>
-              <a href="/catalog/" class="hero-cta">
-                Смотреть каталог
-                <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-              <dl class="hero-facts">
-                <div v-for="f in facts" :key="f.label" class="hero-fact">
-                  <dt class="hero-fact__label">{{ f.label }}</dt>
-                  <dd class="hero-fact__value">{{ f.value }}</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
+          <div class="hero-body relative z-10 flex h-full flex-col justify-end p-5 sm:p-8 lg:p-10 text-white">
+            <div class="max-w-2xl">
+              <h1 class="hero-title">Межкомнатные и входные двери в&nbsp;Челябинске</h1>
 
-          <!-- Нижняя строка: точки слайдов слева, «На фото» справа -->
-          <div class="hero-bottom absolute inset-x-5 bottom-5 sm:inset-x-8 sm:bottom-8 lg:inset-x-10 lg:bottom-10 z-20 flex items-center justify-between gap-4">
-            <div
-              class="-ml-0.5 flex shrink-0"
-              role="tablist"
-              aria-label="Фото в слайдере"
-            >
+              <!-- Текст и ссылка — про кадр; меняются вместе с фото -->
+              <div class="hero-lead-stack" :aria-live="liveMode" aria-atomic="true">
+                <p
+                  v-for="(slide, i) in slides"
+                  :key="slide.id"
+                  class="hero-lead"
+                  :class="{ 'is-active': i === activeIndex }"
+                  :aria-hidden="i !== activeIndex"
+                >{{ slide.lead }}</p>
+              </div>
+
+              <div class="hero-actions">
+                <a href="/catalog/" class="hero-cta">
+                  Смотреть каталог
+                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                <Transition name="hero-content" mode="out-in">
+                  <a v-if="currentSlide.link" :key="currentSlide.id" :href="currentSlide.link.href" class="hero-link">
+                    {{ currentSlide.link.label }}
+                  </a>
+                </Transition>
+              </div>
+            </div>
+
+            <!-- Навигация: три отрезка с подписями, активный заполняется
+                 за время показа кадра -->
+            <div class="hero-nav" role="tablist" aria-label="Фото в слайдере">
               <button
                 v-for="(slide, i) in slides"
-                :key="i"
+                :key="slide.id"
                 type="button"
                 role="tab"
-                :aria-label="slide.photoOf ? `Фото ${i + 1}: ${slide.photoOf.label}` : `Фото ${i + 1}`"
+                class="hero-nav__item"
+                :class="{ 'is-active': i === activeIndex }"
                 :aria-selected="i === activeIndex"
-                class="dot-nav__btn"
+                :aria-label="`Фото ${i + 1}: ${slide.nav}`"
                 @click="goTo(i)"
               >
-                <span
-                  class="dot-nav__item dot-nav__item--progress"
-                  :class="{ 'dot-nav__item--active': i === activeIndex }"
-                >
+                <span class="hero-nav__bar" aria-hidden="true">
                   <span
                     v-if="i === activeIndex && autoplayEnabled && !isPaused"
-                    :key="activeIndex"
-                    class="dot-nav__progress"
+                    :key="cycle"
+                    class="hero-nav__fill is-running"
                     :style="{ animationDuration: `${SLIDER_INTERVAL_MS}ms` }"
                   />
+                  <span v-else-if="i === activeIndex" class="hero-nav__fill" />
                 </span>
+                <span class="hero-nav__label">{{ slide.nav }}</span>
               </button>
             </div>
-            <Transition name="hero-content" mode="out-in">
-              <a
-                v-if="currentSlide.photoOf"
-                :key="currentSlide.id"
-                :href="currentSlide.photoOf.href"
-                class="hero-photo-of"
-                :aria-live="liveMode"
-              >
-                На фото: {{ currentSlide.photoOf.label }}
-              </a>
-            </Transition>
           </div>
         </div>
 
         <!-- ══ RIGHT BENTO ══ -->
-        <!-- Строки равной высоты только на десктопе: на планшете плитки идут
-             своей высотой, иначе под широкой образуется пустота -->
         <div class="lg:col-span-5 grid lg:grid-rows-2 gap-4 sm:gap-5 lg:gap-6">
-
           <HeroTile :tile="tiles[0]!" wide />
           <HeroTile :tile="tiles[1]!" wide />
-
         </div>
 
       </div>
@@ -310,77 +295,81 @@ onUnmounted(stop)
 </template>
 
 <style scoped>
-/* ════ SLIDER OPTIMIZATION ════ */
-/* Container optimization for LCP */
+/* Скругление держим явной обрезкой: overflow:hidden + border-radius в
+   части браузеров теряет углы, пока кадры меняют прозрачность на своих
+   слоях (на скрине владельца — прямые нижние углы). content-visibility
+   здесь не нужен — блок в первом экране — и тоже ломал обрезку. */
 .hero-main {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 37.5rem;
+  clip-path: inset(0 round 1rem);
+  isolation: isolate;
+}
+@media (width >= 40rem) {
+  .hero-main { clip-path: inset(0 round 1.5rem); }
+}
+/* Фокус с клавиатуры — внутри блока, иначе его срежет clip-path */
+.hero-main:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
 }
 
-/* Затемнение: плотное снизу, где текст и точки, к верху сходит на нет.
-   Равномерная вуаль (было) тускнила весь кадр и всё равно не держала
-   белый текст на светлых деталях — штора, рейки, дверь. */
 .hero-scrim {
   background: linear-gradient(
     to top,
-    rgb(0 0 0 / 0.78) 0%,
-    rgb(0 0 0 / 0.55) 28%,
-    rgb(0 0 0 / 0.18) 58%,
-    rgb(0 0 0 / 0) 80%
+    rgb(0 0 0 / 0.8) 0%,
+    rgb(0 0 0 / 0.55) 32%,
+    rgb(0 0 0 / 0.15) 62%,
+    rgb(0 0 0 / 0) 82%
   );
 }
 
 .hero-title {
-  line-height: 1.1;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-.hero-lead { text-wrap: pretty; }
-
-/* Цифры под кнопкой: значение крупно и моноширинно, подпись под ним.
-   dl ради семантики, визуально значение идёт первым (column-reverse). */
-.hero-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-  margin: 1.75rem 0 0;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgb(255 255 255 / 0.22);
-}
-.hero-fact {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 0.25rem;
-}
-.hero-fact__value {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 0.9vw + 0.95rem, 1.75rem);
+  font-size: clamp(2rem, 1.6vw + 1.3rem, 3.125rem);
   font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.hero-fact__label {
-  font-size: 0.8125rem;
-  color: rgb(255 255 255 / 0.72);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 
-/* «На фото: …» — подпись кадра текстом, без плашки */
-.hero-photo-of {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.8125rem;
-  color: rgb(255 255 255 / 0.8);
-  text-decoration: underline;
-  text-decoration-color: rgb(255 255 255 / 0.35);
-  text-underline-offset: 0.3em;
-  transition: color 150ms ease, text-decoration-color 150ms ease;
+/* Все три текста в одной ячейке сетки, видим активный: высоту задаёт самый
+   длинный, и при смене кадра кнопки под текстом не прыгают */
+.hero-lead-stack {
+  display: grid;
+  margin-top: 1rem;
+  font-size: var(--text-step-1);
+  line-height: 1.6;
 }
-.hero-photo-of:hover { color: #fff; text-decoration-color: #fff; }
+@media (width >= 40rem) {
+  .hero-lead-stack { font-size: var(--text-step-2); }
+}
+.hero-lead {
+  grid-area: 1 / 1;
+  margin: 0;
+  max-width: 34rem;
+  color: rgb(255 255 255 / 0.85);
+  text-wrap: pretty;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+.hero-lead.is-active {
+  opacity: 1;
+  transform: none;
+}
+
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.875rem;
+  margin-top: 1.5rem;
+}
+/* Узкий экран: ссылка всегда под кнопкой — иначе короткая («Урбан 2ГР»)
+   вставала в строку с кнопкой, длинная переносилась, и блок прыгал */
+@media (width >= 40rem) {
+  .hero-actions { flex-direction: row; align-items: center; gap: 1.5rem; }
+}
 
 /* Кнопка на фото: белая пилюля, стрелка без «кружка» */
 .hero-cta {
@@ -400,7 +389,7 @@ onUnmounted(stop)
     transform        var(--duration-base) var(--ease-out);
 }
 .hero-cta:hover {
-  background: #f4f4f5;  /* zinc-100 */
+  background: #f4f4f5;
   transform: translateY(-1px);
 }
 .hero-cta:hover .btn-arrow-icon { transform: translateX(2px); }
@@ -409,39 +398,113 @@ onUnmounted(stop)
   outline-offset: 3px;
 }
 
-/* Кросс-фейд фона — все слайды в стеке, активный получает opacity:1 */
+/* Вторая ссылка — то, что на фото: текстом, без кнопки */
+.hero-link {
+  font-size: var(--text-step-1);
+  font-weight: 500;
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: rgb(255 255 255 / 0.4);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 150ms ease;
+}
+.hero-link:hover { text-decoration-color: #fff; }
+.hero-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Навигация: колонки на линейке ── */
+.hero-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+@media (width >= 40rem) {
+  .hero-nav { gap: 1.25rem; margin-top: 2.5rem; }
+}
+.hero-nav__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.5rem 0 0;
+  border: none;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.hero-nav__bar {
+  position: relative;
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.28);
+  overflow: hidden;
+}
+.hero-nav__fill {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform-origin: left center;
+}
+.hero-nav__fill.is-running {
+  animation: hero-progress linear forwards;
+}
+@keyframes hero-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.hero-nav__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgb(255 255 255 / 0.6);
+  transition: color 200ms ease;
+}
+.hero-nav__item:hover .hero-nav__label,
+.hero-nav__item.is-active .hero-nav__label { color: #fff; }
+.hero-nav__item:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Кросс-фейд фона */
 .hero-slide {
   opacity: 0;
   z-index: 0;
-  will-change: opacity;
-  transition: opacity 900ms ease-in-out;
+  transition: opacity 1200ms ease-in-out;
 }
 .hero-slide-active {
   opacity: 1;
   z-index: 1;
 }
 
-/* Плавная смена текста (заголовок/описание/CTA) синхронно с фоном */
+/* Плавная смена текста синхронно с фоном */
 .hero-content-enter-active,
 .hero-content-leave-active {
-  transition: opacity 350ms ease, transform 350ms ease;
+  transition: opacity 400ms ease, transform 400ms ease;
 }
 .hero-content-enter-from,
 .hero-content-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(8px);
 }
 
-/* Точки-навигация — общий вид и прогресс-бар вынесены в global.css
-   (.dot-nav__btn/.dot-nav__item/.dot-nav__progress), единая система для
-   всех автослайдеров сайта (Hero, PhotoAutoplaySlider). */
 @media (prefers-reduced-motion: reduce) {
   .hero-slide,
+  .hero-lead,
   .hero-content-enter-active,
   .hero-content-leave-active,
   .hero-cta {
     transition: none;
-    animation: none;
   }
+  .hero-nav__fill.is-running { animation: none; transform: none; }
 }
 </style>
