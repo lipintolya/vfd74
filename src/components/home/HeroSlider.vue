@@ -2,10 +2,23 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
 import HeroTile, { type Tile } from './HeroTile.vue'
+import type { HeroData } from '../../lib/home-promos'
+import { companyLegalInfo } from '../../lib/contacts-data'
+import { salonStatus } from '../../lib/salon-hours'
+import { pluralRu } from '../../lib/plural'
 
+/**
+ * Первый экран главной.
+ *
+ * Слева — постоянный текст (H1 под «двери в Челябинске», лид, кнопка, три
+ * цифры каталога), за ним листаются фото; у каждого кадра подпись «На фото»
+ * со ссылкой на модель. Раньше H1 менялся вместе со слайдом — заголовок
+ * страницы не должен зависеть от того, какой кадр сейчас показан.
+ * Справа — то, что спрашивают следующим: что есть на складе, скрытые двери
+ * по акции, где салон и открыт ли он сейчас.
+ */
 const props = defineProps<{
-  /** Год основания (contacts-data → activity.founded) — крупно на плитке «О компании» */
-  founded: number
+  hero: HeroData
 }>()
 
 const SLIDER_INTERVAL_MS = 9000
@@ -14,13 +27,11 @@ const SWIPE_THRESHOLD    = 50
 interface Slide {
   id:          number
   image:       string
-  /** srcset с ресайзами (public/renders/hero, scripts/gen-hero-slides.mjs);
+  /** srcset с ресайзами (public/renders/hero, scripts/gen-responsive.mjs);
       оригинал — самый широкий кандидат. У первого слайда свой набор. */
   srcset?:     string
-  title:       string
-  description: string
-  cta?:        string
-  ctaHref?:    string
+  /** «На фото: …» — подпись кадра со ссылкой на модель/серию */
+  photoOf?:    { label: string; href: string } | null
   /** object-position картинки, если главный объект не в центре кадра
       (по умолчанию — center). */
   imagePosition?: string
@@ -39,69 +50,77 @@ const slides: Slide[] = [
        центральном кропе на узком экране (телефон, DPR 3 берёт полный
        оригинал из srcset) она уходила бы из кадра — держим кадр на ней. */
     imagePosition: '80% center',
-    title: 'ВФД Челябинск — купить двери в салоне на Братьев Кашириных',
-    description: 'Официальный дилер Владимирской фабрики дверей: межкомнатные и входные двери из наличия и под заказ — подберём, привезём и установим',
-    cta: 'Смотреть каталог',
-    ctaHref: '/catalog/',
+    photoOf: props.hero.coverModel,
   },
   {
     id: 2,
     image: '/media/Main_page_perfomance-covers/innova_render.webp',
     srcset: '/renders/hero/innova-render-640.webp 640w, /renders/hero/innova-render-960.webp 960w, /media/Main_page_perfomance-covers/innova_render.webp 1448w',
-    title: 'Серия «Иннова» уже в салоне',
-    description: 'Новинка в покрытии ПЭТ — не оставляет отпечатков пальцев',
-    cta: 'Смотреть каталог',
-    ctaHref: '/catalog/',
+    photoOf: { label: 'серия Иннова, покрытие ПЭТ', href: '/catalog/series/innova/' },
   },
   {
     id: 4,
     image: '/media/Main_page/left_bento/render_urban2.webp',
     srcset: '/renders/hero/urban2-render-640.webp 640w, /renders/hero/urban2-render-960.webp 960w, /media/Main_page/left_bento/render_urban2.webp 1254w',
-    title: 'Урбан — городской стиль для вашего интерьера',
-    description: 'Лаконичные формы и покрытие Ренолит (Германия) с эффектом эмали — от 18 000 ₽ за комплект',
-    cta: 'Смотреть модель',
-    ctaHref: '/models/urban-2gr-urban-a2d505/',
+    photoOf: { label: 'Урбан 2ГР, Эмалекс', href: '/models/urban-2gr-urban-a2d505/' },
   },
 ]
 
-/* Три плитки справа — один язык с плитками «Каталога» ниже (HeroTile.vue):
+const rub = (n: number) => `${n.toLocaleString('ru-RU')}\u00a0₽`
+
+/* Цифры под лидом — то, что отличает салон: ассортимент, цена входа, склад */
+const facts = [
+  { value: String(props.hero.models), label: `${pluralRu(props.hero.models, ['модель', 'модели', 'моделей'])} в каталоге` },
+  ...(props.hero.minPrice ? [{ value: `от ${rub(props.hero.minPrice)}`, label: 'за полотно' }] : []),
+  { value: '12 мес.', label: 'гарантия на монтаж' },
+]
+
+const street = companyLegalInfo.address.legal.replace(/^г\.\s*[^,]+,\s*/, '')
+
+/* Статус салона — только на клиенте и по времени Челябинска (lib/salon-hours):
+   в статичном HTML нейтральное «Без выходных», после загрузки — «Открыто
+   до 20:00» / «Откроемся в 10:00». Пересчёт раз в минуту. */
+const status = ref({ time: 'с 10:00', label: 'Без выходных' })
+let statusTimer: ReturnType<typeof setInterval> | null = null
+
+/* Плитки справа — один язык с плитками «Каталога» ниже (HeroTile.vue):
    фото на всю площадь или графит, название, одна фраза, ссылка текстом. */
-const tiles: Tile[] = [
+const tiles = computed<Tile[]>(() => [
   {
-    id: 'partitions',
-    href: '/partitions/',
-    title: 'Алюминиевые перегородки и системы открывания',
-    fact: 'Изготовление до 45 рабочих дней',
-    cta: 'Узнать больше',
-    img: {
-      src: '/renders/hero/partitions-tg1-960.webp',
-      srcset: '/renders/hero/partitions-tg1-640.webp 640w, /renders/hero/partitions-tg1-960.webp 960w',
-      sizes: '(max-width: 1023px) 100vw, 40vw',
-      width: 960, height: 1197,
-    },
-  },
-  {
-    id: 'portfolio',
-    href: '/portfolio/',
-    title: 'Фотоотчёты с объектов',
-    fact: 'Живые фото с монтажей',
+    id: 'in-stock',
+    href: '/catalog/v-nalichii/',
+    title: `${props.hero.inStock} ${pluralRu(props.hero.inStock, ['модель', 'модели', 'моделей'])} в наличии`,
+    fact: 'Со склада в Челябинске — без ожидания изготовления',
     cta: 'Смотреть',
     img: {
-      src: '/renders/hero/portfolio-cover-960.webp',
-      srcset: '/renders/hero/portfolio-cover-640.webp 640w, /renders/hero/portfolio-cover-960.webp 960w',
-      sizes: '(max-width: 1023px) 50vw, 20vw',
-      width: 960, height: 1440,
+      src: '/renders/hero/instock-emalex-960.webp',
+      srcset: '/renders/hero/instock-emalex-640.webp 640w, /renders/hero/instock-emalex-960.webp 960w',
+      sizes: '(max-width: 1023px) 100vw, 40vw',
+      width: 960, height: 720,
     },
   },
   {
-    id: 'about',
-    href: '/about/',
-    title: 'Полный цикл: от замера до монтажа',
-    fact: 'Работаем в Челябинске',
-    cta: 'Подробнее',
-    big: `с ${props.founded}`,
+    id: 'hidden',
+    href: '/catalog/skrytye-dveri/',
+    title: 'Скрытые двери',
+    fact: props.hero.secretFact,
+    cta: 'Смотреть',
+    img: {
+      src: '/renders/hero/secret-two-doors-960.webp',
+      srcset: '/renders/hero/secret-two-doors-640.webp 640w, /renders/hero/secret-two-doors-960.webp 960w',
+      sizes: '(max-width: 1023px) 50vw, 20vw',
+      width: 960, height: 1158,
+    },
   },
-]
+  {
+    id: 'salon',
+    href: '/contacts/',
+    title: status.value.label,
+    fact: `Салон на ${street}`,
+    cta: 'Как добраться',
+    big: status.value.time,
+  },
+])
 
 /* ── Slider state ── */
 const activeIndex     = ref(0)
@@ -165,6 +184,10 @@ const onKeyDown = (e: KeyboardEvent) => {
 }
 
 onMounted(() => {
+  const tick = () => { status.value = salonStatus() }
+  tick()
+  statusTimer = setInterval(tick, 60_000)
+
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   autoplayEnabled.value = !prefersReduced
   if (!prefersReduced) start()
@@ -175,7 +198,7 @@ onMounted(() => {
   if (document.readyState === 'complete') warmNext()
   else window.addEventListener('load', warmNext, { once: true })
 })
-onUnmounted(stop)
+onUnmounted(() => { stop(); if (statusTimer) clearInterval(statusTimer) })
 </script>
 
 <template>
@@ -185,9 +208,9 @@ onUnmounted(stop)
 
         <!-- ══ HERO SLIDER ══ -->
         <div
-          class="hero-main lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl aspect-4/5 sm:aspect-3/4 md:aspect-16/11 lg:aspect-auto lg:h-auto"
+          class="hero-main lg:col-span-7 relative overflow-hidden rounded-2xl sm:rounded-3xl min-h-[36rem] sm:min-h-[38rem] md:min-h-0 md:aspect-16/11 lg:aspect-auto lg:h-auto"
           role="region"
-          aria-label="Слайдер акций и новинок"
+          aria-label="Двери в Челябинске — салон ВФД"
           aria-roledescription="carousel"
           tabindex="0"
           @touchstart.passive="onTouchStart"
@@ -225,60 +248,71 @@ onUnmounted(stop)
                сверху, чтобы кадр не тускнел целиком. -->
           <div class="hero-scrim absolute inset-0 z-10" aria-hidden="true" />
 
-          <!-- Content -->
+          <!-- Content — постоянный: H1 страницы не меняется вместе с кадром -->
           <div class="relative z-10 flex h-full items-end">
-            <Transition name="hero-content" mode="out-in">
-              <div :key="currentSlide.id" class="hero-content-text p-5 pb-15 sm:p-8 sm:pb-18 lg:p-10 lg:pb-20 max-w-2xl text-white" :aria-live="liveMode" aria-atomic="true">
-                <h1 class="hero-title text-step-5 font-medium mb-3 sm:mb-4">
-                  {{ currentSlide.title }}
-                </h1>
-                <p class="text-step-1 sm:text-step-2 text-white/85 mb-6 sm:mb-7 leading-relaxed max-w-lg">
-                  {{ currentSlide.description }}
-                </p>
-                <a
-                  v-if="currentSlide.cta && currentSlide.ctaHref"
-                  :href="currentSlide.ctaHref"
-                  class="hero-cta"
-                >
-                  {{ currentSlide.cta }}
-                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </a>
-              </div>
-            </Transition>
+            <div class="hero-content-text p-5 pb-16 sm:p-8 sm:pb-20 lg:p-10 lg:pb-22 max-w-2xl text-white">
+              <h1 class="hero-title text-step-5 font-medium mb-3 sm:mb-4">
+                Межкомнатные и входные двери в&nbsp;Челябинске
+              </h1>
+              <p class="hero-lead text-step-1 sm:text-step-2 text-white/85 mb-6 sm:mb-7 leading-relaxed max-w-lg">
+                Фирменный салон Владимирской фабрики дверей на&nbsp;Братьев Кашириных,&nbsp;131Б: замер, доставка и&nbsp;установка своей бригадой.
+              </p>
+              <a href="/catalog/" class="hero-cta">
+                Смотреть каталог
+                <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+              <dl class="hero-facts">
+                <div v-for="f in facts" :key="f.label" class="hero-fact">
+                  <dt class="hero-fact__label">{{ f.label }}</dt>
+                  <dd class="hero-fact__value">{{ f.value }}</dd>
+                </div>
+              </dl>
+            </div>
           </div>
 
-          <!-- Dots — слева, под кнопкой, по той же линии, что и текст
-               (-ml-0.5 компенсирует отступ широкой активной точки внутри
-               области нажатия 1.5rem) -->
-          <div
-            class="absolute bottom-5 left-5 sm:bottom-8 sm:left-8 lg:bottom-10 lg:left-10 -ml-0.5 z-20 flex"
-            role="tablist"
-            aria-label="Навигация слайдера"
-          >
-            <button
-              v-for="(slide, i) in slides"
-              :key="i"
-              type="button"
-              role="tab"
-              :aria-label="`Слайд ${i + 1}: ${slide.title}`"
-              :aria-selected="i === activeIndex"
-              class="dot-nav__btn"
-              @click="goTo(i)"
+          <!-- Нижняя строка: точки слайдов слева, «На фото» справа -->
+          <div class="hero-bottom absolute inset-x-5 bottom-5 sm:inset-x-8 sm:bottom-8 lg:inset-x-10 lg:bottom-10 z-20 flex items-center justify-between gap-4">
+            <div
+              class="-ml-0.5 flex shrink-0"
+              role="tablist"
+              aria-label="Фото в слайдере"
             >
-              <span
-                class="dot-nav__item dot-nav__item--progress"
-                :class="{ 'dot-nav__item--active': i === activeIndex }"
+              <button
+                v-for="(slide, i) in slides"
+                :key="i"
+                type="button"
+                role="tab"
+                :aria-label="slide.photoOf ? `Фото ${i + 1}: ${slide.photoOf.label}` : `Фото ${i + 1}`"
+                :aria-selected="i === activeIndex"
+                class="dot-nav__btn"
+                @click="goTo(i)"
               >
                 <span
-                  v-if="i === activeIndex && autoplayEnabled && !isPaused"
-                  :key="activeIndex"
-                  class="dot-nav__progress"
-                  :style="{ animationDuration: `${SLIDER_INTERVAL_MS}ms` }"
-                />
-              </span>
-            </button>
+                  class="dot-nav__item dot-nav__item--progress"
+                  :class="{ 'dot-nav__item--active': i === activeIndex }"
+                >
+                  <span
+                    v-if="i === activeIndex && autoplayEnabled && !isPaused"
+                    :key="activeIndex"
+                    class="dot-nav__progress"
+                    :style="{ animationDuration: `${SLIDER_INTERVAL_MS}ms` }"
+                  />
+                </span>
+              </button>
+            </div>
+            <Transition name="hero-content" mode="out-in">
+              <a
+                v-if="currentSlide.photoOf"
+                :key="currentSlide.id"
+                :href="currentSlide.photoOf.href"
+                class="hero-photo-of"
+                :aria-live="liveMode"
+              >
+                На фото: {{ currentSlide.photoOf.label }}
+              </a>
+            </Transition>
           </div>
         </div>
 
@@ -322,10 +356,56 @@ onUnmounted(stop)
 }
 
 .hero-title {
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
+.hero-lead { text-wrap: pretty; }
+
+/* Цифры под кнопкой: значение крупно и моноширинно, подпись под ним.
+   dl ради семантики, визуально значение идёт первым (column-reverse). */
+.hero-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin: 1.75rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(255 255 255 / 0.22);
+}
+.hero-fact {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.25rem;
+}
+.hero-fact__value {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 0.9vw + 0.95rem, 1.75rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.hero-fact__label {
+  font-size: 0.8125rem;
+  color: rgb(255 255 255 / 0.72);
+}
+
+/* «На фото: …» — подпись кадра текстом, без плашки */
+.hero-photo-of {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: rgb(255 255 255 / 0.8);
+  text-decoration: underline;
+  text-decoration-color: rgb(255 255 255 / 0.35);
+  text-underline-offset: 0.3em;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+.hero-photo-of:hover { color: #fff; text-decoration-color: #fff; }
 
 /* Кнопка на фото: белая пилюля, стрелка без «кружка» */
 .hero-cta {

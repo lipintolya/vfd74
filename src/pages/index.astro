@@ -22,12 +22,13 @@ import HowWeWork from '../components/home/HowWeWork.astro'
 import { howToSchema } from '../data/how-it-works'
 import { getHomePromos } from '../lib/home-promos'
 import { companyLegalInfo } from '../lib/contacts-data'
+import { pluralRu } from '../lib/plural'
 import { rub } from '../data/services'
 
 const faqItems = faqs.map(f => ({ q: f.question, a: f.answer }))
 
 /* Новинки и скрытые двери из наличия — данные и живые цены в lib/home-promos.ts */
-const { novelties, inStock, interiorMinPrice } = await getHomePromos()
+const { novelties, inStock, interiorMinPrice, hero } = await getHomePromos()
 
 /* Главная — посадочная и под «купить двери в Челябинске», и под брендовые
    запросы: по данным Search Console (авг–ноя 2026) больше всего кликов дают
@@ -36,8 +37,12 @@ const { novelties, inStock, interiorMinPrice } = await getHomePromos()
    Заголовок главной не менять без причины: поисковик заново перестраивает
    сниппет, в Метрике за квартал было уже пять разных заголовков.
    Цена — живая, минимальная за полотно. */
-const homeTitle = 'Купить двери в Челябинске — салон Владимирской фабрики дверей ВФД'
-const homeDescription = `Салон Владимирской фабрики дверей в Челябинске на Братьев Кашириных, 131Б: межкомнатные${interiorMinPrice ? ` от ${rub(interiorMinPrice)} за полотно` : ''} и входные двери, модели в наличии на складе. Замер межкомнатных дверей при заказе бесплатно, монтаж своей бригадой.`
+/* Под запрос «двери челябинск»: точная фраза в начале title (так её и
+   ищут, так начинаются title у конкурентов в топе), дальше типы дверей и
+   «купить»; бренд — в конце, брендовый запрос «ВФД Челябинск» держит он
+   и LocalBusiness. ≤ 70 знаков. */
+const homeTitle = 'Двери в Челябинске — купить межкомнатные и входные | ВФД'
+const homeDescription = `Двери в Челябинске от Владимирской фабрики дверей: межкомнатные${interiorMinPrice ? ` от ${rub(interiorMinPrice)} за полотно` : ''}, входные и скрытые, ${hero.inStock} ${pluralRu(hero.inStock, ['модель', 'модели', 'моделей'])} в наличии на складе. Салон на Братьев Кашириных, 131Б: замер межкомнатных дверей при заказе бесплатно, монтаж своей бригадой.`
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -118,7 +123,7 @@ const localBusinessSchema = {
   preloadImageSrcset={HERO_COVER_IMAGE_SRCSET}
   ogImage={HERO_COVER_IMAGE}
 >
-  <HeroSlider client:load founded={companyLegalInfo.activity.founded} />
+  <HeroSlider client:load hero={hero} />
   <HowWeWork />
   <Novelties items={novelties} />
   <PromoStripBanner />

@@ -9,6 +9,8 @@
  * обновится при следующей сборке.
  */
 import { getCatalogCards } from './catalog-data'
+import { inStockCards } from './in-stock'
+import { rub } from '../data/services'
 import { calcKitPrice } from '../data/accessories'
 import { formatDate } from './promo-dates'
 import {
@@ -69,12 +71,30 @@ const catalogPrices = (card?: { price: number | null; coatingSlug: string; color
    в made-to-order.ts), поэтому price/colorName — именно он. */
 const SHTRIH_2A_ID = '7434f55c-b2a8-4f12-b0c6-56c7c57888eb'
 
+export interface HeroData {
+  /** Карточек в каталоге — столько же, сколько видно на /catalog/ */
+  models:   number
+  /** Карточек со складским цветом — как на /catalog/v-nalichii/ */
+  inStock:  number
+  minPrice: number | null
+  /** «На фото» у первого слайда: модель с рендера гостиной */
+  coverModel: { label: string; href: string } | null
+  /** Факт на плитке «Скрытые двери»: цена «от» и акция, если идёт */
+  secretFact: string
+}
+
+/* На рендере первого слайда — Урбан ЗТ «Пекан золотой» с чёрной кромкой
+   (рисунок «ёлочкой»). Другой рендер — поменять id или убрать. */
+const HERO_COVER_MODEL_ID = '6e4c2664-0520-4f59-84a1-79b2bfe55333'
+
 export async function getHomePromos(): Promise<{
   novelties: HomePromo[]
   inStock: HomePromo
   /** Минимальная цена полотна по каталогу — «от …» на плитке «Каталога»;
       считаем здесь, чтобы не делать второй запрос к Supabase */
   interiorMinPrice: number | null
+  /** Первый экран главной (HeroSlider): цифры и подписи — из того же каталога */
+  hero: HeroData
 }> {
   const { cards } = await getCatalogCards()
   const prices = cards.map(c => c.price).filter((p): p is number => p != null && p > 0)
@@ -146,7 +166,21 @@ export async function getHomePromos(): Promise<{
     alt:     'Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной',
   }
 
+  const coverCard = cards.find(c => c.id === HERO_COVER_MODEL_ID)
+  const hero: HeroData = {
+    models:   cards.length,
+    inStock:  inStockCards(cards).length,
+    minPrice: interiorMinPrice,
+    coverModel: coverCard
+      ? { label: `${coverCard.name}, ${coverCard.colorName.toLowerCase()}`, href: `/models/${coverCard.slug}/` }
+      : null,
+    secretFact: SECRET_ROW_PROMO
+      ? `от ${rub(SECRET_MIN_BLADE_PRICE)} по акции`
+      : `от ${rub(SECRET_MIN_BLADE_PRICE)} за полотно`,
+  }
+
   return {
+    hero,
     /* Порядок вкладок; Штрих — только если модель нашлась в каталоге */
     novelties: [tehno, shtrih, reflex].filter((p): p is HomePromo => p !== null),
     inStock:   secret,
