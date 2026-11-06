@@ -61,7 +61,7 @@ const bladePrice = computed(() => (selected.value.available === false ? null : s
 
 const kitTotal = computed(() => {
   if (!bladePrice.value) return null
-  return bladePrice.value + calcKitPrice(selected.value.coatingSlug, selected.value.name)
+  return bladePrice.value + calcKitPrice(selected.value.coatingSlug, selected.value.name, props.seriesSlug)
 })
 
 const rub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
@@ -250,6 +250,7 @@ const shareModel = async () => {
       :model-name="modelName"
       :photo="displayPhoto"
       :coating-slug="selected.coatingSlug"
+      :series-slug="seriesSlug"
       :color-name="selected.name"
       :blade-price="bladePrice ?? 0"
       @close="calcOpen = false"

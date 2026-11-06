@@ -59,7 +59,7 @@ const catalogPrices = (card?: { price: number | null; coatingSlug: string; color
   card?.price
     ? {
         price: { value: card.price },
-        kit:   { value: card.price + calcKitPrice(card.coatingSlug, card.colorName), includes: KIT_INTERIOR },
+        kit:   { value: card.price + calcKitPrice(card.coatingSlug, card.colorName, card.seriesSlug), includes: KIT_INTERIOR },
       }
     : {}
 

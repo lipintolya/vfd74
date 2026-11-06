@@ -10,6 +10,7 @@ export const MADE_TO_ORDER_SERIES: ReadonlySet<string> = new Set([
   'next',
   'smart',
   'urban-drevesnyy',
+  'elegant-drevesnyy',
   'tehno',
 ])
 
@@ -81,6 +82,9 @@ export const IN_STOCK_OVERRIDE: ReadonlySet<string> = new Set([
   'f2cf1579-4470-4121-8637-34ed437f880c:Шёлковый бежевый', // Иннова 02W шёлк беж
   'adf4c759-d6ac-460d-9ae2-502a05beb570:Шёлковый белый', // Иннова 02С шёлк иней
   '7434f55c-b2a8-4f12-b0c6-56c7c57888eb:Эмалекс бежевый', // Урбан Штрих 2А бежевый, чёрный молдинг (было отмечено раньше)
+  // Элегант Древесный — «СКЛАД» на витрине фабрики vfd-74.ru/Ekoshpon, 06.11.2026
+  '14381cbe-25ab-4df1-97ea-c0030da4db10:Дуб красный', // Элегант 2, дуб красный
+  '14381cbe-25ab-4df1-97ea-c0030da4db10:Дуб арктический', // Элегант 2, дуб арктический
 ])
 
 /** Конкретная модель+цвет из IN_STOCK_OVERRIDE — есть на складе: плашка

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { accessoriesByCoating, type CoatingSlug } from '../../data/accessories'
+import { accessoriesFor } from '../../data/accessories'
 import {
   HINGE_PRICE, HINGE_LABEL, HINGE_QTY, HINGE_IMAGES,
   LOCK_PRICE, LOCK_LABEL, LOCK_QTY, LOCK_IMAGES,
@@ -25,6 +25,8 @@ const props = defineProps<{
   modelName:   string
   photo:       string
   coatingSlug: string
+  /** Серия — у некоторых свой прайс погонажа (SERIES_ACCESSORIES) */
+  seriesSlug?: string
   colorName:   string
   bladePrice:  number
 }>()
@@ -52,7 +54,7 @@ const wcChecked         = ref(false)
    наличника для покрытия; добор — по подстроке размера в имени
    (формат "…ШИРИНАх10хВЫСОТА" одинаковый во всех покрытиях).
    ============================================================ */
-const accessories = computed(() => accessoriesByCoating[props.coatingSlug as CoatingSlug] ?? [])
+const accessories = computed(() => accessoriesFor(props.coatingSlug, props.seriesSlug))
 
 const boxItem = computed(() => accessories.value.find(a => a.category === 'box') ?? null)
 const nalichnikItem = computed(() => accessories.value.find(a => a.category === 'nalichnik') ?? null)

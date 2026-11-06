@@ -94,7 +94,7 @@ const onPhotoTouchEnd = (e: TouchEvent) => {
 
 /* Комплект (полотно, короб, наличники) — тот же расчёт, что на странице модели */
 const kitPrice = computed(() =>
-  activePrice.value ? activePrice.value + calcKitPrice(props.card.coatingSlug, activeColorName.value) : null
+  activePrice.value ? activePrice.value + calcKitPrice(props.card.coatingSlug, activeColorName.value, props.card.seriesSlug) : null
 )
 
 /* Покрытие и кромка/стекло — одной строкой, цвет — второй. Покрытие не

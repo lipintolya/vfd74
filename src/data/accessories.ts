@@ -110,9 +110,12 @@ export const COLOR_SURCHARGE: Record<string, number> = {
   // Эмалекс — без надбавок (ключи не указываются, fallback = 0)
 }
 
-/** Цена комплекта (коробка + наличники) для конкретного цвета двери. */
-export function calcKitPrice(coatingSlug: string, colorName: string): number {
-  const base = BASE_KIT_PRICE[coatingSlug as CoatingSlug] ?? 0
+/** Цена комплекта (коробка + наличники) для конкретного цвета двери.
+    seriesSlug — для серий со своим прайсом погонажа (SERIES_ACCESSORIES ниже):
+    у них комплект свой, не по покрытию. */
+export function calcKitPrice(coatingSlug: string, colorName: string, seriesSlug?: string): number {
+  const base = (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.kitPrice)
+    || (BASE_KIT_PRICE[coatingSlug as CoatingSlug] ?? 0)
   const surcharge = COLOR_SURCHARGE[colorName] ?? 0
   return Math.ceil(base * (1 + surcharge))
 }
@@ -386,4 +389,49 @@ export const accessoriesByCoating: Record<CoatingSlug, Accessory[]> = {
     { name: 'Добор ДПТ№2 300х10х2070 (компл. 2,5 шт)', category: 'dobor', unit: 'комплект', price: 5_160 },
     { name: 'Соединитель для доборов 35х4х2100',        category: 'dobor', unit: 'шт',       price: 50 },
   ],
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Серии со своим прайсом погонажа. Обычно погонаж общий для покрытия
+// (accessoriesByCoating), но у фабрики бывает отдельный прайс на серию: у
+// «Элегант Древесный» (Экошпон) комплект 3 850 ₽ и цены за штуку, а у
+// «Урбан Древесный» на том же Экошпоне — 5 150 ₽ и цены за комплект 2,5 шт.
+// Ключ — series.slug из Supabase. Карточка, страница модели и калькулятор
+// берут погонаж через accessoriesFor() / calcKitPrice(…, seriesSlug).
+// ─────────────────────────────────────────────────────────────────────────────
+export const SERIES_ACCESSORIES: Record<string, { kitPrice: number; items: Accessory[] }> = {
+  // Прайс фабрики «Атум Про / Элегант Древесный», vfd-74.ru/Ekoshpon, 06.11.2026
+  'elegant-drevesnyy': {
+    kitPrice: 3_850,
+    items: [
+      { name: `Комплект погонажа (${BASE_KIT_DESCRIPTION})`, category: 'kit', unit: 'комплект', price: 3_850 },
+      {
+        name: 'Коробка КБТ№43П 80х32х2100', category: 'box', unit: 'шт', price: 700,
+        image:  '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_new.webp',
+        scheme: '/media/pogonaz/emalex/korobochniy_brus_t_2100h80h32_shema_new.webp',
+      },
+      {
+        name: 'Наличник НТ№22 70х8х2140', category: 'nalichnik', unit: 'шт', price: 420,
+        image:  '/media/pogonaz/emalex/nalichnik_t_2140h70h8.webp',
+        scheme: '/media/pogonaz/emalex/nalichnik_t_2140h70h8_shema.webp',
+      },
+      {
+        name: 'Добор ДПТ№2 100х10х2070', category: 'dobor', unit: 'шт', price: 490,
+        image:  '/media/pogonaz/emalex/dobor_t_2130h100h10.webp',
+        scheme: '/media/pogonaz/emalex/dobor_t_2130h100h10_shema.webp',
+        mediaAspect: '3.4 / 1',
+      },
+      { name: 'Добор ДПТ№2 150х10х2070',           category: 'dobor',      unit: 'шт', price: 630 },
+      { name: 'Добор ДПТ№2 200х10х2070',           category: 'dobor',      unit: 'шт', price: 750 },
+      { name: 'Соединитель для доборов 35х4х2100', category: 'dobor',      unit: 'шт', price: 50 },
+      { name: 'Притворная планка 30х10х2100',      category: 'decorative', unit: 'шт', price: 310 },
+    ],
+  },
+}
+
+/** Погонаж для модели: свой прайс серии, иначе — общий по покрытию. */
+export function accessoriesFor(coatingSlug: string, seriesSlug?: string): Accessory[] {
+  return (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.items)
+    || accessoriesByCoating[coatingSlug as CoatingSlug]
+    || []
 }

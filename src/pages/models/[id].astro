@@ -5,8 +5,8 @@ import Breadcrumbs from '../../components/ui/Breadcrumbs.astro'
 import ProductColorPicker from '../../components/catalog/ProductColorPicker.vue'
 import PlinthSection from '../../components/catalog/PlinthSection.astro'
 import { getSeriesSpec } from '../../data/series-descriptions'
-import { accessoriesByCoating, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
-import type { AccessoryCategory, CoatingSlug } from '../../data/accessories'
+import { accessoriesFor, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
+import type { AccessoryCategory } from '../../data/accessories'
 import InfoImageViewer from '../../components/catalog/InfoImageViewer.vue'
 import { describeTrim } from '../../lib/trim-labels'
 import { merchantPolicy } from '../../lib/contacts-data'
@@ -37,7 +37,7 @@ const entry = Astro.props as ModelEntry
 const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug, extraColors } = entry
 
 const spec        = getSeriesSpec(seriesSlug, coatingSlug)
-const accessories = accessoriesByCoating[coatingSlug as CoatingSlug] ?? []
+const accessories = accessoriesFor(coatingSlug, seriesSlug)
 const hasPlinth   = accessories.some(item => item.category === 'plinth')
 
 /* Статья по теме — перелинковка каталог → блог (раньше была только в одну
