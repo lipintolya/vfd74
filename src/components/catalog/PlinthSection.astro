@@ -23,7 +23,7 @@ const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
   <div class="container">
     <div class="dc-section">
       <div class="dc-section__text">
-        <h2 class="dc-h2">{title}</h2>
+        <h2 class="t-h2 dc-h2">{title}</h2>
         <p class="dc-p">
           Закрывает стык пола и стены, скрывает зазор и кабель-канал.
           Крепится на клипсы — без видимых саморезов на лицевой стороне.
@@ -81,10 +81,6 @@ const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽'
 <style>
 .dc-h2 {
   margin: 0 0 1rem;
-  font-size: clamp(1.625rem, 3vw, 2.125rem);
-  font-weight: 500;
-  color: #0f172a;
-  letter-spacing: -0.02em;
   line-height: 1.15;
 }
 .dc-p {
