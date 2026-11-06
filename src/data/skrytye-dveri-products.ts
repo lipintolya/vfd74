@@ -77,10 +77,20 @@ export interface SecretPriceRow {
   kitStandardPrice:  number
   /** null — комплект «Лайт» для этой комбинации не предлагается (сейчас так у кромки золото) */
   kitLitePrice:      number | null
+  /** Акционные цены строки (фабрика снижает отдельные позиции) — действуют
+      по validUntil включительно, потом сами возвращаются обычные цены выше. */
+  promo?: {
+    bladePrice:       number
+    kitStandardPrice: number
+    kitLitePrice:     number | null
+    validUntil:       string
+  }
 }
 
 export const SECRET_PRICES: SecretPriceRow[] = [
-  { edgeColor: 'black',  edgeLabel: 'Чёрная 4×4 мм',  reverse: false, bladePrice: 11_360, kitStandardPrice: 31_180, kitLitePrice: 23_820 },
+  // Акция фабрики до конца 2026 года: «Финиш-грунт BE 4x4» — 10 220 / 28 060 / 22 680
+  { edgeColor: 'black',  edgeLabel: 'Чёрная 4×4 мм',  reverse: false, bladePrice: 11_360, kitStandardPrice: 31_180, kitLitePrice: 23_820,
+    promo: { bladePrice: 10_220, kitStandardPrice: 28_060, kitLitePrice: 22_680, validUntil: '2026-12-31' } },
   { edgeColor: 'black',  edgeLabel: 'Чёрная 4×4 мм',  reverse: true,  bladePrice: 15_910, kitStandardPrice: 35_730, kitLitePrice: 28_370 },
   { edgeColor: 'silver', edgeLabel: 'Серебро 4×4 мм', reverse: false, bladePrice: 11_360, kitStandardPrice: 31_180, kitLitePrice: 23_820 },
   { edgeColor: 'silver', edgeLabel: 'Серебро 4×4 мм', reverse: true,  bladePrice: 15_910, kitStandardPrice: 35_730, kitLitePrice: 28_370 },
@@ -89,29 +99,47 @@ export const SECRET_PRICES: SecretPriceRow[] = [
   { edgeColor: 'gold',   edgeLabel: 'Золото 4×4 мм',  reverse: true,  bladePrice: 16_920, kitStandardPrice: 37_140, kitLitePrice: null },
 ]
 
+/** Текущие цены строки: своя акция строки (promo), иначе общая акция -8%
+    (applySecretPromo), иначе обычные. Единая точка для страниц и каталога. */
+export function secretRowPrices(row: SecretPriceRow): Pick<SecretPriceRow, 'bladePrice' | 'kitStandardPrice' | 'kitLitePrice'> {
+  if (row.promo && isPromoActive(row.promo.validUntil)) {
+    const { bladePrice, kitStandardPrice, kitLitePrice } = row.promo
+    return { bladePrice, kitStandardPrice, kitLitePrice }
+  }
+  return {
+    bladePrice:       applySecretPromo(row.bladePrice),
+    kitStandardPrice: applySecretPromo(row.kitStandardPrice),
+    kitLitePrice:     row.kitLitePrice != null ? applySecretPromo(row.kitLitePrice) : null,
+  }
+}
+
+/** Активная акция какой-то строки — для подписи «Акция до …» на страницах. */
+export const SECRET_ROW_PROMO = SECRET_PRICES.find(r => r.promo && isPromoActive(r.promo.validUntil))?.promo ?? null
+
 // «От» для превью и карточки «Секрет» — самая доступная комбинация в целом;
 // комплект считаем по самому дешёвому доступному уровню (Лайт, где он есть).
 // *_ORIGINAL — цена без акции, нужна только для зачёркнутой цены в вёрстке;
 // везде, где нужна «текущая» цена, используй версию без суффикса.
 export const SECRET_MIN_BLADE_PRICE_ORIGINAL = Math.min(...SECRET_PRICES.map(r => r.bladePrice))
 export const SECRET_MIN_KIT_PRICE_ORIGINAL   = Math.min(...SECRET_PRICES.map(r => r.kitLitePrice ?? r.kitStandardPrice))
-export const SECRET_MIN_BLADE_PRICE = applySecretPromo(SECRET_MIN_BLADE_PRICE_ORIGINAL)
-export const SECRET_MIN_KIT_PRICE   = applySecretPromo(SECRET_MIN_KIT_PRICE_ORIGINAL)
+export const SECRET_MIN_BLADE_PRICE = Math.min(...SECRET_PRICES.map(r => secretRowPrices(r).bladePrice))
+export const SECRET_MIN_KIT_PRICE   = Math.min(...SECRET_PRICES.map(r => { const p = secretRowPrices(r); return p.kitLitePrice ?? p.kitStandardPrice }))
+/** «От» ниже обычной — показывать зачёркнутую цену (любая акция: -8% или акция строки) */
+export const SECRET_MIN_DISCOUNTED = SECRET_MIN_BLADE_PRICE < SECRET_MIN_BLADE_PRICE_ORIGINAL
 
 // «От» для карточки «Секрет Реверс» — минимум среди строк реверсивного открывания
 const SECRET_REVERS_ROWS = SECRET_PRICES.filter(r => r.reverse)
 export const SECRET_REVERS_MIN_BLADE_PRICE_ORIGINAL = Math.min(...SECRET_REVERS_ROWS.map(r => r.bladePrice))
 export const SECRET_REVERS_MIN_KIT_PRICE_ORIGINAL   = Math.min(...SECRET_REVERS_ROWS.map(r => r.kitLitePrice ?? r.kitStandardPrice))
-export const SECRET_REVERS_MIN_BLADE_PRICE = applySecretPromo(SECRET_REVERS_MIN_BLADE_PRICE_ORIGINAL)
-export const SECRET_REVERS_MIN_KIT_PRICE   = applySecretPromo(SECRET_REVERS_MIN_KIT_PRICE_ORIGINAL)
+export const SECRET_REVERS_MIN_BLADE_PRICE = Math.min(...SECRET_REVERS_ROWS.map(r => secretRowPrices(r).bladePrice))
+export const SECRET_REVERS_MIN_KIT_PRICE   = Math.min(...SECRET_REVERS_ROWS.map(r => { const p = secretRowPrices(r); return p.kitLitePrice ?? p.kitStandardPrice }))
+export const SECRET_REVERS_MIN_DISCOUNTED  = SECRET_REVERS_MIN_BLADE_PRICE < SECRET_REVERS_MIN_BLADE_PRICE_ORIGINAL
 
 // Полная таблица цен «Секрет» с применённой акцией — используй в таблице на
 // странице вместо SECRET_PRICES (который остаётся исходником/каноном).
 export const SECRET_PRICES_DISPLAY: SecretPriceRow[] = SECRET_PRICES.map(row => ({
   ...row,
-  bladePrice:       applySecretPromo(row.bladePrice),
-  kitStandardPrice: applySecretPromo(row.kitStandardPrice),
-  kitLitePrice:      row.kitLitePrice != null ? applySecretPromo(row.kitLitePrice) : null,
+  ...secretRowPrices(row),
 }))
 
 // ── Комплект скрытого короба ─────────────────────────────────

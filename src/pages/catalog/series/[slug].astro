@@ -393,7 +393,7 @@ const structuredData = canonicalUrl ? [
     <div class="container">
       <h2 class="sr-h2">Модели серии {series.name}</h2>
       <p class="sr-p sr-p--tight">
-        {series.modelCount} {series.modelCount === 1 ? 'модель' : 'моделей'}
+        {modelsPhrase}
         {series.minPrice && <span> · от {fmt(series.minPrice)}</span>}
       </p>
       <div class="sr-grid-wrap">

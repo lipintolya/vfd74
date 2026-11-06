@@ -16,6 +16,7 @@ import {
   SECRET_MIN_BLADE_PRICE, SECRET_MIN_KIT_PRICE,
   SECRET_MIN_BLADE_PRICE_ORIGINAL, SECRET_MIN_KIT_PRICE_ORIGINAL,
   SECRET_PROMO_ACTIVE, SECRET_PROMO_DISCOUNT, SECRET_PROMO_VALID_UNTIL,
+  SECRET_ROW_PROMO, SECRET_MIN_DISCOUNTED,
 } from '../data/skrytye-dveri-products'
 
 export interface PromoPrice {
@@ -59,7 +60,7 @@ const catalogPrices = (card?: { price: number | null; coatingSlug: string; color
   card?.price
     ? {
         price: { value: card.price },
-        kit:   { value: card.price + calcKitPrice(card.coatingSlug, card.colorName, card.seriesSlug), includes: KIT_INTERIOR },
+        kit:   { value: card.price + calcKitPrice(card.coatingSlug, card.colorName, card.seriesSlug, card.id), includes: KIT_INTERIOR },
       }
     : {}
 
@@ -115,11 +116,13 @@ export async function getHomePromos(): Promise<{
     text:   'Полотно вровень со стеной, без наличников и видимых петель — красится в цвет стены. Забрать можно без ожидания изготовления.',
     offer:  SECRET_PROMO_ACTIVE
       ? `Акция −${Math.round(SECRET_PROMO_DISCOUNT * 100)}% до ${formatDate(SECRET_PROMO_VALID_UNTIL)}`
-      : undefined,
+      : SECRET_ROW_PROMO
+        ? `Кромка чёрная — по акции до ${formatDate(SECRET_ROW_PROMO.validUntil)}`
+        : undefined,
     price:  { value: SECRET_MIN_BLADE_PRICE, from: true,
-              old: SECRET_PROMO_ACTIVE ? SECRET_MIN_BLADE_PRICE_ORIGINAL : undefined },
+              old: SECRET_MIN_DISCOUNTED ? SECRET_MIN_BLADE_PRICE_ORIGINAL : undefined },
     kit:    { value: SECRET_MIN_KIT_PRICE, from: true, includes: KIT_HIDDEN,
-              old: SECRET_PROMO_ACTIVE ? SECRET_MIN_KIT_PRICE_ORIGINAL : undefined },
+              old: SECRET_MIN_DISCOUNTED ? SECRET_MIN_KIT_PRICE_ORIGINAL : undefined },
     cta:    { label: 'Смотреть скрытые двери', href: '/catalog/skrytye-dveri/' },
     /* Последний кадр — оригинал из /media: он и так лёгкий (15 КБ) */
     images: [

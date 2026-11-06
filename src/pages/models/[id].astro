@@ -8,6 +8,9 @@ import { getSeriesSpec } from '../../data/series-descriptions'
 import { accessoriesFor, CATEGORY_LABELS, CATEGORY_NOTES, PRICE_LIST_UPDATED } from '../../data/accessories'
 import type { AccessoryCategory } from '../../data/accessories'
 import InfoImageViewer from '../../components/catalog/InfoImageViewer.vue'
+import InfoImageViewerIsland from '../../components/catalog/InfoImageViewerIsland.astro'
+import { hiddenBoxOf, HIDDEN_BOX_INFO, isHiddenSeries } from '../../lib/hidden-doors-catalog'
+import { articleImg } from '../../lib/article-images'
 import { describeTrim } from '../../lib/trim-labels'
 import { merchantPolicy } from '../../lib/contacts-data'
 import { getModelEntries } from '../../lib/model-entries'
@@ -16,7 +19,7 @@ import RelatedModels from '../../components/catalog/RelatedModels.astro'
 import { DOOR_CATEGORIES } from '../../data/door-categories'
 import type { ModelEntry } from '../../lib/model-entries'
 import {
-  DOOR_TYPE, BRAND, cleanModelName,
+  doorType, coatingPhrase, BRAND, cleanModelName,
   productName, productTitle, productMetaDescription, productDescription,
 } from '../../lib/product-text'
 
@@ -106,10 +109,18 @@ const coatingLanding = DOOR_CATEGORIES.find(c => c.coatingSlug === coatingSlug)
 /* Короткие факты под кнопками — только то, что отличает эту модель и
    помещается в два-три слова. Длинные тексты серии (описание, особенности,
    конструкция) живут на странице серии — туда ведёт ссылка «Серия». */
+/* Скрытая дверь «Секрет»: короб — часть товара (Стандарт или Лайт), у
+   карточки нет погонажа и калькулятора наличников. */
+const hidden    = isHiddenSeries(seriesSlug)
+const hiddenBox = hiddenBoxOf(model.id)
+const boxInfo   = hiddenBox ? HIDDEN_BOX_INFO[hiddenBox] : null
+const boxImg    = boxInfo ? articleImg(boxInfo.image) : null
+
 const facts: { label: string; value: string; href?: string }[] = [
   ...(seriesName ? [{ label: 'Серия', value: seriesName, href: `/catalog/series/${seriesSlug}/` }] : []),
   ...(coatingName ? [{ label: 'Покрытие', value: coatingName }] : []),
   ...(trim ? [{ label: trim.kind === 'glass' ? 'Остекление' : 'Кромка', value: trim.label }] : []),
+  ...(boxInfo ? [{ label: 'Короб', value: boxInfo.name.replace(/^Короб /, '') }] : []),
   ...(spec.thickness ? [{ label: 'Толщина', value: `${spec.thickness} мм` }] : []),
 ]
 
@@ -186,11 +197,12 @@ const structuredData = [{
         modelId={model.id}
         seriesSlug={seriesSlug}
         isNew={model.isNew}
+        calcHref={hidden ? '/catalog/skrytye-dveri/#secret-prices' : undefined}
       >
         <h1 slot="head" class="product-title">
-          <span class="product-title__type">{DOOR_TYPE}</span>
+          <span class="product-title__type">{doorType(seriesSlug)}</span>
           {' '}<span class="product-title__name">{displayName}</span>
-          {coatingName && <span class="product-title__coating">{` в покрытии ${coatingName}`}</span>}
+          {coatingName && <span class="product-title__coating">{` ${coatingPhrase(coatingSlug, coatingName)}`}</span>}
         </h1>
 
         <div slot="details" class="product-details">
@@ -205,7 +217,10 @@ const structuredData = [{
             </dl>
           )}
 
-          {coatingLanding && (
+          {hidden && (
+            <a href="/catalog/skrytye-dveri/" class="product-coating-link">Все скрытые двери: размеры, короба и цены</a>
+          )}
+          {!hidden && coatingLanding && (
             <a href={`/catalog/${coatingLanding.slug}/`} class="product-coating-link">
               Все {coatingLanding.h1.charAt(0).toLowerCase() + coatingLanding.h1.slice(1)}
             </a>
@@ -214,6 +229,24 @@ const structuredData = [{
       </ProductColorPicker>
     </div>
   </div>
+
+  <!-- ── Короб скрытой двери в разрезе ── -->
+  {boxInfo && boxImg && (
+    <section class="section hidden-box" aria-labelledby="hidden-box-title">
+      <div class="container hidden-box__grid">
+        <div>
+          <h2 id="hidden-box-title" class="t-h2">{boxInfo.name} в разрезе</h2>
+          <p class="hidden-box__text">{boxInfo.text}</p>
+          <a href="/catalog/skrytye-dveri/#secret-prices" class="product-coating-link">Сравнить Стандарт и Лайт</a>
+        </div>
+        <InfoImageViewerIsland
+          variant="wide"
+          aspectRatio="5 / 4"
+          images={[{ ...boxImg, sizes: '(max-width: 767px) 100vw, 600px', caption: boxInfo.caption, alt: boxInfo.alt }]}
+        />
+      </div>
+    </section>
+  )}
 
   <!-- ── Плинтус к дверям (только для покрытий, где он есть — Эмаль/Эмалекс) ── -->
   {hasPlinth && <PlinthSection title="Плинтус к дверям" />}
@@ -380,6 +413,24 @@ const structuredData = [{
 .product-coating-link:hover {
   color: var(--color-accent-hover);
   text-decoration-color: currentColor;
+}
+
+/* ── Короб скрытой двери: текст | разрез ── */
+.hidden-box__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .hidden-box__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2.5rem, 5vw, 5rem); }
+}
+.hidden-box__text {
+  margin: 1rem 0 0;
+  max-width: 32rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-fg-muted);
 }
 
 /* ── Погонаж: открытые строки на линейках, без коробок ── */

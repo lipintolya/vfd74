@@ -24,6 +24,7 @@ export interface ColorVariant {
 }
 
 import { calcKitPrice } from '../../data/accessories'
+import { kitLabel, isScenePhoto } from '../../lib/hidden-doors-catalog'
 import { companyLegalInfo } from '../../lib/contacts-data'
 import { modelStatus, MODEL_STATUS_LABEL } from '../../lib/made-to-order'
 import PriceCalculatorModal from './PriceCalculatorModal.vue'
@@ -37,6 +38,9 @@ const props = defineProps<{
   modelId:     string
   seriesSlug:  string
   isNew?:      boolean
+  /** Вместо калькулятора погонажа — ссылка (скрытые двери: размер и короб
+      подбираются на /catalog/skrytye-dveri/, наличников у них нет). */
+  calcHref?:   string
 }>()
 
 const phone = companyLegalInfo.contacts.phone[0]!
@@ -61,7 +65,7 @@ const bladePrice = computed(() => (selected.value.available === false ? null : s
 
 const kitTotal = computed(() => {
   if (!bladePrice.value) return null
-  return bladePrice.value + calcKitPrice(selected.value.coatingSlug, selected.value.name, props.seriesSlug)
+  return bladePrice.value + calcKitPrice(selected.value.coatingSlug, selected.value.name, props.seriesSlug, props.modelId)
 })
 
 const rub = (n: number) => `${n.toLocaleString('ru-RU')} ₽`
@@ -134,7 +138,7 @@ const shareModel = async () => {
 <template>
   <div class="pdp">
     <!-- Фото -->
-    <div class="pdp__media">
+    <div class="pdp__media" :class="{ 'is-scene': isScenePhoto(seriesSlug) }">
       <button
         v-if="displayPhoto"
         type="button"
@@ -169,7 +173,7 @@ const shareModel = async () => {
           <span v-if="bladePrice" class="pdp__unit">за полотно</span>
         </p>
         <p v-if="kitTotal" class="pdp__kit">
-          С коробом и наличниками <span class="pdp__kit-value">{{ rub(kitTotal) }}</span>
+          {{ kitLabel(seriesSlug) }} <span class="pdp__kit-value">{{ rub(kitTotal) }}</span>
         </p>
       </div>
 
@@ -200,7 +204,8 @@ const shareModel = async () => {
       </div>
 
       <div class="pdp__actions">
-        <button type="button" class="btn btn-primary pdp__cta" @click="calcOpen = true">
+        <a v-if="calcHref" :href="calcHref" class="btn btn-primary pdp__cta">Подобрать размер</a>
+        <button v-else type="button" class="btn btn-primary pdp__cta" @click="calcOpen = true">
           Рассчитать комплект
         </button>
         <a href="https://t.me/vfddoors74" target="_blank" rel="noopener" class="btn btn-outline pdp__cta">
@@ -245,6 +250,7 @@ const shareModel = async () => {
     </Teleport>
 
     <PriceCalculatorModal
+      v-if="!calcHref"
       :open="calcOpen"
       :mounted="mounted"
       :model-name="modelName"
@@ -313,6 +319,17 @@ const shareModel = async () => {
   height: calc(100% - 4.5rem);
   object-fit: contain;
   display: block;
+}
+
+/* Сцена портретная (≈4:5) — на десктопе не режем её в квадрат */
+@media (min-width: 900px) {
+  .pdp__media.is-scene { aspect-ratio: 4 / 5; }
+}
+.pdp__media.is-scene .pdp__photo {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .pdp__no-photo {

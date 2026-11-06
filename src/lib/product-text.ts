@@ -20,7 +20,16 @@ export { pluralRu }
 export const DOOR_TYPE = 'Межкомнатная дверь'
 export const BRAND     = 'ВФД'
 
+/** Тип товара первым словом названия: скрытые двери ищут как «скрытая дверь». */
+export const doorType = (seriesSlug?: string) =>
+  seriesSlug === 'sekret' ? 'Скрытая дверь' : DOOR_TYPE
+
+/** Покрытие во фразе под названием: «в покрытии Эмалекс», у грунта — «под покраску». */
+export const coatingPhrase = (coatingSlug: string, coatingName: string) =>
+  coatingSlug === 'finish-grunt' ? 'под покраску' : `в покрытии ${coatingName}`
+
 type NamingInput = Pick<ModelEntry, 'seriesName' | 'coatingName' | 'coatingSlug'> & {
+  seriesSlug?: string
   model: Pick<ModelEntry['model'], 'name' | 'trim'>
 }
 
@@ -75,7 +84,7 @@ export function productHeadline(m: NamingInput): string {
 
 /* Нарицательные покрытия внутри фразы — строчными («эмаль»), торговые
    марки и аббревиатуры — как в базе (Эмалекс, Протач, ПЭТ). */
-const COMMON_NOUN_COATINGS = new Set(['emal', 'ekoshpon'])
+const COMMON_NOUN_COATINGS = new Set(['emal', 'ekoshpon', 'finish-grunt'])
 
 export const coatingInline = (m: Pick<ModelEntry, 'coatingName' | 'coatingSlug'>) =>
   COMMON_NOUN_COATINGS.has(m.coatingSlug) ? m.coatingName.toLowerCase() : m.coatingName
@@ -90,7 +99,7 @@ export function productName(m: NamingInput, opts: { withBrand?: boolean } = {}):
   const headline = productHeadline(m)
   const coating  = m.coatingName && !hasWords(headline, m.coatingName) ? coatingInline(m) : ''
   const trim     = describeTrim(m.model.trim)?.phrase ?? ''
-  const head     = [DOOR_TYPE, opts.withBrand ? BRAND : '', headline].filter(Boolean).join(' ')
+  const head     = [doorType(m.seriesSlug), opts.withBrand ? BRAND : '', headline].filter(Boolean).join(' ')
   return [head, coating, trim].filter(Boolean).join(', ')
 }
 

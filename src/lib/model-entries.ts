@@ -99,7 +99,7 @@ async function loadModelEntries(): Promise<ModelEntry[]> {
 
     const entry = modelMap.get(model.id)!
 
-    const adjustedPrice = adjustPrice(series?.slug ?? '', row.price_rrp ?? null)
+    const adjustedPrice = adjustPrice(series?.slug ?? '', row.price_rrp ?? null, model.id)
 
     if (!entry.colors.some(c => c.id === color.id)) {
       entry.colors.push({

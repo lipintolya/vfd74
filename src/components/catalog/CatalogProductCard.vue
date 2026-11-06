@@ -10,6 +10,7 @@
  */
 import { computed, ref, watch } from 'vue'
 import { calcKitPrice } from '../../data/accessories'
+import { kitLabel, isScenePhoto } from '../../lib/hidden-doors-catalog'
 import { modelStatus, MODEL_STATUS_LABEL } from '../../lib/made-to-order'
 import { thumbSrcset } from '../../lib/model-thumbs.mjs'
 import type { ColorFamilySlug } from '../../data/color-families'
@@ -94,7 +95,7 @@ const onPhotoTouchEnd = (e: TouchEvent) => {
 
 /* Комплект (полотно, короб, наличники) — тот же расчёт, что на странице модели */
 const kitPrice = computed(() =>
-  activePrice.value ? activePrice.value + calcKitPrice(props.card.coatingSlug, activeColorName.value, props.card.seriesSlug) : null
+  activePrice.value ? activePrice.value + calcKitPrice(props.card.coatingSlug, activeColorName.value, props.card.seriesSlug, props.card.id) : null
 )
 
 /* Покрытие и кромка/стекло — одной строкой, цвет — второй. Покрытие не
@@ -115,7 +116,7 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
     @touchstart.passive="onPhotoTouchStart"
     @touchend="onPhotoTouchEnd"
   >
-    <div ref="photoBoxRef" class="pc__media">
+    <div ref="photoBoxRef" class="pc__media" :class="{ 'is-scene': isScenePhoto(card.seriesSlug) }">
       <img
         v-if="activePhoto"
         :key="activePhoto"
@@ -168,7 +169,7 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
         <span class="pc__value">{{ activePrice ? rub(activePrice) : 'Цена по запросу' }}</span>
         <span v-if="activePrice" class="pc__unit">за полотно</span>
       </p>
-      <p v-if="kitPrice" class="pc__kit">С коробом и наличниками <span class="pc__nowrap">{{ rub(kitPrice) }}</span></p>
+      <p v-if="kitPrice" class="pc__kit">{{ kitLabel(card.seriesSlug) }} <span class="pc__nowrap">{{ rub(kitPrice) }}</span></p>
     </div>
   </article>
 </template>
@@ -199,6 +200,16 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
   height: calc(100% - 3rem);
   object-fit: contain;
   object-position: center bottom;
+}
+
+/* Фото-сцена (интерьерный рендер скрытой двери, а не вырезанная дверь):
+   на всю подложку, без полей — иначе выглядит как картинка в рамке */
+.pc__media.is-scene img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 /* Статус — плашка в углу фото, прямые углы как у подложки. Белый текст на

@@ -1,3 +1,4 @@
+import { hiddenModelPrices } from './hidden-doors-catalog'
 /**
  * src/lib/price-adjustments.ts
  *
@@ -38,7 +39,11 @@ export const PRICE_MULTIPLIER: Record<string, number> = {
 }
 
 /** Применяет повышение к цене полотна из Supabase. price=null проходит без изменений. */
-export function adjustPrice(seriesSlug: string, price: number | null): number | null {
+export function adjustPrice(seriesSlug: string, price: number | null, modelId?: string): number | null {
+  /* Скрытые двери «Секрет» в каталоге — цена из данных страницы скрытых
+     дверей (с акциями), а не из price_rrp: см. lib/hidden-doors-catalog.ts */
+  const hidden = hiddenModelPrices(modelId)
+  if (hidden) return hidden.blade
   if (price == null) return price
   const mult = PRICE_MULTIPLIER[seriesSlug]
   return mult ? Math.round(price * mult) : price

@@ -92,7 +92,7 @@ export async function getCatalogCards(): Promise<{
       swatches.push({
         name:      color.name,
         hex:       normalizeHexColor(color.hex_preview),
-        price:     adjustPrice(seriesSlug, row.price_rrp ?? null),
+        price:     adjustPrice(seriesSlug, row.price_rrp ?? null, model.id),
         photo:     row.photo_url,
         available: true,
         ...(thumbMissing(row.photo_url) ? { noThumb: true as const } : {}),
@@ -139,11 +139,11 @@ export async function getCatalogCards(): Promise<{
       colorHex:    cover?.hex  ?? normalizeHexColor(color.hex_preview),
       trim:        trimCaption(model.trim),
       colorNames:  colorsByModel.get(model.id) ?? [color.name],
-      colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null), photo: row.photo_url ?? '', available: Boolean(row.photo_url), family: colorFamily(color.name, normalizeHexColor(color.hex_preview)) }],
+      colorSwatches: swatches ?? [{ name: color.name, hex: normalizeHexColor(color.hex_preview), price: adjustPrice(seriesSlug, row.price_rrp ?? null, model.id), photo: row.photo_url ?? '', available: Boolean(row.photo_url), family: colorFamily(color.name, normalizeHexColor(color.hex_preview)) }],
       colorFamilies: [...new Set<ColorFamilySlug>((swatches ?? []).map(s => s.family))],
       photo:       cover?.photo ?? row.photo_url ?? '',
       ...(thumbMissing(cover?.photo ?? row.photo_url) ? { noThumb: true as const } : {}),
-      price:       cover?.price ?? adjustPrice(seriesSlug, row.price_rrp ?? null),
+      price:       cover?.price ?? adjustPrice(seriesSlug, row.price_rrp ?? null, model.id),
       hasGlass:    model.has_glass ?? false,
       isNew:       isNewModel(model.id),
     })

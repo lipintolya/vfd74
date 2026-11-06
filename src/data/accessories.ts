@@ -33,6 +33,8 @@
 
 import { PLINTUS_ROWS, type Material as PlintusMaterial } from './decor-products'
 
+import { hiddenModelPrices } from '../lib/hidden-doors-catalog'
+
 export type AccessoryCategory = 'kit' | 'box' | 'nalichnik' | 'kapitel' | 'dobor' | 'plinth' | 'decorative'
 
 export const CATEGORY_LABELS: Record<AccessoryCategory, string> = {
@@ -115,9 +117,12 @@ export const COLOR_SURCHARGE: Record<string, number> = {
 }
 
 /** Цена комплекта (коробка + наличники) для конкретного цвета двери.
-    Порядок: свой прайс цвета (COLOR_ACCESSORIES) → серии (SERIES_ACCESSORIES,
-    нужен seriesSlug) → общий по покрытию. */
-export function calcKitPrice(coatingSlug: string, colorName: string, seriesSlug?: string): number {
+    Порядок: скрытая дверь (короб модели, нужен modelId) → свой прайс цвета
+    (COLOR_ACCESSORIES) → серии (SERIES_ACCESSORIES, нужен seriesSlug) →
+    общий по покрытию. */
+export function calcKitPrice(coatingSlug: string, colorName: string, seriesSlug?: string, modelId?: string): number {
+  const hidden = hiddenModelPrices(modelId)
+  if (hidden) return hidden.box
   const base = COLOR_ACCESSORIES[colorName]?.kitPrice
     || (seriesSlug && SERIES_ACCESSORIES[seriesSlug]?.kitPrice)
     || (BASE_KIT_PRICE[coatingSlug as CoatingSlug] ?? 0)

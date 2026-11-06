@@ -32,6 +32,9 @@ import {
   SECRET_REVERS_MIN_BLADE_PRICE_ORIGINAL,
   SECRET_REVERS_MIN_KIT_PRICE_ORIGINAL,
   SECRET_PROMO_ACTIVE,
+  SECRET_ROW_PROMO,
+  SECRET_MIN_DISCOUNTED,
+  SECRET_REVERS_MIN_DISCOUNTED,
   SECRET_PROMO_VALID_UNTIL,
   CUSTOM_HEIGHT_TIERS,
   CUSTOM_LEAD_TIME,
@@ -45,6 +48,10 @@ import {
   REFLEX_HEIGHT_TIERS,
   REFLEX_TWO_SIDED_MIRROR_SURCHARGE,
 } from '../../data/skrytye-dveri-products'
+
+import { formatDate } from '../../lib/promo-dates'
+/* «31 декабря 2026 г.» — дата окончания акции строки (SECRET_ROW_PROMO) */
+const promoUntil = SECRET_ROW_PROMO ? formatDate(SECRET_ROW_PROMO.validUntil) : ''
 
 const secretPromo = PROMOS.find(p => p.id === 3)
 
@@ -289,18 +296,21 @@ const structuredData = canonicalUrl ? [
             {SECRET_PROMO_ACTIVE && (
               <span class="sd-promo-chip">🔥 Акция -8% до 31 августа</span>
             )}
+            {!SECRET_PROMO_ACTIVE && SECRET_ROW_PROMO && (
+              <span class="sd-promo-chip">Акция на кромку чёрную до {promoUntil}</span>
+            )}
             <div class="sd-product__price">
               <div>
                 <span class="sd-price-label">Полотно</span>
                 <span>
-                  {SECRET_PROMO_ACTIVE && <span class="sd-price-old">{fmt(SECRET_MIN_BLADE_PRICE_ORIGINAL)}</span>}
+                  {SECRET_MIN_DISCOUNTED && <span class="sd-price-old">{fmt(SECRET_MIN_BLADE_PRICE_ORIGINAL)}</span>}
                   <span class="sd-price-val">от {fmt(SECRET_MIN_BLADE_PRICE)}</span>
                 </span>
               </div>
               <div>
                 <span class="sd-price-label">Комплект с коробом</span>
                 <span>
-                  {SECRET_PROMO_ACTIVE && <span class="sd-price-old">{fmt(SECRET_MIN_KIT_PRICE_ORIGINAL)}</span>}
+                  {SECRET_MIN_DISCOUNTED && <span class="sd-price-old">{fmt(SECRET_MIN_KIT_PRICE_ORIGINAL)}</span>}
                   <span class="sd-price-val sd-price-val--accent">от {fmt(SECRET_MIN_KIT_PRICE)}</span>
                 </span>
               </div>
@@ -356,14 +366,14 @@ const structuredData = canonicalUrl ? [
               <div>
                 <span class="sd-price-label">Полотно</span>
                 <span>
-                  {SECRET_PROMO_ACTIVE && <span class="sd-price-old">{fmt(SECRET_REVERS_MIN_BLADE_PRICE_ORIGINAL)}</span>}
+                  {SECRET_REVERS_MIN_DISCOUNTED && <span class="sd-price-old">{fmt(SECRET_REVERS_MIN_BLADE_PRICE_ORIGINAL)}</span>}
                   <span class="sd-price-val">от {fmt(SECRET_REVERS_MIN_BLADE_PRICE)}</span>
                 </span>
               </div>
               <div>
                 <span class="sd-price-label">Комплект с коробом</span>
                 <span>
-                  {SECRET_PROMO_ACTIVE && <span class="sd-price-old">{fmt(SECRET_REVERS_MIN_KIT_PRICE_ORIGINAL)}</span>}
+                  {SECRET_REVERS_MIN_DISCOUNTED && <span class="sd-price-old">{fmt(SECRET_REVERS_MIN_KIT_PRICE_ORIGINAL)}</span>}
                   <span class="sd-price-val sd-price-val--accent">от {fmt(SECRET_REVERS_MIN_KIT_PRICE)}</span>
                 </span>
               </div>
@@ -381,6 +391,11 @@ const structuredData = canonicalUrl ? [
       {SECRET_PROMO_ACTIVE && (
         <p class="sd-promo-note">
           🔥 Цены в таблице уже с учётом акции -8% — действует до 31 августа 2026 г.
+        </p>
+      )}
+      {!SECRET_PROMO_ACTIVE && SECRET_ROW_PROMO && (
+        <p class="sd-promo-note">
+          Кромка чёрная, прямое открывание — цены по акции до {promoUntil}.
         </p>
       )}
       <div class="sd-table-wrap sd-stack-table-wrap">
@@ -691,6 +706,7 @@ const structuredData = canonicalUrl ? [
         цвета кромки и стороны открывания — таблица выше.
         Монтаж нашей бригадой — от {fmt(INSTALL_FROM_PRICE)} за дверь, оплачивается отдельно.
         {SECRET_PROMO_ACTIVE && ' Цены указаны с учётом акции -8% (действует до 31 августа 2026 г.).'}
+        {!SECRET_PROMO_ACTIVE && SECRET_ROW_PROMO && ` Цены «от» — по акции на кромку чёрную до ${promoUntil}.`}
       </p>
 
       <!-- Инфо-изображения: комплектация + сторонность — client:only="vue" (не
