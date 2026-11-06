@@ -3,12 +3,14 @@
    (BaseLayout preloadImage). Раньше preload тянул отдельный захардкоженный
    URL, который разъехался с реальной первой картинкой слайдера — браузер
    грел не тот ресурс, а настоящий LCP-кадр грузился без буста. */
-export const HERO_COVER_IMAGE = '/media/Main_page_perfomance-covers/emalex_render.webp'
+export const HERO_COVER_IMAGE = '/media/Main_page_perfomance-covers/hero_living_render.webp'
 
 /* Уменьшенная версия того же кадра (800w, локальный файл — сгенерирована
    sharp'ом из оригинала в public/media, раздача оригиналов не отдаёт ресайз по query
    параметрам). Мобильный LCP грузил тот же ~1670px файл, что и десктоп —
    на throttled 4G это давало LCP 5.2s вместо 2.5s на десктопе. srcset даёт
    браузеру выбрать этот вариант на узких вьюпортах. */
-export const HERO_COVER_IMAGE_MOBILE = '/renders/hero/emalex-render-mobile.webp'
-export const HERO_COVER_IMAGE_SRCSET = `${HERO_COVER_IMAGE_MOBILE} 800w, ${HERO_COVER_IMAGE} 1448w`
+export const HERO_COVER_IMAGE_MOBILE = '/renders/hero/hero-cover-mobile.webp'
+/* Все варианты — полный кадр (scripts/gen-hero-mobile.mjs), положение
+   двери в кадре держит imagePosition первого слайда в HeroSlider */
+export const HERO_COVER_IMAGE_SRCSET = `${HERO_COVER_IMAGE_MOBILE} 800w, /renders/hero/hero-cover-960.webp 960w, ${HERO_COVER_IMAGE} 1672w`

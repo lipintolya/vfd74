@@ -16,8 +16,9 @@ import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
 import { readMedia } from './lib/media.mjs'
 
-const SRC = '/media/Main_page_perfomance-covers/emalex_render.webp'
-const OUT = new URL('../public/renders/hero/emalex-render-mobile.webp', import.meta.url)
+const SRC = '/media/Main_page_perfomance-covers/hero_living_render.webp'
+const OUT = new URL('../public/renders/hero/hero-cover-mobile.webp', import.meta.url)
+const OUT_960 = new URL('../public/renders/hero/hero-cover-960.webp', import.meta.url)
 const WIDTH = 800
 const QUALITY = 72
 
@@ -25,20 +26,17 @@ await mkdir(new URL('../public/renders/hero/', import.meta.url), { recursive: tr
 
 const buf = await readMedia(SRC)
 
-/* Кадр мобильной версии. Шапка на телефоне вертикальная (~0.85) и режет
-   картинку по центру (object-center в HeroSlider), а дверь в этом рендере
-   стоит у левого края — при полном кадре на телефоне её не было видно.
-   Поэтому мобильный вариант заранее кадрируем по левой части (дверь,
-   диван, фотообои) в пропорции шапки; десктоп/планшет получают полный
-   оригинал через srcset. HeroSlider при этом не трогаем. */
-const MOBILE_RATIO = 0.83
-const { width: srcW = 0, height: srcH = 0 } = await sharp(buf).metadata()
-const cropW = Math.min(srcW, Math.round(srcH * MOBILE_RATIO))
+/* Полный кадр, без кропа: какую часть показать, решает object-position
+   слайда (HeroSlider, imagePosition). Кроп в srcset ломал десктоп — при
+   sizes 55vw (~790px) браузер брал этот 800w и показывал обрезок крупно. */
 const thumb = await sharp(buf)
-  .extract({ left: 0, top: 0, width: cropW, height: srcH })
   .resize({ width: WIDTH, withoutEnlargement: true })
   .webp({ quality: QUALITY })
   .toBuffer()
 await writeFile(OUT, thumb)
 
-console.log(`emalex-render-mobile.webp: ${(buf.length / 1024).toFixed(0)}KB -> ${(thumb.length / 1024).toFixed(0)}KB`)
+/* Полный кадр 960w — для планшетов и десктопа с DPR 1 */
+const full960 = await sharp(buf).resize({ width: 960, withoutEnlargement: true }).webp({ quality: 76 }).toBuffer()
+await writeFile(OUT_960, full960)
+
+console.log(`hero-cover-mobile.webp: ${(buf.length / 1024).toFixed(0)}KB -> ${(thumb.length / 1024).toFixed(0)}KB, 960w: ${(full960.length / 1024).toFixed(0)}KB`)
