@@ -10,8 +10,8 @@
  * opacity). Отступы учитывают чёлку и жесты iOS (safe-area). Баннер
  * cookie на узком экране перекрывал бы кнопку — скрипт поднимает её над ним.
  *
- * Над ней — постоянная кнопка MAX (канал салона): клиенты находят мессенджер
- * с любой страницы. Стоит всегда на одном месте, клик — цель max_click
+ * Над ней — кнопка MAX (канал салона) с мягкой бирюзовой пульсацией:
+ * появляется и прячется вместе с «Наверх», клик — цель max_click
  * (делегированный обработчик Метрики ловит ссылки на max.ru).
  */
 import { companyLegalInfo } from '../../lib/contacts-data'
@@ -130,23 +130,64 @@ const max = companyLegalInfo.socialMedia.find((s) => s.name === 'MAX')!
     height: 3rem;
     border-radius: 999px;
     box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14), 0 0.5rem 1.5rem rgb(15 23 42 / 0.22);
-    transition:
-      scale var(--duration-base) var(--ease-out),
-      box-shadow var(--duration-base) var(--ease-out),
-      bottom 250ms var(--ease-out);
     touch-action: manipulation;
+    /* как у «Наверх»: у верха страницы спрятана (невидима, не кликабельна,
+       не берёт фокус), появляется, когда пролистан экран */
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 0.75rem;
+    scale: 0.9;
+    transition:
+      opacity 220ms var(--ease-out),
+      translate 220ms var(--ease-out),
+      scale 220ms var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      bottom 250ms var(--ease-out),
+      visibility 0s linear 220ms;
   }
-  .max-fab img { display: block; width: 100%; height: 100%; border-radius: 999px; }
+  .max-fab[data-visible] {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    transition-delay: 0s;
+  }
+  .max-fab img { position: relative; display: block; width: 100%; height: 100%; border-radius: 999px; }
+  /* Мягкая бирюзовая пульсация за кнопкой: два кольца со сдвигом по фазе
+     расходятся и гаснут. Только transform/opacity — без перерисовки страницы. */
+  .max-fab::before,
+  .max-fab::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 999px;
+    background: var(--color-accent);
+    opacity: 0;
+    animation: max-pulse 3.2s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    animation-play-state: paused;  /* спрятана — не анимируем */
+    pointer-events: none;
+  }
+  .max-fab[data-visible]::before,
+  .max-fab[data-visible]::after { animation-play-state: running; }
+  .max-fab::after { animation-delay: 1.6s; }
+  @keyframes max-pulse {
+    0%   { transform: scale(1);    opacity: 0.45; }
+    70%  { transform: scale(1.75); opacity: 0; }
+    100% { transform: scale(1.75); opacity: 0; }
+  }
   @media (hover: hover) {
-    .max-fab:hover { scale: 1.06; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2), 0 0.75rem 1.75rem rgb(15 23 42 / 0.3); }
+    .max-fab[data-visible]:hover { scale: 1.06; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2), 0 0.75rem 1.75rem rgb(15 23 42 / 0.3); }
   }
-  .max-fab:active { scale: 0.94; }
+  .max-fab[data-visible]:active { scale: 0.94; }
   .max-fab:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .max-fab::before,
+    .max-fab::after { animation: none; }
     .max-fab,
     .btt,
     .btt-bar,
@@ -156,6 +197,7 @@ const max = companyLegalInfo.socialMedia.find((s) => s.name === 'MAX')!
 
 <script>
   const btn = document.getElementById('btt-btn') as HTMLButtonElement | null
+  const fab = document.getElementById('max-fab')
 
   if (btn) {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)')
@@ -166,7 +208,9 @@ const max = companyLegalInfo.socialMedia.find((s) => s.name === 'MAX')!
       ticking = false
       const y = window.scrollY
       const max = document.documentElement.scrollHeight - window.innerHeight
-      btn.toggleAttribute('data-visible', y > window.innerHeight)
+      const shown = y > window.innerHeight
+      btn.toggleAttribute('data-visible', shown)
+      fab?.toggleAttribute('data-visible', shown)
       btn.style.setProperty('--p', max > 0 ? Math.min(1, y / max).toFixed(3) : '0')
     }
     const onScroll = () => {
