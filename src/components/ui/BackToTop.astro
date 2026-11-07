@@ -9,8 +9,26 @@
  * Спрятанная кнопка недоступна и для клавиатуры (visibility, а не только
  * opacity). Отступы учитывают чёлку и жесты iOS (safe-area). Баннер
  * cookie на узком экране перекрывал бы кнопку — скрипт поднимает её над ним.
+ *
+ * Над ней — постоянная кнопка MAX (канал салона): клиенты находят мессенджер
+ * с любой страницы. Стоит всегда на одном месте, клик — цель max_click
+ * (делегированный обработчик Метрики ловит ссылки на max.ru).
  */
+import { companyLegalInfo } from '../../lib/contacts-data'
+const max = companyLegalInfo.socialMedia.find((s) => s.name === 'MAX')!
 ---
+
+<a
+  href={max.url}
+  id="max-fab"
+  class="max-fab"
+  target="_blank"
+  rel="noopener"
+  aria-label="Написать нам в MAX (открывается в новой вкладке)"
+  title="Написать в MAX"
+>
+  <img src="/icons/max-logo-v2.webp" alt="" width="48" height="48" decoding="async" />
+</a>
 
 <button type="button" id="btt-btn" class="btt" aria-label="Наверх — прокрутить страницу в начало" title="Наверх">
   <!-- Кольцо прогресса: pathLength=1 — длина штриха в долях круга, сдвиг
@@ -101,7 +119,35 @@
     outline-offset: 3px;
   }
 
+  .max-fab {
+    position: fixed;
+    z-index: 48;
+    right: calc(1.25rem + env(safe-area-inset-right, 0px));
+    /* над «Наверх»: её высота 3rem + зазор 0.75rem */
+    bottom: calc(1.25rem + 3.75rem + env(safe-area-inset-bottom, 0px) + var(--btt-lift, 0px));
+    display: block;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14), 0 0.5rem 1.5rem rgb(15 23 42 / 0.22);
+    transition:
+      scale var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      bottom 250ms var(--ease-out);
+    touch-action: manipulation;
+  }
+  .max-fab img { display: block; width: 100%; height: 100%; border-radius: 999px; }
+  @media (hover: hover) {
+    .max-fab:hover { scale: 1.06; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.2), 0 0.75rem 1.75rem rgb(15 23 42 / 0.3); }
+  }
+  .max-fab:active { scale: 0.94; }
+  .max-fab:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .max-fab,
     .btt,
     .btt-bar,
     .btt-arrow { transition: none; }
@@ -146,7 +192,9 @@
         const b = banner.getBoundingClientRect()
         const r = btn.getBoundingClientRect()
         const overlapsX = shown && b.right > r.left - 8
-        btn.style.setProperty('--btt-lift', overlapsX ? `${Math.ceil(b.height + 12)}px` : '0px')
+        const lift = overlapsX ? `${Math.ceil(b.height + 12)}px` : '0px'
+        btn.style.setProperty('--btt-lift', lift)
+        document.getElementById('max-fab')?.style.setProperty('--btt-lift', lift)
       }
       new MutationObserver(avoid).observe(banner, { attributes: true, attributeFilter: ['style'] })
       window.addEventListener('resize', avoid, { passive: true })
