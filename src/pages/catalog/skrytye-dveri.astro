@@ -395,7 +395,7 @@ const structuredData = canonicalUrl ? [
       )}
       {!SECRET_PROMO_ACTIVE && SECRET_ROW_PROMO && (
         <p class="sd-promo-note">
-          Кромка чёрная, прямое открывание — цены по акции до {promoUntil}.
+          Кромка чёрная, прямое и обратное открывание — цены по акции до {promoUntil}
         </p>
       )}
       <div class="sd-table-wrap sd-stack-table-wrap">
@@ -706,7 +706,7 @@ const structuredData = canonicalUrl ? [
         цвета кромки и стороны открывания — таблица выше.
         Монтаж нашей бригадой — от {fmt(INSTALL_FROM_PRICE)} за дверь, оплачивается отдельно.
         {SECRET_PROMO_ACTIVE && ' Цены указаны с учётом акции -8% (действует до 31 августа 2026 г.).'}
-        {!SECRET_PROMO_ACTIVE && SECRET_ROW_PROMO && ` Цены «от» — по акции на кромку чёрную до ${promoUntil}.`}
+        {!SECRET_PROMO_ACTIVE && SECRET_ROW_PROMO && ` Цены «от» — по акции на кромку чёрную до ${promoUntil}`}
       </p>
 
       <!-- Инфо-изображения: комплектация + сторонность — client:only="vue" (не

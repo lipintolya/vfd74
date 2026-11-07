@@ -33,6 +33,8 @@ interface HiddenModel {
 export const HIDDEN_MODELS: Record<string, HiddenModel> = {
   '01da3484-3994-49d2-a25a-e3f79cb73575': { edge: 'black', reverse: false, box: 'standard' }, // Секрет Стандарт, кромка чёрная
   'b5580517-9dfa-46b9-9b86-29bdffeb82a0': { edge: 'black', reverse: false, box: 'lite' },     // Секрет Лайт, кромка чёрная
+  '1476c27f-8830-4a8d-9219-3ea83474cc95': { edge: 'black', reverse: true,  box: 'standard' }, // Секрет Реверс Стандарт, кромка чёрная
+  'ca0c7421-f0f4-4a90-afe9-554e87c27b87': { edge: 'black', reverse: true,  box: 'lite' },     // Секрет Реверс Лайт, кромка чёрная
 }
 
 export const isHiddenSeries = (seriesSlug: string | undefined) => seriesSlug === HIDDEN_SERIES_SLUG

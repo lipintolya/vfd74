@@ -91,7 +91,9 @@ export const SECRET_PRICES: SecretPriceRow[] = [
   // Акция фабрики до конца 2026 года: «Финиш-грунт BE 4x4» — 10 220 / 28 060 / 22 680
   { edgeColor: 'black',  edgeLabel: 'Чёрная 4×4 мм',  reverse: false, bladePrice: 11_360, kitStandardPrice: 31_180, kitLitePrice: 23_820,
     promo: { bladePrice: 10_220, kitStandardPrice: 28_060, kitLitePrice: 22_680, validUntil: '2026-12-31' } },
-  { edgeColor: 'black',  edgeLabel: 'Чёрная 4×4 мм',  reverse: true,  bladePrice: 15_910, kitStandardPrice: 35_730, kitLitePrice: 28_370 },
+  // Та же акция для реверса: полотно 14 330, короб Стандарт 17 840, Лайт 12 460
+  { edgeColor: 'black',  edgeLabel: 'Чёрная 4×4 мм',  reverse: true,  bladePrice: 15_910, kitStandardPrice: 35_730, kitLitePrice: 28_370,
+    promo: { bladePrice: 14_330, kitStandardPrice: 32_170, kitLitePrice: 26_790, validUntil: '2026-12-31' } },
   { edgeColor: 'silver', edgeLabel: 'Серебро 4×4 мм', reverse: false, bladePrice: 11_360, kitStandardPrice: 31_180, kitLitePrice: 23_820 },
   { edgeColor: 'silver', edgeLabel: 'Серебро 4×4 мм', reverse: true,  bladePrice: 15_910, kitStandardPrice: 35_730, kitLitePrice: 28_370 },
   // Золото — цена не уточнялась в последней правке, оставлена по прежним данным.
