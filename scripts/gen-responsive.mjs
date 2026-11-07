@@ -34,7 +34,7 @@ const JOBS = [
   { src: '/media/Main_page_perfomance-covers/innova_render.webp', out: '/renders/hero/innova-render',      widths: S },
   { src: '/media/Main_page/left_bento/render_urban2.webp',        out: '/renders/hero/urban2-render',      widths: S },
   // HeroSlider.vue, плитки справа: «Двери в наличии» и «Скрытые двери»
-  { src: '/media/Main_page_perfomance-covers/emalex_render.webp', out: '/renders/hero/instock-emalex',     widths: S },
+  { src: '/media/Main_page/left_bento/instock_kitchen.webp', out: '/renders/hero/instock-kitchen',     widths: S },
   { src: '/media/invisible/secret.webp',                          out: '/renders/hero/secret-two-doors',   widths: S },
 
   // Промо-слайдеры главной: исходник — готовые 1300w из /renders/home/

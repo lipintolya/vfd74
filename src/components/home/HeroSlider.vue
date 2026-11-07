@@ -3,7 +3,6 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../../data/hero-image'
 import HeroTile, { type Tile } from './HeroTile.vue'
 import type { HeroData } from '../../lib/home-promos'
-import { pluralRu } from '../../lib/plural'
 
 /**
  * Первый экран главной.
@@ -75,12 +74,12 @@ const tiles: Tile[] = [
   {
     id: 'in-stock',
     href: '/catalog/v-nalichii/',
-    title: `${props.hero.inStock} ${pluralRu(props.hero.inStock, ['модель', 'модели', 'моделей'])} в наличии`,
+    title: 'Модели в наличии',
     fact: 'Со склада в Челябинске — без ожидания изготовления',
     cta: 'Смотреть',
     img: {
-      src: '/renders/hero/instock-emalex-960.webp',
-      srcset: '/renders/hero/instock-emalex-640.webp 640w, /renders/hero/instock-emalex-960.webp 960w',
+      src: '/renders/hero/instock-kitchen-960.webp',
+      srcset: '/renders/hero/instock-kitchen-640.webp 640w, /renders/hero/instock-kitchen-960.webp 960w',
       sizes: '(max-width: 1023px) 100vw, 40vw',
       width: 960, height: 720,
     },
