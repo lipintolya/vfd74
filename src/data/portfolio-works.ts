@@ -60,6 +60,31 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-11-08-feniks-2-solnechnaya-dolina',
+    date:        '2026-11-08',
+    label:       '08.11.2026',
+    title:       'Монтаж дверей Феникс 2 в белой эмали, «Солнечная долина»',
+    seoTitle:    'Двери Феникс 2 в белой эмали, «Солнечная долина»',
+    description: 'Установка дверей Феникс 2 в белой эмали с фурнитурой в цвете сатинированного золота в частном доме на объекте «Солнечная долина», Челябинская область.',
+    category:    'interior',
+    objectType:  'house',
+    location:    'Челябинская область, «Солнечная долина»',
+    story:       'Белая эмаль и фурнитура в цвете сатинированного золота задают светлый, спокойный характер интерьера. Двери Феникс 2 с рельефными филёнками установили в разных зонах дома, сохранив один цвет полотна и одну фурнитуру во всех проёмах.',
+    model:       'Феникс 2',
+    features:    ['Белая эмаль', 'Фурнитура — сатинированное золото'],
+    tags:        ['Частный дом', 'Межкомнатные', 'Эмаль', 'Золотая фурнитура'],
+    images: [
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-1.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-2.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-3.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-4.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-5.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-6.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-7.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-8.webp',
+    ],
+  },
+  {
     id:          '2026-11-02-urban-grafit-razvyazka',
     date:        '2026-11-02',
     label:       '02.11.2026',
