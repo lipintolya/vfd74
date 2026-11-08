@@ -74,8 +74,8 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     features:    ['Белая эмаль', 'Фурнитура — сатинированное золото'],
     tags:        ['Частный дом', 'Межкомнатные', 'Эмаль', 'Золотая фурнитура'],
     images: [
-      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-1.webp',
       '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-2.webp',
+      '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-1.webp',
       '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-3.webp',
       '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-4.webp',
       '/media/works_prod/08.11.26_fenix2_solnechnaya/fenix2-solnechnaya-5.webp',
