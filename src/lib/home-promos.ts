@@ -139,7 +139,7 @@ export async function getHomePromos(): Promise<{
     offer:  SECRET_PROMO_ACTIVE
       ? `Акция −${Math.round(SECRET_PROMO_DISCOUNT * 100)}% до ${formatDate(SECRET_PROMO_VALID_UNTIL)}`
       : SECRET_ROW_PROMO
-        ? `Кромка чёрная — по акции до ${formatDate(SECRET_ROW_PROMO.validUntil)}`
+        ? 'Скрытые двери по акции'
         : undefined,
     price:  { value: SECRET_MIN_BLADE_PRICE, from: true,
               old: SECRET_MIN_DISCOUNTED ? SECRET_MIN_BLADE_PRICE_ORIGINAL : undefined },
