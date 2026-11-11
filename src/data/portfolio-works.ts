@@ -60,6 +60,32 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-11-10-urban-emalex-bezhevyy-nestandartnye-proemy',
+    date:        '2026-11-10',
+    label:       '10.11.2026',
+    title:       'Монтаж межкомнатных дверей Урбан и Эмалекс в бежевом цвете с нестандартными проёмами',
+    seoTitle:    'Двери Урбан и Эмалекс бежевые, нестандартные проёмы',
+    description: 'Установили межкомнатные двери Урбан и Эмалекс в бежевом цвете в частном доме, Челябинская область. Наличники разной ширины под нестандартные проёмы.',
+    category:    'interior',
+    objectType:  'house',
+    location:    'Челябинская область, частный дом',
+    story:       'Двери Урбан и Эмалекс в благородном бежевом цвете. Проёмы в доме нестандартные, поэтому использовали комбинированную ширину наличников: верхний — 100 мм, боковые — 70 мм. Так проёмы аккуратно оформлены, а геометрия дверей и целостность интерьера сохранены.',
+    model:       'Урбан и Эмалекс',
+    coating:     'Эмалекс бежевый',
+    features:    ['Покрытие Эмалекс, бежевый', 'Верхний наличник 100 мм, боковые 70 мм'],
+    tags:        ['Частный дом', 'Межкомнатные', 'Эмалекс', 'Нестандартные проёмы'],
+    images: [
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-1.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-2.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-3.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-4.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-5.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-6.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-7.webp',
+      '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-8.webp',
+    ],
+  },
+  {
     id:          '2026-11-08-feniks-2-solnechnaya-dolina',
     date:        '2026-11-08',
     label:       '08.11.2026',
