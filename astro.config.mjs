@@ -194,13 +194,10 @@ export default defineConfig({
         if (/\/catalog\/dveri-[^/]+\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }
         }
-        // Цветовые SEO-лендинги — см. src/data/color-categories.ts (слаги
-        // там не начинаются с dveri-, отдельная проверка).
-        if (/\/catalog\/(belye|seryye|bezhevye|shokolad-mokko)-dveri\/?$/.test(u)) {
-          return { ...item, changefreq: 'weekly', priority: 0.8 }
-        }
-        // Стилевые SEO-лендинги — см. src/data/style-categories.ts.
-        if (/\/catalog\/(loft-dveri|minimalizm-dveri)\/?$/.test(u)) {
+        // Лендинги по цвету, стилю, типу и цене (color-/style-categories.ts):
+        // слаги кончаются на -dveri — одно правило вместо списка, чтобы новый
+        // лендинг не выпадал в 0.6 (так было со skandinavskiy-dveri).
+        if (/\/catalog\/[a-z-]+-dveri\/?$/.test(u)) {
           return { ...item, changefreq: 'weekly', priority: 0.8 }
         }
         if (/\/articles\/?$/.test(u)) {

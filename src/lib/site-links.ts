@@ -38,7 +38,12 @@ export const COLOR_LINKS: SiteLink[] = COLOR_CATEGORIES.map(c => ({
   href: `/catalog/${c.slug}/`, label: anchorFrom(c.h1),
 }))
 
-export const STYLE_LINKS: SiteLink[] = STYLE_CATEGORIES.map(c => ({
+export const STYLE_LINKS: SiteLink[] = STYLE_CATEGORIES.filter(c => !c.linkGroup).map(c => ({
+  href: `/catalog/${c.slug}/`, label: anchorFrom(c.h1),
+}))
+
+/** Подборки по типу и цене (со стеклом, глухие, недорогие) — в style-categories.ts с linkGroup: 'type'. */
+export const TYPE_LINKS: SiteLink[] = STYLE_CATEGORIES.filter(c => c.linkGroup === 'type').map(c => ({
   href: `/catalog/${c.slug}/`, label: anchorFrom(c.h1),
 }))
 
@@ -64,6 +69,7 @@ export const SITE_LINK_GROUPS: SiteLinkGroup[] = [
       { href: '/akcii/',          label: 'Акции' },
     ],
   },
+  { title: 'По типу и цене',   links: TYPE_LINKS },
   { title: 'По покрытию',      links: COATING_LINKS },
   { title: 'По цвету и стилю', links: [...COLOR_LINKS, ...STYLE_LINKS] },
   { title: 'Скрытые двери',    links: HIDDEN_DOOR_LINKS },
@@ -87,13 +93,14 @@ export const SITE_LINK_GROUPS: SiteLinkGroup[] = [
  * из соседних групп — чтобы лендинги связывались друг с другом, а не только
  * через каталог. Текущая страница (по href) исключается.
  */
-export function relatedLandings(currentHref: string, kind: 'coating' | 'color' | 'style'): SiteLinkGroup[] {
+export function relatedLandings(currentHref: string, kind: 'coating' | 'color' | 'style' | 'type'): SiteLinkGroup[] {
   const groups: SiteLinkGroup[] = [
-    { title: 'По покрытию', links: COATING_LINKS },
-    { title: 'По цвету',    links: COLOR_LINKS },
-    { title: 'По стилю',    links: STYLE_LINKS },
+    { title: 'По покрытию',    links: COATING_LINKS },
+    { title: 'По цвету',       links: COLOR_LINKS },
+    { title: 'По стилю',       links: STYLE_LINKS },
+    { title: 'По типу и цене', links: TYPE_LINKS },
   ]
-  const order = { coating: 0, color: 1, style: 2 }[kind]
+  const order = { coating: 0, color: 1, style: 2, type: 3 }[kind]
   return [groups[order]!, ...groups.filter((_, i) => i !== order)]
     .map(g => ({ ...g, links: g.links.filter(l => l.href !== currentHref) }))
     .filter(g => g.links.length > 0)

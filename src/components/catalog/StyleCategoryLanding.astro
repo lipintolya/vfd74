@@ -17,6 +17,8 @@ import RelatedLinks from '../ui/RelatedLinks.astro'
 import { relatedLandings } from '../../lib/site-links'
 import type { StyleCategory } from '../../data/style-categories'
 import type { CatalogCardItem } from './types'
+import { pluralRu } from '../../lib/plural'
+import { rub } from '../../data/services'
 
 interface Props {
   category: StyleCategory
@@ -53,11 +55,40 @@ const withMatchedColorFirst = (card: CatalogCardItem): CatalogCardItem => {
   }
 }
 
+const cardFilter = category.cardFilter
+const matchesCardFilter = (c: CatalogCardItem) =>
+  (cardFilter?.hasGlass === undefined || c.hasGlass === cardFilter.hasGlass) &&
+  (cardFilter?.maxPrice === undefined || (c.price != null && c.price <= cardFilter.maxPrice))
+
 const matchedCards = colorFilter
   ? cards
       .filter(c => colorFilter.coatingSlugs.includes(c.coatingSlug) && c.colorNames.some(matchesColor))
       .map(withMatchedColorFirst)
-  : cards.filter(c => category.seriesSlugs.includes(c.seriesSlug))
+  : cardFilter
+    ? cards.filter(matchesCardFilter)
+    : cards.filter(c => category.seriesSlugs.includes(c.seriesSlug))
+
+/* Подстановки {count}/{models}/{minPrice}/{coatings} — по фактической
+   подборке (см. комментарий в style-categories.ts). */
+const prices = matchedCards.map(c => c.price).filter((p): p is number => p != null && p > 0)
+const minPrice = prices.length ? Math.min(...prices) : null
+const coatingCounts = new Map<string, number>()
+for (const c of matchedCards) if (c.coating) coatingCounts.set(c.coating, (coatingCounts.get(c.coating) ?? 0) + 1)
+const coatingList = [...coatingCounts.entries()]
+  .sort((a, b) => b[1] - a[1])
+  /* Эмаль и экошпон — материалы, пишем строчными; Эмалекс, Протач, ПЭТ — названия покрытий. */
+  .map(([name]) => name)
+  .filter(name => name !== 'Финиш-грунт')  // полотно «Секрет» под покраску — не покрытие
+  .map(name => (['Эмаль', 'Экошпон'].includes(name) ? name.toLowerCase() : name))
+  .join(', ')
+const fill = (text: string) => text
+  .replaceAll('{count}', String(matchedCards.length))
+  .replaceAll('{models}', pluralRu(matchedCards.length, ['модель', 'модели', 'моделей']))
+  .replaceAll('{minPrice}', minPrice ? rub(minPrice) : '')
+  .replaceAll('{coatings}', coatingList)
+const intro = fill(category.intro)
+const metaTitle = fill(category.metaTitle)
+const metaDescription = fill(category.metaDescription)
 
 /* Фильтры — только из уже отобранной подборки. */
 const allSeries = [...new Map(
@@ -81,7 +112,7 @@ const structuredData = canonicalUrl ? [
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: category.h1,
-    description: category.metaDescription,
+    description: metaDescription,
     url: canonicalUrl,
     numberOfItems: matchedCards.length,
   },
@@ -98,8 +129,8 @@ const structuredData = canonicalUrl ? [
 ---
 
 <BaseLayout
-  title={category.metaTitle}
-  description={category.metaDescription}
+  title={metaTitle}
+  description={metaDescription}
   canonical={canonicalUrl}
   structuredData={structuredData}
 >
@@ -113,7 +144,7 @@ const structuredData = canonicalUrl ? [
     <div class="container">
       <header class="max-w-2xl mb-8 md:mb-10">
         <h1 class="text-3xl font-medium leading-tight tracking-tight text-slate-900 md:text-5xl">{category.h1}</h1>
-        <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">{category.intro}</p>
+        <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">{intro}</p>
       </header>
 
       {allSeries.length > 0 && (
@@ -142,7 +173,7 @@ const structuredData = canonicalUrl ? [
     </div>
   </div>
 
-  <RelatedLinks groups={relatedLandings(`/catalog/${category.slug}/`, 'style')} />
+  <RelatedLinks groups={relatedLandings(`/catalog/${category.slug}/`, category.linkGroup ?? 'style')} />
 
   <section class="section">
     <div class="container">

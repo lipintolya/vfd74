@@ -58,7 +58,7 @@ const faqSchema = {
 
 const localBusinessSchema = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': 'HomeGoodsStore',  // подтип LocalBusiness → Store: «магазин дверей», а не просто организация
   '@id': 'https://vfd74.ru/#localbusiness',
   name: 'Салон дверей ВФД на Кашириных',
   /* Разговорное имя, которым пользователи фактически ищут салон в поиске
@@ -98,6 +98,10 @@ const localBusinessSchema = {
   })),
   foundingDate: '2014',
   priceRange: '₽₽',
+  areaServed: [
+    { '@type': 'City', name: 'Челябинск' },
+    { '@type': 'AdministrativeArea', name: 'Челябинская область' },
+  ],
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '4.9',

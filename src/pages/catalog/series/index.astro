@@ -1,4 +1,5 @@
 ---
+import { pluralRu } from '../../../lib/plural'
 /**
  * /catalog/series/ — раньше этого файла не было: у Astro нет index.html
  * для родительской директории динамических /catalog/series/[slug]/,
@@ -15,7 +16,8 @@ const { cards } = await getCatalogCards()
 const seriesCardsData = getSeriesCardsData(cards)
 
 const title       = 'Все серии межкомнатных дверей — каталог | ВФД Челябинск'
-const description = `Все серии межкомнатных дверей ВФД в Челябинске: ${seriesCardsData.length} серий, покрытия эмаль, ПЭТ, Эмалекс, Протач. Цены, фото, модели каждой серии.`
+const seriesWord = pluralRu(seriesCardsData.length, ['серия', 'серии', 'серий'])
+const description = `Все серии межкомнатных дверей ВФД в Челябинске: ${seriesCardsData.length} ${seriesWord}, покрытия эмаль, ПЭТ, Эмалекс, Протач. Цены, фото, модели каждой серии.`
 const canonicalUrl = Astro.site ? new URL('/catalog/series/', Astro.site).href : undefined
 
 const breadcrumbItems = [
@@ -56,7 +58,7 @@ const structuredData = canonicalUrl ? [
           Все серии дверей
         </h1>
         <p class="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">
-          {seriesCardsData.length} серий межкомнатных дверей ВФД — все покрытия и модели в одном каталоге.
+          {seriesCardsData.length} {seriesWord} межкомнатных дверей ВФД — все покрытия и модели в одном каталоге.
         </p>
       </header>
 

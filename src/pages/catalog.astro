@@ -24,7 +24,7 @@ import { sortCards, coatingRank } from '../lib/catalog-filter'
 import { popularRank } from '../lib/popular-series'
 import { getSeriesSpec, coatingGroupCopy } from '../data/series-descriptions'
 import { DOOR_CATEGORIES } from '../data/door-categories'
-import { COLOR_LINKS, STYLE_LINKS } from '../lib/site-links'
+import { COLOR_LINKS, STYLE_LINKS, TYPE_LINKS } from '../lib/site-links'
 import { ENTRANCE_DOOR_MODELS, minPriceOf } from '../data/entrance-doors'
 import { SECRET_MIN_BLADE_PRICE } from '../data/skrytye-dveri-products'
 import { rub } from '../data/services'
@@ -201,7 +201,7 @@ const lead = minPrice
 
 <BaseLayout
   title="Купить межкомнатные двери в Челябинске — каталог и цены | ВФД"
-  description="Межкомнатные двери в Челябинске от официального дилера ВФД: каталог с ценами, покрытия эмаль, ПЭТ, Эмалекс, Протач. Бесплатный замер по Челябинску при заказе, монтаж, салон на Братьев Кашириных."
+  description={`Межкомнатные двери в Челябинске: ${modelsCount} фабрики ВФД${minPrice ? `, от ${rub(minPrice)} за полотно` : ''}. Эмаль, ПЭТ, Эмалекс, Протач, экошпон. Бесплатный замер при заказе, монтаж, салон на Братьев Кашириных.`}
   canonical={canonicalUrl}
   structuredData={structuredData}
 >
@@ -307,6 +307,7 @@ const lead = minPrice
   <RelatedLinks
     heading="Подборки"
     groups={[
+      { title: 'По типу и цене', links: TYPE_LINKS },
       { title: 'По цвету', links: COLOR_LINKS },
       { title: 'По стилю', links: STYLE_LINKS },
     ]}

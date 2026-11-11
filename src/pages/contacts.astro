@@ -12,7 +12,8 @@ const description =
 
 const localBusinessSchema = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': 'HomeGoodsStore',  // подтип LocalBusiness → Store: «магазин дверей», а не просто организация
+  '@id': 'https://vfd74.ru/#localbusiness',  // та же сущность, что на главной и «О салоне»
   name: 'Салон ВФД (Владимирская фабрика дверей)',
   image: ['https://vfd74.ru/logo-schema.png', '/media/about_page/vfd_out.webp'],
   description: companyLegalInfo.activity.description,
@@ -38,6 +39,10 @@ const localBusinessSchema = {
   url: 'https://vfd74.ru/contacts/',
   foundingDate: '2014',
   priceRange: '₽₽',
+  areaServed: [
+    { '@type': 'City', name: 'Челябинск' },
+    { '@type': 'AdministrativeArea', name: 'Челябинская область' },
+  ],
   acceptsPaymentMethod: ['Cash', 'CreditCard', 'DebitCard'],
   sameAs: [
     'https://t.me/vfddoors74',
