@@ -55,7 +55,7 @@ export interface PortfolioWork {
   images:      string[]     // images[0] — обложка
   /** Ссылка на раздел каталога, к которому относится работа (под
       спецификацией на странице работы) — перелинковка портфолио → каталог. */
-  relatedLink?: { href: string; label: string }
+  relatedLinks?: { href: string; label: string }[]
 }
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
@@ -69,8 +69,8 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     category:    'interior',
     objectType:  'house',
     location:    'Челябинская область, частный дом',
-    story:       'Двери Урбан и Эмалекс в благородном бежевом цвете. Проёмы в доме нестандартные, поэтому использовали комбинированную ширину наличников: верхний — 100 мм, боковые — 70 мм. Так проёмы аккуратно оформлены, а геометрия дверей и целостность интерьера сохранены.',
-    model:       'Урбан и Эмалекс',
+    story:       'Двери Урбан 2ГР и Эмалекс ЕР1 в благородном бежевом цвете. Проёмы в доме нестандартные, поэтому использовали комбинированную ширину наличников: верхний — 100 мм, боковые — 70 мм. Так проёмы аккуратно оформлены, а геометрия дверей и целостность интерьера сохранены.',
+    model:       'Урбан 2ГР и Эмалекс ЕР1',
     coating:     'Эмалекс бежевый',
     features:    ['Покрытие Эмалекс, бежевый', 'Верхний наличник 100 мм, боковые 70 мм'],
     tags:        ['Частный дом', 'Межкомнатные', 'Эмалекс', 'Нестандартные проёмы'],
@@ -83,6 +83,10 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
       '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-6.webp',
       '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-7.webp',
       '/media/works_prod/10.11.26_urban_emalex_bezhevyy/urban-emalex-bezhevyy-8.webp',
+    ],
+    relatedLinks: [
+      { href: '/models/urban-2gr-urban-137989/', label: 'Урбан 2ГР в каталоге' },
+      { href: '/models/er1-emalex/', label: 'Эмалекс ЕР1 в каталоге' },
     ],
   },
   {
@@ -146,7 +150,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     coating:     'Эмалекс белый',
     features:    ['Покрытие Эмалекс «Белый»', 'Вертикальные линии с тёмными вставками', 'Монтаж собственной бригадой'],
     tags:        ['Квартира', 'Межкомнатные', 'Эмалекс', 'Минимализм'],
-    relatedLink: { href: '/models/emaleks-33-lakobel-chernyi-steklo-emalex-modern/', label: 'Эмалекс 33 с чёрными вставками в каталоге' },
+    relatedLinks: [{ href: '/models/emaleks-33-lakobel-chernyi-steklo-emalex-modern/', label: 'Эмалекс 33 с чёрными вставками в каталоге' }],
     images: [
       '/media/works_prod/30.10.26/emalex-e33-1.webp',
       '/media/works_prod/30.10.26/emalex-e33-2.webp',
@@ -169,7 +173,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     coating:     'Букле графит',
     features:    ['Терморазрыв', 'Покраска «букле графит»', 'Стеклянная вставка с решёткой', 'Монтаж собственной бригадой'],
     tags:        ['Частный дом', 'Входные', 'Терморазрыв', 'Букле графит'],
-    relatedLink: { href: '/vhodnye-dveri/', label: 'Входные двери в каталоге' },
+    relatedLinks: [{ href: '/vhodnye-dveri/', label: 'Входные двери в каталоге' }],
     images: [
       '/media/works_prod/26.10.26/thermovetra-pro-1.webp',
       '/media/works_prod/26.10.26/thermovetra-pro-2.webp',
@@ -214,7 +218,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     doorCount:   3,
     features:    ['Чёрная алюминиевая кромка', 'Монтаж на этапе черновой отделки', 'Полотно в грунте под покраску', 'Без наличников'],
     tags:        ['Квартира', 'Скрытые двери', 'Чёрная кромка'],
-    relatedLink: { href: '/catalog/skrytye-dveri/', label: 'Скрытые двери «Секрет» в каталоге' },
+    relatedLinks: [{ href: '/catalog/skrytye-dveri/', label: 'Скрытые двери «Секрет» в каталоге' }],
     images: [
       '/media/works_prod/5.10.26_sekret/sekret-privilegiya-1.webp',
       '/media/works_prod/5.10.26_sekret/sekret-privilegiya-2.webp',
@@ -260,7 +264,7 @@ export const PORTFOLIO_WORKS: PortfolioWork[] = [
     story:       'Белый напольный плинтус гармонично сочетается со стенами и дверями, подчёркивает геометрию помещения и красиво обрамляет паркет, уложенный «ёлочкой». Особое внимание — примыканиям к наличникам и стыкам: именно такие детали создают ощущение цельного и качественно выполненного ремонта. Белый плинтус — универсальное решение, которое визуально делает интерьер чище, легче и аккуратнее.',
     features:    ['Белый напольный плинтус', 'Примыкание к дверным наличникам', 'Паркет «ёлочкой»'],
     tags:        ['Квартира', 'Плинтус', 'Белый'],
-    relatedLink: { href: '/catalog/decor/', label: 'Плинтус и декор в каталоге' },
+    relatedLinks: [{ href: '/catalog/decor/', label: 'Плинтус и декор в каталоге' }],
     images: [
       '/media/works_prod/27.09.26_plintus/-jJW_itwjF3ySbjJAx8Ny9nrvXPMz1dVdEXfYsmSkVquhM33SSopk3wSEJe-eWnraz-_gEh1P0_V4Nf_G6R8N8Tc.webp',
       '/media/works_prod/27.09.26_plintus/1doKbi2wIyUFrOk65MMluUPUE_TOvP20U_Wo5lJ0hHg65iKgWUcRFlDMR9-UtnRT_18tYnI-Qdr3NxC4sJ2HAMmX.webp',
