@@ -60,6 +60,29 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-11-12-urban-2vr-emalex-seryy-universitetskaya',
+    date:        '2026-11-12',
+    label:       '12.11.2026',
+    title:       'Монтаж межкомнатных дверей Урбан 2ВР в цвете «Эмалекс серый» с чёрной алюминиевой кромкой',
+    seoTitle:    'Двери Урбан 2ВР Эмалекс серый, Университетская набережная',
+    description: 'Установили межкомнатные двери Урбан 2ВР в цвете «Эмалекс серый» с чёрной алюминиевой кромкой по периметру полотна и чёрной фурнитурой. Челябинск, Университетская набережная.',
+    category:    'interior',
+    objectType:  'apartment',
+    location:    'Челябинск, Университетская набережная',
+    story:       'Установили межкомнатные двери Урбан 2ВР в цвете «Эмалекс серый» с чёрной алюминиевой кромкой по периметру полотна. Спокойный серый оттенок, выразительные чёрные линии и чёрная фурнитура создают современный минималистичный образ, который хорошо вписывается в интерьер.',
+    model:       'Урбан 2ВР',
+    coating:     'Эмалекс серый',
+    features:    ['Цвет «Эмалекс серый»', 'Чёрная алюминиевая кромка по периметру', 'Чёрная фурнитура'],
+    tags:        ['Квартира', 'Межкомнатные', 'Эмалекс', 'Чёрная кромка'],
+    images: [
+      '/media/works_prod/12.11.26_urban_2vr_universitetskaya/urban-2vr-universitetskaya-1.webp',
+      '/media/works_prod/12.11.26_urban_2vr_universitetskaya/urban-2vr-universitetskaya-2.webp',
+      '/media/works_prod/12.11.26_urban_2vr_universitetskaya/urban-2vr-universitetskaya-3.webp',
+      '/media/works_prod/12.11.26_urban_2vr_universitetskaya/urban-2vr-universitetskaya-4.webp',
+    ],
+    relatedLinks: [{ href: '/models/urban-2vr-urban-51c843/', label: 'Урбан 2ВР в каталоге' }],
+  },
+  {
     id:          '2026-11-10-urban-emalex-bezhevyy-nestandartnye-proemy',
     date:        '2026-11-10',
     label:       '10.11.2026',
