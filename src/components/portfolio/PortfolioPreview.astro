@@ -7,8 +7,10 @@
  * с заголовком, лидом, кнопкой и крупным числом работ, справа — три фото.
  * Число внизу колонки вровень с подписями — вместо графитовой полосы под
  * рядом, которая повторяла «Отзывы». Остальные работы — по кнопке
- * «Все работы». От 64rem до 80rem колонка отняла бы у фото слишком много
- * места — там шапка сверху и три фото в ряд.
+ * «Все работы». На широком десктопе первое фото занимает две колонки и два
+ * ряда, а два следующих располагаются справа одно над другим. От 64rem до
+ * 80rem колонка отняла бы у фото слишком много места — там шапка сверху и
+ * три фото в ряд.
  *
  * На телефоне и планшете — как у остальных лент: шапка сверху, лента из
  * шести работ со свайпом (следующая карточка выглядывает из-за края),
@@ -68,13 +70,15 @@ const lead = 'Фото готовых объектов в Челябинске �
 
       <ul class="rail pr-rail" role="list" data-rail aria-label="Последние работы">
         {preview.map((work, i) => (
-          <li class:list={{ 'pr-off': i >= DESKTOP_SIZE }}>
+          <li class:list={{ 'pr-off': i >= DESKTOP_SIZE, 'pr-feature': i === 0 }}>
             <a href={`/portfolio/${work.id}/`} class="pr-card">
               <span class="pr-photo">
                 <img
                   src={`/renders/portfolio/${work.id}-640.webp`}
                   srcset={`/renders/portfolio/${work.id}-640.webp 640w, /renders/portfolio/${work.id}.webp 1080w`}
-                  sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 78vw"
+                  sizes={i === 0
+                    ? '(min-width: 90rem) 35vw, (min-width: 80rem) 44vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 78vw'
+                    : '(min-width: 80rem) 22vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 78vw'}
                   alt={work.title}
                   width="640"
                   height="800"
@@ -168,6 +172,14 @@ const lead = 'Фото готовых объектов в Челябинске �
       display: block;
       margin: auto 0 0;
       padding-top: 2rem;
+    }
+    .pr-rail > .pr-feature {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    .pr-feature .pr-title {
+      font-size: var(--text-step-3);
+      line-height: 1.3;
     }
     .pp-num {
       display: block;
