@@ -109,7 +109,7 @@ onBeforeUnmount(() => io?.disconnect())
 <style scoped>
 /* Палитра по варианту: тёмная — футер, светлая — страница контактов */
 .sm {
-  --sm-signal: #14b8a6;                     /* teal-500, как --color-accent */
+  --sm-signal: #78716c;                     /* stone-500, как --color-accent */
   --sm-ring: #fff;
   --sm-card-bg: #fff;
   --sm-card-line: var(--color-border);
@@ -118,7 +118,7 @@ onBeforeUnmount(() => io?.disconnect())
   --sm-shadow: 0 0.25rem 1rem rgb(15 23 42 / 0.12);
 }
 .sm[data-variant='dark'] {
-  --sm-signal: #2dd4bf;                     /* teal-400 */
+  --sm-signal: #a8a29e;                     /* stone-400 */
   --sm-ring: var(--color-graphite);
   --sm-card-bg: var(--color-graphite-card);
   --sm-card-line: rgb(255 255 255 / 0.12);

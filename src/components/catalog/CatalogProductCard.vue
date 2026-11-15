@@ -275,15 +275,12 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
 }
 .pc__link {
   color: inherit;
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-  transition: text-decoration-color 180ms var(--ease-out);
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-out);
 }
 /* Растянутая ссылка: вся карточка открывает модель */
 .pc__link::after { content: ''; position: absolute; inset: 0; }
-.pc:hover .pc__link { text-decoration-color: currentColor; }
+
 .pc__link:focus-visible { outline: none; }
 .pc__link:focus-visible::after { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 

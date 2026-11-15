@@ -1,14 +1,18 @@
 /**
- * Генерирует public/renders/about/*.webp — уменьшенные локальные копии
- * картинок страницы /about (AboutSection.vue, about-data.ts). Тот же приём,
- * что и gen-hero-mobile.mjs/gen-hero-bento.mjs: оригиналы на Yandex Cloud
- * storage лежат в 1920×2560 (300-750КБ каждая), а реальный экранный размер
- * в вёрстке в разы меньше — hero-фото и director помещаются в максимум
- * ~900px по ширине, feature-links карточки — ~700px, галерея жёстко
- * задана 480×600.
+ * Генерирует public/renders/about/*.webp — уменьшенные копии фото салона.
+ * Оригиналы зала в public/media/about_page — 1920×2560 (370–730 КБ), на
+ * экране они в разы меньше.
+ *
+ * Кто использует:
+ * - фото зала g-* — /about/ (src/pages/about.astro, список SHOWROOM):
+ *   srcset 480/700/960 для героя и ленты, 1280 — в лайтбоксе вместо оригинала;
+ * - фасад vfd-out-* — /contacts/ и /dostavka-montazh-po-rayonam/
+ *   (src/lib/facade-image.ts);
+ * - director-500 — /about/, блок руководителя;
+ * - avatar-al-2-160 — модалка разработчика в футере.
  *
  * Запуск:        node scripts/gen-about-images.mjs
- * Когда запускать снова: если исходники в about-data.ts поменяли на другие URL.
+ * Когда запускать снова: если поменяли исходные фото в public/media/about_page.
  */
 import sharp from 'sharp'
 import { writeFile, mkdir } from 'node:fs/promises'
@@ -17,24 +21,21 @@ import { readMedia } from './lib/media.mjs'
 const OUT_DIR = new URL('../public/renders/about/', import.meta.url)
 await mkdir(OUT_DIR, { recursive: true })
 
+/* Фото зала: одинаковый набор ширин у всех — srcset на странице строится
+   одной функцией (showroomSrcset в about.astro). */
+const SHOWROOM = ['g-1', 'g-2', 'g-3', 'g-5', 'g-6']
+const SHOWROOM_WIDTHS = [480, 700, 960, 1280]
+
 const jobs = [
-  // galleryImages[0..3] (vfd_out, g-1, g-5, g-3) рендерятся ДВАЖДЫ на странице:
-  // один раз крупно (hero .hero-main-photo или feature-link карточка),
-  // второй раз ещё раз в нижней секции GALLERY жёстко в 480×600 — весь
-  // массив galleryImages маппится там без слайса. Поэтому у каждой из
-  // четырёх — два ресайза: крупный (hero/feature-link) и 480w (галерея).
+  ...SHOWROOM.flatMap((name) => SHOWROOM_WIDTHS.map((width) => ({
+    src: `/media/about_page/${name}.webp`,
+    out: `${name}-${width}.webp`,
+    width,
+    quality: width >= 960 ? 74 : 76,
+  }))),
   { src: '/media/about_page/vfd_out.webp', out: 'vfd-out-900.webp', width: 900, quality: 78 },
   { src: '/media/about_page/vfd_out.webp', out: 'vfd-out-480.webp', width: 480, quality: 78 },
-  { src: '/media/about_page/g-1.webp', out: 'g-1-700.webp', width: 700, quality: 76 },
-  { src: '/media/about_page/g-1.webp', out: 'g-1-480.webp', width: 480, quality: 78 },
-  { src: '/media/about_page/g-5.webp', out: 'g-5-700.webp', width: 700, quality: 76 },
-  { src: '/media/about_page/g-5.webp', out: 'g-5-480.webp', width: 480, quality: 78 },
-  { src: '/media/about_page/g-3.webp', out: 'g-3-700.webp', width: 700, quality: 76 },
-  { src: '/media/about_page/g-3.webp', out: 'g-3-480.webp', width: 480, quality: 78 },
-  // galleryImages[4,5] (g-2, g-6) — используются ТОЛЬКО в нижней галерее.
-  { src: '/media/about_page/g-2.webp', out: 'g-2-480.webp', width: 480, quality: 78 },
-  { src: '/media/about_page/g-6.webp', out: 'g-6-480.webp', width: 480, quality: 78 },
-  // Фото директора — колонка 380px на десктопе, aspect 3/4.
+  // Руководитель — колонка ~20rem, на retina берётся оригинал 853w.
   { src: '/media/about_page/director.webp', out: 'director-500.webp', width: 500, quality: 80 },
 ]
 

@@ -14,8 +14,8 @@
  */
 import { companyLegalInfo, getFormattedHours } from '../../lib/contacts-data'
 import { SOCIAL_NETWORKS } from '../../lib/header-nav'
-import { paymentMethods } from '../about/about-data'
 import SalonMap from '../ui/SalonMap.vue'
+import Action from '../ui/Action.astro'
 import { FACADE_IMAGE } from '../../lib/facade-image'
 
 const phones   = companyLegalInfo.contacts.phone
@@ -24,6 +24,7 @@ const address  = companyLegalInfo.address
 const director = companyLegalInfo.director
 const req      = companyLegalInfo.requisites
 const ROUTE    = address.routeUrl
+const paymentMethods = companyLegalInfo.paymentMethods
 
 /* Telegram — главный канал (отвечаем быстрее всего), остальные рядом */
 const telegram   = SOCIAL_NETWORKS.find((s) => s.name === 'Telegram')!
@@ -61,13 +62,13 @@ const hours = saturday!.time === sunday!.time
         </ul>
 
         <div class="ct-actions">
-          <a href={telegram.url} target="_blank" rel="noopener noreferrer" class="btn btn-primary ct-btn">
+          <Action href={telegram.url} target="_blank" rel="noopener noreferrer" variant="primary" class="ct-action">
             Написать в Telegram
-          </a>
+          </Action>
           {messengers.map((s) => (
-            <a href={s.url} target="_blank" rel="noopener noreferrer" class="btn btn-outline ct-btn">
+            <Action href={s.url} target="_blank" rel="noopener noreferrer" variant="outline" arrow={false} class="ct-action">
               {s.name === 'MAX' ? 'MAX' : s.label}
-            </a>
+            </Action>
           ))}
         </div>
 
@@ -109,7 +110,7 @@ const hours = saturday!.time === sunday!.time
         </dl>
         <p class="ct-muted">Без выходных.</p>
 
-        <a href={ROUTE} target="_blank" rel="noopener noreferrer" class="btn btn-primary ct-btn ct-route">
+        <a href={ROUTE} target="_blank" rel="noopener noreferrer" class="btn btn-primary ct-route">
           Построить маршрут
         </a>
       </div>
@@ -232,14 +233,9 @@ const hours = saturday!.time === sunday!.time
 }
 /* Где три кнопки не влезают в строку (телефон, узкая левая колонка на
    1024–1279) — Telegram во всю ширину, ВКонтакте и MAX пополам под ним */
-.ct-actions > :first-child { grid-column: 1 / -1; }
+:global(.ct-actions > .ct-action:first-child) { grid-column: 1 / -1; }
 @media (min-width: 480px) and (max-width: 1023px), (min-width: 1280px) {
   .ct-actions { display: flex; flex-wrap: wrap; }
-}
-.ct-btn {
-  min-height: 3rem;
-  padding-inline: 1.375rem;
-  font-size: 0.9375rem;
 }
 
 .ct-email {
@@ -250,14 +246,11 @@ const hours = saturday!.time === sunday!.time
 .ct-email a {
   font-weight: 500;
   color: var(--color-ink);
-  text-decoration: underline;
-  text-decoration-color: var(--color-border);
-  text-underline-offset: 0.3em;
-  transition: color 150ms var(--ease-out), text-decoration-color 150ms var(--ease-out);
+  text-decoration: none;
+  transition: color 150ms var(--ease-out);
 }
 .ct-email a:hover {
   color: var(--color-accent-hover);
-  text-decoration-color: currentColor;
 }
 
 .ct-facade {

@@ -148,13 +148,10 @@ const money = (pr: PromoPrice) => `${pr.from ? 'от\u00a0' : ''}${rub(pr.value)
     color: #94a3b8;  /* slate-400 */
   }
 
-  /* Кнопка — системная .btn-primary, крупнее; на телефоне во всю ширину */
+  /* Кнопка остаётся системного размера; на телефоне занимает всю ширину. */
   .pf-cta {
     width: 100%;
     margin-top: 1.75rem;
-    padding: 0.9375rem 1.5rem;
-    font-size: var(--text-step-1);
-    gap: 0.5rem;
   }
   .pf-cta:hover .btn-arrow-icon { transform: translateX(2px); }
   @media (width >= 30rem) {

@@ -1,0 +1,24 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+type Props = HTMLAttributes<'a'> & HTMLAttributes<'button'> & {
+  variant?: 'primary' | 'outline' | 'soft' | 'light' | 'ghost' | 'text' | 'text-inverse'
+  arrow?: boolean
+  compact?: boolean
+}
+const { href, variant = 'primary', arrow = !variant.startsWith('text'), compact = false, class: className, type, ...attrs } = Astro.props
+const Tag = href ? 'a' : 'button'
+---
+<Tag
+  {...attrs}
+  href={href}
+  type={href ? undefined : type ?? 'button'}
+  class:list={['btn', `btn-${variant}`, { 'btn-split': arrow, 'btn-sm': compact }, className]}
+>
+  <span class="btn-label"><slot /></span>
+  {arrow && (
+    <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  )}
+</Tag>

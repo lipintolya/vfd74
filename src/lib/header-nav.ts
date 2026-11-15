@@ -80,7 +80,7 @@ export const isCurrentPage = (link: NavLink, path: string): boolean => path === 
 
 const NAV_BASE =
   'flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-200 ' +
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500'
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-500'
 
 /** Классы пункта десктопной навигации */
 export const navLinkClass = (link: NavLink, path: string): string =>
@@ -97,5 +97,5 @@ export const BRAND_TEXT =
     есть своё нажатое состояние, а вспышка выглядела как обводка вокруг бургера
     и крестика при быстрых нажатиях. */
 export const FOCUS =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 ' +
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-500 ' +
   '[-webkit-tap-highlight-color:transparent]'

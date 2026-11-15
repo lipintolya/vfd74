@@ -8,6 +8,8 @@
  * (lib/rail.ts) — на телефоне лента листается свайпом. Скрипт подключается
  * один раз на страницу, сколько бы лент на ней ни было.
  */
+import Action from './Action.astro'
+
 interface Props {
   prevLabel: string
   nextLabel: string
@@ -27,12 +29,7 @@ const { prevLabel, nextLabel, allHref, allLabel } = Astro.props
   </button>
 </div>
 {allHref && allLabel && (
-  <a href={allHref} class="btn btn-outline rc-all">
-    {allLabel}
-    <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  </a>
+  <Action href={allHref} variant="outline">{allLabel}</Action>
 )}
 
 <script>
@@ -63,6 +60,4 @@ const { prevLabel, nextLabel, allHref, allLabel } = Astro.props
   .rc-arrow:hover:not(:disabled) { box-shadow: inset 0 0 0 1.5px var(--color-fg); }
   .rc-arrow:disabled { opacity: 0.35; cursor: default; }
   .rc-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  .rc-all { padding: 0.75rem 1.25rem; font-size: var(--text-step-1); }
-  .rc-all:hover .btn-arrow-icon { transform: translateX(2px); }
 </style>

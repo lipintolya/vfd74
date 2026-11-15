@@ -13,6 +13,7 @@
  * позвонить и номер нужен на виду.
  */
 import { companyLegalInfo } from '../../lib/contacts-data'
+import Action from '../ui/Action.astro'
 
 const { contacts, workingHours } = companyLegalInfo
 const main = contacts.phone[0]!
@@ -38,13 +39,13 @@ const max = social('MAX')
   </div>
 
   <div class="ask-actions">
-    <a href={telegram.url} target="_blank" rel="noopener" class="ask-btn ask-btn--main">Написать в Telegram</a>
-    <a href={vk.url} target="_blank" rel="noopener" class="ask-btn ask-btn--ghost ask-ic" aria-label="Написать в VK">
+    <Action href={telegram.url} target="_blank" rel="noopener noreferrer" variant="light">Написать в Telegram</Action>
+    <Action href={vk.url} target="_blank" rel="noopener noreferrer" variant="ghost" arrow={false} class="btn-icon" aria-label="Написать в VK">
       <img src="/icons/w_vk.webp" alt="" width="18" height="18" loading="lazy" decoding="async" />
-    </a>
-    <a href={max.url} target="_blank" rel="noopener" class="ask-btn ask-btn--ghost ask-ic" aria-label="Написать в MAX">
+    </Action>
+    <Action href={max.url} target="_blank" rel="noopener noreferrer" variant="ghost" arrow={false} class="btn-icon" aria-label="Написать в MAX">
       <img src="/icons/w_max.webp" alt="" width="18" height="18" loading="lazy" decoding="async" />
-    </a>
+    </Action>
   </div>
 </div>
 </div>
@@ -111,47 +112,12 @@ const max = social('MAX')
   }
   .ask-hours span { display: block; }
 
-  /* Кнопки: Telegram тянется, значки справа от него */
+  /* Telegram занимает основное место, значки мессенджеров остаются справа. */
   .ask-actions {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 0.5rem;
-  }
-  .ask-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 2.875rem;
-    padding: 0.5rem 1.5rem;
-    border-radius: 999px;
-    font-size: var(--text-step-1);
-    font-weight: 600;
-    white-space: nowrap;
-    text-decoration: none;
-    transition:
-      background-color var(--duration-base) var(--ease-out),
-      box-shadow       var(--duration-base) var(--ease-out),
-      transform        var(--duration-base) var(--ease-out);
-  }
-  .ask-btn:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 3px;
-  }
-  .ask-btn--main { background: #fff; color: var(--color-ink); }
-  .ask-btn--ghost {
-    color: #fff;
-    box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.4);
-  }
-  .ask-ic { width: 2.875rem; padding: 0; }
-  .ask-ic img { display: block; }
-  @media (hover: hover) {
-    .ask-btn--main:hover { background: #f4f4f5; transform: translateY(-1px); }  /* zinc-100 */
-    .ask-btn--ghost:hover {
-      background: rgb(255 255 255 / 0.12);
-      box-shadow: inset 0 0 0 1.5px #fff;
-    }
   }
 
   /* Средняя панель (планшет): кнопки в строку слева, Telegram не растянут */
@@ -177,8 +143,5 @@ const max = social('MAX')
     }
     .ask-actions { flex-wrap: nowrap; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .ask-btn, .ask-phone { transition: none; }
-    .ask-btn--main:hover { transform: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .ask-phone { transition: none; } }
 </style>

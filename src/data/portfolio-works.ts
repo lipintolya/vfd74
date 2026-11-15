@@ -20,7 +20,7 @@ export const CATEGORY_LABELS: Record<WorkCategory, string> = {
     отдельной точки-маркера перед словом (убрали как AI-slop-паттерн). */
 export const CATEGORY_TEXT_COLORS: Record<WorkCategory, string> = {
   interior:   'text-[oklch(50.5%_0.213_27.518)]',
-  hidden:     'text-teal-600',
+  hidden:     'text-stone-600',
   partitions: 'text-indigo-600',
   entrance:   'text-amber-600',
 }

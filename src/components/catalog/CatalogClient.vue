@@ -650,10 +650,10 @@ onMounted(() => { isMounted.value = true })
   font: inherit;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0f766e;
+  color: #44403c;
   cursor: pointer;
 }
-.cat__reset:hover { color: #115e59; }
+.cat__reset:hover { color: #292524; }
 .cat__aside-head .cat__reset { padding-inline: 0; }
 
 .cat__list { margin-top: clamp(1.5rem, 3vw, 2rem); }

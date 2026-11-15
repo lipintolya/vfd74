@@ -78,8 +78,13 @@ export const companyLegalInfo = {
     { dayOfWeek: ['Saturday', 'Sunday'], opens: '10:00', closes: '18:00' },
   ],
 
-  // Способы оплаты
-  paymentMethods: ['Наличные', 'Карты (Visa, MasterCard, Maestro)', 'Переводы через Сбербанк'],
+  // Способы оплаты — список на /contacts/, фраза на /about/
+  paymentMethods: [
+    { title: 'Наличные',           description: 'Оплата наличными в салоне для оформления заказа' },
+    { title: 'Банковская карта',   description: 'Оплата картами Visa, Mastercard, МИР через терминал в салоне' },
+    { title: 'Безналичный расчёт', description: 'Оплата по счёту для юридических лиц и ИП без НДС' },
+    { title: 'QR-код СБП',         description: 'Быстрая оплата через Систему быстрых платежей по QR-коду' },
+  ],
 
   // Социальные сети
   socialMedia: [

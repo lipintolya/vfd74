@@ -194,10 +194,10 @@ const groups = computed(() => [
   font: inherit;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #0f766e;
+  color: #44403c;
   cursor: pointer;
 }
-.cf__more:hover { color: #115e59; }
+.cf__more:hover { color: #292524; }
 
 @media (prefers-reduced-motion: reduce) {
   .cf__head svg, .cf__row, .cf__box { transition: none; }

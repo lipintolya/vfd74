@@ -1,9 +1,28 @@
 ---
+/**
+ * /about/ — «О салоне». Статичная страница без Vue-острова: всё содержимое в
+ * HTML, JS только у лайтбокса (общий PhotoLightbox, client:only — тот же,
+ * что на /partitions/).
+ *
+ * Порядок: кто мы и зачем приходить (первый экран с фото зала и тремя
+ * фактами) → зал (лента фото) → как работаем (общая тёмная полоса главной)
+ * → руководитель → оплата и реквизиты → вопросы.
+ *
+ * Факты — только из данных сайта: год, гарантия и реквизиты из
+ * contacts-data.ts, «60+ моделей» — то же, что в FAQ и meta description.
+ */
 import BaseLayout from '../layouts/BaseLayout.astro'
-import AboutSection from '../components/about/AboutSection.vue'
 import Breadcrumbs from '../components/ui/Breadcrumbs.astro'
 import FaqAccordion from '../components/ui/FaqAccordion.astro'
+import SectionHeader from '../components/home/SectionHeader.astro'
+import HowWeWork from '../components/home/HowWeWork.astro'
+import PhotoLightbox from '../components/ui/PhotoLightbox.vue'
 import { companyLegalInfo } from '../lib/contacts-data'
+import { typograph } from '../lib/typograph'
+
+const { address, contacts, director, requisites, workingHours, activity } = companyLegalInfo
+const founded = activity.founded
+const phone = contacts.phone[0]!
 
 const title       = 'О салоне дверей ВФД в Челябинске — официальный дилер с 2014 года'
 const description = 'Салон дверей ВФД на Братьев Кашириных, 131Б — официальный дилер Владимирской фабрики дверей в Челябинске с 2014 года. 60+ моделей в выставочном зале, замер и монтаж.'
@@ -14,6 +33,47 @@ const breadcrumbItems = [
   { label: 'О нас' },
 ]
 
+/* ── Фото зала ─────────────────────────────────────────────────
+   Ресайзы 480/700/960/1280 — scripts/gen-about-images.mjs (оригиналы
+   1920×2560 в public/media/about_page). 1280 открывается в лайтбоксе. */
+const showroomSrcset = (name: string) =>
+  [480, 700, 960, 1280].map((w) => `/renders/about/${name}-${w}.webp ${w}w`).join(', ')
+const showroomFull = (name: string) => `/renders/about/${name}-1280.webp`
+
+const HERO_PHOTO = {
+  name: 'g-1',
+  alt:  'Выставочный зал салона ВФД: межкомнатные двери в экспозиции и стенд с ручками',
+}
+/* Колонка фото на первом экране — 5/12 контейнера (80rem, поля 2rem, зазор
+   4rem ≈ 480px; на ≥1920px контейнер 96rem ≈ 590px). На телефоне — во всю
+   ширину контейнера. */
+const HERO_SIZES = '(min-width: 1920px) 590px, (min-width: 1280px) 480px, (min-width: 1024px) 38vw, calc(100vw - 2rem)'
+
+const SHOWROOM = [
+  { name: 'g-2', alt: 'Классические двери с филёнками в экспозиции салона ВФД' },
+  { name: 'g-3', alt: 'Стенды с дверными ручками в салоне ВФД' },
+  { name: 'g-5', alt: 'Двери с тёмным полотном в зале салона ВФД' },
+  { name: 'g-6', alt: 'Двери со стеклом и в синем цвете в зале салона ВФД' },
+]
+/* Лента: на телефоне колонка 72%, на планшете 40%, на десктопе 4 в ряд */
+const SHOWROOM_SIZES = '(min-width: 1280px) 290px, (min-width: 1024px) 23vw, (min-width: 640px) 40vw, 72vw'
+const lightboxImages = SHOWROOM.map((p) => ({ src: showroomFull(p.name), alt: p.alt }))
+
+/* ── Факты первого экрана: цифра крупно, пояснение той же строкой ── */
+const FACTS = [
+  { value: String(founded), text: 'работаем с фабрикой напрямую' },
+  { value: '60+',           text: 'моделей в выставочном зале' },
+  { value: '12 мес.',       text: 'гарантия на монтаж' },
+]
+
+const DIRECTOR = {
+  name:     director.fullName,
+  position: 'Руководитель салона ВФД на Кашириных',
+  quote:    'Дверь выбирают не на сезон, а на годы. Поэтому мы не просто показываем каталог, а помогаем найти модель, которая подойдёт вашему интерьеру, бюджету и условиям эксплуатации.',
+}
+
+const legalName = `ИП ${director.fullName}`
+
 const faq = [
   {
     q: 'Вы официальный дилер Владимирской фабрики дверей?',
@@ -21,11 +81,11 @@ const faq = [
   },
   {
     q: 'С какого года работает салон?',
-    a: `Салон работает в Челябинске с ${companyLegalInfo.activity.founded} года.`,
+    a: `Салон работает в Челябинске с ${founded} года.`,
   },
   {
     q: 'Можно ли посмотреть двери вживую?',
-    a: `Да, в выставочном зале представлено более 60 моделей дверей, образцы покрытий и профилей перегородок. Адрес: ${companyLegalInfo.address.legal}, ${companyLegalInfo.address.entrance.charAt(0).toLowerCase() + companyLegalInfo.address.entrance.slice(1)}. Работаем без выходных: ${companyLegalInfo.workingHours.shortDisplay}.`,
+    a: `Да, в выставочном зале представлено более 60 моделей дверей, образцы покрытий и профилей перегородок. Адрес: ${address.legal}, ${address.entrance.charAt(0).toLowerCase() + address.entrance.slice(1)}. Работаем без выходных: ${workingHours.shortDisplay}.`,
   },
   {
     q: 'Какая гарантия на двери и монтаж?',
@@ -43,11 +103,11 @@ const storeSchema = {
   '@id': 'https://vfd74.ru/#localbusiness',
   name: 'Салон дверей ВФД на Кашириных',
   description:
-    `Фирменный салон межкомнатных, скрытых и входных дверей, алюминиевых перегородок в Челябинске. Официальный дилер Владимирской фабрики дверей с ${companyLegalInfo.activity.founded} года.`,
+    `Фирменный салон межкомнатных, скрытых и входных дверей, алюминиевых перегородок в Челябинске. Официальный дилер Владимирской фабрики дверей с ${founded} года.`,
   url: 'https://vfd74.ru',
   image: 'https://vfd74.ru/renders/about/vfd-out-900.webp',
-  telephone: companyLegalInfo.contacts.phone.map(p => p.raw),
-  email: companyLegalInfo.contacts.email,
+  telephone: contacts.phone.map(p => p.raw),
+  email: contacts.email,
   sameAs: [
     'https://vk.com/vfddoors74',
     'https://t.me/vfddoors74',
@@ -65,15 +125,15 @@ const storeSchema = {
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: companyLegalInfo.address.coordinates.lat,
-    longitude: companyLegalInfo.address.coordinates.lng,
+    latitude: address.coordinates.lat,
+    longitude: address.coordinates.lng,
   },
   openingHoursSpecification: companyLegalInfo.schemaOrgHours.map(h => ({
     '@type': 'OpeningHoursSpecification',
     ...h,
   })),
-  foundingDate: String(companyLegalInfo.activity.founded),
-  founder: { '@type': 'Person', name: companyLegalInfo.director.fullName },
+  foundingDate: String(founded),
+  founder: { '@type': 'Person', name: director.fullName },
   priceRange: '₽₽',
   acceptsPaymentMethod: ['Cash', 'CreditCard', 'DebitCard'],
 }
@@ -96,7 +156,6 @@ const faqSchema = {
     acceptedAnswer: { '@type': 'Answer', text: f.a },
   })),
 }
-
 ---
 
 <BaseLayout
@@ -112,16 +171,388 @@ const faqSchema = {
     </div>
   </div>
 
-  <AboutSection client:visible />
+  <!-- ── Первый экран: кто мы, три факта, как прийти ── -->
+  <section class="section" aria-labelledby="about-h1">
+    <div class="container ab-hero">
+      <div class="ab-hero-body">
+        <h1 id="about-h1" class="t-h1 ab-h1">Салон дверей ВФД в&nbsp;Челябинске</h1>
+
+        <!-- Строки внутри абзаца не переносить: сжатие HTML в Astro съедает
+             пробел на переносе рядом с тегом («скрытыеи входные»). -->
+        <p class="ab-lead">Фирменный салон <a href="/o-fabrike/">Владимирской фабрики дверей</a> с&nbsp;{founded}&nbsp;года. В&nbsp;одном зале&nbsp;— <a href="/catalog/">межкомнатные</a>, <a href="/catalog/skrytye-dveri/">скрытые</a> и&nbsp;<a href="/vhodnye-dveri/">входные двери</a>, <a href="/partitions/">алюминиевые перегородки</a> и&nbsp;<a href="/catalog/decor/">погонаж</a>. Замер и&nbsp;монтаж делаем сами, без посредников и&nbsp;субподрядчиков.</p>
+
+        <dl class="ab-facts">
+          {FACTS.map((f) => (
+            <div class="ab-fact">
+              <dt class="t-stat ab-fact-num">{f.value}</dt>
+              <dd class="ab-fact-text">{typograph(f.text)}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div class="ab-actions">
+          <a href={address.routeUrl} class="btn btn-primary ab-cta" target="_blank" rel="noopener noreferrer">
+            Построить маршрут
+            <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+          <a href={`tel:${phone.raw}`} class="btn btn-outline ab-cta">{phone.label}</a>
+        </div>
+
+        <p class="ab-visit">
+          {address.legal.replace(/^г\. Челябинск, /, '')}, {address.entrance.charAt(0).toLowerCase() + address.entrance.slice(1)}.<br />
+          {workingHours.shortDisplay}, без выходных.
+        </p>
+      </div>
+
+      <figure class="ab-hero-media">
+        <img
+          src={`/renders/about/${HERO_PHOTO.name}-960.webp`}
+          srcset={showroomSrcset(HERO_PHOTO.name)}
+          sizes={HERO_SIZES}
+          width="1920"
+          height="2560"
+          alt={HERO_PHOTO.alt}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <!-- ── Зал: лента фото, по клику — лайтбокс ── -->
+  <section class="section rail-scope" aria-labelledby="showroom-heading">
+    <div class="container">
+      <SectionHeader
+        id="showroom-heading"
+        title="Выставочный зал"
+        lead="Более 60 моделей дверей, образцы покрытий, фурнитуры и профилей перегородок — всё можно посмотреть и сравнить до заказа."
+      />
+
+      <ul class="rail ab-rail" role="list" data-ab-gallery>
+        {SHOWROOM.map((p, i) => (
+          <li>
+            <button type="button" class="ab-shot" data-ab-open={i} aria-label={`Открыть фото: ${p.alt}`}>
+              <img
+                src={`/renders/about/${p.name}-700.webp`}
+                srcset={showroomSrcset(p.name)}
+                sizes={SHOWROOM_SIZES}
+                width="1920"
+                height="2560"
+                alt={p.alt}
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <HowWeWork />
+
+  <!-- ── Руководитель ── -->
+  <section class="section" aria-label="Руководитель салона">
+    <div class="container ab-director">
+      <img
+        class="ab-director-photo"
+        src="/renders/about/director-500.webp"
+        srcset="/renders/about/director-500.webp 500w, /media/about_page/director.webp 853w"
+        sizes="(min-width: 1024px) 20rem, (min-width: 640px) 18rem, calc(100vw - 2rem)"
+        width="853"
+        height="1280"
+        alt={DIRECTOR.name}
+        loading="lazy"
+        decoding="async"
+      />
+
+      <figure class="ab-director-body">
+        <blockquote class="ab-quote">
+          <p>«{typograph(DIRECTOR.quote)}»</p>
+        </blockquote>
+        <figcaption class="ab-sign">
+          <span class="ab-sign-name">{DIRECTOR.name}</span>
+          <span class="ab-sign-role">{typograph(DIRECTOR.position)}</span>
+        </figcaption>
+        <p class="ab-director-fact">
+          <span class="t-stat">20+ лет</span>
+          <span class="ab-fact-text">в&nbsp;дверной отрасли</span>
+        </p>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ── Оплата и реквизиты: фактами в тексте, без плиток ── -->
+  <section class="section" aria-labelledby="pay-heading">
+    <div class="container">
+      <SectionHeader id="pay-heading" title="Оплата и реквизиты" />
+
+      <div class="ab-pay">
+        <div>
+          <h3 class="t-h3 ab-pay-title">Оплата</h3>
+          <p class="ab-pay-text">
+            {typograph('Наличными или картой в салоне, по QR-коду СБП. Для юрлиц и ИП — по счёту, без НДС.')}
+          </p>
+        </div>
+        <div>
+          <h3 class="t-h3 ab-pay-title">Реквизиты</h3>
+          <p class="ab-pay-text ab-req">
+            {legalName}<br />
+            ИНН&nbsp;{requisites.inn}<br />
+            ОГРНИП&nbsp;{requisites.ogrnip}<br />
+            {address.legal}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <section class="section">
     <div class="container">
       <FaqAccordion items={faq} />
-      <p class="mt-6 text-sm text-slate-600">
-        Ещё по теме: <a href="/o-fabrike/" class="font-semibold text-teal-700 hover:text-teal-800">о фабрике-производителе</a>,
-        <a href="/designers/" class="font-semibold text-teal-700 hover:text-teal-800">партнёрская программа для дизайнеров</a>,
-        <a href="/contacts/" class="font-semibold text-teal-700 hover:text-teal-800">контакты и схема проезда</a>.
-      </p>
+      <p class="ab-more">Ещё по&nbsp;теме: <a href="/o-fabrike/">о&nbsp;фабрике-производителе</a>, <a href="/designers/">партнёрская программа для дизайнеров</a>, <a href="/contacts/">контакты и&nbsp;схема проезда</a>.</p>
     </div>
   </section>
+
+  <PhotoLightbox client:only="vue" />
 </BaseLayout>
+
+<script define:vars={{ lightboxImages }}>
+  document.querySelector('[data-ab-gallery]')?.addEventListener('click', (e) => {
+    const btn = e.target instanceof Element ? e.target.closest('[data-ab-open]') : null
+    if (!btn) return
+    const index = Number(btn.getAttribute('data-ab-open'))
+    window.dispatchEvent(new CustomEvent('open-lightbox', { detail: { images: lightboxImages, index } }))
+  })
+</script>
+
+<style>
+  /* ── Первый экран ── */
+  .ab-hero {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (width >= 64rem) {
+    .ab-hero {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 4rem;
+      align-items: center;
+    }
+  }
+
+  .ab-h1 { margin: 0; text-wrap: balance; }
+
+  .ab-lead {
+    margin: 1.25rem 0 0;
+    max-width: 36rem;
+    font-size: var(--text-step-2);
+    line-height: 1.6;
+    color: #475569;  /* slate-600 */
+    text-wrap: pretty;
+  }
+  .ab-lead a,
+  .ab-more a {
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .ab-lead a:hover,
+
+
+  /* Факты: цифра крупно, пояснение той же строкой; на телефоне — столбиком,
+     с 40rem — в ряд. Без рамок и плашек. */
+  .ab-facts {
+    display: grid;
+    gap: 0.875rem;
+    margin: 2rem 0 0;
+  }
+  @media (width >= 40rem) {
+    .ab-facts {
+      grid-template-columns: repeat(3, auto);
+      justify-content: start;
+      gap: 2.5rem;
+    }
+  }
+  .ab-fact {
+    display: flex;
+    align-items: baseline;
+    gap: 0.625rem;
+  }
+  @media (width >= 40rem) {
+    .ab-fact { flex-direction: column; gap: 0.5rem; }
+  }
+  .ab-fact-num { margin: 0; white-space: nowrap; }
+  .ab-fact-text {
+    margin: 0;
+    max-width: 11rem;
+    font-size: var(--text-step-1);
+    line-height: 1.35;
+    color: #64748b;  /* slate-500 */
+  }
+
+  .ab-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+  .ab-cta:hover .btn-arrow-icon { transform: translateX(2px); }
+  @media (width < 30rem) {
+    .ab-cta { flex: 1 1 100%; }
+  }
+
+  .ab-visit {
+    margin: 1.25rem 0 0;
+    font-size: var(--text-step-1);
+    line-height: 1.55;
+    color: #64748b;
+  }
+
+  .ab-hero-media {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: #f1f5f9;  /* место под кадр, пока грузится */
+    aspect-ratio: 4 / 3;
+  }
+  @media (width >= 40rem) {
+    .ab-hero-media { border-radius: 1.5rem; }
+  }
+  @media (width >= 64rem) {
+    .ab-hero-media { aspect-ratio: 4 / 5; }
+  }
+  .ab-hero-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 60%;
+  }
+
+  /* ── Лента зала ── */
+  .ab-rail {
+    --rail-col: 72%;
+    --rail-col-md: 40%;
+    --rail-cols-lg: 4;
+  }
+  .ab-shot {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: #f1f5f9;
+    aspect-ratio: 3 / 4;
+    cursor: zoom-in;
+  }
+  .ab-shot:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .ab-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms var(--ease-out);
+  }
+  @media (hover: hover) {
+    .ab-shot:hover img { transform: scale(1.03); }
+  }
+
+  /* ── Руководитель: фото и цитата, открыто, без рамок ── */
+  .ab-director {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (width >= 40rem) {
+    .ab-director {
+      grid-template-columns: 18rem minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: end;
+    }
+  }
+  @media (width >= 64rem) {
+    .ab-director {
+      grid-template-columns: 20rem minmax(0, 1fr);
+      gap: clamp(3rem, 6vw, 6rem);
+      align-items: center;
+    }
+  }
+  .ab-director-photo {
+    display: block;
+    width: 100%;
+    max-width: 20rem;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: 50% 22%;
+    border-radius: 1.25rem;
+    background: #f1f5f9;
+  }
+  .ab-director-body { margin: 0; }
+  .ab-quote { margin: 0; }
+  .ab-quote p {
+    margin: 0;
+    max-width: 40rem;
+    font-size: var(--text-step-4);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
+  .ab-sign {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin-top: 1.5rem;
+  }
+  .ab-sign-name {
+    font-size: var(--text-step-2);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .ab-sign-role {
+    font-size: var(--text-step-1);
+    color: #64748b;
+  }
+  .ab-director-fact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.625rem;
+    margin: 2rem 0 0;
+  }
+
+  /* ── Оплата и реквизиты ── */
+  .ab-pay {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (width >= 48rem) {
+    .ab-pay {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(2rem, 5vw, 4rem);
+    }
+  }
+  .ab-pay-title { margin: 0 0 0.75rem; }
+  .ab-pay-text {
+    margin: 0;
+    max-width: 30rem;
+    font-size: var(--text-step-2);
+    line-height: 1.6;
+    color: #475569;
+    text-wrap: pretty;
+  }
+  .ab-req { font-variant-numeric: tabular-nums; }
+
+  .ab-more {
+    margin: 1.5rem 0 0;
+    font-size: var(--text-step-1);
+    color: #64748b;
+  }
+</style>

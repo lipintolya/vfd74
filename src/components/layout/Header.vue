@@ -289,7 +289,7 @@ onUnmounted(() => {
             v-if="!logoError"
             :src="LOGO_URL"
             alt=""
-            class="h-9.5 w-auto shrink-0 object-contain xl:h-9"
+            class="h-9.5 w-auto shrink-0 object-contain xl:h-11"
             width="36"
             height="36"
             decoding="async"
@@ -298,11 +298,11 @@ onUnmounted(() => {
           <!-- Запасной вариант, если файл логотипа не загрузился -->
           <span
             v-else
-            class="flex size-9.5 shrink-0 items-center justify-center rounded-lg bg-linear-to-br xl:size-9 from-gray-700 to-gray-900 text-xs font-semibold text-white"
+            class="flex size-9.5 shrink-0 items-center justify-center rounded-lg bg-linear-to-br xl:size-11 from-gray-700 to-gray-900 text-xs font-semibold text-white"
             aria-hidden="true"
           >ВФД</span>
           <span
-            class="hidden transition-colors duration-300 ease-in-out sm:block group-hover:text-teal-600"
+            class="hidden transition-colors duration-300 ease-in-out sm:block group-hover:text-stone-600"
             :class="BRAND_TEXT"
           >
             ДВЕРИ НА КАШИРИНЫХ
@@ -401,7 +401,7 @@ onUnmounted(() => {
               <button
                 ref="contactsBtnRef"
                 type="button"
-                class="btn btn-primary h-10 px-5 text-sm"
+                class="btn btn-primary px-5"
                 aria-haspopup="dialog"
                 :aria-expanded="contactsOpen"
                 aria-controls="contacts-panel"
@@ -434,7 +434,7 @@ onUnmounted(() => {
                           :key="p.raw"
                           :href="`tel:${p.raw}`"
                           class="group -mx-2 flex items-center gap-3 rounded-xl px-2 py-2 font-semibold text-gray-800
-                                 transition-colors duration-200 hover:bg-teal-50/70 hover:text-teal-700"
+                                 transition-colors duration-200 hover:bg-stone-50/70 hover:text-stone-700"
                           :class="FOCUS"
                         >
                           <img src="/icons/phone-call.webp" alt="" class="h-8 w-8 shrink-0" width="32" height="32" />
@@ -470,7 +470,7 @@ onUnmounted(() => {
                       <p class="mb-1.5 text-sm font-semibold text-gray-500">Почта</p>
                       <a
                         :href="`mailto:${CONTACTS.email}`"
-                        class="font-medium text-gray-700 underline decoration-gray-300 underline-offset-4 transition-colors duration-200 hover:text-teal-600 hover:decoration-teal-400"
+                        class="font-medium text-gray-700  transition-colors duration-200 hover:text-stone-600"
                         :class="FOCUS"
                       >
                         {{ CONTACTS.email }}
@@ -479,7 +479,7 @@ onUnmounted(() => {
 
                     <a
                       href="/contacts/"
-                      class="btn btn-primary w-full py-3 text-sm"
+                      class="btn btn-primary w-full"
                       @click="closeContacts(false)"
                     >
                       Перейти к контактам
@@ -649,7 +649,7 @@ onUnmounted(() => {
                     @click="closeMobileMenu()"
                   >
                     <span class="min-w-0">
-                      <span class="block text-step-2 font-medium leading-snug" :class="isItemCurrent(item) ? 'text-teal-700' : 'text-ink'">{{ item.label }}</span>
+                      <span class="block text-step-2 font-medium leading-snug" :class="isItemCurrent(item) ? 'text-stone-700' : 'text-ink'">{{ item.label }}</span>
                       <span class="block text-sm leading-snug text-gray-500">{{ item.desc }}</span>
                     </span>
                     <svg class="size-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -695,7 +695,7 @@ onUnmounted(() => {
         >
           <a
             :href="`tel:${CONTACTS.phones[0]?.raw}`"
-            class="btn btn-primary h-11 flex-1 text-base active:opacity-80"
+            class="btn btn-primary flex-1 active:opacity-80"
             @click="closeMobileMenu()"
           >
             Позвонить
@@ -772,6 +772,6 @@ onUnmounted(() => {
   bottom: 0.875rem;
   width: 3px;
   border-radius: 2px;
-  background: var(--color-accent, #14b8a6);
+  background: var(--color-accent, #78716c);
 }
 </style>

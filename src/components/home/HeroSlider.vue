@@ -239,14 +239,14 @@ onUnmounted(stop)
               </div>
 
               <div class="hero-actions">
-                <a href="/catalog/" class="hero-cta">
+                <a href="/catalog/" class="btn btn-light btn-split hero-cta">
                   Смотреть каталог
                   <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
                 <Transition name="hero-content" mode="out-in">
-                  <a v-if="currentSlide.link" :key="currentSlide.id" :href="currentSlide.link.href" class="hero-link">
+                  <a v-if="currentSlide.link" :key="currentSlide.id" :href="currentSlide.link.href" class="btn btn-ghost hero-link">
                     {{ currentSlide.link.label }}
                   </a>
                 </Transition>
@@ -370,50 +370,8 @@ onUnmounted(stop)
   .hero-actions { flex-direction: row; align-items: center; gap: 1.5rem; }
 }
 
-/* Кнопка на фото: белая пилюля, стрелка без «кружка» */
-.hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--color-ink);
-  font-size: var(--text-step-1);
-  font-weight: 600;
-  white-space: nowrap;
-  text-decoration: none;
-  transition:
-    background-color var(--duration-base) var(--ease-out),
-    transform        var(--duration-base) var(--ease-out);
-}
-.hero-cta:hover {
-  background: #f4f4f5;
-  transform: translateY(-1px);
-}
-.hero-cta:hover .btn-arrow-icon { transform: translateX(2px); }
-.hero-cta:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
-}
-
-/* Вторая ссылка — то, что на фото: текстом, без кнопки */
-.hero-link {
-  font-size: var(--text-step-1);
-  font-weight: 500;
-  color: #fff;
-  text-decoration: underline;
-  text-decoration-color: rgb(255 255 255 / 0.4);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
-  transition: text-decoration-color 150ms ease;
-}
-.hero-link:hover { text-decoration-color: #fff; }
-.hero-link:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
-  border-radius: 2px;
-}
+/* Цвет, фокус и анимация CTA — общие controls.css. */
+.hero-cta, .hero-link { align-self: flex-start; }
 
 /* ── Навигация: колонки на линейке ── */
 .hero-nav {

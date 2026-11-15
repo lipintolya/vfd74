@@ -22,14 +22,14 @@ export type SalonMapVariant = 'light' | 'dark'
 const PALETTES = {
   light: {
     bg: '#f8fafc', green: '#e6f2ec', water: '#d9e6f2', building: '#e2e8f0',
-    roadCasing: '#cbd5e1', road: '#ffffff', rail: '#94a3b8', salon: '#0d9488',
-    landmark: '#b6c2d1', label: '#64748b', halo: '#f8fafc', signal: '#14b8a6', ink: '#0f172a',
+    roadCasing: '#cbd5e1', road: '#ffffff', rail: '#94a3b8', salon: '#57534e',
+    landmark: '#b6c2d1', label: '#64748b', halo: '#f8fafc', signal: '#78716c', ink: '#0f172a',
     card: '#ffffff', cardStroke: '#e2e8f0',
   },
   dark: {
     bg: '#18181a', green: '#1e1e21', water: '#1f2937', building: '#232227',
-    roadCasing: '#18181a', road: '#34343a', rail: '#52525b', salon: '#14b8a6',
-    landmark: '#3f3f46', label: '#8b8b94', halo: '#18181a', signal: '#2dd4bf', ink: '#ffffff',
+    roadCasing: '#18181a', road: '#34343a', rail: '#52525b', salon: '#78716c',
+    landmark: '#3f3f46', label: '#8b8b94', halo: '#18181a', signal: '#a8a29e', ink: '#ffffff',
     card: '#232227', cardStroke: '#3f3f46',
   },
 } as const

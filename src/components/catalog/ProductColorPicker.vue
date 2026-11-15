@@ -484,17 +484,13 @@ const shareModel = async () => {
   font: inherit;
   font-weight: 500;
   color: var(--color-ink);
-  text-decoration: underline;
-  text-decoration-color: var(--color-border);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
+  text-decoration: none;
   cursor: pointer;
-  transition: text-decoration-color 150ms var(--ease-out), color 150ms var(--ease-out);
+  transition: color 150ms var(--ease-out);
 }
 .pdp__contacts a:hover,
 .pdp__contacts button:hover {
   color: var(--color-accent-hover);
-  text-decoration-color: currentColor;
 }
 
 /* ── Зум-модалка ── */

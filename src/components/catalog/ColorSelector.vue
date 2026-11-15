@@ -143,13 +143,13 @@ const current  = computed(() => FRAME_COLORS.find(c => c.id === activeId.value)!
               :fill="current.highlightHex" opacity="0.55"/>
 
             <!-- "Заподлицо со стеной" annotation -->
-            <line x1="62" y1="12" x2="62" y2="30" stroke="#14B8A6" stroke-width="1.5" stroke-dasharray="2 2.5"/>
-            <line x1="218" y1="12" x2="218" y2="30" stroke="#14B8A6" stroke-width="1.5" stroke-dasharray="2 2.5"/>
-            <line x1="57"  y1="21" x2="223" y2="21" stroke="#14B8A6" stroke-width="1"/>
+            <line x1="62" y1="12" x2="62" y2="30" stroke="#78716c" stroke-width="1.5" stroke-dasharray="2 2.5"/>
+            <line x1="218" y1="12" x2="218" y2="30" stroke="#78716c" stroke-width="1.5" stroke-dasharray="2 2.5"/>
+            <line x1="57"  y1="21" x2="223" y2="21" stroke="#78716c" stroke-width="1"/>
             <text
               x="140" y="17"
               text-anchor="middle"
-              fill="#14B8A6"
+              fill="#78716c"
               font-size="7.5"
               font-family="system-ui,sans-serif"
               font-weight="700"
@@ -237,8 +237,8 @@ const current  = computed(() => FRAME_COLORS.find(c => c.id === activeId.value)!
   min-height: 7.75rem;
   transition: border-color 200ms ease, box-shadow 200ms ease, transform 150ms ease;
 }
-.cs-swatch:hover { border-color: #99f6e4; transform: translateY(-2px); }
-.cs-swatch--active { border-color: #14b8a6; }
+.cs-swatch:hover { border-color: #e7e5e4; transform: translateY(-2px); }
+.cs-swatch--active { border-color: #78716c; }
 .cs-swatch__dot {
   width: 2.25rem;
   height: 2.25rem;
