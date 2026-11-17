@@ -4,8 +4,8 @@
  * src/data/promos.ts, активность — lib/promo-dates.ts (общая с /akcii/
  * и архивом).
  *
- * Та же система, что «Фотоотчёты» и «Отзывы»: шапка SectionHeader, лента
- * .rail (свайп на телефоне, сетка 3 в ряд на десктопе), RailControls.
+ * Единственная актуальная акция — отдельная промополоса; при нескольких
+ * акциях остаётся лента с привычным управлением.
  * Карточка — открытая, без рамки и плашек на фото: фото, крупно выгода
  * («−10%», «Бесплатно») и срок, название, условие, ссылка. Вся карточка —
  * одна ссылка.
@@ -17,6 +17,7 @@
  */
 import SectionHeader from './SectionHeader.astro'
 import RailControls from '../ui/RailControls.astro'
+import Action from '../ui/Action.astro'
 import { PROMOS } from '../../data/promos'
 import { isPromoActive, parseLocalDate } from '../../lib/promo-dates'
 import { typograph } from '../../lib/typograph'
@@ -47,16 +48,20 @@ const until = (iso: string) =>
         lead="Действуют только в салоне ВФД на Кашириных."
       >
         <Fragment slot="actions">
-          <RailControls
-            prevLabel="Предыдущие акции"
-            nextLabel="Следующие акции"
-            allHref="/akcii/"
-            allLabel="Все акции"
-          />
+          {active.length === 1 ? (
+            <Action href="/akcii/" variant="outline">Все акции</Action>
+          ) : (
+            <RailControls
+              prevLabel="Предыдущие акции"
+              nextLabel="Следующие акции"
+              allHref="/akcii/"
+              allLabel="Все акции"
+            />
+          )}
         </Fragment>
       </SectionHeader>
 
-      <ul class="rail pm-rail" role="list" data-rail aria-label="Действующие акции">
+      <ul class:list={['rail pm-rail', { 'pm-rail--single': active.length === 1 }]} role="list" data-rail aria-label="Действующие акции">
         {active.map((p, i) => (
           <li data-promo-until={p.validUntil} hidden={i >= SHOWN}>
             <a href={p.ctaLink || '/akcii/'} class="pm-card">
@@ -118,6 +123,16 @@ const until = (iso: string) =>
     --rail-col-md: 42%;
     --rail-cols-lg: 3;
   }
+  .pm-rail--single {
+    display: grid;
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
 
   .pm-card {
     display: flex;
@@ -125,6 +140,53 @@ const until = (iso: string) =>
     height: 100%;
     color: inherit;
     text-decoration: none;
+  }
+  .pm-rail--single .pm-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .pm-rail--single .pm-photo { border-radius: 0; aspect-ratio: 3 / 2; }
+  .pm-rail--single .pm-head,
+  .pm-rail--single .pm-title,
+  .pm-rail--single .pm-text,
+  .pm-rail--single .pm-cta { margin-inline: 1.5rem; }
+  .pm-rail--single .pm-head { margin-top: 1.5rem; }
+  .pm-rail--single .pm-head { flex-wrap: wrap; }
+  .pm-rail--single .pm-value,
+  .pm-rail--single .pm-title { color: #fff; }
+  .pm-rail--single .pm-until,
+  .pm-rail--single .pm-text { color: rgb(255 255 255 / 0.75); }
+  .pm-rail--single .pm-cta {
+    min-height: 3rem;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    color: #fff;
+  }
+  @media (width >= 48rem) {
+    .pm-rail--single .pm-card {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto auto 1fr;
+      column-gap: clamp(2rem, 5vw, 5rem);
+      min-height: 22rem;
+      border-radius: 1.5rem;
+    }
+    .pm-rail--single .pm-photo {
+      grid-column: 1;
+      grid-row: 1 / -1;
+      height: 100%;
+      aspect-ratio: auto;
+    }
+    .pm-rail--single .pm-head,
+    .pm-rail--single .pm-title,
+    .pm-rail--single .pm-text,
+    .pm-rail--single .pm-cta { grid-column: 2; margin-inline: 0 clamp(1.5rem, 4vw, 3rem); }
+    .pm-rail--single .pm-head { margin-top: clamp(2rem, 4vw, 3rem); }
+    .pm-rail--single .pm-cta { align-self: end; }
   }
   .pm-photo {
     display: block;

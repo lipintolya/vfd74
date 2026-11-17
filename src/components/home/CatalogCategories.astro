@@ -29,7 +29,7 @@ const CATEGORIES: PhotoTile[] = [
     title: 'Межкомнатные двери',
     fact:  interiorMinPrice ? `от ${rub(interiorMinPrice)} за полотно` : null,
     href:  '/catalog/',
-    cta:   'Смотреть модели',
+    cta:   'Модели',
     img: {
       src:    '/renders/home/cat-interior-960.webp',
       srcset: '/renders/home/cat-interior-640.webp 640w, /renders/home/cat-interior-960.webp 960w, /media/Main_page/left_bento/cover_doors.webp 1280w',
@@ -41,7 +41,7 @@ const CATEGORIES: PhotoTile[] = [
     title: 'Входные двери',
     fact:  `от ${rub(entranceMinPrice)} с накладкой изнутри`,
     href:  '/vhodnye-dveri/',
-    cta:   'Смотреть входные',
+    cta:   'Входные двери',
     img: {
       src:    '/renders/home/cat-entrance-960.webp',
       srcset: '/renders/home/cat-entrance-640.webp 640w, /renders/home/cat-entrance-960.webp 960w, /media/metal_doors/Optima/render_optima.webp 1122w',
@@ -53,7 +53,7 @@ const CATEGORIES: PhotoTile[] = [
     title: 'Алюминиевые перегородки',
     fact:  'Изготовление до 45 рабочих дней',
     href:  '/partitions/',
-    cta:   'Смотреть перегородки',
+    cta:   'Перегородки',
     img: {
       src:    '/renders/home/cat-partitions-960.webp',
       srcset: '/renders/home/cat-partitions-640.webp 640w, /renders/home/cat-partitions-960.webp 960w, /media/alum/saint_p_alum/tg4.webp 1080w',
@@ -64,7 +64,7 @@ const CATEGORIES: PhotoTile[] = [
 ]
 ---
 
-<section class="section bg-white" aria-labelledby="cat-heading">
+<section class="section bg-white catalog-home" aria-labelledby="cat-heading">
   <div class="container">
 
     <SectionHeader
@@ -77,3 +77,23 @@ const CATEGORIES: PhotoTile[] = [
 
   </div>
 </section>
+
+<style>
+  /* Витрина направлений: первая категория задаёт масштаб, две другие
+     сохраняют собственные фотографии и равноправные точки входа. */
+  .catalog-home :global(.pt-grid) { gap: 0.75rem; }
+  .catalog-home :global(.pt-tile) { aspect-ratio: 1.18; }
+  .catalog-home :global(.pt-body) { padding: clamp(1.25rem, 3vw, 2rem); }
+  @media (width >= 48rem) {
+    .catalog-home :global(.pt-grid) {
+      grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .catalog-home :global(.pt-tile) { aspect-ratio: 4 / 5; }
+    .catalog-home :global(.pt-tile:first-child) { aspect-ratio: auto; }
+  }
+  @media (width >= 64rem) {
+    .catalog-home :global(.pt-grid) { gap: 1.25rem; }
+    .catalog-home :global(.pt-tile:first-child .pt-title) { font-size: var(--text-step-5); }
+  }
+</style>

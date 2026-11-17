@@ -10,7 +10,7 @@
  * «Все работы». От 64rem до 80rem колонка отняла бы у фото слишком много
  * места — там шапка сверху и три фото в ряд.
  *
- * На телефоне и планшете — как у остальных лент: шапка сверху, лента из
+ * На телефоне и планшете — шапка сверху, лента из
  * шести работ со свайпом (следующая карточка выглядывает из-за края),
  * стрелки для мыши и последняя графитовая карточка «N фотоотчётов».
  *
@@ -143,10 +143,37 @@ const lead = 'Двери и перегородки после монтажа —
     .pp-actions { grid-column: 2; grid-row: 1 / span 2; }
   }
 
-  /* ── От 64rem лента — сетка из трёх работ без плашки «N фотоотчётов»
-     (остальные работы — по кнопке «Все работы» в шапке) ── */
+  /* На десктопе первый проект — крупная история, следующие два —
+     компактные строки справа. Остальные работы доступны по общей ссылке. */
   @media (width >= 64rem) {
     .pr-end, .pr-off { display: none; }
+    .pr-rail {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem 2rem;
+    }
+    .pr-rail > li:first-child { grid-row: 1 / 3; }
+    .pr-rail > li:not(:first-child) .pr-card {
+      display: grid;
+      grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr;
+      gap: 0 1.25rem;
+      height: 100%;
+      align-content: start;
+    }
+    .pr-rail > li:not(:first-child) .pr-photo {
+      grid-column: 1;
+      grid-row: 1 / 4;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      aspect-ratio: 1;
+    }
+    .pr-rail > li:not(:first-child) .pr-title,
+    .pr-rail > li:not(:first-child) .pr-detail,
+    .pr-rail > li:not(:first-child) .pr-meta { grid-column: 2; }
+    .pr-rail > li:not(:first-child) .pr-title { margin-top: 0.25rem; }
+    .pr-rail > li:not(:first-child) .pr-meta { align-self: end; }
   }
 
   /* ── Широкий десктоп: компактная информационная колонка слева,
@@ -198,6 +225,9 @@ const lead = 'Двери и перегородки после монтажа —
     --rail-col-md: 42%;
     --rail-cols-lg: 3;
     align-self: start;
+  }
+  @media (width >= 64rem) {
+    .pr-rail > li:first-child .pr-photo { aspect-ratio: 4 / 5; }
   }
 
   /* ── Карточка работы ── */
