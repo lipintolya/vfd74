@@ -66,6 +66,36 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-11-16-urban-emalex-innova-newton',
+    date:        '2026-11-16',
+    label:       '16.11.2026',
+    title:       'Монтаж дверей Урбан и Эмалекс с погонажем Иннова в ЖК «Ньютон»',
+    previewTitle:  'Урбан и Эмалекс',
+    previewDetail: 'Белые полотна · погонаж «Шёлк беж»',
+    seoTitle:    'Двери Урбан и Эмалекс с погонажем Иннова, ЖК «Ньютон»',
+    description: 'Установили белые двери серий Урбан и Эмалекс с погонажем Иннова в оттенке «Шёлк беж» в квартире ЖК «Ньютон», Челябинск.',
+    category:    'interior',
+    objectType:  'apartment',
+    location:    'Челябинск, ЖК «Ньютон»',
+    story:       'Двери идеально дополняют интерьер и создают ощущение гармонии. В проекте установлены белые полотна серий Урбан и Эмалекс, а также погонаж серии Иннова в оттенке «Шёлк беж». Сдержанная эстетика, современные линии и элегантное сочетание оттенков объединяют пространство.',
+    model:       'Урбан и Эмалекс',
+    coating:     'Белый; погонаж Иннова «Шёлк беж»',
+    features:    ['Белый цвет полотен', 'Погонаж серии Иннова в оттенке «Шёлк беж»'],
+    tags:        ['Квартира', 'Межкомнатные', 'Урбан', 'Эмалекс', 'Иннова'],
+    images: [
+      '/media/works_prod/16.11.26_urban_emalex_newton/urban-emalex-newton-1.webp',
+      '/media/works_prod/16.11.26_urban_emalex_newton/urban-emalex-newton-2.webp',
+      '/media/works_prod/16.11.26_urban_emalex_newton/urban-emalex-newton-3.webp',
+      '/media/works_prod/16.11.26_urban_emalex_newton/urban-emalex-newton-4.webp',
+      '/media/works_prod/16.11.26_urban_emalex_newton/urban-emalex-newton-5.webp',
+    ],
+    relatedLinks: [
+      { href: '/catalog/series/urban/', label: 'Серия Урбан' },
+      { href: '/catalog/series/emalex/', label: 'Серия Эмалекс' },
+      { href: '/catalog/series/innova/', label: 'Серия Иннова' },
+    ],
+  },
+  {
     id:          '2026-11-12-urban-2vr-emalex-seryy-universitetskaya',
     date:        '2026-11-12',
     label:       '12.11.2026',
