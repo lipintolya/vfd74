@@ -1,33 +1,22 @@
 ---
 /**
- * «Акции» на главной — три активные акции (все — на /akcii/). Данные —
- * src/data/promos.ts, активность — lib/promo-dates.ts (общая с /akcii/
- * и архивом).
+ * Активные акции на главной. Данные и даты общие со страницей /akcii/.
  *
- * Единственная актуальная акция — отдельная промополоса; при нескольких
- * акциях остаётся лента с привычным управлением.
- * Карточка — открытая, без рамки и плашек на фото: фото, крупно выгода
- * («−10%», «Бесплатно») и срок, название, условие, ссылка. Вся карточка —
- * одна ссылка.
- *
- * Статичный HTML: текст виден без JS. Срок проверяется дважды: при сборке
- * (истёкшие не попадают в разметку) и в браузере — скрипт убирает акции,
- * закончившиеся после сборки, и оставляет первые три. Сайт статичный,
- * без этого истёкшая акция висела бы до следующего деплоя.
+ * Секция использует системный графитовый фон. Одна актуальная акция
+ * становится крупной промополосой; несколько акций собираются в спокойную
+ * сетку. Истёкшие предложения отсекаются при сборке и повторно в браузере,
+ * чтобы статическая страница не показывала их до следующего деплоя.
  */
 import SectionHeader from './SectionHeader.astro'
-import RailControls from '../ui/RailControls.astro'
 import Action from '../ui/Action.astro'
 import { PROMOS } from '../../data/promos'
 import { isPromoActive, parseLocalDate } from '../../lib/promo-dates'
 import { typograph } from '../../lib/typograph'
 
 const SHOWN = 3
+const active = PROMOS.filter((promo) => isPromoActive(promo.validUntil))
 
-const active = PROMOS.filter((p) => isPromoActive(p.validUntil))
-
-/* «-10%» → «−10%»: в цифрах — настоящий минус, не дефис */
-const minus = (t: string) => t.replace(/(^|\s)-(\d)/g, '$1−$2')
+const minus = (text: string) => text.replace(/(^|\s)-(\d)/g, '$1−$2')
 const until = (iso: string) =>
   parseLocalDate(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
 ---
@@ -35,67 +24,62 @@ const until = (iso: string) =>
 {active.length > 0 && (
   <section
     id="promo"
-    class="section bg-white rail-scope"
+    class="section promo-band bg-graphite"
     aria-labelledby="promo-heading"
-    data-rail-scope
     data-promo-section
   >
     <div class="container">
-
       <SectionHeader
         id="promo-heading"
         title="Акции и специальные предложения"
         lead="Действуют только в салоне ВФД на Кашириных."
+        dark
       >
         <Fragment slot="actions">
-          {active.length === 1 ? (
-            <Action href="/akcii/" variant="outline">Все акции</Action>
-          ) : (
-            <RailControls
-              prevLabel="Предыдущие акции"
-              nextLabel="Следующие акции"
-              allHref="/akcii/"
-              allLabel="Все акции"
-            />
-          )}
+          <Action href="/akcii/" variant="ghost">Все акции</Action>
         </Fragment>
       </SectionHeader>
 
-      <ul class:list={['rail pm-rail', { 'pm-rail--single': active.length === 1 }]} role="list" data-rail aria-label="Действующие акции">
-        {active.map((p, i) => (
-          <li data-promo-until={p.validUntil} hidden={i >= SHOWN}>
-            <a href={p.ctaLink || '/akcii/'} class="pm-card">
-              <span class="pm-photo">
+      <ul
+        class:list={['pm-list', { 'pm-list--single': active.length === 1 }]}
+        role="list"
+        aria-label="Действующие акции"
+        data-promo-list
+      >
+        {active.map((promo, index) => (
+          <li data-promo-until={promo.validUntil} hidden={index >= SHOWN}>
+            <article class="pm-item">
+              <div class="pm-photo">
                 <img
-                  src={p.image}
-                  srcset={p.imageSrcset}
-                  sizes="(min-width: 64rem) 33vw, (min-width: 40rem) 42vw, 84vw"
-                  alt={p.title}
+                  src={promo.image}
+                  srcset={promo.imageSrcset}
+                  sizes={active.length === 1
+                    ? '(min-width: 64rem) 56vw, 100vw'
+                    : '(min-width: 64rem) 31vw, (min-width: 40rem) 46vw, 100vw'}
+                  alt={promo.title}
                   width="800"
                   height="600"
                   loading="lazy"
                   decoding="async"
                 />
-              </span>
-              <span class="pm-head">
-                {p.discount && <span class="pm-value">{minus(p.discount)}</span>}
-                <time class="pm-until" datetime={p.validUntil}>до {until(p.validUntil)}</time>
-              </span>
-              <span class="pm-title">{typograph(p.title)}</span>
-              <span class="pm-text">{typograph(minus(p.subtitle))}</span>
-              {p.ctaText && (
-                <span class="pm-cta">
-                  {p.ctaText}
-                  <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
-                </span>
-              )}
-            </a>
+              </div>
+              <div class="pm-content">
+                <div class="pm-offer">
+                  {promo.discount && <span class="pm-value">{minus(promo.discount)}</span>}
+                  <time class="pm-until" datetime={promo.validUntil}>до {until(promo.validUntil)}</time>
+                </div>
+                <h3 class="t-h3 pm-title">{typograph(promo.title)}</h3>
+                <p class="pm-text">{typograph(minus(promo.subtitle))}</p>
+                {promo.ctaText && (
+                  <div class="pm-action">
+                    <Action href={promo.ctaLink || '/akcii/'} variant="light">{promo.ctaText}</Action>
+                  </div>
+                )}
+              </div>
+            </article>
           </li>
         ))}
       </ul>
-
     </div>
   </section>
 )}
@@ -105,98 +89,44 @@ const until = (iso: string) =>
 
   const SHOWN = 3
   document.querySelectorAll<HTMLElement>('[data-promo-section]').forEach((section) => {
+    const list = section.querySelector<HTMLElement>('[data-promo-list]')
     const items = [...section.querySelectorAll<HTMLElement>('[data-promo-until]')]
-    const alive = items.filter((li) => {
-      const ok = isPromoActive(li.dataset.promoUntil ?? '')
-      if (!ok) li.remove()
-      return ok
+    const alive = items.filter((item) => {
+      const current = isPromoActive(item.dataset.promoUntil ?? '')
+      if (!current) item.remove()
+      return current
     })
-    alive.forEach((li, i) => { li.hidden = i >= SHOWN })
+
+    alive.forEach((item, index) => { item.hidden = index >= SHOWN })
+    list?.classList.toggle('pm-list--single', alive.length === 1)
     if (!alive.length) section.hidden = true
   })
 </script>
 
 <style>
-  /* Колонки ленты .rail (global.css) */
-  .pm-rail {
-    --rail-col: 84%;
-    --rail-col-md: 42%;
-    --rail-cols-lg: 3;
-  }
-  .pm-rail--single {
-    display: grid;
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-    grid-template-columns: minmax(0, 1fr);
-    margin: 0;
-    padding: 0;
-    overflow: visible;
-    scroll-snap-type: none;
+  .promo-band {
+    padding-block: clamp(3.5rem, 8vw, 6.5rem);
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
   }
 
-  .pm-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: inherit;
-    text-decoration: none;
-  }
-  .pm-rail--single .pm-card {
+  .pm-list {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-content: start;
-    overflow: hidden;
-    border-radius: 1.25rem;
-    background: var(--color-ink);
-    color: #fff;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .pm-rail--single .pm-photo { border-radius: 0; aspect-ratio: 3 / 2; }
-  .pm-rail--single .pm-head,
-  .pm-rail--single .pm-title,
-  .pm-rail--single .pm-text,
-  .pm-rail--single .pm-cta { margin-inline: 1.5rem; }
-  .pm-rail--single .pm-head { margin-top: 1.5rem; }
-  .pm-rail--single .pm-head { flex-wrap: wrap; }
-  .pm-rail--single .pm-value,
-  .pm-rail--single .pm-title { color: #fff; }
-  .pm-rail--single .pm-until,
-  .pm-rail--single .pm-text { color: rgb(255 255 255 / 0.75); }
-  .pm-rail--single .pm-cta {
-    min-height: 3rem;
-    align-items: center;
-    margin-bottom: 1.25rem;
-    color: #fff;
-  }
-  @media (width >= 48rem) {
-    .pm-rail--single .pm-card {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      grid-template-rows: auto auto auto 1fr;
-      column-gap: clamp(2rem, 5vw, 5rem);
-      min-height: 22rem;
-      border-radius: 1.5rem;
-    }
-    .pm-rail--single .pm-photo {
-      grid-column: 1;
-      grid-row: 1 / -1;
-      height: 100%;
-      aspect-ratio: auto;
-    }
-    .pm-rail--single .pm-head,
-    .pm-rail--single .pm-title,
-    .pm-rail--single .pm-text,
-    .pm-rail--single .pm-cta { grid-column: 2; margin-inline: 0 clamp(1.5rem, 4vw, 3rem); }
-    .pm-rail--single .pm-head { margin-top: clamp(2rem, 4vw, 3rem); }
-    .pm-rail--single .pm-cta { align-self: end; }
+  .pm-item {
+    display: grid;
+    gap: 1.5rem;
+    height: 100%;
   }
   .pm-photo {
     display: block;
     overflow: hidden;
     aspect-ratio: 4 / 3;
     border-radius: 1.25rem;
-    background: #f4f4f5;  /* zinc-100 — место под кадр, пока он грузится */
-  }
-  @media (width >= 40rem) {
-    .pm-photo { border-radius: 1.5rem; }
+    background: var(--color-graphite-card);
   }
   .pm-photo img {
     display: block;
@@ -205,68 +135,74 @@ const until = (iso: string) =>
     object-fit: cover;
     transition: transform 700ms var(--ease-out);
   }
-
-  /* Выгода крупно, срок — справа той же строкой */
-  .pm-head {
+  .pm-content {
     display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .pm-offer {
+    display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: 1rem;
-    margin-top: 1.25rem;
+    gap: 0.75rem 1rem;
   }
   .pm-value {
     font-family: var(--font-display);
-    font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+    font-size: var(--text-step-5);
     font-weight: 500;
     line-height: 1;
     letter-spacing: -0.03em;
+    color: #fff;
     font-variant-numeric: tabular-nums;
-    color: var(--color-ink);
   }
   .pm-until {
     font-size: var(--text-step-1);
-    color: #52525b;  /* zinc-600 */
+    color: rgb(255 255 255 / 0.62);
     white-space: nowrap;
   }
   .pm-title {
-    margin-top: 0.75rem;
-    font-size: var(--text-step-3);
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
+    margin: 1rem 0 0;
+    color: #fff;
     text-wrap: balance;
-    transition: color var(--duration-base) var(--ease-out);
   }
   .pm-text {
-    margin-top: 0.375rem;
+    max-width: 34rem;
+    margin: 0.5rem 0 0;
     font-size: var(--text-step-1);
     line-height: 1.5;
-    color: #52525b;  /* zinc-600 */
+    color: rgb(255 255 255 / 0.68);
+    text-wrap: pretty;
   }
-  .pm-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    margin-top: auto;
-    padding-top: 1rem;
-    font-size: var(--text-step-1);
-    font-weight: 600;
-    color: #047857;  /* emerald-700 — на белом 5.4:1 */
+  .pm-action {
+    display: flex;
+    margin-top: 1.5rem;
   }
 
-  .pm-card:focus-visible {
-    outline: 2px solid var(--color-accent-hover);
-    outline-offset: 4px;
-    border-radius: 1.5rem;
+  @media (width >= 40rem) {
+    .pm-list:not(.pm-list--single) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pm-photo { border-radius: 1.5rem; }
   }
+  @media (width >= 64rem) {
+    .pm-list:not(.pm-list--single) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pm-list--single .pm-item {
+      grid-template-columns: minmax(0, 7fr) minmax(20rem, 5fr);
+      gap: clamp(2.5rem, 5vw, 6rem);
+      align-items: stretch;
+    }
+    .pm-list--single .pm-photo {
+      min-height: 25rem;
+      aspect-ratio: 16 / 10;
+    }
+    .pm-list--single .pm-content { padding-block: clamp(1rem, 3vw, 3rem); }
+    .pm-list--single .pm-action { margin-top: auto; padding-top: 2rem; }
+  }
+
   @media (hover: hover) {
-    .pm-card:hover .pm-photo img { transform: scale(1.03); }
-    .pm-card:hover .pm-title { color: #047857; }
-    .pm-card:hover .btn-arrow-icon { transform: translateX(3px); }
+    .pm-item:hover .pm-photo img { transform: scale(1.025); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pm-photo img, .pm-title { transition: none; }
-    .pm-card:hover .pm-photo img { transform: none; }
+    .pm-photo img { transition: none; }
+    .pm-item:hover .pm-photo img { transform: none; }
   }
 </style>

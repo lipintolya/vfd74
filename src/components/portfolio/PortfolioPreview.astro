@@ -1,44 +1,26 @@
 ---
 /**
- * «Фотоотчёты с объектов» на главной — последние работы портфолио.
+ * «Готовые объекты» на главной — три последние работы портфолио.
  *
- * Композиция отличается от соседних «Отзывов» и «Акций» (там шапка сверху
- * и ряд одинаковых карточек): на широком десктопе (от 80rem) слева колонка
- * с заголовком, лидом, кнопкой и крупным числом работ, справа — три фото.
- * Число внизу колонки вровень с подписями — вместо графитовой полосы под
- * рядом, которая повторяла «Отзывы». Остальные работы — по кнопке
- * «Все работы». От 64rem до 80rem колонка отняла бы у фото слишком много
- * места — там шапка сверху и три фото в ряд.
- *
- * На телефоне и планшете — шапка сверху, лента из
- * шести работ со свайпом (следующая карточка выглядывает из-за края),
- * стрелки для мыши и последняя графитовая карточка «N фотоотчётов».
- *
- * Под фото — короткое презентационное название, один значимый факт и место.
- * Канонический title остаётся в данных, H1 проекта и alt изображения. Лента,
- * стрелки и последняя карточка —
- * общие с «Отзывами»: .rail (global.css), RailControls, RailEndCard. Без JS
- * лента листается сама. Фото — превью 640/1080
- * (scripts/gen-portfolio-thumbs.mjs), lazy.
+ * Это статичная редакционная композиция, а не карусель: ведущий проект
+ * получает крупный кадр, ещё два поддерживают его компактными строками.
+ * На телефоне все три проекта видны без скрытого горизонтального скролла.
+ * Канонический title остаётся в данных, H1 проекта и alt изображения;
+ * в превью используются короткие previewTitle / previewDetail.
  */
-import RailControls from '../ui/RailControls.astro'
-import RailEndCard from '../ui/RailEndCard.astro'
+import Action from '../ui/Action.astro'
 import { PORTFOLIO_WORKS, CATEGORY_LABELS } from '../../data/portfolio-works'
 import { pluralRu } from '../../lib/product-text'
 import { typograph } from '../../lib/typograph'
 
-const RAIL_SIZE = 6
-/* Сколько работ в ряду на десктопе (остальные скрыты, см. .pr-off) */
-const DESKTOP_SIZE = 3
+const SHOWN = 3
 
-const byDate = [...PORTFOLIO_WORKS].sort((a, b) => b.date.localeCompare(a.date))
-const preview = byDate.slice(0, RAIL_SIZE)
+const preview = [...PORTFOLIO_WORKS]
+  .sort((a, b) => b.date.localeCompare(a.date))
+  .slice(0, SHOWN)
 const total = PORTFOLIO_WORKS.length
-const totalWord = pluralRu(total, ['фотоотчёт', 'фотоотчёта', 'фотоотчётов'])
+const totalWord = pluralRu(total, ['объект', 'объекта', 'объектов'])
 
-/* Место одной короткой строкой: город/область и так понятны, из
-   «ЖК НИКС Сити, Университетская набережная» — только ЖК, из
-   «посёлок Развязка (Чурилово)» — без уточнения в скобках */
 const place = (location: string) =>
   location.replace(/^Челябинск(ая область)?,\s*/, '').split(',')[0]!.replace(/\s*\([^)]*\)/, '').trim()
 
@@ -46,35 +28,34 @@ const lead = 'Двери и перегородки после монтажа —
 ---
 
 {preview.length > 0 && (
-  <section class="section bg-white rail-scope" aria-labelledby="portfolio-preview-heading" data-rail-scope>
+  <section class="section bg-white" aria-labelledby="portfolio-preview-heading">
     <div class="container pp">
 
       <header class="pp-head">
-        <h2 id="portfolio-preview-heading" class="t-h2 pp-title">Готовые объекты</h2>
-        <p class="t-lead pp-lead">{typograph(lead)}</p>
-        <div class="pp-actions">
-          <RailControls
-            prevLabel="Предыдущие работы"
-            nextLabel="Следующие работы"
-            allHref="/portfolio/"
-            allLabel="Все работы"
-          />
+        <div class="pp-heading">
+          <h2 id="portfolio-preview-heading" class="t-h2 pp-title">Готовые объекты</h2>
+          <p class="t-lead pp-lead">{typograph(lead)}</p>
         </div>
-        <p class="pp-count">
-          <span class="pp-num">{total}</span>
-          <span class="pp-count-text">объектов в портфолио</span>
-        </p>
+        <div class="pp-summary">
+          <p class="pp-count" aria-label={`${total} ${totalWord} в портфолио`}>
+            <strong>{total}</strong>
+            <span>{totalWord}<br />в портфолио</span>
+          </p>
+          <Action href="/portfolio/" variant="outline" class="pp-action">Все работы</Action>
+        </div>
       </header>
 
-      <ul class="rail pr-rail" role="list" data-rail aria-label="Последние работы">
+      <ul class="pr-grid" role="list" aria-label="Последние работы">
         {preview.map((work, i) => (
-          <li class:list={{ 'pr-off': i >= DESKTOP_SIZE }}>
+          <li class:list={['pr-item', { 'pr-item--feature': i === 0 }]}>
             <a href={`/portfolio/${work.id}/`} class="pr-card" aria-label={work.title}>
               <span class="pr-photo">
                 <img
                   src={`/renders/portfolio/${work.id}-640.webp`}
                   srcset={`/renders/portfolio/${work.id}-640.webp 640w, /renders/portfolio/${work.id}.webp 1080w`}
-                  sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 84vw"
+                  sizes={i === 0
+                    ? '(min-width: 64rem) 54vw, 100vw'
+                    : '(min-width: 40rem) 18vw, 34vw'}
                   alt={work.title}
                   width="640"
                   height="800"
@@ -82,26 +63,24 @@ const lead = 'Двери и перегородки после монтажа —
                   decoding="async"
                 />
               </span>
-              <span class="pr-title">{typograph(work.previewTitle ?? work.model ?? work.title)}</span>
-              {(work.previewDetail ?? work.coating ?? work.features?.[0]) && (
-                <span class="pr-detail">{typograph(work.previewDetail ?? work.coating ?? work.features![0]!)}</span>
-              )}
-              <span class="pr-meta">
-                {CATEGORY_LABELS[work.category]}<span class="pr-dot" aria-hidden="true">·</span>{place(work.location)}
-              </span>
+              <div class="pr-copy">
+                <span class="pr-meta">
+                  {CATEGORY_LABELS[work.category]}<span aria-hidden="true">·</span>{place(work.location)}
+                </span>
+                <h3 class="t-h3 pr-title">{typograph(work.previewTitle ?? work.model ?? work.title)}</h3>
+                {(work.previewDetail ?? work.coating ?? work.features?.[0]) && (
+                  <p class="pr-detail">{typograph(work.previewDetail ?? work.coating ?? work.features![0]!)}</p>
+                )}
+                <span class="pr-open" aria-hidden="true">
+                  Смотреть проект
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </div>
             </a>
           </li>
         ))}
-
-        <li class="rail-end pr-end">
-          <RailEndCard
-            value={total}
-            text={`${totalWord} в портфолио — двери, перегородки, входные группы`}
-            href="/portfolio/"
-            cta="Смотреть все"
-            fit="row"
-          />
-        </li>
       </ul>
 
     </div>
@@ -109,144 +88,82 @@ const lead = 'Двери и перегородки после монтажа —
 )}
 
 <style>
-  /* ── Шапка ──
-     Телефон/планшет: заголовок, лид, действия столбиком над лентой.
-     Стили без слоя перебивают .t-h2/.t-lead из @layer components. */
   .pp-head {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: clamp(2rem, 4vw, 3rem);
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: clamp(2rem, 5vw, 3.5rem);
   }
+  .pp-heading { display: grid; gap: 0.75rem; }
   .pp-title { margin: 0; text-wrap: balance; }
   .pp-lead {
+    max-width: 34rem;
     margin: 0;
-    max-width: 30rem;
-    color: #475569;  /* slate-600, как в SectionHeader */
+    color: #475569;
     text-wrap: pretty;
   }
-  .pp-actions {
+  .pp-summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+  }
+  .pp-count {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem;
+    min-width: 0;
+    margin: 0;
+    color: #64748b;
+    font-size: var(--text-step-0);
+    line-height: 1.25;
   }
-  .pp-count { display: none; }
+  .pp-count strong {
+    font-family: var(--font-display);
+    font-size: var(--text-step-5);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
   @media (width >= 48rem) {
     .pp-head {
-      display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
-      column-gap: 2rem;
       align-items: end;
+      gap: 2rem;
     }
-    .pp-lead { grid-column: 1; }
-    .pp-actions { grid-column: 2; grid-row: 1 / span 2; }
+    .pp-summary { gap: 1.5rem; }
   }
 
-  /* На десктопе первый проект — крупная история, следующие два —
-     компактные строки справа. Остальные работы доступны по общей ссылке. */
-  @media (width >= 64rem) {
-    .pr-end, .pr-off { display: none; }
-    .pr-rail {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-      gap: 1.25rem 2rem;
-    }
-    .pr-rail > li:first-child { grid-row: 1 / 3; }
-    .pr-rail > li:not(:first-child) .pr-card {
-      display: grid;
-      grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
-      grid-template-rows: auto auto 1fr;
-      gap: 0 1.25rem;
-      height: 100%;
-      align-content: start;
-    }
-    .pr-rail > li:not(:first-child) .pr-photo {
-      grid-column: 1;
-      grid-row: 1 / 4;
-      width: 100%;
-      min-width: 0;
-      height: 100%;
-      aspect-ratio: 1;
-    }
-    .pr-rail > li:not(:first-child) .pr-title,
-    .pr-rail > li:not(:first-child) .pr-detail,
-    .pr-rail > li:not(:first-child) .pr-meta { grid-column: 2; }
-    .pr-rail > li:not(:first-child) .pr-title { margin-top: 0.25rem; }
-    .pr-rail > li:not(:first-child) .pr-meta { align-self: end; }
+  .pr-grid {
+    display: grid;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-
-  /* ── Широкий десктоп: компактная информационная колонка слева,
-     три доминирующие фотографии справа. ── */
-  @media (width >= 80rem) {
-    .pp {
-      display: grid;
-      grid-template-columns: minmax(0, 2.6fr) minmax(0, 9.4fr);
-      column-gap: clamp(2rem, 4vw, 3.5rem);
-    }
-    .pp-head {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-      margin-bottom: 0;
-    }
-    .pp-actions { margin-top: 0.5rem; }
-    /* Число вровень с низом подписей: ряд фото задаёт высоту колонки */
-    .pp-count {
-      display: block;
-      margin: auto 0 0;
-      padding-top: 2rem;
-    }
-    .pp-num {
-      display: block;
-      font-family: var(--font-display);
-      font-size: clamp(3.5rem, 7vw, 5rem);
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: -0.04em;
-      font-variant-numeric: tabular-nums;
-      color: var(--color-ink);
-    }
-    .pp-count-text {
-      display: block;
-      max-width: 12rem;
-      margin-top: 0.5rem;
-      font-size: var(--text-step-1);
-      line-height: 1.45;
-      color: #64748b;  /* slate-500 */
-    }
-  }
-
-  /* Колонки ленты .rail (global.css): на телефоне — карточка и край
-     следующей, на десктопе — три в ряд */
-  .pr-rail {
-    --rail-col: 84%;
-    --rail-col-md: 42%;
-    --rail-cols-lg: 3;
-    align-self: start;
-  }
-  @media (width >= 64rem) {
-    .pr-rail > li:first-child .pr-photo { aspect-ratio: 4 / 5; }
-  }
-
-  /* ── Карточка работы ── */
   .pr-card {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 7.25rem minmax(0, 1fr);
+    gap: 1rem;
+    min-height: 9rem;
     color: inherit;
     text-decoration: none;
+  }
+  .pr-item--feature .pr-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
   }
   .pr-photo {
     display: block;
     overflow: hidden;
+    min-width: 0;
+    height: 100%;
     aspect-ratio: 4 / 5;
     border-radius: 1.25rem;
-    background: #f4f4f5;  /* zinc-100 — место под кадр, пока он грузится */
+    background: #f4f4f5;
   }
-  @media (width >= 40rem) {
-    .pr-photo { border-radius: 1.5rem; }
-  }
+  .pr-item--feature .pr-photo { aspect-ratio: 4 / 5; }
   .pr-photo img {
     display: block;
     width: 100%;
@@ -254,46 +171,93 @@ const lead = 'Двери и перегородки после монтажа —
     object-fit: cover;
     transition: transform 700ms var(--ease-out);
   }
+  .pr-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding-block: 0.125rem;
+  }
+  .pr-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.4em;
+    font-size: var(--text-step-0);
+    line-height: 1.4;
+    color: #71717a;
+  }
   .pr-title {
     display: block;
-    margin-top: 0.875rem;
-    font-size: var(--text-step-2);
-    font-weight: 600;
-    line-height: 1.25;
-    letter-spacing: -0.015em;
+    margin-top: 0.5rem;
     color: var(--color-ink);
+    text-wrap: balance;
     transition: color var(--duration-base) var(--ease-out);
   }
   .pr-detail {
     display: block;
     margin-top: 0.375rem;
     font-size: var(--text-step-1);
-    line-height: 1.4;
+    line-height: 1.45;
     color: #475569;
+    text-wrap: pretty;
   }
-  .pr-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    margin-top: 0.625rem;
+  .pr-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.75rem;
+    margin-top: auto;
+    padding-top: 0.625rem;
     font-size: var(--text-step-0);
-    line-height: 1.4;
-    color: #71717a;  /* zinc-500 */
+    font-weight: 600;
+    color: var(--color-ink);
   }
-  .pr-dot { margin: 0 0.4em; color: #a1a1aa; }
+  .pr-open svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .pr-item--feature .pr-open { margin-top: 0.75rem; }
+
+  @media (width >= 40rem) {
+    .pr-photo { border-radius: 1.5rem; }
+  }
+  @media (width >= 64rem) {
+    .pr-grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem clamp(1.5rem, 3vw, 3rem);
+    }
+    .pr-item--feature { grid-row: 1 / 3; }
+    .pr-item--feature .pr-card { height: 100%; }
+    .pr-item--feature .pr-photo { min-height: 34rem; }
+    .pr-item:not(.pr-item--feature) .pr-card {
+      grid-template-columns: minmax(8.5rem, 42%) minmax(0, 1fr);
+      height: 100%;
+    }
+    .pr-item:not(.pr-item--feature) .pr-photo {
+      aspect-ratio: auto;
+      min-height: 0;
+    }
+  }
+  @media (width >= 80rem) {
+    .pr-grid { gap: 2rem clamp(2.5rem, 4vw, 4.5rem); }
+    .pr-item--feature .pr-photo { min-height: 40rem; }
+  }
 
   .pr-card:focus-visible {
     outline: 2px solid var(--color-accent-hover);
-    outline-offset: 4px;
+    outline-offset: 5px;
     border-radius: 1.5rem;
   }
-
   @media (hover: hover) {
-    .pr-card:hover .pr-photo img { transform: scale(1.03); }
+    .pr-card:hover .pr-photo img { transform: scale(1.025); }
+    .pr-card:hover .pr-open svg { transform: translateX(3px); }
     .pr-card:hover .pr-title { color: var(--color-fg); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pr-photo img, .pr-title { transition: none; }
+    .pr-photo img, .pr-title, .pr-open svg { transition: none; }
     .pr-card:hover .pr-photo img { transform: none; }
   }
 </style>
