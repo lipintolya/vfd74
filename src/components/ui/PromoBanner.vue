@@ -112,7 +112,7 @@ const onDetailsClick = () => {
   padding: 0.3rem 0.75rem;
   margin-bottom: 0.75rem;
   border-radius: 9999px;
-  background: #57534e;
+  background: #059669;
   color: #fff;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -128,7 +128,7 @@ const onDetailsClick = () => {
 .promo-banner__subtitle {
   margin: 0 0 0.5rem;
   font-size: 0.875rem;
-  color: #a8a29e;
+  color: #34d399;
   font-weight: 500;
 }
 .promo-banner__note {
@@ -149,7 +149,7 @@ const onDetailsClick = () => {
   font-weight: 600;
   transition: background-color 150ms ease;
 }
-.promo-banner__cta:hover { background: #a8a29e; }
+.promo-banner__cta:hover { background: #34d399; }
 
 .promo-banner-fade-enter-active,
 .promo-banner-fade-leave-active {

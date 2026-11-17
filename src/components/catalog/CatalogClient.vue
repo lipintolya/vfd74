@@ -479,7 +479,7 @@ onMounted(() => { isMounted.value = true })
 .cc__name { margin-top: 0.875rem; font-size: var(--text-step-2); font-weight: 600; letter-spacing: -0.01em; }
 .cc__meta { margin-top: 0.125rem; font-size: 0.875rem; color: #71717a; font-variant-numeric: tabular-nums; }
 .cc__card:focus-visible { outline: none; }
-.cc__card:focus-visible .cc__media { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.cc__card:focus-visible .cc__media { outline: 2px solid var(--color-accent-hover); outline-offset: 3px; }
 
 /* Телефон: лента вбок — край следующей карточки подсказывает, что листается */
 @media (max-width: 47.9375rem) {
@@ -594,7 +594,7 @@ onMounted(() => { isMounted.value = true })
   cursor: pointer;
 }
 .cat__select:focus-visible { outline: none; }
-.cat__sort:has(.cat__select:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 0.375rem; }
+.cat__sort:has(.cat__select:focus-visible) { outline: 2px solid var(--color-accent-hover); outline-offset: 3px; border-radius: 0.375rem; }
 .cat__sort svg { position: absolute; right: 0; width: 1rem; height: 1rem; pointer-events: none; }
 .cat__filters-btn {
   display: none;
@@ -650,10 +650,10 @@ onMounted(() => { isMounted.value = true })
   font: inherit;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #44403c;
+  color: #047857;
   cursor: pointer;
 }
-.cat__reset:hover { color: #292524; }
+.cat__reset:hover { color: #065f46; }
 .cat__aside-head .cat__reset { padding-inline: 0; }
 
 .cat__list { margin-top: clamp(1.5rem, 3vw, 2rem); }

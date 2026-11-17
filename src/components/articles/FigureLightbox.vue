@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
   transform: translateY(0);
 }
 .fig-zoom-btn:focus-visible {
-  outline: 2px solid var(--color-accent, #78716c);
+  outline: 2px solid var(--color-accent, oklch(69.6% 0.17 162.48));
   outline-offset: 3px;
   border-radius: 0.75rem;
 }

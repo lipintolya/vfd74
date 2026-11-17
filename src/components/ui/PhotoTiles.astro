@@ -15,6 +15,8 @@ export interface PhotoTile {
   /** Цена «от» или срок — одной строкой под названием */
   fact:  string | null
   href:  string
+  /** Короткая подпись назначения; по умолчанию — «Смотреть» */
+  cta?:  string
   img:   { src: string; srcset: string; alt: string; width: number; height: number }
 }
 
@@ -49,7 +51,7 @@ const Heading = headingTag
         <!-- Название уже на плитке — ссылка коротко «Смотреть»;
              для скринридера её имя — название раздела -->
         <a class="pt-link" href={c.href} aria-label={c.title}>
-          Смотреть
+          {c.cta ?? 'Смотреть'}
           <svg class="btn-arrow-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -159,7 +161,7 @@ const Heading = headingTag
   }
   .pt-link:focus-visible { outline: none; }
   .pt-tile:has(.pt-link:focus-visible) {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-hover);
     outline-offset: 3px;
   }
 

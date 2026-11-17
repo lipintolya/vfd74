@@ -155,7 +155,7 @@ defineProps<{ tile: Tile; wide?: boolean }>()
 }
 .hb-link:focus-visible { outline: none; }
 .hb-tile:has(.hb-link:focus-visible) {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-accent-hover);
   outline-offset: 3px;
 }
 

@@ -142,6 +142,11 @@ const next  = () => { activeIndex.value = (activeIndex.value + 1) % slides.lengt
 const prev  = () => { activeIndex.value = (activeIndex.value - 1 + slides.length) % slides.length }
 
 const goTo = (i: number) => { activeIndex.value = i; if (!isPaused.value) start() }
+const toggleAutoplay = () => {
+  autoplayEnabled.value = !autoplayEnabled.value
+  if (autoplayEnabled.value) start()
+  else stop()
+}
 
 const onMouseEnter = () => { isPaused.value = true;  stop() }
 const onMouseLeave = () => { isPaused.value = false; start() }
@@ -224,6 +229,20 @@ onUnmounted(stop)
           <div class="hero-scrim absolute inset-0 z-10" aria-hidden="true" />
 
           <div class="hero-body relative z-10 flex h-full flex-col justify-end p-5 sm:p-8 lg:p-10 text-white">
+            <button
+              type="button"
+              class="hero-pause"
+              :aria-label="autoplayEnabled ? 'Остановить смену фотографий' : 'Возобновить смену фотографий'"
+              :aria-pressed="!autoplayEnabled"
+              @click="toggleAutoplay"
+            >
+              <svg v-if="autoplayEnabled" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M5.5 4v8M10.5 4v8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+              </svg>
+              <svg v-else viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="m6 4 6 4-6 4V4Z" fill="currentColor" />
+              </svg>
+            </button>
             <div class="max-w-2xl">
               <h1 class="hero-title">Межкомнатные и входные двери в&nbsp;Челябинске</h1>
 
@@ -246,7 +265,7 @@ onUnmounted(stop)
                   </svg>
                 </a>
                 <Transition name="hero-content" mode="out-in">
-                  <a v-if="currentSlide.link" :key="currentSlide.id" :href="currentSlide.link.href" class="btn btn-ghost hero-link">
+                  <a v-if="currentSlide.link" :key="currentSlide.id" :href="currentSlide.link.href" class="btn btn-text-inverse hero-link">
                     {{ currentSlide.link.label }}
                   </a>
                 </Transition>
@@ -255,15 +274,14 @@ onUnmounted(stop)
 
             <!-- Навигация: три отрезка с подписями, активный заполняется
                  за время показа кадра -->
-            <div class="hero-nav" role="tablist" aria-label="Фото в слайдере">
+            <div class="hero-nav" role="group" aria-label="Выбор фотографии">
               <button
                 v-for="(slide, i) in slides"
                 :key="slide.id"
                 type="button"
-                role="tab"
                 class="hero-nav__item"
                 :class="{ 'is-active': i === activeIndex }"
-                :aria-selected="i === activeIndex"
+                :aria-pressed="i === activeIndex"
                 :aria-label="`Фото ${i + 1}: ${slide.nav}`"
                 @click="goTo(i)"
               >
@@ -319,6 +337,29 @@ onUnmounted(stop)
     rgb(0 0 0 / 0.15) 62%,
     rgb(0 0 0 / 0) 82%
   );
+}
+
+.hero-pause {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.55);
+  border-radius: 999px;
+  background: rgb(24 24 26 / 0.45);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+}
+.hero-pause svg { width: 1rem; height: 1rem; }
+.hero-pause:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (hover: hover) {
+  .hero-pause:hover { background: rgb(24 24 26 / 0.72); border-color: #fff; }
 }
 
 .hero-title {
@@ -387,12 +428,14 @@ onUnmounted(stop)
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
+  min-height: 2.75rem;
   padding: 0.5rem 0 0;
   border: none;
   background: none;
   color: inherit;
   text-align: left;
   cursor: pointer;
+  touch-action: manipulation;
 }
 .hero-nav__bar {
   position: relative;
@@ -462,6 +505,7 @@ onUnmounted(stop)
   .hero-cta {
     transition: none;
   }
+  .hero-pause { transition: none; }
   .hero-nav__fill.is-running { animation: none; transform: none; }
 }
 </style>

@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
         :aria-label="`Фото ${i + 1}`"
         :class="[
           'flex-none w-16 h-16 overflow-hidden rounded-lg border-2 transition-colors',
-          i === current ? 'border-stone-500' : 'border-transparent hover:border-slate-300'
+          i === current ? 'border-emerald-500' : 'border-transparent hover:border-slate-300'
         ]"
       >
         <img

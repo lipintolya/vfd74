@@ -246,16 +246,16 @@ const structuredData = canonicalUrl ? [
         <h2 class="sr-h2">Особенности</h2>
         <!-- Тот же язык карточки, что у «Доступные цвета» / CatalogProductCard —
              rounded-2xl border-slate-200 модуль снаружи, rounded-xl плитки внутри
-             с hover:border-stone-200 hover:shadow-lg. Иконка — тонированный кружок
-             (bg-stone-50/text-stone-600), как в CatalogEmptyState, не
+             с hover:border-emerald-200 hover:shadow-lg. Иконка — тонированный кружок
+             (bg-emerald-50/text-emerald-600), как в CatalogEmptyState, не
              голая обводка-галочка. sr-features__item — единственный элемент с
              нечётным индексом последним растягивается на всю ширину (см. CSS),
              чтобы 5/7 фич не давали сиротливую узкую строку. -->
         <div class="sr-collapsible" data-collapsible>
           <ul class="sr-features sr-collapsible__content grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4" data-collapsible-content>
             {spec.features.map(feature => (
-              <li class="sr-features__item group flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 transition hover:border-stone-200 hover:shadow-lg hover:-translate-y-0.5">
-                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-stone-50 text-stone-600">
+              <li class="sr-features__item group flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 transition hover:border-emerald-200 hover:shadow-lg hover:-translate-y-0.5">
+                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                   <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                     <path d="M4.5 10.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -315,8 +315,8 @@ const structuredData = canonicalUrl ? [
                 {characteristics.map((row, i) => (
                   <div class="group -mx-5 rounded-xl px-5 py-7 transition-colors duration-200 first:pt-0 last:pb-0 lg:hover:bg-slate-50">
                     <dt class="mb-2 flex items-baseline gap-3">
-                      <span class="text-sm font-semibold tabular-nums text-stone-600/60 transition-colors duration-200 group-hover:text-stone-600">{String(i + 1).padStart(2, '0')}</span>
-                      <span class="text-lg font-semibold text-slate-900 transition-colors duration-200 group-hover:text-stone-700">{row.label}</span>
+                      <span class="text-sm font-semibold tabular-nums text-emerald-600/60 transition-colors duration-200 group-hover:text-emerald-600">{String(i + 1).padStart(2, '0')}</span>
+                      <span class="text-lg font-semibold text-slate-900 transition-colors duration-200 group-hover:text-emerald-700">{row.label}</span>
                     </dt>
                     <dd class="m-0 text-base leading-relaxed text-slate-600">{row.value}</dd>
                   </div>
@@ -362,7 +362,7 @@ const structuredData = canonicalUrl ? [
           <ul class="sr-colors-grid sr-collapsible__content" data-collapsible-content role="list">
             {paletteColors.map(color => (
               <li>
-                <div class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-stone-200 hover:shadow-lg hover:-translate-y-0.5">
+                <div class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-emerald-200 hover:shadow-lg hover:-translate-y-0.5">
                   <span
                     class="block aspect-square w-full transition-transform duration-300 group-hover:scale-105"
                     style={`background-color:${color.hex}`}
@@ -454,12 +454,12 @@ const structuredData = canonicalUrl ? [
   gap: 0.375rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #57534e;
+  color: #059669;
   cursor: pointer;
   user-select: none;
   list-style: none;
 }
-.sr-desc__toggle:hover { color: #44403c; }
+.sr-desc__toggle:hover { color: #047857; }
 .sr-desc__toggle::-webkit-details-marker { display: none; }
 .sr-desc__toggle::after {
   content: '';
@@ -614,7 +614,7 @@ const structuredData = canonicalUrl ? [
   margin-top: 1rem;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--color-accent-hover, #57534e);
+  color: var(--color-accent-hover, #059669);
   background: none;
   border: none;
   padding: 0;

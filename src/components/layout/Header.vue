@@ -302,7 +302,7 @@ onUnmounted(() => {
             aria-hidden="true"
           >ВФД</span>
           <span
-            class="hidden transition-colors duration-300 ease-in-out sm:block group-hover:text-stone-600"
+            class="hidden transition-colors duration-300 ease-in-out sm:block group-hover:text-emerald-600"
             :class="BRAND_TEXT"
           >
             ДВЕРИ НА КАШИРИНЫХ
@@ -434,7 +434,7 @@ onUnmounted(() => {
                           :key="p.raw"
                           :href="`tel:${p.raw}`"
                           class="group -mx-2 flex items-center gap-3 rounded-xl px-2 py-2 font-semibold text-gray-800
-                                 transition-colors duration-200 hover:bg-stone-50/70 hover:text-stone-700"
+                                 transition-colors duration-200 hover:bg-emerald-50/70 hover:text-emerald-700"
                           :class="FOCUS"
                         >
                           <img src="/icons/phone-call.webp" alt="" class="h-8 w-8 shrink-0" width="32" height="32" />
@@ -470,7 +470,7 @@ onUnmounted(() => {
                       <p class="mb-1.5 text-sm font-semibold text-gray-500">Почта</p>
                       <a
                         :href="`mailto:${CONTACTS.email}`"
-                        class="font-medium text-gray-700  transition-colors duration-200 hover:text-stone-600"
+                        class="font-medium text-gray-700  transition-colors duration-200 hover:text-emerald-600"
                         :class="FOCUS"
                       >
                         {{ CONTACTS.email }}
@@ -649,7 +649,7 @@ onUnmounted(() => {
                     @click="closeMobileMenu()"
                   >
                     <span class="min-w-0">
-                      <span class="block text-step-2 font-medium leading-snug" :class="isItemCurrent(item) ? 'text-stone-700' : 'text-ink'">{{ item.label }}</span>
+                      <span class="block text-step-2 font-medium leading-snug" :class="isItemCurrent(item) ? 'text-emerald-700' : 'text-ink'">{{ item.label }}</span>
                       <span class="block text-sm leading-snug text-gray-500">{{ item.desc }}</span>
                     </span>
                     <svg class="size-4 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -772,6 +772,6 @@ onUnmounted(() => {
   bottom: 0.875rem;
   width: 3px;
   border-radius: 2px;
-  background: var(--color-accent, #78716c);
+  background: var(--color-accent, oklch(69.6% 0.17 162.48));
 }
 </style>

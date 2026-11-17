@@ -374,12 +374,12 @@ function openDecorLightbox() {
   transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
 }
 .dlv__thumb:hover {
-  border-color: #a8a29e;
-  background: #fafaf9;
+  border-color: #34d399;
+  background: #ecfdf5;
 }
 .dlv__thumb--active {
-  border-color: #78716c;
-  background: #fafaf9;
+  border-color: oklch(69.6% 0.17 162.48);
+  background: #ecfdf5;
   box-shadow: 0 0 0 3px rgba(120, 113, 108, 0.18);
 }
 
@@ -397,7 +397,7 @@ function openDecorLightbox() {
   color: #64748b;
   font-variant-numeric: tabular-nums;
 }
-.dlv__thumb--active .dlv__thumb-label { color: #57534e; }
+.dlv__thumb--active .dlv__thumb-label { color: #059669; }
 
 /* ── Responsive ── */
 @media (max-width: 700px) {

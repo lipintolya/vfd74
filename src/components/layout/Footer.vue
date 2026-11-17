@@ -311,7 +311,7 @@ onUnmounted(() => {
               <li v-for="p in CONTACTS.phones" :key="p.raw">
                 <a
                   :href="`tel:${p.raw}`"
-                  class="text-white hover:text-stone-400 transition-colors duration-200 font-medium"
+                  class="text-white hover:text-emerald-400 transition-colors duration-200 font-medium"
                 >
                   {{ p.label }}
                 </a>
@@ -344,7 +344,7 @@ onUnmounted(() => {
               :href="MAP_LINK"
               target="_blank"
               rel="noopener noreferrer"
-              class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-stone-400 hover:text-stone-300 transition-colors duration-200"
+              class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors duration-200"
             >
               Построить маршрут
               <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -462,7 +462,7 @@ onUnmounted(() => {
                 Все изображения, тексты и дизайн сайта являются объектами авторского права VFD Кашириных.
                 Любое использование материалов возможно только с письменного разрешения правообладателя
                 и обязательным указанием источника:
-                <a href="https://vfd74.ru" class="text-stone-600 hover:opacity-80">vfd74.ru</a>
+                <a href="https://vfd74.ru" class="text-emerald-600 hover:opacity-80">vfd74.ru</a>
               </p>
             </div>
 
@@ -479,9 +479,9 @@ onUnmounted(() => {
               <h4 class="text-sm font-medium text-gray-900 mb-2">Контакты</h4>
               <p class="text-gray-600 leading-relaxed">
                 г. Челябинск, ул. Братьев Кашириных, 131Б<br />
-                Телефон: <a href="tel:+79000297888" class="text-stone-600 hover:opacity-80">+7 (900) 029-78-88</a><br />
-                Email: <a href="mailto:vfddoors74@mail.ru" class="text-stone-600 hover:opacity-80">vfddoors74@mail.ru</a><br />
-                Сайт: <a href="https://vfd74.ru" class="text-stone-600 hover:opacity-80">vfd74.ru</a>
+                Телефон: <a href="tel:+79000297888" class="text-emerald-600 hover:opacity-80">+7 (900) 029-78-88</a><br />
+                Email: <a href="mailto:vfddoors74@mail.ru" class="text-emerald-600 hover:opacity-80">vfddoors74@mail.ru</a><br />
+                Сайт: <a href="https://vfd74.ru" class="text-emerald-600 hover:opacity-80">vfd74.ru</a>
               </p>
             </div>
 
@@ -565,7 +565,7 @@ onUnmounted(() => {
                   </dt>
                   <dd class="m-0 mt-1 flex items-baseline gap-2">
                     <span class="font-mono text-xl font-medium tabular-nums text-white">{{ v.value }}</span>
-                    <span v-if="v.good" class="text-xs font-medium text-stone-400">хорошо</span>
+                    <span v-if="v.good" class="text-xs font-medium text-emerald-400">хорошо</span>
                   </dd>
                 </div>
               </dl>
@@ -613,7 +613,7 @@ onUnmounted(() => {
                 :href="DEV_CONTACTS.telegram"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group flex items-center justify-between gap-3 rounded-full bg-white py-1.5 pl-5 pr-1.5 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-stone-400"
+                class="group flex items-center justify-between gap-3 rounded-full bg-white py-1.5 pl-5 pr-1.5 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-emerald-400"
               >
                 Написать в Telegram
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-white transition-transform duration-200 group-hover:translate-x-0.5">

@@ -14,8 +14,9 @@
  * шести работ со свайпом (следующая карточка выглядывает из-за края),
  * стрелки для мыши и последняя графитовая карточка «N фотоотчётов».
  *
- * Под фото — название и место: категория и ЖК/посёлок (реальные адреса —
- * главное доверие к живым фото). Лента, стрелки и последняя карточка —
+ * Под фото — короткое презентационное название, один значимый факт и место.
+ * Канонический title остаётся в данных, H1 проекта и alt изображения. Лента,
+ * стрелки и последняя карточка —
  * общие с «Отзывами»: .rail (global.css), RailControls, RailEndCard. Без JS
  * лента листается сама. Фото — превью 640/1080
  * (scripts/gen-portfolio-thumbs.mjs), lazy.
@@ -34,7 +35,6 @@ const byDate = [...PORTFOLIO_WORKS].sort((a, b) => b.date.localeCompare(a.date))
 const preview = byDate.slice(0, RAIL_SIZE)
 const total = PORTFOLIO_WORKS.length
 const totalWord = pluralRu(total, ['фотоотчёт', 'фотоотчёта', 'фотоотчётов'])
-const objectsWord = pluralRu(total, ['объект', 'объекта', 'объектов'])
 
 /* Место одной короткой строкой: город/область и так понятны, из
    «ЖК НИКС Сити, Университетская набережная» — только ЖК, из
@@ -42,7 +42,7 @@ const objectsWord = pluralRu(total, ['объект', 'объекта', 'объе
 const place = (location: string) =>
   location.replace(/^Челябинск(ая область)?,\s*/, '').split(',')[0]!.replace(/\s*\([^)]*\)/, '').trim()
 
-const lead = 'Фото готовых объектов в Челябинске и области: настоящие монтажи, а не визуализации.'
+const lead = 'Двери и перегородки после монтажа — реальные объекты Челябинска и области.'
 ---
 
 {preview.length > 0 && (
@@ -50,7 +50,7 @@ const lead = 'Фото готовых объектов в Челябинске �
     <div class="container pp">
 
       <header class="pp-head">
-        <h2 id="portfolio-preview-heading" class="t-h2 pp-title">Фотоотчёты с объектов</h2>
+        <h2 id="portfolio-preview-heading" class="t-h2 pp-title">Готовые объекты</h2>
         <p class="t-lead pp-lead">{typograph(lead)}</p>
         <div class="pp-actions">
           <RailControls
@@ -62,19 +62,19 @@ const lead = 'Фото готовых объектов в Челябинске �
         </div>
         <p class="pp-count">
           <span class="pp-num">{total}</span>
-          <span class="pp-count-text">{objectsWord} в портфолио: двери, перегородки, входные группы</span>
+          <span class="pp-count-text">объектов в портфолио</span>
         </p>
       </header>
 
       <ul class="rail pr-rail" role="list" data-rail aria-label="Последние работы">
         {preview.map((work, i) => (
           <li class:list={{ 'pr-off': i >= DESKTOP_SIZE }}>
-            <a href={`/portfolio/${work.id}/`} class="pr-card">
+            <a href={`/portfolio/${work.id}/`} class="pr-card" aria-label={work.title}>
               <span class="pr-photo">
                 <img
                   src={`/renders/portfolio/${work.id}-640.webp`}
                   srcset={`/renders/portfolio/${work.id}-640.webp 640w, /renders/portfolio/${work.id}.webp 1080w`}
-                  sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 78vw"
+                  sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 30vw, (min-width: 40rem) 42vw, 84vw"
                   alt={work.title}
                   width="640"
                   height="800"
@@ -82,7 +82,10 @@ const lead = 'Фото готовых объектов в Челябинске �
                   decoding="async"
                 />
               </span>
-              <span class="pr-title">{typograph(work.title)}</span>
+              <span class="pr-title">{typograph(work.previewTitle ?? work.model ?? work.title)}</span>
+              {(work.previewDetail ?? work.coating ?? work.features?.[0]) && (
+                <span class="pr-detail">{typograph(work.previewDetail ?? work.coating ?? work.features![0]!)}</span>
+              )}
               <span class="pr-meta">
                 {CATEGORY_LABELS[work.category]}<span class="pr-dot" aria-hidden="true">·</span>{place(work.location)}
               </span>
@@ -146,13 +149,12 @@ const lead = 'Фото готовых объектов в Челябинске �
     .pr-end, .pr-off { display: none; }
   }
 
-  /* ── Широкий десктоп: слева колонка с текстом, справа три фото.
-     Уже 80rem колонка отнимает у фото слишком много места (заголовки
-     обрезаются), там шапка остаётся сверху. ── */
+  /* ── Широкий десктоп: компактная информационная колонка слева,
+     три доминирующие фотографии справа. ── */
   @media (width >= 80rem) {
     .pp {
       display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      grid-template-columns: minmax(0, 2.6fr) minmax(0, 9.4fr);
       column-gap: clamp(2rem, 4vw, 3.5rem);
     }
     .pp-head {
@@ -181,7 +183,7 @@ const lead = 'Фото готовых объектов в Челябинске �
     }
     .pp-count-text {
       display: block;
-      max-width: 15rem;
+      max-width: 12rem;
       margin-top: 0.5rem;
       font-size: var(--text-step-1);
       line-height: 1.45;
@@ -192,7 +194,7 @@ const lead = 'Фото готовых объектов в Челябинске �
   /* Колонки ленты .rail (global.css): на телефоне — карточка и край
      следующей, на десктопе — три в ряд */
   .pr-rail {
-    --rail-col: 78%;
+    --rail-col: 84%;
     --rail-col-md: 42%;
     --rail-cols-lg: 3;
     align-self: start;
@@ -202,7 +204,6 @@ const lead = 'Фото готовых объектов в Челябинске �
   .pr-card {
     display: flex;
     flex-direction: column;
-    height: 100%;
     color: inherit;
     text-decoration: none;
   }
@@ -224,41 +225,42 @@ const lead = 'Фото готовых объектов в Челябинске �
     transition: transform 700ms var(--ease-out);
   }
   .pr-title {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    margin-top: 1rem;
+    display: block;
+    margin-top: 0.875rem;
     font-size: var(--text-step-2);
-    font-weight: 500;
-    line-height: 1.35;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
     color: var(--color-ink);
     transition: color var(--duration-base) var(--ease-out);
   }
-  @media (width >= 64rem) {
-    .pr-title { -webkit-line-clamp: 3; }
+  .pr-detail {
+    display: block;
+    margin-top: 0.375rem;
+    font-size: var(--text-step-1);
+    line-height: 1.4;
+    color: #475569;
   }
   .pr-meta {
-    overflow: hidden;
-    margin-top: auto;
-    padding-top: 0.375rem;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: var(--text-step-1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    margin-top: 0.625rem;
+    font-size: var(--text-step-0);
+    line-height: 1.4;
     color: #71717a;  /* zinc-500 */
   }
   .pr-dot { margin: 0 0.4em; color: #a1a1aa; }
 
   .pr-card:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-hover);
     outline-offset: 4px;
     border-radius: 1.5rem;
   }
 
   @media (hover: hover) {
     .pr-card:hover .pr-photo img { transform: scale(1.03); }
-    .pr-card:hover .pr-title { color: #44403c; }  /* stone-700 */
+    .pr-card:hover .pr-title { color: var(--color-fg); }
   }
   @media (prefers-reduced-motion: reduce) {
     .pr-photo img, .pr-title { transition: none; }

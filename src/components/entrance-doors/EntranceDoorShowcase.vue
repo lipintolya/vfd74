@@ -257,7 +257,7 @@ const toggleTab = (tab: InfoTab) => { infoTab.value = infoTab.value === tab ? nu
               type="button"
               class="shrink-0 snap-start rounded-full border-[1.5px] px-4 py-2 text-step-0 font-medium transition-colors active:scale-95"
               :class="group.name === activeGroup?.name
-                ? 'border-stone-600 bg-stone-700 text-white'
+                ? 'border-emerald-600 bg-emerald-700 text-white'
                 : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'"
               :aria-pressed="group.name === activeGroup?.name"
               @click="selectSeries(group)"
@@ -278,7 +278,7 @@ const toggleTab = (tab: InfoTab) => { infoTab.value = infoTab.value === tab ? nu
               :key="item.idx"
               type="button"
               class="flex w-20 shrink-0 snap-start flex-col items-center gap-2 rounded-xl border-[1.5px] p-2 transition-colors active:scale-95"
-              :class="item.idx === selectedIdx ? 'border-stone-600 shadow-[0_0_0_3px_rgba(120,113,108,0.14)]' : 'border-slate-200 hover:border-slate-300'"
+              :class="item.idx === selectedIdx ? 'border-emerald-600 shadow-[0_0_0_3px_rgb(16 185 129 / 0.14)]' : 'border-slate-200 hover:border-slate-300'"
               :aria-pressed="item.idx === selectedIdx"
               @click="selectColor(item.idx)"
             >

@@ -282,7 +282,7 @@ const status = computed(() => modelStatus(props.card, activeColorName.value))
 .pc__link::after { content: ''; position: absolute; inset: 0; }
 
 .pc__link:focus-visible { outline: none; }
-.pc__link:focus-visible::after { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+.pc__link:focus-visible::after { outline: 2px solid var(--color-accent-hover); outline-offset: 3px; }
 
 .pc__meta {
   margin: 0.25rem 0 0;

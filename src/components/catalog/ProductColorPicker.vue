@@ -442,7 +442,7 @@ const shareModel = async () => {
 .pdp__swatch[aria-pressed='true'] { box-shadow: 0 0 0 3px #fff, 0 0 0 4.5px var(--color-fg); }
 .pdp__swatch.is-empty { border: 2px dashed rgb(0 0 0 / 0.3); }
 .pdp__swatch:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-accent-hover);
   outline-offset: 5px;
 }
 .pdp__extra {

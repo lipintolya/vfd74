@@ -110,12 +110,12 @@ const max = companyLegalInfo.socialMedia.find((s) => s.name === 'MAX')!
   @media (hover: hover) {
     .btt:hover { background: var(--color-fg); color: #fff; }
     .btt:hover .btt-track { stroke: rgb(255 255 255 / 0.2); }
-    .btt:hover .btt-bar { stroke: #a8a29e; }  /* stone-400 на тёмном */
+    .btt:hover .btt-bar { stroke: #34d399; }  /* emerald-400 на тёмном */
     .btt:hover .btt-arrow { translate: 0 -0.125rem; }
   }
   .btt:active { scale: 0.94; }
   .btt:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-hover);
     outline-offset: 3px;
   }
 
@@ -180,7 +180,7 @@ const max = companyLegalInfo.socialMedia.find((s) => s.name === 'MAX')!
   }
   .max-fab[data-visible]:active { scale: 0.94; }
   .max-fab:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-hover);
     outline-offset: 3px;
   }
 

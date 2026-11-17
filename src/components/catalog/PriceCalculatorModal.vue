@@ -479,7 +479,7 @@ onUnmounted(() => {
 .calc-row__control input[type='radio'] {
   width: 1.125rem;
   height: 1.125rem;
-  accent-color: #57534e;
+  accent-color: #059669;
   flex-shrink: 0;
 }
 .calc-row__price {
@@ -610,7 +610,7 @@ onUnmounted(() => {
   transition: border-color 150ms ease, transform 150ms ease;
 }
 .calc-send__btn:hover {
-  border-color: #e7e5e4;
+  border-color: #a7f3d0;
   transform: translateY(-1px);
 }
 .calc-send__btn img { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
@@ -621,7 +621,7 @@ onUnmounted(() => {
   color: #94a3b8;
 }
 .calc-send__hint--copied {
-  color: #57534e;
+  color: #059669;
   font-weight: 600;
 }
 
@@ -646,7 +646,7 @@ onUnmounted(() => {
   flex-shrink: 0;
   transition: color 150ms ease, background-color 150ms ease;
 }
-.calc-hw-view:hover { color: #57534e; background: #fafaf9; }
+.calc-hw-view:hover { color: #059669; background: #ecfdf5; }
 .calc-hw-view svg { width: 1rem; height: 1rem; }
 
 /* ── Модалка "фото + схема" для петель/замка/WC — z-index выше

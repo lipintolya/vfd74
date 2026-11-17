@@ -103,9 +103,9 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
         <!-- Breadcrumb -->
         <nav aria-label="Хлебные крошки" class="mb-6">
           <ol class="flex items-center gap-2 text-sm text-slate-500 flex-wrap">
-            <li><a href="/" class="hover:text-stone-600 transition-colors">Главная</a></li>
+            <li><a href="/" class="hover:text-emerald-600 transition-colors">Главная</a></li>
             <li aria-hidden="true" class="text-slate-300">/</li>
-            <li><a href="/articles/" class="hover:text-stone-600 transition-colors">Статьи</a></li>
+            <li><a href="/articles/" class="hover:text-emerald-600 transition-colors">Статьи</a></li>
             <li aria-hidden="true" class="text-slate-300">/</li>
             <li class="font-medium text-slate-700 truncate max-w-52">{article.data.title}</li>
           </ol>
@@ -207,7 +207,7 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
           <div class="mt-10 pt-2">
             <a
               href="/articles/"
-              class="inline-flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-700 transition-colors"
+              class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
             >
               <svg viewBox="0 0 16 16" fill="none" class="w-4 h-4" aria-hidden="true">
                 <path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -332,7 +332,7 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
     font-weight: 600;
     color: var(--color-ink);
   }
-  .article-body :global(tbody tr:hover) { background: #fafaf9; }
+  .article-body :global(tbody tr:hover) { background: #ecfdf5; }
   @media (max-width: 640px) {
     .article-body :global(table) {
       display: block;
@@ -383,7 +383,7 @@ const structuredData = [blogPostingSchema, breadcrumbSchema, ...(faqSchema ? [fa
     text-decoration: none;
     transition: color 200ms ease;
   }
-  .article-toc__list a:hover { color: #44403c; }
+  .article-toc__list a:hover { color: #047857; }
   .article-toc__n {
     flex: none;
     font-size: 0.8125rem;

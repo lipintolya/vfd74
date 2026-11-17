@@ -186,16 +186,18 @@ const { items } = Astro.props
     color: #52525b;  /* zinc-600 — на zinc-100 7:1 */
     white-space: nowrap;
     cursor: pointer;
+    touch-action: manipulation;
     transition: color 200ms var(--ease-out);
   }
   @media (width >= 48rem) {
     .nv-tab { padding: 0 1.375rem; font-size: var(--text-step-1); }
   }
   .nv-tab:hover { color: var(--color-fg); }
+  .nv-tab:active { opacity: 0.72; }
   .nv-tab[aria-selected='true'] { color: #fff; }
   .nv-tabs:not(.is-ready) .nv-tab[aria-selected='true'] { background: var(--color-fg); }
   .nv-tab:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-accent-hover);
     outline-offset: 2px;
   }
 

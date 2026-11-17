@@ -177,7 +177,7 @@ const groups = computed(() => [
 .cf__row:hover .cf__box { border-color: var(--color-fg); }
 .cf__input:checked + .cf__box { border-color: var(--color-fg); background: var(--color-fg); color: #fff; }
 .cf__input:checked ~ .cf__text { color: var(--color-ink); font-weight: 500; }
-.cf__input:focus-visible + .cf__box { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.cf__input:focus-visible + .cf__box { outline: 2px solid var(--color-accent-hover); outline-offset: 2px; }
 .cf__sample {
   flex: none;
   width: 0.875rem;
@@ -194,10 +194,10 @@ const groups = computed(() => [
   font: inherit;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #44403c;
+  color: #047857;
   cursor: pointer;
 }
-.cf__more:hover { color: #292524; }
+.cf__more:hover { color: #065f46; }
 
 @media (prefers-reduced-motion: reduce) {
   .cf__head svg, .cf__row, .cf__box { transition: none; }
