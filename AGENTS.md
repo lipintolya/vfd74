@@ -1,334 +1,368 @@
 # AGENTS.md
 
-Руководство для Codex и других агентов при работе с этим репозиторием. Содержит контекст проекта, архитектурные решения и правила внесения изменений. Учитывай применимые инструкции `AGENTS.md`, если такие файлы есть в проекте; ограничения на деплой действуют для всего проекта.
+Guidance for Codex and other coding agents working in this repository.
 
-## Проект
+This file defines project context, architectural conventions, verification
+requirements, Git rules, and deployment boundaries. Follow applicable nested
+`AGENTS.md` files when present. Deployment restrictions apply repository-wide.
 
-Маркетинговый сайт и каталог ВФД — Владимирской фабрики дверей, салона дверей и алюминиевых перегородок в Челябинске: `vfd74.ru`.
+## Project
 
-Стек: Astro 7 (в `package.json` — `^7.3.2`), Vue 3 islands, Tailwind CSS v4. Актуальные версии зависимостей проверяй в `package.json` и lock-файле. Контент и товарные данные преимущественно на русском языке. Сайт собирается статически и развёртывается на VPS; готовый `dist/` переносится в каталог nginx через rsync.
+Marketing site and product catalog for VFD (Vladimirskaya Fabrika Dverey),
+a door salon and aluminum partition business in Chelyabinsk, Russia.
 
-## Основные правила работы
+- Production domain: `https://vfd74.ru`
+- Content and product data are primarily in Russian.
+- Stack: Astro 7 (`^7.3.2` in `package.json`), Vue 3 islands, and Tailwind CSS v4.
+- Verify current dependency versions in `package.json` and the lockfile.
+- The site is statically built and deployed to a VPS. The resulting `dist/`
+  directory is synchronized to the nginx web root through rsync.
 
-- Перед изменениями изучи соответствующие компоненты, данные и общие модули. Сохраняй существующую архитектуру и используй общие источники данных.
-- Проверь `git status` перед правками. Сохраняй незакоммиченные изменения пользователя; не откатывай и не перезаписывай их.
-- Вноси изменения в рамках задачи, без попутного рефакторинга. Отвечай пользователю по-русски, если он не попросил другой язык.
-- Не дублируй расчёт цен, названий, описаний, путей к изображениям и реквизитов в отдельных компонентах, если для них уже есть общий модуль.
-- Проверяй утверждения о товарах и числовые значения по данным проекта. Не придумывай характеристики, цены, даты и реквизиты.
-- Выполняй проверки, относящиеся к изменению. Основная проверка корректности — `npm run build`.
-- В итоговом сообщении кратко опиши результат и выполненные проверки. Если проверку выполнить не удалось, укажи это и причину; не представляй её как успешную.
-- Деплой и изменение действующего сервера регулируются отдельными правилами ниже.
+## Operating principles
 
-## Команды
+- Inspect the relevant components, data sources, shared modules, and existing
+  patterns before making changes.
+- Preserve the existing architecture. Prefer extending established patterns over
+  introducing a new approach.
+- Check `git status` before editing. Preserve unrelated user changes; never
+  revert, overwrite, or discard work you did not create.
+- Keep changes focused on the requested task. Do not perform unrelated
+  refactoring, formatting churn, dependency upgrades, or speculative cleanup.
+- Respond to the user in Russian unless they request another language. Keep code,
+  identifiers, comments, commit messages, and technical documentation in English
+  unless the repository or user explicitly requires another language.
+- Use shared modules for product names, descriptions, prices, calculations,
+  image paths, contact details, and other repeated business data. Do not
+  duplicate this information in individual components.
+- Verify product claims, prices, dates, specifications, and contact information
+  against project data. Never invent facts, characteristics, prices, dates, or
+  legal details.
+- Treat ambiguous requirements as an opportunity to inspect the code first.
+  Ask a focused question only when the ambiguity materially affects correctness,
+  security, data integrity, SEO, accessibility, or product behavior.
+- Clearly distinguish verified results from assumptions. Never claim that a
+  command, build, type check, visual check, or deployment succeeded unless it
+  actually did.
+
+## Commands
 
 ```bash
-npm run dev                # Локальный сервер Astro
-npm run build              # Статическая сборка в dist/ и проверка media в postbuild
-npm run preview            # Локальный просмотр production-сборки
-npm run gen:renders        # public/renders/alum-covers/*.webp из оригиналов public/media
-npm run media:sync         # Локализация облачных URL и фото Supabase, генерация эскизов моделей
-npm run gen:model-thumbs   # Эскизы каталога: public/renders/models/<path>-320|640.webp
-npm run gen:responsive     # srcset-варианты для слайдов, промоблоков, категорий и схемы плинтуса
-npm run media:check        # Проверка наличия /media/... из исходников и БД
-npm run deploy            # git push production main — только по явному запросу на деплой
+npm run dev                 # Local Astro development server
+npm run build               # Static build into dist/; postbuild performs media checks
+npm run preview             # Local preview of the production build
+npm run gen:renders         # Generate public/renders/alum-covers/*.webp from public/media
+npm run media:sync          # Localize Supabase/cloud media URLs and generate model thumbnails
+npm run gen:model-thumbs    # Generate catalog thumbnails in public/renders/models/
+npm run gen:responsive      # Generate srcset variants for slides, promos, categories, and baseboard schema
+npm run media:check         # Verify that referenced /media/... assets exist in sources and the database
+npm run deploy              # git push production main; production deployment action
 ```
 
-`gen:model-thumbs` идемпотентен; `npm run gen:model-thumbs -- --force` пересоздаёт все эскизы.
-
-В репозитории не настроены тестовый раннер и линтер. `tsconfig.json` расширяет `astro/tsconfigs/strict`. Для проверки типов используй `npm run astro -- check`, если установлены необходимые зависимости (`@astrojs/check` и `typescript`), и диагностику TypeScript. Если зависимостей нет, укажи это как ограничение проверки. Не считай проверку типов выполненной только потому, что прошла сборка.
-
-`npm run build` выполняет `getStaticPaths` с обращением к действующему проекту Supabase: ошибка запроса может сломать сборку. Не обходи эту проверку, чтобы скрыть проблему. Если сборка заблокирована окружением, доступом к сети или Supabase, явно сообщи об ограничении.
-
-## Деплой: не запускать автоматически
-
-**Не отправляй изменения в remote `production` и не запускай `npm run deploy`, если пользователь явно не попросил о деплое в текущем сообщении.** Запрос исправить, собрать, проверить, закоммитить или отправить код сам по себе не является запросом на production-деплой. По умолчанию ограничивайся локальной сборкой и просмотром.
-
-Деплой запускает `git push production main`. На VPS срабатывает `post-receive` hook: извлекает `main`, выполняет `npm ci && npm run build`, затем переносит `dist/` в web root nginx через rsync. Не обходи ограничение прямым запуском hook, rsync или эквивалентных команд публикации.
-
-Сервер: HostingRussia, Москва; после сбоя Beget в ноябре 2026 года проект перенесён оттуда. `deploy/setup-server.sh` предназначен для развёртывания сервера с нуля на Ubuntu 24.04 VPS. DNS находится в reg.ru. Эти сведения описывают инфраструктуру, но не дают разрешения переустанавливать сервер или менять DNS.
-
-### nginx
-
-Конфигурация лежит в `deploy/nginx/`:
-
-- `vfd74.ru.conf`;
-- `vfd74-perf.conf` — кеш-заголовки через одну переменную, Brotli, HSTS;
-- порядок применения описан в `deploy/nginx/README.md`.
-
-`git push production main` не обновляет конфигурацию nginx. Она применяется на сервере вручную. Изменение файлов в репозитории не означает, что конфигурация уже действует на сервере; сообщай об этом при таких правках. Применяй её на сервере только в рамках явного запроса пользователя.
-
-## Архитектура и рендеринг
-
-Страницы Astro рендерятся на сервере во время сборки. Большинство страниц статические; динамические маршруты используют `getStaticPaths`.
-
-Интерактивность реализована Vue 3 islands с явными директивами `client:*`. Выбирай директиву с учётом того, когда компонент нужен:
-
-- `Header` и `Footer` используют `client:only="vue"`, чтобы избежать несовпадений при гидратации;
-- секции ниже первого экрана используют `client:visible` или `client:idle`;
-- `client:load` применяй там, где интерактивность нужна сразу.
-
-Не переводь статический контент в клиентский компонент без необходимости.
-
-## Источники данных
-
-В проекте два разных способа хранения товарных данных. Сохраняй это разделение.
-
-### Каталог Supabase
-
-Клиент: `src/lib/supabase.ts`. Переменные окружения: `PUBLIC_SUPABASE_URL` и `PUBLIC_SUPABASE_ANON_KEY`.
-
-Основной каталог (`src/pages/catalog.astro`, `src/pages/models/[id].astro`) запрашивает таблицу `model_colors` с вложенными связями `colors → coatings` и `models → series → coatings`.
-
-Данные загружаются при сборке, URL фотографий проходят через `resolveMedia` и преобразуются в локальные `/media/...`. Затем данные приводятся к плоскому формату `CardItem` / `CatalogCardItem`:
-
-- одна карточка на модель;
-- выбирается первый цвет;
-- hex-цвета нормализуются с учётом встречающейся в БД путаницы кириллической `С` и латинской `C`.
-
-Плоский массив передаётся в `CatalogClient.vue`. Фильтрация, сортировка, пагинация и синхронизация с query-параметрами URL выполняются в этом Vue island, без запросов к серверу при фильтрации.
-
-Страницы моделей и YML-фид для Яндекс Товаров (`src/pages/feed/yandex.xml.ts` → `/feed/yandex.xml`) используют:
-
-- общий источник данных `src/lib/model-entries.ts`;
-- общие названия и описания из `src/lib/product-text.ts`.
-
-Яндекс сопоставляет цены и фотографии фида со страницами. Меняй цены, фотографии и названия через эти общие модули. Не рассчитывай их независимо на странице и в фиде.
-
-### Статические TypeScript-модули
-
-`src/data/*.ts` содержат отдельные товарные направления, ещё не перенесённые в Supabase:
-
-- `skrytye-dveri-products.ts` — скрытые двери, размеры, ценовые уровни и `calcCustomPrice`;
-- `partitions.ts` — алюминиевые перегородки;
-- `door-categories.ts` — SEO-контент по `slug` для общего шаблона `DoorCategoryLanding.astro`;
-- `accessories.ts`;
-- `series-descriptions.ts`.
-
-Эти страницы статические и строятся по данным соответствующих модулей.
-
-## Изображения, видео и media
-
-Основной режим — полностью локальные медиа. Сайт не должен зависеть от Yandex Cloud при обычной загрузке или сборке: у облака были массовые сбои. В существующем коде есть аварийный возврат к облачному URL для несинхронизированных фото Supabase; это сигнал выполнить синхронизацию, а не штатный способ размещения новых изображений.
-
-Оригиналы фотографий, схем и видео находятся в `public/media/<path>` и доступны как `/media/<path>`. Структура повторяет пути прежних бакетов: `https://storage.yandexcloud.net/<bucket>/<path>` → `/media/<path>`. Два бакета объединены без коллизий путей.
-
-Основные разделы: `works_prod/` — портфолио, `metal_doors/` — входные двери, `emalex/`, `emal/`, `innova/`, `Smart/` — покрытия и цвета каталога, `alum_*` — перегородки, `invisible/` — скрытые двери, `statya/` — статьи, `video/` — видео.
-
-Производные изображения лежат в `public/renders/**`. Их создают `scripts/gen-*.mjs` из `public/media` через `scripts/lib/media.mjs`. Причина отдельной генерации — медленная работа удалённого оптимизатора Astro без кеша; подробности в начале `scripts/gen-render-gallery.mjs`.
-
-### Пути и добавление файлов
-
-- В итоговых исходниках `src/` не оставляй `https://storage.yandexcloud.net/...`; используй `/media/...`. Общее правило преобразования путей — `src/lib/media-path.mjs`.
-- Сохраняй точные имена и регистр ключей из облака, включая пробелы и скобки. Не переименовывай файлы для «очистки» названий: браузер кодирует ссылки.
-- Существующий процесс добавления контента: фото загружается в облако, его URL временно вставляется в данные или статью, затем запускается `npm run media:sync`. Скрипт скачивает файл в `public/media`, заменяет URL на `/media/...` в `src/` и `astro.config.mjs`, а также синхронизирует фото Supabase. Завершай этот процесс до сдачи изменений; временный облачный URL не должен остаться в `src/`.
-- Файлы из `public/media` и сгенерированные производные включай в тот же коммит, что и использующий их код, если задача предполагает коммит.
-- Для новых превью дополнительно запускай соответствующий генератор: `npm run gen:portfolio-thumbs` для портфолио, `npm run gen:article-images` для статей (`node scripts/gen-article-images.mjs` — прямой запуск генератора статей).
-- Превью портфолио: `<id>.webp` шириной 1080 px и `<id>-640.webp` для ленты `PortfolioPreview.astro` на главной. Без генерации изображения статей работают, но загружают тяжёлые оригиналы.
-
-### Фотографии Supabase
-
-`model_colors.photo_url` в БД остаётся облачным URL: админка загружает фото в облако. При сборке `src/lib/media-resolve.ts` подставляет локальный `/media/...`.
-
-Если файл ещё не синхронизирован, модуль возвращает облачный URL и пишет предупреждение `[media]`. `npm run media:sync` скачивает и эти фотографии. Не заменяй массово URL в БД локальными путями ради соответствия путям на сайте.
-
-### Абсолютные URL и целостность
-
-Страницы используют относительные `/media/...`. `BaseLayout.astro` делает `og:image` и JSON-LD абсолютными через `absolutizeAssets`; фид Яндекса и изображения sitemap делают то же в своих общих механизмах. Не собирай строки `https://vfd74.ru/media/...` вручную в других местах.
-
-`npm run build` запускает `postbuild` → `scripts/sync-media.mjs --dist`: отсутствие файла, на который ссылается собранный сайт через `/media/...`, завершает проверку ошибкой. `npm run media:check` проверяет исходники и БД без сборки. Не отключай эти проверки для прохождения сборки.
-
-### Производительность изображений
-
-По замерам Lighthouse мобильный экран имеет ширину около 380 CSS px, тогда как оригиналы — 1100–1900 px. Соблюдай следующие правила:
-
-- Крупные фотографии выводи через `<img>` с `srcset` и `sizes`; для изображений вне первого экрана используй `loading="lazy"`. Не делай их CSS `background-image`: фон загружается без ленивой загрузки. Критичное изображение первого экрана загружай своевременно, согласовав его с preload.
-- `HeroSlider.vue` и `PhotoAutoplaySlider.vue` держат все слайды в DOM. У неактивных слайдов задавай `src` лениво: одного `loading="lazy"` недостаточно, поскольку браузер считает эти изображения находящимися в зоне видимости.
-- Варианты 640w/960w для слайдов, промослайдеров, карточек «Каталог» на главной и схемы плинтуса создаёт `npm run gen:responsive` (`scripts/gen-responsive.mjs`, список `JOBS`). Для новой картинки в таком месте добавь задание в `JOBS` и `srcset` в компонент.
-- У статей и портфолио собственные генераторы. Для страниц каталога подходит `articleImg()` из `src/lib/article-images.ts`.
-- Если `BaseLayout` получает `preloadImage` и `preloadImageSrcset`, укажи `preloadImageSizes`, совпадающий с `sizes` самого `<img>`. Иначе браузер может скачать изображение дважды.
-
-### Эскизы моделей
-
-`/media/<путь>.webp` соответствует `/renders/models/<путь>-320.webp` и `-640.webp`: обычно 3–9 КБ вместо 14–45 КБ.
-
-Их создаёт `scripts/gen-model-thumbs.mjs` по фотографиям `model_colors`. Генератор входит в `npm run media:sync` и идемпотентен. `srcset` строит чистая функция `thumbSrcset()` из `src/lib/model-thumbs.mjs`; её используют `CatalogProductCard.vue` и `RelatedModels.astro`.
-
-Если эскиза нет, `catalog-data.ts` ставит `noThumb`, карточка использует оригинал, а сборка предупреждает `[media] нет эскиза`. Ссылка в `dist` на несуществующий эскиз приводит к ошибке `postbuild`. Добавляй эскизы вместе с оригиналами.
-
-### CLS и шрифты
-
-`client:only` оставляет пустое место до загрузки JavaScript и может сдвигать страницу. На страницах серий это давало CLS 0,19.
-
-`InfoImageViewer` с `client:only` подключай через `components/catalog/InfoImageViewerIsland.astro`: обёртка помещает в слот `fallback` пустой блок высотой с готовую карточку. Формула зависит от стилей `InfoImageViewer.vue`; при изменении размеров обновляй её.
-
-В `global.css` запасные шрифты `Rubik Fallback` и `Manrope Fallback` подогнаны по метрикам через `size-adjust` и `ascent-override`, чтобы смена шрифта не перестраивала строки. Метрики вычисляются fontTools по файлам из `public/fonts`; не заменяй их произвольными значениями.
-
-## Отзывы и горизонтальные ленты
-
-Отзывы: `components/home/Reviews.astro`, данные: `src/data/reviews.ts`. Это статический Astro с текстовыми отзывами, без фотографий клиентов.
-
-Карточки имеют общую высоту строки, автор расположен внизу. Текст до 110 символов включительно показывается как крупная цитата; текст длиннее 260 символов ограничивается семью строками. «Читать полностью» открывает нативный `<dialog>`.
-
-Ленты «Отзывы» и «Фотоотчёты» используют общий набор:
-
-- `.rail` / `.rail-scope` в `global.css`; ширина колонок задаётся `--rail-col`, `--rail-col-md`, `--rail-col-lg`;
-- `components/ui/RailControls.astro` — стрелки и ссылка «Все …»; загружает `src/lib/rail.ts` один раз на страницу;
-- `components/ui/RailEndCard.astro` — завершающая графитовая карточка.
-
-Секции нужен `data-rail-scope`, списку — `data-rail`.
-
-## Товарные блоки главной страницы
-
-«Новинки» — единый блок с вкладками `components/home/Novelties.astro`: Техно, Штрих 2А и «Рефлекс».
-
-«Секрет» не относится к новинкам: у него отдельный блок «Скрытые двери из наличия…» под полосой замера. Оба блока используют `components/home/ProductFeature.astro`.
-
-Данные: `src/lib/home-promos.ts`, `getHomePromos()` → `{ novelties, inStock }`. Цены берутся из актуальных данных: каталог — через `getCatalogCards`, скрытые двери — из `skrytye-dveri-products.ts`. Новая новинка — новый объект в `novelties`, а не новый компонент.
-
-Все панели присутствуют в статическом HTML. Неактивные помечены `hidden`; их фотографии и island `PhotoAutoplaySlider` должны загружаться только при открытии вкладки. Слайдер переключается каждые 8 секунд и автоматически работает только в зоне видимости.
-
-«Каталог» (`CatalogCategories.astro`) — три статические фотоплитки. Заголовок выводится через `components/home/SectionHeader.astro`: H2 слева, вводный текст справа.
-
-Появление плиток на мобильных и планшетах реализовано через `src/lib/tile-reveal.ts`, атрибуты `data-tile-reveal` / `data-reveal-*` и стили в конце `global.css`. Не применяй `translate` к растянутой ссылке `<a>`: это нарушает стабильность раскладки и ухудшает CLS.
-
-Короткие тексты из данных пропускай через `typograph()` (`src/lib/typograph.ts`): без переноса тире «—» в начало строки и висячих предлогов, с неразрывным «500 ₽». Правильная формулировка — двери «в покрытии Эмалекс».
-
-## Карты
-
-Не используй iframe или скриншот Яндекс Карт. Карта салона — собственная векторная карта окрестностей на основе OpenStreetMap.
-
-Генерация: `scripts/gen-visit-map.mjs` → `src/data/visit-map.json`. Рендеринг: `src/lib/salon-map.ts`, маршруты `src/pages/salon-map-*.svg.ts`:
-
-- `/salon-map-dark.svg` — футер;
-- `/salon-map-light.svg` — `/contacts/`.
-
-Повторно запускай генератор только при изменении `address.coordinates` в `contacts-data.ts`. Сохраняй подпись «© участники OpenStreetMap» рядом с картой. Кнопки маршрута по-прежнему открывают Яндекс Карты.
-
-SVG содержит только геометрию и подписи улиц и кешируется один раз для примерно 400 страниц. Метка салона с пульсацией, карточка названия и плашки ориентиров — HTML поверх SVG в `components/ui/SalonMap.vue`. Данные наложения: `src/lib/salon-map-overlay.ts`.
-
-Используются шрифты сайта и появление при прокрутке через IntersectionObserver: приближение камеры → падение метки → карточка. Пульсация работает только в зоне видимости; анимации пропускаются при `prefers-reduced-motion`.
-
-Футер использует `variant="dark"`, `/contacts/` — `variant="light"`. URL маршрута берётся из `companyLegalInfo.address.routeUrl`.
-
-## Статьи блога
-
-Файлы: `src/content/articles/*.mdoc`, формат Markdoc. Схема: `src/content.config.ts`.
-
-### Публикация и даты
-
-- `publishDate` — реальная дата публикации. Не ставь дату задним числом. Её используют страница, JSON-LD `datePublished` и sitemap `lastmod`.
-- Будущая дата откладывает публикацию: до неё статья не генерируется, не появляется в sitemap, на главной, в «Читайте также» и «Статья по теме».
-- Поскольку сайт статический, наступление даты само по себе не публикует статью. Нужна сборка в этот день или позже. Production-деплой при этом подчиняется отдельному запрету на автоматический запуск.
-- Читай статьи только через `getPublishedArticles()` из `src/lib/articles.ts`. Не вызывай `getCollection('articles')` напрямую в потребителях контента.
-- Для предпросмотра запланированных статей используй `npm run dev` (показывает все) или `ARTICLES_PREVIEW=1 npm run build`. Такую сборку не используй для обычной публикации сайта.
-
-### Markdoc и связанные материалы
-
-Теги определены в `markdoc.config.ts`:
-
-- `figure`, `callout`, `cards` / `card`, `photogrid` / `photo`;
-- `coatingPrices`;
-- `linePrices of="hidden"|"thermo"` — актуальные цены «от» из товарных модулей; не прописывай эти цены вручную в тексте;
-- `ifpublished to="slug"` — выводит содержимое только после публикации указанной статьи; используй для ссылок и предложений о ещё не опубликованном материале.
-
-Необязательное поле frontmatter `related: [slugs]` задаёт «Читайте также». Оглавление автоматически строится по H2.
-
-Страницы каталога и разделов ссылаются на статьи через `<RelatedArticleCard slugs={[...]} asSection />`, который показывает только опубликованные материалы.
-
-После добавления статьи или изображений запусти `npm run gen:article-images`. Пути к изображениям подчиняются общим правилам `/media/...`.
-
-Факты бери из данных сайта: характеристики, FAQ, процесс работы, портфолио. Перед указанием числа проверь соответствующий модуль. Для цен предпочитай `linePrices` / `coatingPrices`.
+## Supabase and data security
+
+- The shared client is `src/lib/supabase.ts`; do not create duplicate clients in
+  pages or components. `@supabase/supabase-js` is already installed.
+- The current environment variables are `PUBLIC_SUPABASE_URL` and
+  `PUBLIC_SUPABASE_ANON_KEY`. Keep their values only in ignored local environment
+  files or deployment environment variables. Never hard-code or log API keys.
+- The site queries Supabase while Astro generates static pages. Do not move the
+  Supabase client into browser-side Vue code unless the product explicitly needs
+  client-side database access and the security implications have been reviewed.
+- A publishable or legacy anon key is a low-privilege public identifier, not a
+  secret. It must never be treated as the database security boundary. Never put a
+  `service_role`, `sb_secret_...`, database password, or other privileged
+  credential in client code, a `PUBLIC_...` variable, a committed file, logs, or
+  chat output.
+- Enable Row Level Security on every table exposed through the Data API. Grant
+  `anon` and `authenticated` only the minimum required privileges. Public catalog
+  tables may allow the reads needed to build the site; anonymous insert, update,
+  and delete access must remain disabled unless explicitly required and reviewed.
+- Product catalog facts rendered into static HTML are public by design. Personal,
+  operational, and other sensitive data must not be queried into generated pages
+  or exposed through anonymous Supabase policies.
+- Repository inspection cannot prove the live RLS configuration. When changing
+  tables, grants, or policies, verify the live policies and Supabase Security
+  Advisor findings before claiming that database access is secure.
+- A production build requires network access to Supabase. The Yandex feed refuses
+  to publish when Supabase returns no models; preserve this fail-closed behavior.
+
+## Markdoc and related content
+
+- Markdoc tags are defined in `markdoc.config.ts`.
+- Use existing tags and components rather than recreating their behavior.
+- For article, FAQ, workflow, portfolio, and product content, source facts from
+  the site's data modules.
+- Verify numerical claims against the relevant module before including them.
+- For prices, prefer `linePrices` and `coatingPrices` over hard-coded values.
+- Do not invent specifications, availability, dates, guarantees, or legal claims.
+- Preserve the factual distinction between the VFD manufacturer and the VFD
+  dealer salon in Chelyabinsk.
+- Do not present dealer-specific services, prices, stock availability, or
+  installation terms as universal manufacturer guarantees.
 
 ## SEO
 
-SEO-инфраструктура — обязательная часть архитектуры. Сохраняй её при любых изменениях страниц.
+SEO infrastructure is part of the site architecture. Preserve it when changing
+pages, routes, metadata, content, or navigation.
 
-### Общий head и sitemap
+### Head and sitemap
 
-`BaseLayout.astro` централизует OG/Twitter meta, canonical, favicons, JSON-LD через prop `structuredData`, preload шрифтов, Яндекс Метрику и баннер согласия на cookies по ФЗ-152.
+- `BaseLayout.astro` centralizes Open Graph and Twitter metadata, canonical URLs,
+  favicons, JSON-LD through the `structuredData` prop, font preloading,
+  Yandex Metrica, and the Federal Law No. 152 cookie-consent banner.
+- `astro.config.mjs` configures `@astrojs/sitemap` with custom `serialize()` and
+  `filter()` functions.
+- Preserve intentional sitemap rules, including priority and change-frequency
+  settings and the exclusion of `/privacy`.
+- When adding routes, ensure they are represented consistently in the sitemap
+  and metadata model.
+- Do not create duplicate canonical URLs, conflicting metadata, or unstable slugs.
+- Preserve absolute URLs for canonical links, Open Graph images, and structured
+  data where required by the existing implementation.
 
-В `astro.config.mjs` подключён `@astrojs/sitemap` с собственными `serialize()` / `filter()`. Правила priority/changefreq и исключение `/privacy` намеренные; сохраняй их при добавлении маршрутов.
+### Landing pages
 
-### Посадочные страницы
+- Catalog landing pages under `/catalog/<slug>` use the `DoorCategory` structure
+  from `door-categories.ts` and the `DoorCategoryLanding.astro` template.
+- Add a new SEO category as a data object, not as a separate page unless it
+  requires a real product grid sourced from Supabase.
+- Type- and price-based collections such as `/catalog/nedorogie-dveri/`,
+  `/catalog/dveri-so-steklom/`, and `/catalog/glukhie-dveri/` are defined as
+  objects in `style-categories.ts`.
+- Use `cardFilter` fields such as `hasGlass` and `maxPrice`, plus
+  `linkGroup: 'type'`, to define these collections.
+- In `intro`, `metaTitle`, and `metaDescription`, use the placeholders
+  `{count}`, `{models}`, `{minPrice}`, and `{coatings}`.
+- `StyleCategoryLanding` fills these placeholders from the active collection.
+  Do not hard-code model counts, prices, or coating names.
+- For a new catalog landing page, end its slug with `-dveri`; the sitemap
+  assigns such URLs a priority of `0.8`.
+- Preserve existing Russian-language SEO copy, terminology, and user intent.
+- Do not create thin, duplicated, or automatically generated landing pages
+  without a clear product or informational purpose.
 
-Посадочные `/catalog/<slug>` используют структуру `DoorCategory` из `door-categories.ts` и шаблон `DoorCategoryLanding.astro`. Новую SEO-категорию добавляй объектом данных. Отдельная `.astro`-страница нужна, если требуется настоящий товарный grid из Supabase вместо статического контента.
+### Headings
 
-Подборки «по типу и цене» (`/catalog/nedorogie-dveri/`, `dveri-so-steklom`, `glukhie-dveri`) задаются объектами в `style-categories.ts` с `cardFilter` (`hasGlass`, `maxPrice`) и `linkGroup: 'type'`.
+- Keep `<title>` values to approximately 70 characters or fewer, since longer
+  titles may be truncated in search results.
+- For models, `productTitle()` in `src/lib/product-text.ts` shortens titles
+  using a stepped pattern. Do not change `productName`, which is used by the feed.
+- Series pages use equivalent title-shortening logic in
+  `src/pages/catalog/series/[slug].astro`.
+- For portfolio items and articles with long titles, set the optional
+  `seoTitle` field in `PortfolioWork` or article frontmatter.
+- `seoTitle` is a short `<title>` without the brand suffix; ` | ВФД` is added
+  automatically.
+- Keep the full `title` as the visible `H1`.
+- Maintain a logical heading hierarchy: one primary `H1` per page, meaningful
+  `H2` sections, and `H3` only for subsections or card-level headings.
+- Do not use heading tags for visual styling alone.
 
-В `intro`, `metaTitle`, `metaDescription` таких лендингов используй `{count}`, `{models}`, `{minPrice}`, `{coatings}`. `StyleCategoryLanding` заполняет их по актуальной подборке. Не вписывай цену и количество моделей вручную. Для нового лендинга заканчивай slug на `-dveri`: sitemap назначает таким адресам priority 0.8.
+## Internal linking
 
-### Заголовки
+- `Header` and `Footer` use `client:only` and are absent from static HTML.
+- The server-rendered “Site sections” block is
+  `src/components/layout/SiteLinks.astro`, included by `BaseLayout`.
+- Do not remove `SiteLinks.astro` as duplicate navigation: it provides direct
+  server-rendered links to major sections and landing pages.
+- Its data source is `src/lib/site-links.ts`.
+- Coating, color, and style landing links are derived from `door-categories.ts`,
+  `color-categories.ts`, and `style-categories.ts`.
+- Hidden-door scenarios and “About the salon” links are listed directly in
+  `site-links.ts`.
+- Add new top-level pages or new hidden-door scenarios to `site-links.ts`.
+- Cross-links between landing pages use `components/ui/RelatedLinks.astro` and
+  `relatedLandings()`.
+- Model-page recommendations use `components/catalog/RelatedModels.astro` and
+  `lib/related-models.ts`.
+- Related models use a deterministic window of eight price-adjacent models
+  within the same series.
+- Each model receives at least four inbound links.
+- Related-model data uses the same `ModelEntry` records as the model page and feed.
+- Preserve this deterministic linking principle when changing recommendations.
+- Use descriptive link text. Avoid generic labels such as “click here” or
+  “read more” when a more specific label is available.
+- Do not create circular or orphaned navigation structures.
 
-Ориентир для `<title>` — не более примерно 70 знаков, иначе заголовок может обрезаться в выдаче.
+## Analytics
 
-- Модели: `productTitle()` в `src/lib/product-text.ts` сокращает заголовок по «лесенке». `productName` для фида при этом не меняй.
-- Серии: аналогичная логика в `catalog/series/[slug].astro`.
-- Портфолио и статьи: для длинного заголовка задавай необязательный `seoTitle` в `PortfolioWork` или frontmatter статьи. Это короткий `<title>` без бренда: ` | ВФД` добавляется автоматически. H1 остаётся полным `title`.
+- Yandex Metrica counter ID: `106993554`.
+- The delegated click handler in
+  `components/analytics/YandexMetrika.astro` sends JavaScript goals only in
+  production.
+- Existing goal identifiers:
 
-### Перелинковка
+  - `phone_click` — `tel:` links
+  - `email_click` — `mailto:` links
+  - `telegram_click`
+  - `vk_click`
+  - `max_click`
+  - `whatsapp_click`
+  - `route_click` — short Yandex Maps link on the salon card
+  - `review_platform_click` — 2GIS or Yandex Maps search links
 
-Header и Footer используют `client:only` и отсутствуют в статическом HTML. Серверный блок «Разделы сайта» — `components/layout/SiteLinks.astro` в `BaseLayout` — даёт каждой странице прямые ссылки на разделы и лендинги. Не удаляй его как дублирование меню.
+- To add a new contact-link type, add its identifier to `GOALS`.
+- A code change does not create the corresponding Yandex Metrica goal.
+- The goal must also be created in Yandex Metrica under
+  “Goals → JavaScript event” with the same identifier.
+- If a new goal requires Metrica configuration, state that requirement in the
+  final response.
+- Do not send analytics events in development or preview environments unless the
+  existing implementation explicitly supports it.
+- Do not expose analytics identifiers, tokens, or private configuration values
+  in committed files.
 
-Данные: `src/lib/site-links.ts`. Лендинги покрытий, цветов и стилей подтягиваются из `door-categories.ts`, `color-categories.ts`, `style-categories.ts`; скрытые двери и «О салоне» перечислены в самом `site-links.ts`. Новую страницу верхнего уровня или новый сценарий скрытых дверей добавляй туда.
+## Styling and typography
 
-«Смотрите также» между лендингами: `components/ui/RelatedLinks.astro` и `relatedLandings()`.
+- Tailwind CSS v4 is integrated through `@tailwindcss/vite`.
+- There is no `tailwind.config.*` file.
+- Design tokens are declared through `@theme` in `src/styles/global.css`,
+  for example `--color-ink` and `--color-body`.
+- Use token-based utilities such as `text-ink` and `bg-ink`.
+- Page-specific CSS, such as `src/styles/partitions.css`, is imported directly
+  by the page that needs it.
+- Do not introduce a global Tailwind configuration file unless the task
+  explicitly requires a structural change.
 
-На страницах моделей «Другие модели серии» реализованы через `components/catalog/RelatedModels.astro` и `lib/related-models.ts`: детерминированное окно из восьми соседей по цене в той же серии. Каждая модель получает не менее четырёх входящих ссылок. Источник — те же `ModelEntry`, что у страницы и фида. Сохраняй этот принцип при изменении рекомендаций.
+Typography roles:
 
-### Аналитика
+- Page `H1`: `.t-h1`
+- Section `H2`: `.t-h2`; use one consistent size for all sections on a page
+- Card headings: `.t-h3`
 
-Яндекс Метрика: счётчик `106993554`. Делегированный обработчик кликов в `components/analytics/YandexMetrika.astro` отправляет JavaScript-цели только в PROD.
+Do not replace these roles with arbitrary heading sizes such as
+`text-3xl md:text-5xl`.
 
-Идентификаторы:
+Do not add small eyebrow labels above headings. Eyebrow labels have been removed
+site-wide. Communicate status or context through the heading itself or the main
+body copy.
 
-- `phone_click` — `tel:`;
-- `email_click` — `mailto:`;
-- `telegram_click`;
-- `vk_click`;
-- `max_click`;
-- `whatsapp_click`;
-- `route_click` — короткая ссылка `yandex.ru/maps/-/…` на карточку салона;
-- `review_platform_click` — 2ГИС или поиск Яндекс Карт.
+Use Russian typography and wording consistently with the existing site. Do not
+mix transliteration styles, inconsistent product names, or unofficial brand
+wording.
 
-Для нового типа контактной ссылки добавляй строку в `GOALS`. Цель должна быть создана и в интерфейсе Метрики: «Цели → JavaScript-событие», с тем же идентификатором. Изменение кода само по себе не создаёт цель; укажи необходимость этой настройки в результате работы.
+## Buttons and links
 
-## Стили и типографика
+- Use the interface palette: graphite, white, and warm gray tones.
+- Do not use teal.
+- Do not add link underlines.
+- Preserve strikethrough styling for previous prices.
+- Shared button variants, focus styles, and animations are defined in
+  `src/styles/controls.css`.
+- For Astro, use `components/ui/Action.astro`.
+- For Vue, use the same `.btn` classes.
+- Follow `docs/design-system.md`; do not duplicate CTA styling in components.
+- Maintain at least 44 px touch targets, support long label wrapping, and respect
+  `prefers-reduced-motion`.
+- Use meaningful, action-oriented button labels.
+- Preserve existing focus-visible behavior and keyboard operability.
+- Do not introduce decorative animations that interfere with reading, scrolling,
+  or reduced-motion preferences.
 
-Tailwind v4 подключён через `@tailwindcss/vite`; `tailwind.config.*` нет. Токены объявляются через `@theme` в `src/styles/global.css`, например `--color-ink`, `--color-body`, и используются утилитами `text-ink`, `bg-ink`.
+## Company details
 
-CSS отдельных страниц, например `src/styles/partitions.css`, импортируется непосредственно страницей, которой он нужен.
+- `src/lib/contacts-data.ts` is the single source of required company details:
+  sole-proprietor legal information, address, business hours, and phone numbers.
+- Contacts, footer, and structured data consume this module.
+- Update this module rather than duplicating company details in components.
+- Do not alter legal information, addresses, phone numbers, working hours, or
+  guarantees without a verified source in the repository or explicit user approval.
 
-Типографические роли из `global.css`:
+## Frontend quality
 
-- H1 страницы — `.t-h1`;
-- H2 секций — `.t-h2`, единый размер для всех секций страницы;
-- заголовки карточек — `.t-h3`.
+- Follow the existing Astro component structure, Vue island boundaries, Tailwind
+  conventions, and design system documented in `docs/design-system.md`.
+- Keep client-side JavaScript limited to islands that require interactivity.
+- Preserve existing performance practices, including lazy loading, responsive
+  images, `srcset`, preloading, and avoidance of unnecessary client JavaScript.
+- Maintain accessibility: semantic HTML, keyboard operability, visible focus
+  states, sufficient contrast, and respect for `prefers-reduced-motion`.
+- Account for responsive layouts and relevant loading, empty, error, and success
+  states.
+- For user-visible UI changes, inspect the rendered interface with browser tools
+  when available. Do not claim visual verification based solely on source review.
+- Do not introduce layout shift, horizontal overflow, or broken responsive
+  behavior.
+- Preserve existing image optimization practices and avoid oversized images.
+- Do not add third-party scripts, fonts, trackers, or external services without
+  an explicit requirement.
 
-Не задавай произвольные размеры заголовков вроде `text-3xl md:text-5xl` вместо этих ролей.
+## Git workflow
 
-Не добавляй мелкие надписи над заголовками: такие надзаголовки удалены по всему сайту. Статус и контекст передавай в самом заголовке или основном тексте.
+- Before editing, determine the current branch and inspect the working tree.
+- Prefer a focused feature or fix branch for substantive work when appropriate.
+- Keep commits small, coherent, and reversible.
+- Before committing, inspect the staged diff and ensure it contains only the
+  intended changes.
+- Use concise, conventional commit messages that describe the actual change.
+- Never amend, rebase, force-push, or rewrite shared history without explicit
+  permission.
+- Never run destructive Git commands, discard changes, reset branches, or delete
+  branches without explicit permission.
+- Do not commit generated media, build output, dependencies, credentials, or
+  temporary files unless the repository convention explicitly requires it.
+- Do not push to any remote without explicit user authorization.
 
-### Кнопки и ссылки
+## Deployment boundary
 
-Палитра интерфейса — графит, белый и оттенки `emerald`; каменно-серый `stone` не используй.
-Подчёркивания ссылок не добавляй. Зачёркивание старой цены сохраняй.
-Общие варианты кнопок, фокус и анимация — `src/styles/controls.css`;
-для Astro используй `components/ui/Action.astro`, для Vue — те же классы `.btn`.
-Правила и примеры: `docs/design-system.md`. Не дублируй оформление CTA в компонентах.
-Сохраняй области нажатия от 44 px, перенос длинных подписей и поддержку `prefers-reduced-motion`.
+**Do not push to the `production` remote or run `npm run deploy` unless the user
+explicitly requests deployment in the current conversation.**
 
-## Реквизиты и контакты
+A request to fix, build, test, type-check, commit, or push code does not by
+itself authorize a production deployment. By default, limit work to local
+verification and preview.
 
-`src/lib/contacts-data.ts` — единый источник обязательных сведений о компании: реквизиты ИП, адрес, часы работы, телефоны. Их используют контакты, футер и структурированные данные. Обновляй этот модуль, не копии в отдельных компонентах.
+`npm run deploy` runs `git push production main`. On the VPS, a `post-receive`
+hook checks out `main`, runs `npm ci && npm run build`, and synchronizes `dist/`
+to the nginx web root with rsync.
 
-## Завершение задачи
+Do not circumvent this boundary by directly running the deployment hook, rsync,
+or an equivalent publishing command.
 
-Перед завершением проверь применимые к задаче условия:
+Infrastructure context:
 
-- изменения используют общие данные и компоненты;
-- новые медиа локализованы, нужные производные созданы и включены в изменения;
-- даты публикации, цены, SEO и ссылки соответствуют правилам выше;
-- выполнены подходящие проверки, прежде всего сборка при изменении сайта;
-- production-деплой и применение серверных настроек выполнены только при соответствующем явном запросе.
+- Hosting provider: HostingRussia, Moscow.
+- The project was migrated from Beget after a service disruption in November 2026.
+- `deploy/setup-server.sh` is intended for provisioning a new Ubuntu 24.04 VPS.
+- DNS is managed through reg.ru.
+- This context does not authorize server reinstallation, DNS changes, credential
+  rotation, or infrastructure modifications.
 
-Сообщи, что изменено, что проверено и какие действия или проверки остались невыполненными.
+## Deployment procedure
+
+When the user explicitly requests deployment:
+
+1. Confirm the intended branch is `main` and inspect `git status`.
+2. Run relevant local verification, at minimum `npm run build`; run
+   `npm run astro -- check` when its dependencies are available.
+3. Inspect the changes that will be deployed.
+4. Run `npm run deploy`.
+5. Report the command result and any verification performed.
+6. Do not claim a successful deployment unless the deployment command completed
+   successfully and relevant verification passed.
+
+If verification fails, do not deploy. Report the failure, the affected command,
+and the recommended next step.
+
+## Task completion checklist
+
+Before declaring a task complete, verify the applicable items:
+
+- Changes use shared data sources and components rather than duplicating logic.
+- New media is localized; required derived assets are generated and included in
+  the change when applicable.
+- Publication dates, prices, SEO metadata, links, and structured data follow
+  the rules above.
+- Relevant checks have been performed, especially `npm run build` for site
+  changes.
+- Type checking has been performed when its dependencies are available.
+- No secrets, credentials, temporary files, debug output, or unrelated generated
+  artifacts are included in the change.
+- Production deployment and server configuration changes occur only after an
+  explicit user request.
+
+In the final response, state:
+
+- What changed.
+- Which checks were performed and their results.
+- Which required actions or checks remain incomplete, if any.
