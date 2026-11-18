@@ -28,8 +28,8 @@ export async function getStaticPaths() {
      /feed/yandex.xml, цена и фото в фиде обязаны совпадать со страницей. */
   const entries = await getModelEntries()
 
-  /* ── Каждая модель доступна по двум путям: новому слагу (канонический)
-     и старому UUID (чтобы не 404'ить уже проиндексированные Яндексом ссылки) ── */
+  /* Канонический slug отдаёт карточку, старый UUID — redirect на неё
+     (см. проверку isUuidRoute ниже), чтобы не терять исторические ссылки. */
   return [
     ...entries.map(entry => ({ params: { id: entry.slug },     props: entry })),
     ...entries.map(entry => ({ params: { id: entry.model.id }, props: entry })),
@@ -38,6 +38,13 @@ export async function getStaticPaths() {
 
 const entry = Astro.props as ModelEntry
 const { model, slug, colors, minPrice, seriesName, seriesSlug, coatingName, coatingSlug, extraColors } = entry
+
+/* Старый UUID-маршрут не должен отдавать полную копию карточки. Нулевой
+   redirect сохраняет накопленные ссылки, сразу передаёт робота на канонический
+   slug и не расходует обход на сотни noindex-дублей. В static output Astro
+   генерирует redirect-страницу с canonical и meta refresh. */
+const isUuidRoute = Astro.params.id !== slug
+if (isUuidRoute) return Astro.redirect(`/models/${slug}/`, 301)
 
 const spec        = getSeriesSpec(seriesSlug, coatingSlug)
 /* Цвет — для моделей, у которых погонаж зависит от цвета (COLOR_ACCESSORIES,
@@ -78,18 +85,8 @@ const groupPriceLabel = (items: typeof accessories) => {
 }
 
 const canonicalUrl  = Astro.site ? new URL(`/models/${slug}/`, Astro.site).href : undefined
-/* UUID-маршрут — тот же контент, что и на slug-странице (см. комментарий
-   у getStaticPaths: оставлен, чтобы не 404'ить старые проиндексированные
-   ссылки). canonical выше уже указывает на slug-версию, но Яндекс.Вебмастер
-   всё равно считает title/description дублями по факту краулинга — noIndex
-   явно говорит роботу не индексировать и не учитывать эту версию отдельной
-   страницей, ссылка при этом продолжает открываться. */
-const isUuidRoute   = Astro.params.id !== slug
-
-/* «Другие модели серии» — только на канонической странице: UUID-копия закрыта
-   от индексации и ссылок раздавать не должна. getModelEntries() кэшируется на
-   сборку — повторных запросов к Supabase нет. */
-const related = isUuidRoute ? null : relatedModels(entry, await getModelEntries())
+/* getModelEntries() кэшируется на сборку — повторных запросов к Supabase нет. */
+const related = relatedModels(entry, await getModelEntries())
 /* Имя модели для показа: без лишних пробелов и латинских букв-двойников
    внутри кириллических слов (см. cleanModelName). */
 const displayName = cleanModelName(model.name)
@@ -177,7 +174,6 @@ const structuredData = [{
   canonical={canonicalUrl}
   ogImage={colors[0]?.photo || undefined}
   structuredData={structuredData}
-  noIndex={isUuidRoute}
 >
   <div class="breadcrumb-bar">
     <div class="container">

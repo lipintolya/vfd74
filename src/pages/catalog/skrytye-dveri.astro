@@ -159,6 +159,7 @@ const structuredData = canonicalUrl ? [
       priceCurrency: 'RUB',
       lowPrice: SECRET_MIN_KIT_PRICE,
       highPrice: Math.max(...SECRET_PRICES_DISPLAY.map(r => r.kitStandardPrice)),
+      offerCount: SECRET_PRICES_DISPLAY.length,
       availability: 'https://schema.org/InStock',
       areaServed: [
         { '@type': 'City', name: 'Челябинск' },
@@ -180,6 +181,7 @@ const structuredData = canonicalUrl ? [
       priceCurrency: 'RUB',
       lowPrice: REFLEX_MIN_KIT_PRICE,
       highPrice: Math.max(...REFLEX_PRICES.map(r => r.kitStandardPrice)),
+      offerCount: REFLEX_PRICES.length,
       availability: 'https://schema.org/InStock',
       areaServed: [
         { '@type': 'City', name: 'Челябинск' },

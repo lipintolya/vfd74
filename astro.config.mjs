@@ -143,6 +143,19 @@ export default defineConfig({
   /* Постоянные переадресации удалённых страниц (статическая сборка —
      HTML с мгновенным meta refresh + canonical на новый адрес). */
   redirects: {
+    /* Старые служебные адреса из отчёта Google Search Console. */
+    '/policy/':                                     '/privacy/',
+    '/warranty/':                                   '/about/',
+
+    /* Маршруты прежнего каталога: сохраняем накопленные сигналы и ведём
+       пользователя на актуальную модель или серию, а не на главную. */
+    '/catalog/strong-flex/innova/innova03c':         '/models/innova-03s-innova/',
+    '/catalog/strong-flex/innova/innova03c Crystal Cloud':
+      '/models/innova-03s-kristall-steklo-innova/',
+    '/catalog/emalex/emalex/emalex33':               '/catalog/series/emalex-modern/',
+    '/models/emaleks-33-satin-belyi-steklo-innova/':
+      '/models/emaleks-33-satin-belyi-steklo-emalex-modern/',
+
     /* «Урбан 1» с чёрной кромкой был разбит в Supabase на две записи по
        цветам; бежевый перенесён в основную (98075687), лишняя запись
        9afc9b75 удалена — её адреса ведут на основную страницу модели. */
