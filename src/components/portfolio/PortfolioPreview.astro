@@ -70,7 +70,7 @@ const cover = (id: string) => ({
               <img
                 class="pp-img"
                 {...cover(work.id)}
-                sizes="(min-width: 80rem) 24vw, (min-width: 48rem) 30vw, 92vw"
+                sizes="(min-width: 80rem) 24vw, (min-width: 48rem) 30vw, 82vw"
                 alt={work.title}
                 width="640"
                 height="800"
@@ -105,14 +105,14 @@ const cover = (id: string) => ({
         ))}
       </ul>
 
-      {/* Один выразительный CTA на блок (docs/design-system.md): outline
-          со стрелкой — тот же паттерн, что у «Все отзывы» и «Все акции».
-          Счётчик над кнопкой даёт масштаб, но не спорит с ней за внимание. */}
+      {/* На мобильном карточки уже являются крупными ссылками. Переход ко
+          всему портфолио оставляем спокойным текстовым действием, чтобы не
+          повторять ещё одну акцентную кнопку сразу после ленты. */}
       <div class="pp-cta">
         <p class="pp-count">
           <strong>{total}</strong> {totalWord} в&nbsp;портфолио
         </p>
-        <Action href="/portfolio/" variant="outline">Все работы</Action>
+        <Action href="/portfolio/" variant="text">Смотреть все работы</Action>
       </div>
 
     </div>
@@ -148,13 +148,22 @@ const cover = (id: string) => ({
   /* ── Лента кадров ─────────────────────────────────────────────── */
   .pp-grid {
     display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(82vw, 20rem);
     gap: 0.875rem;
-    margin: 0;
-    padding: 0;
+    margin: 0 calc(-1 * clamp(1rem, 4vw, 2rem));
+    padding: 0 clamp(1rem, 4vw, 2rem) 0.25rem;
     list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: clamp(1rem, 4vw, 2rem);
+    scrollbar-width: none;
   }
+  .pp-grid::-webkit-scrollbar { display: none; }
   .pp-item {
     min-width: 0;
+    scroll-snap-align: start;
   }
   @media (width >= 40rem) {
     .pp-grid {
@@ -163,8 +172,14 @@ const cover = (id: string) => ({
   }
   @media (width >= 48rem) {
     .pp-grid {
+      grid-auto-flow: row;
+      grid-auto-columns: auto;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: clamp(1rem, 1.6vw, 1.5rem);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      scroll-snap-type: none;
     }
   }
 
@@ -295,14 +310,10 @@ const cover = (id: string) => ({
   .pp-cta {
     display: grid;
     justify-items: start;
-    gap: 0.75rem;
+    gap: 0.25rem;
   }
-  /* Счётчик стоит над кнопкой и выровнен по её подписи, а не по рамке:
-     внутри пилюли свой отступ, и без сдвига строка с числом «вылезает»
-     влево от текста «Все работы». Отступ равен padding-left кнопки. */
   .pp-count {
     margin: 0;
-    padding-inline-start: 1.25rem;
     font-size: var(--text-step-0);
     line-height: 1.4;
     color: #475569; /* slate-600: на тёплой полосе даёт 6.9:1, а slate-500 — 4.3:1 (мало для 13px) */
