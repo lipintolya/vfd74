@@ -29,36 +29,39 @@ const CATEGORIES: PhotoTile[] = [
     title: 'Межкомнатные двери',
     fact:  interiorMinPrice ? `от ${rub(interiorMinPrice)} за полотно` : null,
     href:  '/catalog/',
-    cta:   'Модели',
+    cta:   'Выбрать модель',
     img: {
       src:    '/renders/home/cat-interior-960.webp',
       srcset: '/renders/home/cat-interior-640.webp 640w, /renders/home/cat-interior-960.webp 960w, /media/Main_page/left_bento/cover_doors.webp 1280w',
       alt:    'Белая межкомнатная дверь в светлом интерьере',
       width: 960, height: 960,
+      sizes: '(min-width: 64rem) 33vw, (min-width: 48rem) calc(100vw - 4rem), calc(100vw - 2rem)',
     },
   },
   {
     title: 'Входные двери',
     fact:  `от ${rub(entranceMinPrice)} с накладкой изнутри`,
     href:  '/vhodnye-dveri/',
-    cta:   'Входные двери',
+    cta:   'Выбрать входную дверь',
     img: {
       src:    '/renders/home/cat-entrance-960.webp',
       srcset: '/renders/home/cat-entrance-640.webp 640w, /renders/home/cat-entrance-960.webp 960w, /media/metal_doors/Optima/render_optima.webp 1122w',
       alt:    'Стальная входная дверь «Оптима» в тёмно-сером цвете',
       width: 960, height: 1200,
+      sizes: '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, calc(100vw - 2rem)',
     },
   },
   {
     title: 'Алюминиевые перегородки',
     fact:  'Изготовление до 45 рабочих дней',
     href:  '/partitions/',
-    cta:   'Перегородки',
+    cta:   'Смотреть перегородки',
     img: {
       src:    '/renders/home/cat-partitions-960.webp',
       srcset: '/renders/home/cat-partitions-640.webp 640w, /renders/home/cat-partitions-960.webp 960w, /media/alum/saint_p_alum/tg4.webp 1080w',
       alt:    'Реечная перегородка из чёрного алюминиевого профиля в гостиной',
       width: 960, height: 1196,
+      sizes: '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, calc(100vw - 2rem)',
     },
   },
 ]
@@ -79,21 +82,102 @@ const CATEGORIES: PhotoTile[] = [
 </section>
 
 <style>
-  /* Витрина направлений: первая категория задаёт масштаб, две другие
-     сохраняют собственные фотографии и равноправные точки входа. */
-  .catalog-home :global(.pt-grid) { gap: 0.75rem; }
-  .catalog-home :global(.pt-tile) { aspect-ratio: 1.18; }
-  .catalog-home :global(.pt-body) { padding: clamp(1.25rem, 3vw, 2rem); }
+  /* Mobile-first: карточки остаются достаточно низкими для быстрого
+     просмотра, но текст и действие не конкурируют с изображением. */
+  .catalog-home :global(.pt-grid) {
+    gap: 1rem;
+  }
+  .catalog-home :global(.pt-tile) {
+    aspect-ratio: 16 / 11;
+    min-height: 19rem;
+  }
+  .catalog-home :global(.pt-tile::before) {
+    background:
+      linear-gradient(to top, rgb(0 0 0 / 0.9) 0%, rgb(0 0 0 / 0.54) 42%, rgb(0 0 0 / 0.08) 78%),
+      linear-gradient(to right, rgb(0 0 0 / 0.12), transparent 45%);
+  }
+  .catalog-home :global(.pt-body) {
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+  .catalog-home :global(.pt-title) {
+    max-width: 18ch;
+  }
+  .catalog-home :global(.pt-fact) {
+    max-width: 32rem;
+  }
+
+  /* Не отдельная «кнопка поверх фото», а нижняя навигационная строка:
+     вся карточка остаётся одной ссылкой и одним tab-stop. */
+  .catalog-home :global(.pt-link) {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    min-height: 3rem;
+    margin-top: 1.125rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgb(255 255 255 / 0.38);
+  }
+  .catalog-home :global(.pt-link .btn-arrow-icon) {
+    box-sizing: border-box;
+    flex: 0 0 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.75rem;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--color-graphite);
+    transform: rotate(-45deg);
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Планшет: главная категория получает целую строку, две остальные —
+     равные колонки. Так текст не зажимается в три узких столбца. */
   @media (width >= 48rem) {
     .catalog-home :global(.pt-grid) {
-      grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
     }
-    .catalog-home :global(.pt-tile) { aspect-ratio: 4 / 5; }
-    .catalog-home :global(.pt-tile:first-child) { aspect-ratio: auto; }
+    .catalog-home :global(.pt-tile) {
+      min-height: 22rem;
+      aspect-ratio: 4 / 3;
+    }
+    .catalog-home :global(.pt-tile:first-child) {
+      grid-column: 1 / -1;
+      min-height: 25rem;
+      aspect-ratio: 2 / 1;
+    }
   }
+
+  /* Десктоп: спокойный равный триптих в полную ширину контейнера. */
   @media (width >= 64rem) {
-    .catalog-home :global(.pt-grid) { gap: 1.25rem; }
-    .catalog-home :global(.pt-tile:first-child .pt-title) { font-size: var(--text-step-5); }
+    .catalog-home :global(.pt-grid) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1rem, 1.6vw, 1.5rem);
+    }
+    .catalog-home :global(.pt-tile),
+    .catalog-home :global(.pt-tile:first-child) {
+      grid-column: auto;
+      min-height: 31rem;
+      aspect-ratio: 4 / 5;
+    }
+    .catalog-home :global(.pt-title) {
+      font-size: var(--text-step-4);
+    }
+  }
+
+  @media (hover: hover) {
+    .catalog-home :global(.pt-tile:hover .pt-link .btn-arrow-icon) {
+      transform: rotate(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .catalog-home :global(.pt-link .btn-arrow-icon) {
+      transition: none;
+    }
+    .catalog-home :global(.pt-tile:hover .pt-link .btn-arrow-icon) {
+      transform: rotate(-45deg);
+    }
   }
 </style>

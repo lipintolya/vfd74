@@ -1,7 +1,7 @@
 /**
- * Товары на главной: «Новинки» (Техно, Штрих 2А, «Рефлекс») — вкладки
- * components/home/Novelties.astro, и отдельный блок «Скрытые двери из
- * наличия» («Секрет» — не новинка). Оба рисует ProductFeature.astro.
+ * Товары на главной: «Новинки» (Техно, Штрих 2А, «Рефлекс») — открытая витрина
+ * components/home/Novelties.astro, и отдельный блок «Скрытые двери»
+ * («Секрет» — не новинка), который рисует HiddenDoorsFeature.astro.
  *
  * Цены не пишем руками: Техно и Штрих — из того же Supabase-каталога, что
  * и /catalog/ (getCatalogCards + calcKitPrice), скрытые двери — из
@@ -14,7 +14,7 @@ import { rub } from '../data/services'
 import { calcKitPrice } from '../data/accessories'
 import { formatDate } from './promo-dates'
 import {
-  REFLEX_IMAGE, REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE,
+  REFLEX_MIN_BLADE_PRICE, REFLEX_MIN_KIT_PRICE,
   SECRET_MIN_BLADE_PRICE, SECRET_MIN_KIT_PRICE,
   SECRET_MIN_BLADE_PRICE_ORIGINAL, SECRET_MIN_KIT_PRICE_ORIGINAL,
   SECRET_PROMO_ACTIVE, SECRET_PROMO_DISCOUNT, SECRET_PROMO_VALID_UNTIL,
@@ -30,11 +30,8 @@ export interface PromoPrice {
 }
 
 export interface HomePromo {
-  /** Ключ — из него id вкладки и панели */
+  /** Стабильный ключ записи. */
   id:      string
-  /** Короткое имя на вкладке «Новинок»: на телефоне вкладки делят ширину
-      экрана; без вкладки (отдельный блок) не нужно */
-  tab?:    string
   title:   string
   /** Две короткие фразы живым текстом: что это и есть ли на складе.
       Статус и свойства — словами, без плашек, списков и цветных строк */
@@ -46,8 +43,8 @@ export interface HomePromo {
   /** Цена комплекта — второй строкой обычным текстом, с составом */
   kit?:    PromoPrice & { includes: string }
   cta:     { label: string; href: string }
-  /** Кадры слайдера; /renders/home/<имя>.webp имеют ресайзы 640/960 */
-  images:  string[]
+  /** Главный кадр; /renders/home/<имя>.webp имеет ресайзы 640/960. */
+  image:   string
   alt:     string
 }
 
@@ -77,17 +74,11 @@ export interface HeroData {
   /** Карточек со складским цветом — как на /catalog/v-nalichii/ */
   inStock:  number
   minPrice: number | null
-  /** «На фото» у первого слайда: модель с рендера гостиной */
-  coverModel: { label: string; href: string } | null
   /** Факт на плитке «Скрытые двери»: цена КОМПЛЕКТА с коробом — полотно
       без короба скрытой дверью не поставить, «от» за одно полотно вводило бы
       в заблуждение */
   secretFact: string
 }
-
-/* На рендере первого слайда — Урбан ЗТ «Пекан золотой» с чёрной кромкой
-   (рисунок «ёлочкой»). Другой рендер — поменять id или убрать. */
-const HERO_COVER_MODEL_ID = '6e4c2664-0520-4f59-84a1-79b2bfe55333'
 
 export async function getHomePromos(): Promise<{
   novelties: HomePromo[]
@@ -109,24 +100,22 @@ export async function getHomePromos(): Promise<{
 
   const tehno: HomePromo = {
     id:     'tehno',
-    tab:    'Техно',
     title:  'Серия Техно',
     /* Свойства — из преимуществ Эмалекса на /catalog/ (coatingGroupCopy) */
     text:   'Новая коллекция в покрытии Эмалекс: не боится царапин, легко моется и не желтеет. Техно 1 белый — на складе.',
     ...catalogPrices(tehnoCard),
     cta:    { label: 'Смотреть серию', href: '/catalog/series/tehno/' },
-    images: ['/renders/home/tehno-1.webp', '/renders/home/tehno-2.webp', '/renders/home/tehno-3.webp'],
+    image:  '/renders/home/tehno-1.webp',
     alt:    'Межкомнатная дверь серии «Техно» в цвете Эмалекс белый',
   }
 
   const shtrih: HomePromo | null = shtrihCard ? {
     id:      'shtrih',
-    tab:     'Штрих 2А',
     title:   'Урбан Штрих 2А',
     text:    'Бежевый Эмалекс с графичным чёрным молдингом и алюминиевой кромкой. Есть на складе — без ожидания.',
     ...catalogPrices(shtrihCard),
     cta:     { label: 'Смотреть модель', href: `/models/${shtrihCard.slug}/` },
-    images:  ['/renders/home/shtrih-2a-1.webp', '/renders/home/shtrih-2a-2.webp', '/renders/home/shtrih-2a-3.webp'],
+    image:   '/renders/home/shtrih-2a-1.webp',
     alt:     'Межкомнатная дверь Урбан Штрих 2А в цвете Эмалекс бежевый с чёрным молдингом',
   } : null
 
@@ -134,8 +123,8 @@ export async function getHomePromos(): Promise<{
     id:     'secret',
     /* В наличии — кромки чёрная и серебро («хром»), см. SECRET_PRICES;
        минимальные цены ниже — как раз у них (золото дороже) */
-    title:  'Скрытые двери из наличия с кромками чёрный и хром',
-    text:   'Полотно вровень со стеной, без наличников и видимых петель — красится в цвет стены. Забрать можно без ожидания изготовления.',
+    title:  'Скрытые двери «Секрет»',
+    text:   'Полотно вровень со стеной, под покраску в её цвет. Чёрная и хромированная кромки — в наличии в Челябинске.',
     offer:  SECRET_PROMO_ACTIVE
       ? `Акция −${Math.round(SECRET_PROMO_DISCOUNT * 100)}% до ${formatDate(SECRET_PROMO_VALID_UNTIL)}`
       : SECRET_ROW_PROMO
@@ -146,42 +135,31 @@ export async function getHomePromos(): Promise<{
     kit:    { value: SECRET_MIN_KIT_PRICE, from: true, includes: KIT_HIDDEN,
               old: SECRET_MIN_DISCOUNTED ? SECRET_MIN_KIT_PRICE_ORIGINAL : undefined },
     cta:    { label: 'Смотреть скрытые двери', href: '/catalog/skrytye-dveri/' },
-    /* Последний кадр — оригинал из /media: он и так лёгкий (15 КБ) */
-    images: [
-      '/renders/home/secret-cover.webp',
-      '/renders/home/secret-2.webp',
-      '/renders/home/secret-3.webp',
-      '/media/invisible/reverse_render_11zon.webp',
-    ],
+    image:  '/renders/home/secret-cover.webp',
     alt:    'Скрытая дверь серии «Секрет» — полотно заподлицо со стеной',
   }
 
   const reflex: HomePromo = {
     id:      'reflex',
-    tab:     'Рефлекс',
     title:   'Скрытая дверь с зеркалом «Рефлекс»',
     text:    'Зеркало во всю высоту полотна, дверь вровень со стеной. Размеры под проём, высота до 2,5 м.',
     price:   { value: REFLEX_MIN_BLADE_PRICE, from: true },
     kit:     { value: REFLEX_MIN_KIT_PRICE,   from: true, includes: KIT_HIDDEN },
     cta:     { label: 'Смотреть «Рефлекс»', href: '/catalog/skrytye-dveri/#reflex' },
-    images:  ['/renders/home/reflex-1.webp', '/renders/home/reflex-2.webp', '/renders/home/reflex-3.webp', REFLEX_IMAGE],
+    image:   '/renders/home/reflex-1.webp',
     alt:     'Скрытая дверь с зеркалом «Рефлекс» — полотно заподлицо со стеной',
   }
 
-  const coverCard = cards.find(c => c.id === HERO_COVER_MODEL_ID)
   const hero: HeroData = {
     models:   cards.length,
     inStock:  inStockCards(cards).length,
     minPrice: interiorMinPrice,
-    coverModel: coverCard
-      ? { label: `${coverCard.name}, ${coverCard.colorName.toLowerCase()}`, href: `/models/${coverCard.slug}/` }
-      : null,
     secretFact: `С коробом от ${rub(SECRET_MIN_KIT_PRICE)}${SECRET_MIN_DISCOUNTED ? ' по акции' : ''}`,
   }
 
   return {
     hero,
-    /* Порядок вкладок; Штрих — только если модель нашлась в каталоге */
+    /* Порядок в витрине; Штрих — только если модель нашлась в каталоге */
     novelties: [tehno, shtrih, reflex].filter((p): p is HomePromo => p !== null),
     inStock:   secret,
     interiorMinPrice,

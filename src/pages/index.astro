@@ -9,7 +9,7 @@ import HeroSlider from '../components/home/HeroSlider.vue'
 import { HERO_COVER_IMAGE, HERO_COVER_IMAGE_SRCSET } from '../data/hero-image'
 import PromoStripBanner from '../components/home/PromoStripBanner.astro'
 import Novelties from '../components/home/Novelties.astro'
-import ProductFeature from '../components/home/ProductFeature.astro'
+import HiddenDoorsFeature from '../components/home/HiddenDoorsFeature.astro'
 import CatalogCategories from '../components/home/CatalogCategories.astro'
 import Promo from '../components/home/Promo.astro'
 import Reviews from '../components/home/Reviews.astro'
@@ -130,13 +130,9 @@ const localBusinessSchema = {
   <HowWeWork />
   <Novelties items={novelties} />
   <PromoStripBanner />
-  <!-- «Секрет» не новинка — отдельным блоком под замером, фото справа
-       (у «Новинок» слева) -->
-  <section class="section bg-white" aria-labelledby="in-stock-heading">
-    <div class="container">
-      <ProductFeature item={inStock} headingTag="h2" headingId="in-stock-heading" reverse />
-    </div>
-  </section>
+  <!-- «Секрет» не новинка: для скрытых дверей отдельная
+       архитектурная сцена вместо товарной строки «Новинок». -->
+  <HiddenDoorsFeature item={inStock} />
   <CatalogCategories interiorMinPrice={interiorMinPrice} />
   <Reviews limit={4} />
   <PortfolioPreview />

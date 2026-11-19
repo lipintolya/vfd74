@@ -1,217 +1,300 @@
 ---
 /**
- * «Новинки» на главной — один блок с вкладками вместо промо подряд (те
- * растягивали главную одним и тем же приёмом). Данные — lib/home-promos.ts,
- * панель товара — общий ProductFeature.astro.
+ * New products as a static editorial showcase.
  *
- * Вкладки — сегментный переключатель: серая дорожка, выбранная вкладка —
- * тёмная «таблетка», которая переезжает между вкладками.
- *
- * Скорость: все панели — в серверном HTML (тексты и ссылки видят
- * поисковики), неактивные — с атрибутом hidden: их фото не грузятся
- * (lazy-картинки в display:none браузер не запрашивает), а остров
- * слайдера (client:visible) не гидрируется, пока панель не откроют.
- * Переключение — скрипт ниже, по образцу ARIA Tabs: стрелки ←/→,
- * Home/End, фокус ходит по вкладкам.
+ * Product imagery and buying information live on separate surfaces so the
+ * section remains visually distinct from the image-overlay home-page hero.
+ * All products, prices and links are visible in the server-rendered document
+ * without interaction or client-side JavaScript.
  */
-import ProductFeature from './ProductFeature.astro'
-import type { HomePromo } from '../../lib/home-promos'
+import Action from '../ui/Action.astro'
+import { rub } from '../../data/services'
+import { typograph } from '../../lib/typograph'
+import type { HomePromo, PromoPrice } from '../../lib/home-promos'
 
 interface Props {
   items: HomePromo[]
 }
+
 const { items } = Astro.props
+
+const money = (price: PromoPrice) => `${price.from ? 'от\u00a0' : ''}${rub(price.value)}`
+
+const IMAGE_META: Record<string, { width: number; height: number }> = {
+  '/renders/home/tehno-1.webp': { width: 1254, height: 1254 },
+  '/renders/home/shtrih-2a-1.webp': { width: 1145, height: 1374 },
+  '/renders/home/reflex-1.webp': { width: 1300, height: 732 },
+}
+
+const imageMeta = (src: string) => IMAGE_META[src] ?? { width: 1300, height: 1300 }
+const imageSrcset = (src: string) => {
+  if (!src.startsWith('/renders/home/')) return undefined
+  const base = src.replace(/\.webp$/, '')
+  const { width } = imageMeta(src)
+  return `${base}-640.webp 640w, ${base}-960.webp 960w, ${src} ${width}w`
+}
 ---
 
 {items.length > 0 && (
   <section class="section bg-white" aria-labelledby="novelties-heading">
     <div class="container">
-
       <header class="nv-head">
-        <h2 id="novelties-heading" class="t-h2 nv-h2">Новинки</h2>
-        <div
-          class="nv-tabs"
-          role="tablist"
-          aria-label="Новинки"
-          style={`--nv-n:${items.length}`}
-          data-nv-tabs
-        >
-          <span class="nv-thumb" aria-hidden="true" />
-          {items.map((p, i) => (
-            <button
-              type="button"
-              role="tab"
-              class="nv-tab"
-              id={`nv-tab-${p.id}`}
-              aria-controls={`nv-panel-${p.id}`}
-              aria-selected={i === 0 ? 'true' : 'false'}
-              tabindex={i === 0 ? 0 : -1}
-            >
-              {p.tab ?? p.title}
-            </button>
-          ))}
-        </div>
+        <h2 id="novelties-heading" class="t-h2 nv-heading">Новинки</h2>
+        <p class="nv-intro">
+          Все новые модели — сразу: особенности, актуальные цены и переход к подробностям.
+        </p>
       </header>
 
-      {items.map((p, i) => (
-        <div
-          class="nv-panel"
-          role="tabpanel"
-          id={`nv-panel-${p.id}`}
-          aria-labelledby={`nv-tab-${p.id}`}
-          hidden={i !== 0}
-        >
-          <ProductFeature item={p} />
-        </div>
-      ))}
+      <div class="nv-bento">
+        {items.map((item) => {
+          const meta = imageMeta(item.image)
 
+          return (
+            <article class="nv-tile">
+              <div class="nv-media">
+                <img
+                  class="nv-image"
+                  src={item.image}
+                  srcset={imageSrcset(item.image)}
+                  sizes="(max-width: 1023px) calc(100vw - 2rem), min(50vw, 46rem)"
+                  alt={item.alt}
+                  width={meta.width}
+                  height={meta.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <div class="nv-content">
+                <h3 class="t-h3 nv-title">{typograph(item.title)}</h3>
+                <p class="nv-text">{typograph(item.text)}</p>
+
+                {item.offer && <p class="nv-offer">{typograph(item.offer)}</p>}
+
+                {(item.price || item.kit) && (
+                  <div class="nv-buy">
+                    {item.price && (
+                      <p class="nv-price">
+                        <span class="t-price">{money(item.price)}</span>
+                        {item.price.old && <s class="nv-old">{rub(item.price.old)}</s>}
+                        <span class="nv-per">за полотно</span>
+                      </p>
+                    )}
+                    {item.kit && (
+                      <p class="nv-kit">
+                        Комплект {item.kit.includes}&nbsp;— <b>{money(item.kit)}</b>
+                        {item.kit.old && <s class="nv-old">{rub(item.kit.old)}</s>}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <Action
+                  href={item.cta.href}
+                  variant="primary"
+                  class="nv-cta"
+                >
+                  {item.cta.label}
+                </Action>
+              </div>
+            </article>
+          )
+        })}
+      </div>
     </div>
   </section>
 )}
 
-<script>
-  document.querySelectorAll<HTMLElement>('[data-nv-tabs]').forEach((list) => {
-    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[role="tab"]')]
-    const current = () => tabs.find((t) => t.getAttribute('aria-selected') === 'true') ?? tabs[0]!
-
-    /* «Таблетка» под выбранной вкладкой — позиция и ширина из раскладки;
-       пересчёт при изменении ширины (поворот телефона, загрузка шрифта) */
-    const place = () => {
-      const tab = current()
-      list.style.setProperty('--nv-x', `${tab.offsetLeft}px`)
-      list.style.setProperty('--nv-w', `${tab.offsetWidth}px`)
-    }
-
-    const select = (next: HTMLButtonElement, focus = false) => {
-      for (const tab of tabs) {
-        const on = tab === next
-        tab.setAttribute('aria-selected', String(on))
-        tab.tabIndex = on ? 0 : -1
-        const panel = document.getElementById(tab.getAttribute('aria-controls') ?? '')
-        if (panel) panel.hidden = !on
-      }
-      place()
-      if (focus) next.focus()
-    }
-
-    list.addEventListener('click', (e) => {
-      const tab = (e.target as Element).closest<HTMLButtonElement>('[role="tab"]')
-      if (tab) select(tab)
-    })
-
-    list.addEventListener('keydown', (e) => {
-      const i = tabs.indexOf(document.activeElement as HTMLButtonElement)
-      if (i < 0) return
-      const n = tabs.length
-      const to =
-        e.key === 'ArrowRight' ? (i + 1) % n :
-        e.key === 'ArrowLeft'  ? (i - 1 + n) % n :
-        e.key === 'Home'       ? 0 :
-        e.key === 'End'        ? n - 1 : -1
-      if (to < 0) return
-      e.preventDefault()
-      select(tabs[to]!, true)
-    })
-
-    place()
-    new ResizeObserver(place).observe(list)
-    // Переезд «таблетки» анимируем только после первой расстановки
-    requestAnimationFrame(() => list.classList.add('is-ready'))
-  })
-</script>
-
 <style>
-  /* Шапка: заголовок слева, переключатель справа; на телефоне
-     переключатель — под заголовком во всю ширину */
   .nv-head {
+    display: grid;
+    gap: 0.75rem 3rem;
+    width: 100%;
+    margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
+  }
+  .nv-heading,
+  .nv-intro {
+    margin: 0;
+  }
+  .nv-intro {
+    max-width: 39rem;
+    font-size: var(--text-step-2);
+    line-height: 1.5;
+    color: var(--color-body);
+    text-wrap: pretty;
+  }
+
+  .nv-bento {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+  }
+  .nv-tile {
+    display: grid;
+    grid-template-rows: minmax(18rem, 1fr) auto;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #ebe8e2;
+  }
+  .nv-media {
+    min-width: 0;
+    min-height: 18rem;
+    overflow: hidden;
+    background: #e8e5df;
+  }
+  .nv-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms var(--ease-out);
+  }
+  .nv-tile:nth-child(2) .nv-image {
+    object-position: center 42%;
+  }
+  .nv-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
+  .nv-title,
+  .nv-text,
+  .nv-offer,
+  .nv-price,
+  .nv-kit {
+    margin: 0;
+  }
+  .nv-title {
+    max-width: 18ch;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .nv-text {
+    max-width: 36rem;
+    margin-top: 0.625rem;
+    font-size: var(--text-step-0);
+    line-height: 1.5;
+    color: var(--color-body);
+    text-wrap: pretty;
+  }
+  .nv-offer {
+    margin-top: 0.875rem;
+    font-size: var(--text-step-0);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .nv-buy {
+    margin-top: 0.875rem;
+  }
+  .nv-offer + .nv-buy {
+    margin-top: 0.375rem;
+  }
+  .nv-price {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.25rem 2.5rem;
-    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: baseline;
+    gap: 0 0.5rem;
   }
-  .nv-h2 { margin: 0; }
+  .nv-price .t-price {
+    color: var(--color-ink);
+  }
+  .nv-per,
+  .nv-kit,
+  .nv-old {
+    font-size: var(--text-step-0);
+  }
+  .nv-per,
+  .nv-kit {
+    color: var(--color-body);
+  }
+  .nv-kit {
+    margin-top: 0.25rem;
+    line-height: 1.45;
+  }
+  .nv-kit b {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+  .nv-old {
+    margin-inline-start: 0.25rem;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--color-body) 65%, transparent);
+  }
+  .nv-cta {
+    margin-top: 1rem;
+  }
 
-  /* Сегментный переключатель: равные сегменты на серой дорожке.
-     Выбранная — тёмная «таблетка» (.nv-thumb), до запуска скрипта —
-     фон самой вкладки (без JS выбранная тоже видна). Цвета нейтральные:
-     таблетка — графит --color-fg, как у .btn-primary («Связаться» в шапке),
-     дорожка и текст — серые без синевы (slate отдавал синим). */
-  .nv-tabs {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(var(--nv-n), minmax(0, 1fr));
-    width: 100%;
-    padding: 0.25rem;
-    border-radius: 999px;
-    background: #f4f4f5;  /* zinc-100 */
-  }
-  @media (width >= 48rem) {
-    .nv-tabs {
-      display: inline-grid;
-      width: auto;
+  @media (width >= 40rem) {
+    .nv-bento {
+      gap: 1.25rem;
+    }
+    .nv-tile {
+      border-radius: 1.5rem;
+    }
+    .nv-content {
+      padding: 1.75rem;
     }
   }
-  .nv-thumb {
-    position: absolute;
-    top: 0.25rem;
-    bottom: 0.25rem;
-    left: 0;
-    width: var(--nv-w, 0);
-    transform: translateX(var(--nv-x, 0));
-    border-radius: 999px;
-    background: var(--color-fg);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
-    opacity: 0;
-  }
-  .nv-tabs.is-ready .nv-thumb {
-    opacity: 1;
-    transition: transform 300ms var(--ease-out), width 300ms var(--ease-out);
-  }
 
-  .nv-tab {
-    position: relative;
-    z-index: 1;
-    min-height: 2.75rem;  /* 44px — палец */
-    margin: 0;
-    padding: 0 0.5rem;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    font: inherit;
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1;
-    color: #52525b;  /* zinc-600 — на zinc-100 7:1 */
-    white-space: nowrap;
-    cursor: pointer;
-    touch-action: manipulation;
-    transition: color 200ms var(--ease-out);
-  }
   @media (width >= 48rem) {
-    .nv-tab { padding: 0 1.375rem; font-size: var(--text-step-1); }
-  }
-  .nv-tab:hover { color: var(--color-fg); }
-  .nv-tab:active { opacity: 0.72; }
-  .nv-tab[aria-selected='true'] { color: #fff; }
-  .nv-tabs:not(.is-ready) .nv-tab[aria-selected='true'] { background: var(--color-fg); }
-  .nv-tab:focus-visible {
-    outline: 2px solid var(--color-accent-hover);
-    outline-offset: 2px;
+    .nv-head {
+      grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.8fr);
+      align-items: end;
+    }
   }
 
-  /* Панель — общий ProductFeature; здесь только показ/скрытие и
-     мягкое появление при переключении */
-  .nv-panel { animation: nv-in 350ms var(--ease-out); }
-  .nv-panel[hidden] { display: none; }
-  @keyframes nv-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+  @media (width >= 64rem) {
+    .nv-bento {
+      grid-auto-rows: 1fr;
+      gap: clamp(1.25rem, 2vw, 1.5rem);
+    }
+    .nv-tile {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      min-height: 24rem;
+    }
+    .nv-tile:nth-child(even) .nv-media {
+      order: 2;
+    }
+    .nv-tile .nv-media {
+      min-height: 0;
+    }
+    .nv-tile .nv-content {
+      justify-content: center;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    .nv-tile .nv-text {
+      max-width: 34rem;
+    }
+    .nv-tile .nv-price .t-price {
+      font-size: var(--text-step-3);
+    }
   }
 
+  @media (width >= 75rem) {
+    .nv-tile {
+      height: 24rem;
+      min-height: 0;
+    }
+  }
+
+  @media (hover: hover) {
+    .nv-tile:hover .nv-image,
+    .nv-tile:focus-within .nv-image {
+      transform: scale(1.025);
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .nv-panel { animation: none; }
-    .nv-tab, .nv-tabs.is-ready .nv-thumb { transition: none; }
+    .nv-image {
+      transition: none;
+    }
+    .nv-tile:hover .nv-image,
+    .nv-tile:focus-within .nv-image {
+      transform: none;
+    }
   }
 </style>

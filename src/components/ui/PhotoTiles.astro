@@ -17,7 +17,15 @@ export interface PhotoTile {
   href:  string
   /** Короткая подпись назначения; по умолчанию — «Смотреть» */
   cta?:  string
-  img:   { src: string; srcset: string; alt: string; width: number; height: number }
+  img:   {
+    src: string
+    srcset: string
+    alt: string
+    width: number
+    height: number
+    /** Optional responsive slot width for non-uniform layouts. */
+    sizes?: string
+  }
 }
 
 interface Props {
@@ -38,7 +46,7 @@ const Heading = headingTag
         data-reveal-img
         src={c.img.src}
         srcset={c.img.srcset}
-        sizes="(min-width: 48rem) 33vw, calc(100vw - 2rem)"
+        sizes={c.img.sizes ?? '(min-width: 48rem) 33vw, calc(100vw - 2rem)'}
         width={c.img.width}
         height={c.img.height}
         alt={c.img.alt}
