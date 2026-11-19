@@ -8,10 +8,9 @@ import type { HeroData } from '../../lib/home-promos'
  * Первый экран главной.
  *
  * Слева — фото листаются, H1 постоянный («двери в Челябинске» — главный
- * запрос страницы, заголовок не должен зависеть от кадра). Под ним текст и
- * ссылка того, что на фото: у каждого кадра своя модель или серия. Внизу —
- * три подписанных отрезка вместо точек: видно, что дальше, и можно
- * переключить самому.
+ * запрос страницы, заголовок не должен зависеть от кадра). Под ним текст о
+ * том, что на фото. Внизу — три подписанных отрезка вместо точек: видно,
+ * что дальше, и можно переключить самому.
  * Справа — две плитки: что есть на складе и скрытые двери (цена комплекта
  * с коробом, не полотна).
  */
@@ -35,8 +34,6 @@ interface Slide {
   nav:    string
   /** Текст под H1 — про то, что на фото. Факты — из series-descriptions.ts */
   lead:   string
-  /** Ссылка на модель или серию с кадра */
-  link:   { label: string; href: string } | null
 }
 
 const slides: Slide[] = [
@@ -48,7 +45,6 @@ const slides: Slide[] = [
     imagePosition: '80% center',
     nav:  'Урбан ЗТ',
     lead: 'Двери, которые подчёркивают пространство: фактура дерева, чистые линии и тонкая кромка. Подберём модель под ваш интерьер.',
-    link: props.hero.coverModel,
   },
   {
     id: 2,
@@ -56,7 +52,6 @@ const slides: Slide[] = [
     srcset: '/renders/hero/innova-render-640.webp 640w, /renders/hero/innova-render-960.webp 960w, /media/Main_page_perfomance-covers/innova_render.webp 1448w',
     nav:  'Иннова',
     lead: 'Иннова в покрытии ПЭТ: мягкая на ощупь поверхность не собирает отпечатки, а полотно 39 мм из массива сосны и МДФ хорошо глушит звук.',
-    link: { label: 'Серия Иннова', href: '/catalog/series/innova/' },
   },
   {
     id: 3,
@@ -64,7 +59,6 @@ const slides: Slide[] = [
     srcset: '/renders/hero/urban2-render-640.webp 640w, /renders/hero/urban2-render-960.webp 960w, /media/Main_page/left_bento/render_urban2.webp 1254w',
     nav:  'Урбан 2ГР',
     lead: 'Урбан — строгая геометрия и алюминиевая кромка. Покрытие Эмалекс выглядит как эмаль и не боится царапин.',
-    link: { label: 'Урбан 2ГР', href: '/models/urban-2gr-urban-a2d505/' },
   },
 ]
 
@@ -109,8 +103,6 @@ const autoplayEnabled = ref(true)
    таймера анимация начинается заново и идёт ровно в такт смене кадра */
 const cycle           = ref(0)
 
-const currentSlide = computed(() => slides[activeIndex.value] ?? slides[0]!)
-
 /* Пока слайды листаются сами, смену текста скринридеру не зачитываем —
    иначе он перебивает чтение страницы каждые 12 секунд. После паузы или
    ручного управления — polite. */
@@ -142,12 +134,6 @@ const next  = () => { activeIndex.value = (activeIndex.value + 1) % slides.lengt
 const prev  = () => { activeIndex.value = (activeIndex.value - 1 + slides.length) % slides.length }
 
 const goTo = (i: number) => { activeIndex.value = i; if (!isPaused.value) start() }
-const toggleAutoplay = () => {
-  autoplayEnabled.value = !autoplayEnabled.value
-  if (autoplayEnabled.value) start()
-  else stop()
-}
-
 const onMouseEnter = () => { isPaused.value = true;  stop() }
 const onMouseLeave = () => { isPaused.value = false; start() }
 
@@ -229,24 +215,10 @@ onUnmounted(stop)
           <div class="hero-scrim absolute inset-0 z-10" aria-hidden="true" />
 
           <div class="hero-body relative z-10 flex h-full flex-col justify-end p-5 sm:p-8 lg:p-10 text-white">
-            <button
-              type="button"
-              class="hero-pause"
-              :aria-label="autoplayEnabled ? 'Остановить смену фотографий' : 'Возобновить смену фотографий'"
-              :aria-pressed="!autoplayEnabled"
-              @click="toggleAutoplay"
-            >
-              <svg v-if="autoplayEnabled" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M5.5 4v8M10.5 4v8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-              </svg>
-              <svg v-else viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="m6 4 6 4-6 4V4Z" fill="currentColor" />
-              </svg>
-            </button>
             <div class="max-w-2xl">
               <h1 class="hero-title">Межкомнатные и входные двери в&nbsp;Челябинске</h1>
 
-              <!-- Текст и ссылка — про кадр; меняются вместе с фото -->
+              <!-- Текст про кадр меняется вместе с фото -->
               <div class="hero-lead-stack" :aria-live="liveMode" aria-atomic="true">
                 <p
                   v-for="(slide, i) in slides"
@@ -264,11 +236,6 @@ onUnmounted(stop)
                     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
-                <Transition name="hero-content" mode="out-in">
-                  <a v-if="currentSlide.link" :key="currentSlide.id" :href="currentSlide.link.href" class="btn btn-text-inverse hero-link">
-                    {{ currentSlide.link.label }}
-                  </a>
-                </Transition>
               </div>
             </div>
 
@@ -339,29 +306,6 @@ onUnmounted(stop)
   );
 }
 
-.hero-pause {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 1px solid rgb(255 255 255 / 0.55);
-  border-radius: 999px;
-  background: rgb(24 24 26 / 0.45);
-  color: #fff;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out);
-}
-.hero-pause svg { width: 1rem; height: 1rem; }
-.hero-pause:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-@media (hover: hover) {
-  .hero-pause:hover { background: rgb(24 24 26 / 0.72); border-color: #fff; }
-}
-
 .hero-title {
   margin: 0;
   font-family: var(--font-display);
@@ -399,20 +343,11 @@ onUnmounted(stop)
 }
 
 .hero-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.875rem;
   margin-top: 1.5rem;
-}
-/* Узкий экран: ссылка всегда под кнопкой — иначе короткая («Урбан 2ГР»)
-   вставала в строку с кнопкой, длинная переносилась, и блок прыгал */
-@media (width >= 40rem) {
-  .hero-actions { flex-direction: row; align-items: center; gap: 1.5rem; }
 }
 
 /* Цвет, фокус и анимация CTA — общие controls.css. */
-.hero-cta, .hero-link { align-self: flex-start; }
+.hero-cta { align-self: flex-start; }
 
 /* ── Навигация: колонки на линейке ── */
 .hero-nav {
@@ -486,26 +421,12 @@ onUnmounted(stop)
   z-index: 1;
 }
 
-/* Плавная смена текста синхронно с фоном */
-.hero-content-enter-active,
-.hero-content-leave-active {
-  transition: opacity 400ms ease, transform 400ms ease;
-}
-.hero-content-enter-from,
-.hero-content-leave-to {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-slide,
   .hero-lead,
-  .hero-content-enter-active,
-  .hero-content-leave-active,
   .hero-cta {
     transition: none;
   }
-  .hero-pause { transition: none; }
   .hero-nav__fill.is-running { animation: none; transform: none; }
 }
 </style>
