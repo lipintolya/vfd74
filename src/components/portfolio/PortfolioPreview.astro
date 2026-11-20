@@ -1,25 +1,25 @@
 ---
 /**
- * «Готовые объекты» на главной — три последние работы портфолио.
+ * «Готовые объекты» на главной — четыре последние работы портфолио.
  *
- * Редакционная композиция: слева заголовок, лид и кнопка-уход в портфолио,
- * справа — три вертикальных кадра, которые занимают всю высоту блока.
+ * Редакционная композиция: сверху заголовок, лид, число работ и переход в
+ * портфолио; ниже — четыре вертикальных кадра на всю ширину контейнера.
  * Подписи лежат на самом кадре, на затемнении (тот же язык, что у
  * фото-плиток каталога: фото на всю площадь, белый текст на скриме, вся
  * плитка — одна ссылка). Так блок читается как подборка работ, а не как
  * список карточек с текстом рядом.
  *
- * Раскладка: на телефоне — шапка, кадры стопкой и только потом кнопка в
- * портфолио; с 80rem шапка и кнопка встают узкой колонкой слева, кадры —
- * справа во всю высоту колонки. Канонический title остаётся в данных,
- * H1 проекта и alt изображения; в подписи идёт короткий previewTitle.
+ * Раскладка: на телефоне — шапка, горизонтальная лента и только потом
+ * кнопка в портфолио; с 80rem шапка и CTA образуют верхнюю строку, а
+ * четыре кадра занимают следующую строку. Канонический title остаётся в
+ * данных, H1 проекта и alt изображения; в подписи идёт previewTitle.
  */
 import Action from '../ui/Action.astro'
 import { PORTFOLIO_WORKS, CATEGORY_LABELS } from '../../data/portfolio-works'
 import { pluralRu } from '../../lib/product-text'
 import { typograph } from '../../lib/typograph'
 
-const SHOWN = 3
+const SHOWN = 4
 
 const preview = [...PORTFOLIO_WORKS]
   .sort((a, b) => b.date.localeCompare(a.date))
@@ -70,7 +70,7 @@ const cover = (id: string) => ({
               <img
                 class="pp-img"
                 {...cover(work.id)}
-                sizes="(min-width: 80rem) 24vw, (min-width: 48rem) 30vw, 82vw"
+                sizes="(min-width: 80rem) 18vw, (min-width: 48rem) 30vw, 82vw"
                 alt={work.title}
                 width="640"
                 height="800"
@@ -110,9 +110,10 @@ const cover = (id: string) => ({
           с содержимым ленты. */}
       <div class="pp-cta">
         <p class="pp-count">
-          <strong>{total}</strong> {totalWord} в&nbsp;портфолио
+          <strong>{total}</strong>
+          <span>{totalWord}<br />в&nbsp;портфолио</span>
         </p>
-        <Action href="/portfolio/" variant="outline">Смотреть все работы</Action>
+        <Action href="/portfolio/" variant="outline" class="pp-all">Смотреть все работы</Action>
       </div>
 
     </div>
@@ -127,12 +128,14 @@ const cover = (id: string) => ({
 
   .pp {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(1.75rem, 3vw, 2.5rem);
   }
   .pp-intro {
     display: grid;
     align-content: start;
     gap: 0.875rem;
+    min-width: 0;
   }
   .pp-title {
     margin: 0;
@@ -165,6 +168,11 @@ const cover = (id: string) => ({
     min-width: 0;
     scroll-snap-align: start;
   }
+  /* На компактных экранах сохраняем короткую ленту из трёх работ.
+     Четвёртая нужна только там, где весь ряд виден одновременно. */
+  .pp-item:nth-child(n + 4) {
+    display: none;
+  }
   @media (width >= 40rem) {
     .pp-grid {
       gap: 1rem;
@@ -192,7 +200,7 @@ const cover = (id: string) => ({
     flex-direction: column;
     justify-content: flex-end;
     overflow: hidden;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 10 / 13;
     border-radius: 1.25rem;
     background: #27272a; /* zinc-800 — пока грузится фото */
     color: #fff;
@@ -310,40 +318,62 @@ const cover = (id: string) => ({
   .pp-cta {
     display: grid;
     justify-items: start;
-    gap: 0.25rem;
+    gap: 1rem;
   }
   .pp-count {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin: 0;
-    font-size: var(--text-step-0);
-    line-height: 1.4;
-    color: #475569; /* slate-600: на тёплой полосе даёт 6.9:1, а slate-500 — 4.3:1 (мало для 13px) */
+    color: var(--color-body);
   }
   .pp-count strong {
-    font-weight: 600;
+    font-size: var(--text-step-7);
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.04em;
     color: var(--color-ink);
-    font-variant-numeric: tabular-nums;
+  }
+  .pp-count span {
+    font-size: var(--text-step-1);
+    line-height: 1.5;
   }
 
-  /* ── Десктоп: шапка и ссылка — узкая колонка слева, кадры — справа
-     во всю высоту колонки (ссылка встаёт по нижнему краю кадров) ── */
+  /* ── Десктоп: смысловая шапка сверху, четыре кадра — отдельным рядом
+     на всю ширину контейнера, а общий переход завершает секцию снизу. ── */
   @media (width >= 80rem) {
     .pp {
-      grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
-      grid-template-rows: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       grid-template-areas:
-        'intro cards'
-        'cta cards';
-      column-gap: clamp(2rem, 3vw, 3.5rem);
-      row-gap: 1.5rem;
+        'intro count'
+        'cards cards'
+        '. action';
+      column-gap: clamp(2rem, 5vw, 5rem);
+      row-gap: clamp(2rem, 3vw, 2.75rem);
     }
     .pp-intro {
       grid-area: intro;
+      max-width: 39rem;
     }
     .pp-grid {
       grid-area: cards;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .pp-item:nth-child(n + 4) {
+      display: block;
     }
     .pp-cta {
-      grid-area: cta;
+      display: contents;
+    }
+    .pp-count {
+      grid-area: count;
+      align-self: end;
+      justify-self: end;
+      justify-content: flex-end;
+    }
+    :global(.pp-all) {
+      grid-area: action;
+      justify-self: end;
     }
   }
 

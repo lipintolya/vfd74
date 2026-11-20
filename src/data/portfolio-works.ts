@@ -66,6 +66,33 @@ export interface PortfolioWork {
 
 export const PORTFOLIO_WORKS: PortfolioWork[] = [
   {
+    id:          '2026-11-19-erika-emal-magnoliya-knyazhiy',
+    date:        '2026-11-19',
+    label:       '19.11.2026',
+    title:       'Монтаж дверей Эрика в эмали «Магнолия» в посёлке Княжий',
+    previewTitle:  'Эрика',
+    previewDetail: 'Эмаль «Магнолия» · классическая фрезеровка',
+    seoTitle:    'Двери Эрика в эмали «Магнолия», посёлок Княжий',
+    description: 'Установили межкомнатные двери Эрика в эмали цвета «Магнолия» в частном доме в посёлке Княжий, Челябинская область.',
+    category:    'interior',
+    objectType:  'house',
+    location:    'Челябинская область, посёлок Княжий',
+    story:       'Элегантность вне времени! Делимся фотографиями проекта: светлые межкомнатные двери Эрика в эмали цвета «Магнолия», изящная фрезеровка и классические линии — гармоничное сочетание для современного интерьера. Ремонт ещё продолжается, но уже сейчас можно оценить, насколько двери дополняют пространство. Создавайте интерьер, в который хочется возвращаться!',
+    model:       'Эрика',
+    coating:     'Эмаль «Магнолия»',
+    features:    ['Эмаль цвета «Магнолия»', 'Изящная фрезеровка', 'Классические линии'],
+    tags:        ['Частный дом', 'Межкомнатные', 'Эмаль', 'Магнолия', 'Классика'],
+    images: [
+      '/media/works_prod/19.11.26_knyazhiy/erika-magnoliya-knyazhiy-cover.webp',
+      '/media/works_prod/19.11.26_knyazhiy/erika-magnoliya-knyazhiy-1.webp',
+      '/media/works_prod/19.11.26_knyazhiy/erika-magnoliya-knyazhiy-2.webp',
+      '/media/works_prod/19.11.26_knyazhiy/erika-magnoliya-knyazhiy-3.webp',
+      '/media/works_prod/19.11.26_knyazhiy/erika-magnoliya-knyazhiy-4.webp',
+      '/media/works_prod/19.11.26_knyazhiy/erika-magnoliya-knyazhiy-5.webp',
+    ],
+    relatedLinks: [{ href: '/models/erika-winter/', label: 'Эрика в каталоге' }],
+  },
+  {
     id:          '2026-11-16-urban-emalex-innova-newton',
     date:        '2026-11-16',
     label:       '16.11.2026',
